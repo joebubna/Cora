@@ -1,13 +1,13 @@
 <?php 
-namespace Task;
+namespace Websites;
 /**
 * 
 */
 class Note extends \Note {
     
-    public function __construct()
+    public function __construct() 
     {
-        echo 'This is a task note.<br>';
+        echo 'This is a website note.';
     }
 
     public function foo()

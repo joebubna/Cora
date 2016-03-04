@@ -3,9 +3,14 @@
 * 
 */
 class Note {
+    
+    public function __construct()
+    {
+        echo 'This is a regular note.';
+    }
 
-    protected function foo() {
-        return 'FOO';
+    public function foo() {
+        return 'This is a note.';
     }
 
 }

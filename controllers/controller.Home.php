@@ -1,11 +1,11 @@
 <?php
 
-class Build extends Cora {
+class Home extends \MyApp {
     
     public function index() {
         $this->data->title = 'A Simple Form';
-        $this->data->content = $this->Cora->view('forms/genericForm', $this->data, true);
-        $this->Cora->view('', $this->data);
+        $this->data->content = 'HOME PAGE';
+        $this->load->view('', $this->data);
     }
     
     public function indexPOST() {
@@ -21,7 +21,15 @@ class Build extends Cora {
     
     public function test() {
         
-        $this->Cora->model('')
+        $this->load->model('note');
+        $this->load->model('task/note');
+        
+        $note = new Note();
+        $taskNote = new Task\Note();
+        
+        echo $note->foo();
+        echo '<br>';
+        echo $taskNote->foo();
     }
     
 }

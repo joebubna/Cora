@@ -1,9 +1,8 @@
 <?PHP
 namespace Cora;
 
-class Framework {
+class Route extends Framework {
     
-    protected $config;
     protected $pathString;
     protected $path;
     protected $controllerPath;      // STRING - filepath to controller .php file.
@@ -11,13 +10,10 @@ class Framework {
     
     
     function __construct() {
-        
-        // Load and set config.
-        require_once(dirname(__FILE__).'/../config/cora.php');
-        $this->config = $config;
-        
+        parent::__construct(); // Call parent constructor too so we don't lose functionality.
+                
         // Figure out and set pathString. E.g. "/controller/method/id"
-        $this->pathString = explode($config['site_url'], $_SERVER['REQUEST_URI'], 2)[1];
+        $this->pathString = explode($this->config['site_url'], $_SERVER['REQUEST_URI'], 2)[1];
         
         // Setup Path array
         $this->path = explode('/', $this->pathString);
@@ -42,42 +38,47 @@ class Framework {
         
         // Vars setup
         $curPath = $this->partialPathArray($offset, 1);
-        $p = '';
+        $controller = '';
+        $controllerFileName = '';
         
         // if $path isn't empty
-        if ( is_array($curPath) and !empty($curPath)) {
-            $p = $curPath[0];
+        if ( is_array($curPath) and !empty($curPath) ) {
+            $controller = $curPath[0];
+            $controllerFileName =   $this->config['controllersPrefix'] .
+                                    $curPath[0] .
+                                    $this->config['controllersPostfix'] .
+                                    '.php';
         }   
         else {
-            $p = $this->config['default_controller'];
+            $controller = $this->config['default_controller'];
+            $controllerFileName =   $this->config['controllersPrefix'] .
+                                    $this->config['default_controller'] .
+                                    $this->config['controllersPostfix'] .
+                                    '.php';
         }
 
         // Set working filepath.
-        $filepath = dirname(__FILE__).'/../controllers/'.$basePath.$p;
+        $dirpath = $this->config['pathToControllers'].$basePath.$controller;
+        $filepath = $this->config['pathToControllers'].$basePath.$controllerFileName;
 
         // Debug
         $this->debug('Searching for: ' . $filepath);
 
         // Check if the controller .php file exists in this directory.
-        if ( file_exists($filepath.'.php') ) {
+        if ( file_exists($filepath) ) {
             $this->controllerPath = $this->partialPathString(0, $offset+1);
             $this->controllerOffset = $offset;
             
-            $this->debug('File Found: ' . $p . '.php');
+            $this->debug('File Found: ' . $controllerFileName);
             $this->debug('Controller Path: ' . $this->controllerPath);
         }
 
         // Else check if there's a matching directory we can look through.
-        else if ( is_dir($filepath) ) {
-            $this->debug('Directory Found: ' . $basePath . $p);
+        else if ( is_dir($dirpath) ) {
+            $this->debug('Directory Found: ' . $basePath . $controller);
             
             // Recursive call
-            $this->routeFind($basePath . $p . '/', $offset+1);
-        }
-
-        // Return 404 error view
-        else {
-            $this->error404();
+            $this->routeFind($basePath . $controller . '/', $offset+1);
         }
         
     } // end routeFind
@@ -90,10 +91,23 @@ class Framework {
     public function routeExec() {
         
         // Load generic Cora parent class
-        require(dirname(__FILE__).'/Cora.php');
+        require('Cora.php');
+        
+        // If no controller was found by routeFind()...
+        if ( !isset($this->controllerPath) ) {
+            $this->error404();
+            exit;
+        }
         
         // Include the controller code.
-        require(dirname(__FILE__).'/../controllers/'.$this->controllerPath.'.php');
+        $cPath =    $this->config['pathToControllers'] . 
+                    $this->getPath($this->controllerPath) .
+                    $this->config['controllersPrefix'] .
+                    $this->getName($this->controllerPath) .
+                    $this->config['controllersPostfix'] .
+                    '.php';
+
+        require($cPath);
         
         // Create an instance of the controller.
         $controller = new $this->path[$this->controllerOffset]($this);
@@ -134,45 +148,34 @@ class Framework {
             // $controller->$method(...$this->partialPathArray($this->controllerOffset+2));
             
             // Older PHP compatible version
+            /** Maps an array of arguments derived from the URL into a method with a comma
+             *  delimited list of parameters. Calls the method.
+             *
+             *  I.E. If the URL is:
+             *  'www.mySite.com/MyController/FooBar/Param1/Param2/Param3'
+             *
+             *  And the FooBar method within MyController is defined as:
+             *  public function FooBar($a, $b, $c) {}
+             *
+             *  $a will have the value 'Param1'
+             *  $b will have the value 'Param2'  ... and so forth.
+             */
             call_user_func_array( array($controller, $method), $this->partialPathArray($this->controllerOffset+2) );
+            
         }
         else {
             $this->error404();
         }
     } // end routeExec
+    
+    
+    public function exists() {
+        if ( !isset($this->controllerPath) ) {
+            return false;
+        }
+        return true;
+    }
 
-    
-    /**
-     *  Include specified model.
-     */
-    public function model($pathname) {
-        $fullPath = dirname(__FILE__).'/../classes/'.$pathname.'.php';
-        include($fullPath);
-    }
-    
-    
-    /**
-     *  Load view OR return view depending on 2nd parameter.
-     */
-    public function view($pathname = '', $data = false, $return = false) {
-        
-        // If no pathname specified, grab template name.
-        if ($pathname == '')
-            $pathname = $this->config['template'];
-        
-        // Determine full filepath to View
-        $fullPath = dirname(__FILE__).'/../views/'.$pathname.'.php';
-        
-        // Either return the view for storage in a variable, or output to browser.
-        if ($return) {
-            ob_start();
-            include($fullPath);
-            return ob_get_clean();
-        }
-        else {
-            include($fullPath);
-        }
-    }
     
     
     protected function partialPathString($offset, $length = null) {
@@ -185,27 +188,18 @@ class Framework {
         return array_slice($this->path, $offset, $length);
     }
     
-    
-    protected function debug($message = '', $newLine = true) {
-        if ($this->config['debug'] == true) {
-            echo $message;
-            if ($newLine) echo '<br>';
-        }
-    }
-    
-    protected function debugArray($arr) {
-        if ($this->config['debug'] == true) {
-            echo '<pre>';
-            print_r($arr);
-            echo '</pre>';
-        }
-    }
-    
     protected function error404() {
+        
+        // Grab load object.
+        $load = new Load();
+        
+        // Set 404 Page data.
         $data = new \stdClass();
         $data->title = '404 Not Found';
-        $data->content = $this->view('errors/404', null, true);
-        $this->view('', $data);
+        $data->content = $load->view('errors/404', null, true);
+        
+        // Show 404 to user.
+        $load->view('', $data);
         exit;
     }
     
