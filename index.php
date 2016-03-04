@@ -9,10 +9,4 @@ require('cora/core.php');
 
 $Route = new Cora\Route();
 $Route->routeFind();
-if ( $Route->exists() ) {
-    $Route->routeExec();
-}
-else {
-    // Do legacy routing.
-    echo 'No Controller found!';
-}
+$Route->routeExec();
