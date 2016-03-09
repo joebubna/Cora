@@ -4,36 +4,55 @@ namespace Cora;
 class Route extends Framework
 {
     
-    protected $debug;
-    protected $container;
-    protected $pathString;
-    protected $path;
-    protected $controllerPath;      // STRING - filepath to controller .php file.
-    protected $controllerOffset;    // INT - The offset within the path array of the controller.
+    protected $container;           // VARIES   - For passing data to controllers.
+    protected $pathString;          // STRING   - URL excluding siteURL. mysite.com/FROM/HERE/ONWARD/
+    protected $path;                // ARRAY    - Array version of pathString. URL pieces after baseURL.
+    protected $controllerPath;      // STRING   - filepath to controller .php file.
+    protected $controllerOffset;    // INT      - The offset within the path array of the controller.
     protected $controllerName;      // STRING
     protected $controllerNamespace; // STRING
+    protected $controller;          // OBJECT
+    protected $method;              // STRING
     
     
     public function __construct($container = false)
     {
         parent::__construct(); // Call parent constructor too so we don't lose functionality.
         
+        // Register a autoloader function. Is called when an unloaded class is invoked.
         spl_autoload_register(array($this, 'autoLoader'));
         
         // For site specific data. This will be passed to Cora's controllers when they
         // are invoked in the routeExec() method.
         $this->container = $container;
         
-        // Figure out and set pathString. E.g. "/controller/method/id"
-        $cleanURI = str_replace('?'.$_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
-        $this->pathString = explode($this->config['site_url'], $cleanURI, 2)[1];
-        
-        // Setup Path array
-        $this->path = explode('/', $this->pathString);
+        // Set PATH info.
+        $this->setPath($_SERVER['REQUEST_URI']);       
         
         // Debug
         $this->debug('Route: ' . $this->pathString);
 
+    }
+    
+    
+    /**
+     *  Given a URL, sets needed PATH information.
+     *
+     *  NOTE: $_SERVER['QUERY_STRING'] is set by the server and may not be available
+     *  depending on the server being used.
+     */
+    public function setPath($url) 
+    {
+        // Removes any GET data from the url.
+        // Makes 'mysite.com/websites/build/?somevalue=test' INTO '/websites/build'
+        $cleanURI = str_replace('?'.$_SERVER['QUERY_STRING'], '', $url);
+
+        // Removes the 'mysite.com' from 'mysite.com/controller/method/id/'
+        // Resulting pathString will be 'controller/method/id/'
+        $this->pathString = explode($this->config['site_url'], $cleanURI, 2)[1];
+        
+        // Setup Path array
+        $this->path = explode('/', $this->pathString);
     }
     
     
@@ -82,8 +101,6 @@ class Route extends Framework
 
         // Debug
         $this->debug('Searching for: ' . $filepath);
-        
-        //$this->debug('Namespace: '.$this->controllerNamespace);
 
         // Check if the controller .php file exists in this directory.
         if (file_exists($filepath)) {
@@ -113,11 +130,12 @@ class Route extends Framework
                 // Debug
                 $this->debug('Not matching method within controller. Continuing search.');
                 
-                // Recursive call
-                //$this->routeFind($basePath . $controller . '/', $offset+1);
             }
             else {
-                return false;
+                // Valid controller+method combination found, so stop searching further.
+                $this->controller   = $controllerInstance;
+                $this->method       = $method;
+                return true;
             }
         }
 
@@ -145,48 +163,44 @@ class Route extends Framework
             $this->error404();
             exit;
         }
-        
-        $controller = $this->getController();
-        $method = $this->getMethod();
-        
-        // If that method exists, call it or output 404 error.
-        if (method_exists($controller, $method)) {
-            
-            // Setup and clean method arguments in URL
-            $methodArgs = $this->partialPathArray($this->controllerOffset+2);
 
-            if (empty($methodArgs)) {
-                array_push($methodArgs, '');
-            }
-            $input = new Input($methodArgs);
-            $methodArgs = $input->getData();
-            
-            // PHP7 Version
-            // $controller->$method(...$this->partialPathArray($this->controllerOffset+2));
-            
-            // Older PHP compatible version
-            /** Maps an array of arguments derived from the URL into a method with a comma
-             *  delimited list of parameters. Calls the method.
-             *
-             *  I.E. If the URL is:
-             *  'www.mySite.com/MyController/FooBar/Param1/Param2/Param3'
-             *
-             *  And the FooBar method within MyController is defined as:
-             *  public function FooBar($a, $b, $c) {}
-             *
-             *  $a will have the value 'Param1'
-             *  $b will have the value 'Param2'  ... and so forth.
-             */
-            call_user_func_array(array($controller, $method), $methodArgs);
-            
+        // Grab method arguments from the URL.
+        $methodArgs = $this->partialPathArray($this->controllerOffset+2);
+        
+        // Push empty string if no arguments are set.
+        if (empty($methodArgs)) {
+            array_push($methodArgs, '');
         }
-        else {
-            $this->error404();
-        }
+        
+        // Sanitize arguments.
+        $input = new Input($methodArgs);
+        $methodArgs = $input->getData();
+
+        /** Maps an array of arguments derived from the URL into a method with a comma
+         *  delimited list of parameters. Calls the method.
+         *
+         *  I.E. If the URL is:
+         *  'www.mySite.com/MyController/FooBar/Param1/Param2/Param3'
+         *
+         *  And the FooBar method within MyController is defined as:
+         *  public function FooBar($a, $b, $c) {}
+         *
+         *  $a will have the value 'Param1'
+         *  $b will have the value 'Param2'  ... and so forth.
+         */
+        call_user_func_array(array($this->controller, $this->method), $methodArgs);
         
     } // end routeExec
     
     
+    /**
+     *  Checks if routeFind found a path to a controller. Check this before calling
+     *  routeExec.
+     *
+     *  Note: This helps with integrating Cora into legacy applications.
+     *  You can check if a matching controller was found in the directory you're putting
+     *  Cora controllers in, and if not, then run legacy routing instead.
+     */
     public function exists()
     {
         if (!isset($this->controllerPath)) {
