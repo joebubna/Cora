@@ -22,15 +22,15 @@ class Build extends \MyApp {
     
     public function test() {
         
-        $this->load->model('note');
-        $this->load->model('task/note');
+        //$this->load->model('note');
+        //$this->load->model('task/note');
         
         $note = new Note();
-        $taskNote = new Task\Note();
+        $taskNote = new \Task\Note();
         
-        echo $note->foo();
-        echo '<br>';
-        echo $taskNote->foo();
+        $this->load->library('TestLib');
+        $t = new \TestLib();
+        $t->hi();
     }
     
     public function testNote() {

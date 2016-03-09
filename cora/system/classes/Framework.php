@@ -10,6 +10,7 @@ class Framework {
     
         // Load and set config.
         require(dirname(__FILE__).'/../config/config.php');
+        include(dirname(__FILE__).'/../../config/config.php');
         $this->config = $config;
         
     }

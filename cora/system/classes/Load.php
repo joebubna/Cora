@@ -7,22 +7,31 @@ class Load extends Framework {
     /**
      *  Include specified model.
      *  
-     *  If $strict == true, then searches for given view EXACTLY as 
-     *  stated from base Views directory. Ex: if $pathname == 'user/login'
-     *  it will search for login.php in 'views/user/login.php' and fail
-     *  the include if that file is not found.
-     *
-     *  If $strict == false, and $pathname == 'create' it will search for
-     *  a file named create.php in a directory matching the controller's
-     *  and then walk up the directory path until it reaches the base View
-     *  directory.
+     *  This is included for people that like to specifically load their classes.
+     *  It's recommended you not use this and just let the autoloader handle
+     *  model loading.
      */
-    public function model($pathname, $strict = false) {
+    public function model($pathname) {
         $fullPath = $this->config['pathToModels'] .
                     $this->getPath($pathname) .
                     $this->config['modelsPrefix'] .
                     $this->getName($pathname) .
                     $this->config['modelsPostfix'] .
+                    '.php';
+        include_once($fullPath);
+    }
+    
+    
+    /**
+     *  Include specified library.
+     *  
+     */
+    public function library($pathname) {
+        $fullPath = $this->config['pathToLibraries'] .
+                    $this->getPath($pathname) .
+                    $this->config['librariesPrefix'] .
+                    $this->getName($pathname) .
+                    $this->config['librariesPostfix'] .
                     '.php';
         include_once($fullPath);
     }

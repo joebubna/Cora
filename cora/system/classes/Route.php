@@ -194,8 +194,8 @@ class Route extends Framework
     
     
     /**
-     *  Checks if routeFind found a path to a controller. Check this before calling
-     *  routeExec.
+     *  Checks if routeFind found a path to a controller. Can optionally check this 
+     *  before calling routeExec.
      *
      *  Note: This helps with integrating Cora into legacy applications.
      *  You can check if a matching controller was found in the directory you're putting
@@ -218,7 +218,7 @@ class Route extends Framework
         
         // If the config specifies an application specific class that extends Cora, load that.
         if ($this->config['cora_extension'] != '') {
-            require_once(dirname(__FILE__).'/../extensions/'.$this->config['cora_extension'].'.php');
+            require_once($this->config['pathToExtensions'].$this->config['cora_extension'].'.php');
         }
         
         // Include the controller code.
@@ -233,7 +233,7 @@ class Route extends Framework
         
         // Return an instance of the controller.
         $class = $this->controllerNamespace.$this->getClassName($this->controllerName);
-        //$class = $this->getClassName($this->controllerName);
+        
         return new $class($this->container);
     }
     
@@ -303,6 +303,7 @@ class Route extends Framework
     {
         
         // Grab load object.
+        require('Cora.php');
         require('CoraError.php');
         $error = new \CoraError($this->container);
         $error->index();

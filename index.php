@@ -3,7 +3,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Load Cora mini framework.
+// Load Cora framework.
 require('cora/core.php');
 
 
