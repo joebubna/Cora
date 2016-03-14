@@ -48,7 +48,6 @@ class Validate
         }
         else {
             $this->controller->setData('errors', $this->errors);
-            $this->controller->setData('saved', $this->data);
             return false;
         }       
     }
