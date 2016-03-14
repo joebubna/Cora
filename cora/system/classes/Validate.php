@@ -73,7 +73,7 @@ class Validate
             if (is_array($check)) {
                 
                 // Grab custom check type. Ex. "call"
-                $custom = $check[0];
+                $custom = '_'.$check[0];
                 
                 // Remove the check type from array.
                 array_shift($check);
@@ -85,6 +85,9 @@ class Validate
                 $checkResult = call_user_func_array(array($this, $custom), $check);
             }
             else {
+                // Append underscore to the check method's name.
+                $check = '_'.$check;
+                
                 // Call a built-in check that's part of this Validation class.
                 $checkResult = $this->$check($fieldData, $humanName);    
             }
@@ -179,7 +182,7 @@ class Validate
     /**
      *  Form field is required.
      */
-    public function required($fieldData, $humanName)
+    protected function _required($fieldData, $humanName)
     {
         if ($fieldData)
             return false;
@@ -201,7 +204,7 @@ class Validate
      *          $user->nameAvailable($fieldData) you would want to return TRUE. So set $passing = true.
      *  $message is the custom error message to display if the check fails.
      */
-    public function call($fieldData, $controller, $method, $passing, $message)
+    protected function _call($fieldData, $controller, $method, $passing, $message)
     {      
         // If data to be passed to the method isn't an array, put it in array format.
         if (!is_array($fieldData))
@@ -218,7 +221,7 @@ class Validate
     /**
      *  Just trims the field. This check Never fails.
      */
-    public function trim(&$fieldData)
+    protected function _trim(&$fieldData)
     {
         $fieldData = trim($fieldData);
         return false;
