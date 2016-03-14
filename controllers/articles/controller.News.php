@@ -19,7 +19,6 @@ class News extends \MyApp
     
     public function createPOST() 
     {       
-        //var_dump($_POST);
         // Recommended way of setup
         $this->load->library('Validate', $this, true);  
         
