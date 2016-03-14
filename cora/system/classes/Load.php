@@ -1,8 +1,19 @@
 <?php
 namespace Cora;
 
-class Load extends Framework {
-
+class Load extends Framework 
+{
+    
+    /**
+     *  For echo'ing data in Views only if that data is set.
+     */
+    public function ifset(&$property)
+    {
+        if (isset($property))
+            echo $property;
+        else
+            echo '';
+    }
     
     /**
      *  Include specified model.
@@ -26,14 +37,34 @@ class Load extends Framework {
      *  Include specified library.
      *  
      */
-    public function library($pathname) {
+    public function library($pathname, &$caller = false) {
+        
+        $name = $this->getName($pathname);
+        $path = $this->getPath($pathname);       
         $fullPath = $this->config['pathToLibraries'] .
-                    $this->getPath($pathname) .
+                    $path .
                     $this->config['librariesPrefix'] .
-                    $this->getName($pathname) .
+                    $name .
                     $this->config['librariesPostfix'] .
                     '.php';
-        include_once($fullPath);
+        
+        // If the file exists in the Libraries directory, load it.
+        if (file_exists($fullPath)) {
+            include_once($fullPath);
+        }
+        
+        // Otherwise try and load it from the Cora system files.
+        else {
+            include_once($name.'.php');
+        }
+              
+        // If a reference to the calling object was passed, set an instance of
+        // the library as one of its members.
+        if ($caller) {
+            $lib = '\\Library\\'.$name;
+            $caller->$name = new $lib($caller);
+        }
+        
     }
     
     

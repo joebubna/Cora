@@ -66,6 +66,9 @@ $config['pathToControllers'] = dirname(__FILE__).'/../../../controllers/';
  */
 $config['pathToLibraries'] = dirname(__FILE__).'/../../../libraries/';
 
+/**
+ *  Path to Extensions directory relative to this file.
+ */
 $config['pathToExtensions'] = dirname(__FILE__).'/../../extensions/';
 
 

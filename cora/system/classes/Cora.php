@@ -18,5 +18,10 @@ class Cora {
         $this->input = new Cora\Input();
 
     }
+    
+    public function setData($property, $value)
+    {
+        $this->data->$property = $value;
+    }
 
 }

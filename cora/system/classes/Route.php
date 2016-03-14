@@ -27,7 +27,7 @@ class Route extends Framework
         $this->container = $container;
         
         // Set PATH info.
-        $this->setPath($_SERVER['REQUEST_URI']);       
+        $this->setPath($_SERVER['REQUEST_URI']);
         
         // Debug
         $this->debug('Route: ' . $this->pathString);
@@ -117,7 +117,7 @@ class Route extends Framework
             $method = $this->getMethod();
             $this->debug("getMethod() call in routeFind() returns: ".$method);
             
-            if (!method_exists($controllerInstance, $method)) {
+            if (!is_callable(array($controllerInstance, $method))) {
                 
                 // Update namespace
                 $this->controllerNamespace .= $this->getClassName($controller).'\\';
@@ -214,7 +214,7 @@ class Route extends Framework
     {
         
         // Load generic Cora parent class
-        require_once('Cora.php');
+        require_once('Cora.php');    
         
         // If the config specifies an application specific class that extends Cora, load that.
         if ($this->config['cora_extension'] != '') {
@@ -302,8 +302,7 @@ class Route extends Framework
     protected function error404()
     {
         
-        // Grab load object.
-        require('Cora.php');
+        require_once('Cora.php');    
         require('CoraError.php');
         $error = new \CoraError($this->container);
         $error->index();
@@ -319,6 +318,6 @@ class Route extends Framework
                     $this->config['modelsPostfix'] .
                     '.php';
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
-        include_once($fullPath);
+        include($fullPath);
     }
 } // end Class
