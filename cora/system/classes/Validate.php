@@ -54,7 +54,7 @@ class Validate
     
     
     /**
-     *  Checks a data field for validness by running all the specified check
+     *  Checks a data field for validness by running all the specified checks
      *  against it.
      */
     public function rule($fieldName, $humanName, $checks)
