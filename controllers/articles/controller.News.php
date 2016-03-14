@@ -4,15 +4,6 @@ namespace Articles;
 class News extends \MyApp 
 {
     
-    // Some things is validate?
-    // required
-    // valid_email
-    // matches[password]
-    // min_length[5]
-    // max_length[12]
-    // PHP single arg functions like: htmlspecialchars, trim
-    // Custom functions
-    
     public function index() 
     {
         echo 'This is the articles homepage.';
@@ -20,6 +11,7 @@ class News extends \MyApp
     
     public function create()
     {
+        $this->load->library('Validate', $this, true); 
         $this->data->title = 'A Simple Form';
         $this->data->content = $this->load->view('forms/articles_create', $this->data, true);
         $this->load->view('', $this->data);
@@ -27,8 +19,9 @@ class News extends \MyApp
     
     public function createPOST() 
     {       
+        //var_dump($_POST);
         // Recommended way of setup
-        $this->load->library('Validate', $this);  
+        $this->load->library('Validate', $this, true);  
         
         // Define custom method validation call.
         // param1 = 'call' tells Validation that this is a custom call.
@@ -43,13 +36,11 @@ class News extends \MyApp
         $this->Validate->rule('content', 'Content', ['required']);
         
         // Initiate validation
-        if ($this->Validate->run()) {
-            
+        if ($this->Validate->run()) {        
             // Submit was successful!
             $this->index();
         }
-        else {
-            
+        else {      
             // Call the main method to redisplay the form.
             $this->create();
         }

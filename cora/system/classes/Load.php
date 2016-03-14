@@ -36,8 +36,14 @@ class Load extends Framework
     /**
      *  Include specified library.
      *  
+     *  if a reference to the calling class is passed in, then the specified library
+     *  will be invoked and a reference passed back to the calling class.
+     *
+     *  If $exposeToView is set to true along with a reference to the calling class,
+     *  then the library will be loaded into the calling controller's Data field
+     *  for use within a View file.
      */
-    public function library($pathname, &$caller = false) {
+    public function library($pathname, &$caller = false, $exposeToView = false) {
         
         $name = $this->getName($pathname);
         $path = $this->getPath($pathname);       
@@ -62,7 +68,15 @@ class Load extends Framework
         // the library as one of its members.
         if ($caller) {
             $lib = '\\Library\\'.$name;
-            $caller->$name = new $lib($caller);
+            $libObj = new $lib($caller);
+            
+            // Set library to be available within a class via "$this->$libraryName"
+            $caller->$name = $libObj;
+            
+            // Set library to also be available via "$this->load->$libraryName"
+            // This is so this library will be available within View files as $libraryName.
+            if ($exposeToView)
+                $caller->setData($name, $libObj);
         }
         
     }
@@ -109,6 +123,4 @@ class Load extends Framework
             include($fullPath);
         }
     }
-    
-
-}
+} // end class

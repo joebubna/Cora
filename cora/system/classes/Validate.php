@@ -1,11 +1,21 @@
 <?php
 namespace Library;
 
+
 class Validate
 {
     private $controller;    // Stores a reference to the calling controller.
     private $errors;        // Array of validation errors.
     private $data;          // The data array to be validated. Defaults to $_POST.
+    
+    // Some things to validate?
+    // required
+    // valid_email
+    // matches[password]
+    // min_length[5]
+    // max_length[12]
+    // PHP single arg functions like: htmlspecialchars, trim
+    // Custom functions
     
     public function __construct($controller, $data = false)
     {
@@ -91,12 +101,85 @@ class Validate
         return $checkFailures == 0 ? true : false;
     }
     
+    /**
+     *  For resetting a form field's data after a failed validation.
+     *  Default is displayed if no data exists for this field.
+     */
+    public function setField($name, $default = '') 
+    {
+        if (isset($this->data[$name])) {
+            return $this->data[$name];
+        }
+        else {
+            return $default;
+        }
+    }
+    
+    
+    /**
+     *  For resetting a form Checkbox's data after a failed validation.
+     *  $name = checkbox's name
+     *  $value = checkbox's value
+     *  $default = whether this checkbox should be checked by default.
+     */
+    public function setCheckbox($name, $value, $default = false) 
+    {
+        if (isset($this->data[$name])) {
+            $return = '';
+            foreach ($this->data[$name] as $checkBox) {
+                if ($checkBox == $value) {
+                    $return = 'checked';
+                }
+            }
+            return $return;
+        }
+        else {
+            if ($default) {
+                return 'checked';
+            }
+            else {
+                return '';
+            }
+        }
+    }
+    
+    /**
+     *  For resetting a form Select's data after a failed validation.
+     *  $name = Select's name
+     *  $value = Option's value
+     *  $default = whether this Option should be selected by default.
+     */
+    public function setSelect($name, $value, $default = false) 
+    {
+        if (isset($this->data[$name])) {
+            if ($this->data[$name] == $value) {
+                return 'selected';
+            }
+            else {
+                return '';
+            }
+        }
+        else {
+            if ($default) {
+                return 'selected';
+            }
+            else {
+                return '';
+            }
+        }
+    }
+    
     
     ////////////////////////////////////////////////
+    //
     //  The Validation Methods
+    //
     ////////////////////////////////////////////////
     
     
+    /**
+     *  Form field is required.
+     */
     public function required($fieldData, $humanName)
     {
         if ($fieldData)
