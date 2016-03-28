@@ -1,0 +1,14 @@
+{
+    "name": "cora/cora",
+    "description": "Demo project for the Cora development framework. Cora is a framework for easily building beautiful web applications.",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/joebubna/cora-framework"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "cora-framework": "1.*"
+    }
+}
