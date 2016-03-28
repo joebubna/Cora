@@ -1,0 +1,46 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "18a907b0eda6a4816cca7af3b7ed565e",
+    "content-hash": "e31bfad80d96966a44d18c2ce1f26742",
+    "packages": [
+        {
+            "name": "cora/cora-framework",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/joebubna/cora-framework.git",
+                "reference": "a68972fedf9f293b8b59fd8e87664857a36d5341"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/joebubna/cora-framework/zipball/a68972fedf9f293b8b59fd8e87664857a36d5341",
+                "reference": "a68972fedf9f293b8b59fd8e87664857a36d5341",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "description": "A framework for easily building MVC style web applications.",
+            "support": {
+                "source": "https://github.com/joebubna/cora-framework/tree/v1.0.2",
+                "issues": "https://github.com/joebubna/cora-framework/issues"
+            },
+            "time": "2016-03-28 21:24:17"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.3.0"
+    },
+    "platform-dev": []
+}
