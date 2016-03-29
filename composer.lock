@@ -4,33 +4,45 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "18a907b0eda6a4816cca7af3b7ed565e",
-    "content-hash": "e31bfad80d96966a44d18c2ce1f26742",
+    "hash": "990df61057f4487901b3a1edc9e4021d",
+    "content-hash": "78e3cff2ee976431bb1ebebba71c2aa9",
     "packages": [
         {
             "name": "cora/cora-framework",
-            "version": "v1.0.2",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joebubna/cora-framework.git",
-                "reference": "a68972fedf9f293b8b59fd8e87664857a36d5341"
+                "reference": "a56aff7b5a3767866d9df84f9f9791f6e7cd5344"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joebubna/cora-framework/zipball/a68972fedf9f293b8b59fd8e87664857a36d5341",
-                "reference": "a68972fedf9f293b8b59fd8e87664857a36d5341",
+                "url": "https://api.github.com/repos/joebubna/cora-framework/zipball/a56aff7b5a3767866d9df84f9f9791f6e7cd5344",
+                "reference": "a56aff7b5a3767866d9df84f9f9791f6e7cd5344",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josiah Bubna"
+                },
+                {
+                    "name": "Aaron Rabideau"
+                }
+            ],
             "description": "A framework for easily building MVC style web applications.",
-            "support": {
-                "source": "https://github.com/joebubna/cora-framework/tree/v1.0.2",
-                "issues": "https://github.com/joebubna/cora-framework/issues"
-            },
-            "time": "2016-03-28 21:24:17"
+            "keywords": [
+                "cora",
+                "framework"
+            ],
+            "time": "2016-03-29 18:01:58"
         }
     ],
     "packages-dev": [],

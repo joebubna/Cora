@@ -79,24 +79,20 @@ class Route extends Framework
 
         // if $curPath isn't empty
         if (is_array($curPath) and !empty($curPath) and $curPath[0] != '') {
-            $controller = $curPath[0];
-            $controllerFileName =   $this->config['controllersPrefix'] .
-                                    $this->getClassName($controller) .
-                                    $this->config['controllersPostfix'] .
-                                    '.php';
+            $controller_path = $curPath[0];
         }
-        
         // Else grab the default controller.
         else {
-            $controller = $this->config['default_controller'];
+            $controller_path = $this->config['default_controller'];
+        }
+            $controller = $this->getClassName($controller_path);
             $controllerFileName =   $this->config['controllersPrefix'] .
-                                    $this->getClassName($this->config['default_controller']) .
+                                    $controller .
                                     $this->config['controllersPostfix'] .
                                     '.php';
-        }
-
+        
         // Set working filepath.
-        $dirpath = $this->config['pathToControllers'].$basePath.$controller;
+        $dirpath = $this->config['pathToControllers'].$basePath.$controller_path;
         $filepath = $this->config['pathToControllers'].$basePath.$controllerFileName;
 
         // Debug
@@ -118,9 +114,8 @@ class Route extends Framework
             $this->debug("getMethod() call in routeFind() returns: ".$method);
             
             if (!is_callable(array($controllerInstance, $method))) {
-                
                 // Update namespace
-                $this->controllerNamespace .= $this->getClassName($controller).'\\';
+                $this->controllerNamespace .= $this->controllerName.'\\';
                 
                 //  Controller->Method combo doesn't exist, so undo previously set data.
                 $this->controllerPath = null;
@@ -130,13 +125,16 @@ class Route extends Framework
                 // Debug
                 $this->debug('Not matching method within controller. Continuing search.');
                 
-            }
-            else {
+            } else {
                 // Valid controller+method combination found, so stop searching further.
                 $this->controller   = $controllerInstance;
                 $this->method       = $method;
                 return true;
             }
+        }
+        else {
+            // Update namespace
+            $this->controllerNamespace .= $controller.'\\';
         }
 
         // Else check if there's a matching directory we can look through.
@@ -144,7 +142,7 @@ class Route extends Framework
             $this->debug('Directory Found: ' . $basePath . $controller);
             
             // Recursive call
-            $this->routeFind($basePath . $controller . '/', $offset+1);
+            $this->routeFind($basePath . $controller_path . '/', $offset+1);
         }
         
     } // end routeFind
@@ -214,7 +212,7 @@ class Route extends Framework
     {
         
         // Load generic Cora parent class
-        require_once('Cora.php');    
+        require_once('Cora.php');
         
         // If the config specifies an application specific class that extends Cora, load that.
         if ($this->config['cora_extension'] != '') {
@@ -230,10 +228,10 @@ class Route extends Framework
                     '.php';
 
         require_once($cPath);
-        
+
         // Return an instance of the controller.
-        $class = $this->controllerNamespace.$this->getClassName($this->controllerName);
-        
+        $class = $this->controllerNamespace.$this->controllerName;
+
         return new $class($this->container);
     }
     
@@ -279,7 +277,7 @@ class Route extends Framework
 
     protected function getClassName($slug)
     {
-        return str_replace(' ', '', ucwords(preg_replace('/-_/', ' ', $slug)));
+        return str_replace(' ', '', ucwords(preg_replace('/[-_]/', ' ', $slug)));
     }
     
     /**
@@ -302,7 +300,7 @@ class Route extends Framework
     protected function error404()
     {
         
-        require_once('Cora.php');    
+        require_once('Cora.php');
         require('CoraError.php');
         $error = new \CoraError($this->container);
         $error->index();
@@ -318,6 +316,8 @@ class Route extends Framework
                     $this->config['modelsPostfix'] .
                     '.php';
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
-        include($fullPath);
+        if(file_exists($fullPath)) {
+            include($fullPath);
+        }
     }
 } // end Class
