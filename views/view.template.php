@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= $data->title; ?></title>
+    <title><?= $title; ?></title>
 </head>
     
 <body>
     <h1>CONTENT:</h1>
-    <?= $data->content; ?>
+    <?= $content; ?>
 </body>
 </html>
