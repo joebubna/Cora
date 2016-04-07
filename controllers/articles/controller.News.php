@@ -28,11 +28,11 @@ class News extends \MyApp
         // param3 = 'exists' tells we want to call the 'exists' method.
         // param4 = false tells Validate that to PASS the test the returned result needs to be false.
         // param5 = The error message to display when the check fails.
-        $titleCheck = ['call','Article','exists', false,'This title already exists.'];
+        $this->Validate->def('articleExists', 'Article','exists', 'This title already exists.', false);
         
         // Define validation rules.
-        $this->Validate->rule('title', 'Title', ['required', $titleCheck, 'trim']);
-        $this->Validate->rule('content', 'Content', ['required']);
+        $this->Validate->rule('title', ['required', 'articleExists', 'trim']);
+        $this->Validate->rule('content', ['required']);
         
         // Initiate validation
         if ($this->Validate->run()) {        

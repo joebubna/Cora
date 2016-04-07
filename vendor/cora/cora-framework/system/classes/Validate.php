@@ -185,7 +185,7 @@ class Validate
     }
 
     // valid_email
-    protected function _valid_email($fieldData, $humanName)
+    protected function _valid_email($fieldData)
     {
         echo $fieldData;
         if (preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/', $fieldData)) {
@@ -195,7 +195,7 @@ class Validate
     }
 
     // mathces
-    protected function _matches($fieldData, $humanName, $array)
+    protected function _matches($fieldData, $array)
     {
         var_dump($array);
     }

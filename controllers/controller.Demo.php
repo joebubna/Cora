@@ -8,6 +8,16 @@ class Demo extends \MyApp {
         
     }
     
+    public function index()
+    {
+        echo 'Index GET';
+    }
+    
+    public function itemGET($id)
+    {
+        echo $id;
+    }
+    
     public function someWebPage()
     {
         $this->data->title = "Demo App!";

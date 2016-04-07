@@ -1,23 +1,23 @@
 [
     {
         "name": "cora/cora-framework",
-        "version": "v1.0.7",
-        "version_normalized": "1.0.7.0",
+        "version": "v1.1.1",
+        "version_normalized": "1.1.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/joebubna/cora-framework.git",
-            "reference": "e9fc21f275aa7b73e69ffd321d5f5b965c73048d"
+            "reference": "c9dd2e5557cdf1b690827056a1dae675fbb9af96"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/joebubna/cora-framework/zipball/e9fc21f275aa7b73e69ffd321d5f5b965c73048d",
-            "reference": "e9fc21f275aa7b73e69ffd321d5f5b965c73048d",
+            "url": "https://api.github.com/repos/joebubna/cora-framework/zipball/c9dd2e5557cdf1b690827056a1dae675fbb9af96",
+            "reference": "c9dd2e5557cdf1b690827056a1dae675fbb9af96",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.0"
         },
-        "time": "2016-04-01 18:35:52",
+        "time": "2016-04-06 22:41:03",
         "type": "library",
         "installation-source": "dist",
         "notification-url": "https://packagist.org/downloads/",

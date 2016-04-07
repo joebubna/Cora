@@ -13,6 +13,8 @@ class Route extends Framework
     protected $controllerNamespace; // STRING
     protected $controller;          // OBJECT
     protected $method;              // STRING
+    protected $collectionIDgiven;   // BOOL     - If the URL is of form /articles/107 this is set to true.
+    protected $collectionID;        // INT      - The ID if a collection ID is specified.
     
     
     public function __construct($container = false)
@@ -165,7 +167,17 @@ class Route extends Framework
         }
 
         // Grab method arguments from the URL.
-        $methodArgs = $this->partialPathArray($this->controllerOffset+2);
+        if ($this->collectionIDGiven) {
+            $methodArgs = $this->partialPathArray($this->controllerOffset+1, 1);
+        }
+        else {
+            $methodArgs = $this->partialPathArray($this->controllerOffset+2);
+        }
+        
+        // Remove the last item from arguments if empty.
+        if ($methodArgs[count($methodArgs)-1] == '') {
+            array_pop($methodArgs);
+        }
         
         // If no arguments are set then make empty array.
         if (empty($methodArgs) || $methodArgs[0] == '') {
@@ -243,12 +255,23 @@ class Route extends Framework
     {
         
         $method = '';
+        $this->collectionIDGiven = false;
+        $this->collectionID = false;
         
         // Figure out method to be called, or use default.
         if (isset($this->path[$this->controllerOffset+1])) {
             $method = $this->path[$this->controllerOffset+1];
+            
+            // If no method is specified or if the method spot is numeric (indicating 
+            // that an ID is being passed to a collection for RESTful routing)
+            // Route to default method.
             if ($method == '') {
                 $method = $this->config['default_method'];
+            }
+            else if (is_numeric($method)) {
+                $this->collectionIDGiven = true;
+                $this->collectionID = $method;
+                $method = $this->config['default_method'];          
             }
         }
         else {
@@ -261,22 +284,41 @@ class Route extends Framework
 
             $httpMethod = $_SERVER['REQUEST_METHOD'];
             
-            switch ($httpMethod) {
-                case 'PUT':
-                    $method = $method.'PUT';
-                    break;
-                case 'POST':
-                    $method = $method.'POST';
-                    break;
-                case 'DELETE':
-                    $method = $method.'DELETE';
-                    break;
+            if ($this->collectionIDGiven) {
+                switch ($httpMethod) {
+                    case 'GET':
+                        $method = 'itemGET';
+                        break;
+                    case 'PUT':
+                        $method = 'itemPUT';
+                        break;
+                    case 'POST':
+                        $method = 'itemPOST';
+                        break;
+                    case 'DELETE':
+                        $method = 'itemDELETE';
+                        break;
+                }
+            }
+            else {
+                switch ($httpMethod) {
+                    case 'PUT':
+                        $method = $method.'PUT';
+                        break;
+                    case 'POST':
+                        $method = $method.'POST';
+                        break;
+                    case 'DELETE':
+                        $method = $method.'DELETE';
+                        break;
+                }
             }
         }
         
         return $method;
         
     } // END getMethod
+    
 
     protected function getClassName($slug)
     {
