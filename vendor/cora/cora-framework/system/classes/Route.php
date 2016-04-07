@@ -175,7 +175,8 @@ class Route extends Framework
         }
         
         // Remove the last item from arguments if empty.
-        if ($methodArgs[count($methodArgs)-1] == '') {
+        $lastItem = count($methodArgs)-1;
+        if (isset($methodArgs[$lastItem]) && $methodArgs[$lastItem] == '') {
             array_pop($methodArgs);
         }
         
