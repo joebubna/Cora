@@ -26,8 +26,8 @@ class News extends \MyApp
         // param1 = 'call' tells Validation that this is a custom call.
         // param2 = 'Article' specifies the class to be called.
         // param3 = 'exists' tells we want to call the 'exists' method.
-        // param4 = false tells Validate that to PASS the test the returned result needs to be false.
-        // param5 = The error message to display when the check fails.
+        // param4 = The error message to display when the check fails.
+        // param5 = false tells Validate that to PASS the test the returned result needs to be false.
         $this->Validate->def('articleExists', 'Article','exists', 'This title already exists.', false);
         
         // Define validation rules.
