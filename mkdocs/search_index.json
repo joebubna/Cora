@@ -22,7 +22,7 @@
         },
         {
             "location": "/about/",
-            "text": "Welcome to MkDocs\n\n\nFor full documentation visit \nmkdocs.org\n.\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nCode Test\n\n\n<?php\nrequire ('redcarpet');\n$markdown = $Redcarpet.new(\"Hello World!\");\necho $markdown;",
+            "text": "Welcome to MkDocs\n\n\nFor full documentation visit \nmkdocs.org\n.\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nCode Test\n\n\n<?php\nrequire ('redcarpet');\n$markdown = $Redcarpet.new(\"Hello World!\");\necho $markdown;\n$TEST",
             "title": "About"
         },
         {
@@ -37,7 +37,7 @@
         },
         {
             "location": "/about/#code-test",
-            "text": "<?php\nrequire ('redcarpet');\n$markdown = $Redcarpet.new(\"Hello World!\");\necho $markdown;",
+            "text": "<?php\nrequire ('redcarpet');\n$markdown = $Redcarpet.new(\"Hello World!\");\necho $markdown;\n$TEST",
             "title": "Code Test"
         }
     ]
