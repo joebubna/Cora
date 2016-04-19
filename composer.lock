@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "cora/cora-framework",
-            "version": "v1.1.2",
+            "version": "v1.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joebubna/cora-framework.git",
-                "reference": "7d553467ba88b7788ea9c833b032db616c4b1f77"
+                "reference": "19914982150f873db3c4b49bd6343c8e8dcaf8c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joebubna/cora-framework/zipball/7d553467ba88b7788ea9c833b032db616c4b1f77",
-                "reference": "7d553467ba88b7788ea9c833b032db616c4b1f77",
+                "url": "https://api.github.com/repos/joebubna/cora-framework/zipball/19914982150f873db3c4b49bd6343c8e8dcaf8c3",
+                "reference": "19914982150f873db3c4b49bd6343c8e8dcaf8c3",
                 "shasum": ""
             },
             "require": {
@@ -42,7 +42,7 @@
                 "cora",
                 "framework"
             ],
-            "time": "2016-04-07 19:14:17"
+            "time": "2016-04-14 17:05:25"
         }
     ],
     "packages-dev": [],

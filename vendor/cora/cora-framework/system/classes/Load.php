@@ -98,29 +98,51 @@ class Load extends Framework
             $pathname = $this->config['template'];
         }
         
-        // Determine full filepath to View
         $fullPath = $this->config['pathToViews'] . 
-                    $this->getPath($pathname) .
-                    $this->config['viewsPrefix'] .
+                    $this->getPath($pathname);
+        $path = $this->getPath($pathname);
+
+        $this->debug('Full Path: '.$fullPath);
+
+        $fileName = $this->config['viewsPrefix'] .
                     $this->getName($pathname) .
                     $this->config['viewsPostfix'] .
                     '.php';
-        
+
+
+        // Determine full filepath to View
+        // $filePath = $fullPath . $fileName;
+
+        $filePath = $this->_getFilePath($pathname, $fileName);
+
         // Debug
         $this->debug('');
         $this->debug( 'Searching for View: ');
         $this->debug( 'View Name: ' . $this->getName($pathname) );
         $this->debug( 'View Path: ' . $this->getPath($pathname) );
+        $this->debug( 'File Path: ' . $filePath);
         $this->debug('');
         
         // Either return the view for storage in a variable, or output to browser.
         if ($return) {
             ob_start();
-            include($fullPath);
+            include($filePath);
             return ob_get_clean();
         }
         else {
-            include($fullPath);
+            include($filePath);
         }
+    }
+
+    protected function _getFilePath($pathname, $fileName)
+    {
+        $path_steps = explode('/', $this->getPath($pathname));
+        do {
+            $path = implode('/', $path_steps);
+            if (file_exists($this->config['pathToViews'] . $this->getPath($path) . $fileName)) {
+                return $this->config['pathToViews'] . $this->getPath($path) . $fileName;
+            }
+            array_pop($path_steps);
+        } while (count($path_steps) > 0);
     }
 } // end class

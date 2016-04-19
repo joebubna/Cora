@@ -53,6 +53,11 @@ class Route extends Framework
         // Resulting pathString will be 'controller/method/id/'
         $this->pathString = explode($this->config['site_url'], $cleanURI, 2)[1];
         
+        // If config option to make url lowercase is true
+        if ($this->config['lowercase_url']) {
+            $this->pathString = strtolower($this->pathString);
+        }
+        
         // Setup Path array
         $this->path = explode('/', $this->pathString);
     }
@@ -68,7 +73,7 @@ class Route extends Framework
      *
      *  NOTE: This is a recursive function.
      */
-    public function routeFind($basePath = '', $offset = 0)
+     public function routeFind($basePath = '', $offset = 0)
     {
         $this->debug('');
         
@@ -81,24 +86,20 @@ class Route extends Framework
 
         // if $curPath isn't empty
         if (is_array($curPath) and !empty($curPath) and $curPath[0] != '') {
-            $controller = $curPath[0];
-            $controllerFileName =   $this->config['controllersPrefix'] .
-                                    $this->getClassName($controller) .
-                                    $this->config['controllersPostfix'] .
-                                    '.php';
+            $controller_path = $curPath[0];
         }
-        
         // Else grab the default controller.
         else {
-            $controller = $this->config['default_controller'];
+            $controller_path = $this->config['default_controller'];
+        }
+            $controller = $this->getClassName($controller_path);
             $controllerFileName =   $this->config['controllersPrefix'] .
-                                    $this->getClassName($this->config['default_controller']) .
+                                    $controller .
                                     $this->config['controllersPostfix'] .
                                     '.php';
-        }
-
+        
         // Set working filepath.
-        $dirpath = $this->config['pathToControllers'].$basePath.$controller;
+        $dirpath = $this->config['pathToControllers'].$basePath.$controller_path;
         $filepath = $this->config['pathToControllers'].$basePath.$controllerFileName;
 
         // Debug
@@ -120,9 +121,8 @@ class Route extends Framework
             $this->debug("getMethod() call in routeFind() returns: ".$method);
             
             if (!is_callable(array($controllerInstance, $method))) {
-                
                 // Update namespace
-                $this->controllerNamespace .= $this->getClassName($controller).'\\';
+                $this->controllerNamespace .= $this->controllerName.'\\';
                 
                 //  Controller->Method combo doesn't exist, so undo previously set data.
                 $this->controllerPath = null;
@@ -132,13 +132,16 @@ class Route extends Framework
                 // Debug
                 $this->debug('Not matching method within controller. Continuing search.');
                 
-            }
-            else {
+            } else {
                 // Valid controller+method combination found, so stop searching further.
                 $this->controller   = $controllerInstance;
                 $this->method       = $method;
                 return true;
             }
+        }
+        else {
+            // Update namespace
+            $this->controllerNamespace .= $controller.'\\';
         }
 
         // Else check if there's a matching directory we can look through.
@@ -146,7 +149,7 @@ class Route extends Framework
             $this->debug('Directory Found: ' . $basePath . $controller);
             
             // Recursive call
-            $this->routeFind($basePath . $controller . '/', $offset+1);
+            $this->routeFind($basePath . $controller_path . '/', $offset+1);
         }
         
     } // end routeFind
@@ -242,9 +245,10 @@ class Route extends Framework
                     $this->controllerName .
                     $this->config['controllersPostfix'] .
                     '.php';
-
-        require_once($cPath);
         
+        if (file_exists($cPath)) {
+            include_once($cPath);
+        }
         // Return an instance of the controller.
         $class = $this->controllerNamespace.$this->getClassName($this->controllerName);
         
@@ -323,7 +327,7 @@ class Route extends Framework
 
     protected function getClassName($slug)
     {
-        return str_replace(' ', '', ucwords(preg_replace('/-_/', ' ', $slug)));
+        return str_replace(' ', '', ucwords(preg_replace('/[-_]/', ' ', $slug)));
     }
     
     /**
@@ -362,6 +366,8 @@ class Route extends Framework
                     $this->config['modelsPostfix'] .
                     '.php';
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
-        include($fullPath);
+        if (file_exists($fullPath)) {
+            include($fullPath);
+        }
     }
 } // end Class

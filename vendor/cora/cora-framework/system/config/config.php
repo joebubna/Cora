@@ -21,6 +21,13 @@ $config['debugHide'] = false; // Hides debug info in HTML comments so you have t
  */
 $config['site_url'] = '/cora/';
 
+/**
+ *  Should URLs be converted to lowercase?
+ *  If your project is hosted on a case-sensitive system (e.g. Linux) and you want a URL to
+ *  work regardless of whether a user typed part of it as uppercase, then having this option on
+ *  can be useful. If however you want your URLs to be case sensitive, then turn this off.
+ */
+$config['lowercase_url'] = true;
 
 /**
  *  If you want to extend the base Cora controller class, add
