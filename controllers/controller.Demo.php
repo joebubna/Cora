@@ -31,8 +31,10 @@ class Demo extends \MyApp {
             'item1' => 'Value1',
             'item2' => 'Value2'
         );
-        $db = new Db_MySQL();
-        $db ->update($data)
-            ->exec();
+        $db = new Cora\Db_MySQL();
+        $db ->select('id')
+            ->from($data)
+            ->where('name', 'bob', '=');
+        echo $db->getQuery();
     }
 }

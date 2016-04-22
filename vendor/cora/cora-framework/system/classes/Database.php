@@ -1,6 +1,7 @@
 <?php
+namespace Cora;
 
-class DbAdaptor
+class Database
 {
     protected $tables;
     protected $selects;
@@ -24,7 +25,14 @@ class DbAdaptor
     
     public function table($tables)
     {
-        $this->store('value', 'tables', $fields);
+        $this->store('value', 'tables', $tables);
+        return $this;
+    }
+    
+    
+    public function from($tables)
+    {
+        $this->table($tables);
         return $this;
     }
     
@@ -50,9 +58,9 @@ class DbAdaptor
     }
     
     
-    public function where($conditions, $value = false)
+    public function where($conditions, $value = false, $comparison = false)
     {
-        $this->store('keyValue', 'wheres', $conditions, $value);
+        $this->store('keyValue', 'wheres', $conditions, $value, $comparison);
         return $this;
     }
     
@@ -128,7 +136,7 @@ class DbAdaptor
         $this->delete   = false;
         $this->limit    = false;
         $this->offset   = false;
-        $this->query    = false;
+        $this->query    = '';
     }
     
     
@@ -139,7 +147,7 @@ class DbAdaptor
     }
     
     
-    protected function store($type, $dataMember, $fields, $value = false)
+    protected function store($type, $dataMember, $fields, $value = false, $comparison = '=')
     {
         // If data being stored doesn't need its key.
         // E.g. adding 'tables' to a table array.
@@ -152,7 +160,7 @@ class DbAdaptor
         else if ($type == 'keyValue') {
             if ($value) {
                 $key = $fields;
-                $this->storeKeyValue($dataMember, $value, $key);
+                $this->storeKeyValue($dataMember, $value, $key, $comparison);
             }
             else {
                 $this->storeKeyValue($dataMember, $fields);
@@ -179,22 +187,41 @@ class DbAdaptor
     }
     
     
-    protected function storeKeyValue($type, $data, $key = false)
+    protected function storeKeyValue($type, $data, $key = false, $comparison = false)
     {
         $dataMember = &$this->$type;
         // If array or object full of data was passed in, add all data
         // to appropriate data member.
         if (is_array($data) || is_object($data)) {
-            foreach ($data as $key => $value) {
-                $dataMember[$key] = $value;
+            foreach ($data as $item) {
+                array_push($dataMember, $item);
             }
         }
         
         // Add singular data item to data member.
         else {
-            $dataMember[$key] = $data;
+            $item = array($key, $comparison, $data);
+            array_push($dataMember, $item);
         }
     }
+    
+    
+//    protected function storeKeyValue($type, $data, $key = false, $comparison = false)
+//    {
+//        $dataMember = &$this->$type;
+//        // If array or object full of data was passed in, add all data
+//        // to appropriate data member.
+//        if (is_array($data) || is_object($data)) {
+//            foreach ($data as $key => $value) {
+//                $dataMember[$key] = $value;
+//            }
+//        }
+//        
+//        // Add singular data item to data member.
+//        else {
+//            $dataMember[$key] = $data;
+//        }
+//    }
     
     
     public function exec()
@@ -209,4 +236,5 @@ class DbAdaptor
         // To be implemented by specific DB adaptor.
         throw new Exception('getQuery() calls calculate(), which needs to be implemented by a specific database adaptor!');
     }
+    
 }

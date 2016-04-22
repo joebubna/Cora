@@ -376,7 +376,7 @@ class Route extends Framework
     protected function coraLoader($className)
     {
         $fullPath = dirname(__FILE__) . '/' .
-                    $this->getPathBackslash($className) .
+                    //$this->getPathBackslash($className) .
                     $this->getNameBackslash($className) .
                     '.php';
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
