@@ -23,6 +23,8 @@ class Route extends Framework
         
         // Register a autoloader function. Is called when an unloaded class is invoked.
         spl_autoload_register(array($this, 'autoLoader'));
+        spl_autoload_register(array($this, 'coraLoader'));
+        spl_autoload_register(array($this, 'coraExtensionLoader'));
         
         // For site specific data. This will be passed to Cora's controllers when they
         // are invoked in the routeExec() method.
@@ -234,9 +236,9 @@ class Route extends Framework
         require_once('Cora.php');    
         
         // If the config specifies an application specific class that extends Cora, load that.
-        if ($this->config['cora_extension'] != '') {
-            require_once($this->config['pathToCora'].'extensions/'.$this->config['cora_extension'].'.php');
-        }
+        //if ($this->config['cora_extension'] != '') {
+            //require_once($this->config['pathToCora'].'extensions/'.$this->config['cora_extension'].'.php');
+        //}
         
         // Include the controller code.
         $cPath =    $this->config['pathToControllers'] .
@@ -364,6 +366,31 @@ class Route extends Framework
                     $this->config['modelsPrefix'] .
                     $this->getNameBackslash($className) .
                     $this->config['modelsPostfix'] .
+                    '.php';
+        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        if (file_exists($fullPath)) {
+            include($fullPath);
+        }
+    }
+    
+    protected function coraLoader($className)
+    {
+        $fullPath = dirname(__FILE__) . '/' .
+                    $this->getPathBackslash($className) .
+                    $this->getNameBackslash($className) .
+                    '.php';
+        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        if (file_exists($fullPath)) {
+            include($fullPath);
+        }
+    }
+    
+    protected function coraExtensionLoader($className)
+    {
+        $fullPath = $this->config['pathToCora'] .
+                    'extensions/' .
+                    $this->getPathBackslash($className) .
+                    $this->getNameBackslash($className) .
                     '.php';
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
         if (file_exists($fullPath)) {
