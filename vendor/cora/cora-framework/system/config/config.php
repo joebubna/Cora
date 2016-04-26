@@ -4,6 +4,7 @@
  */
 $config['debug'] = false;
 $config['debugHide'] = false; // Hides debug info in HTML comments so you have to view source to see it.
+$config['mode'] = 'development';
 
 /**
  *  If site URL is www.MySite.com
