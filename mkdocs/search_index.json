@@ -2,43 +2,188 @@
     "docs": [
         {
             "location": "/",
-            "text": "Welcome to MkDocs\n\n\nFor full documentation visit \nmkdocs.org\n.\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nProject layout\n\n\nmkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.",
-            "title": "Home"
+            "text": "Cora News\n\n\nIn the future any important notices about new releases will be displayed here! So keep your eye out.",
+            "title": "News"
         },
         {
-            "location": "/#welcome-to-mkdocs",
-            "text": "For full documentation visit  mkdocs.org .",
-            "title": "Welcome to MkDocs"
-        },
-        {
-            "location": "/#commands",
-            "text": "mkdocs new [dir-name]  - Create a new project.  mkdocs serve  - Start the live-reloading docs server.  mkdocs build  - Build the documentation site.  mkdocs help  - Print this help message.",
-            "title": "Commands"
-        },
-        {
-            "location": "/#project-layout",
-            "text": "mkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.",
-            "title": "Project layout"
+            "location": "/#cora-news",
+            "text": "In the future any important notices about new releases will be displayed here! So keep your eye out.",
+            "title": "Cora News"
         },
         {
             "location": "/about/",
-            "text": "Welcome to MkDocs\n\n\nFor full documentation visit \nmkdocs.org\n.\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nCode Test\n\n\n<?php\nrequire ('redcarpet');\n$markdown = $Redcarpet.new(\"Hello World!\");\necho $markdown;\n$TEST",
+            "text": "About Cora\n\n\nCora is an MVC style framework for rapidly building scalable web applications. \nThe goal of the project is to make a powerful and well-built infrastructure that is EASY TO USE and well documented. \nThis is a project aimed at experienced world-class developers and the just starting out novice alike. We don't shy away\nfrom advanced design patterns, but rather make every effort to encapsulate that complexity away from the developer\nso that they can focus on creating apps, not wrestling with a framework. Our hope\nis that this results in cleaner, more understandable code for all involved.\n\n\nCore Values\n\n\n\n\nCora should be easy to use.\n\n\nYou shouldn't need to spend a lot of time configuring things to get up and running.\n\n\nYou shouldn't need a degree in computer science to understand what is going on.\n\n\nYou shouldn't need to take a class on how to use the framework.\n\n\nThe framework should make your life as a developer easier, and help you work faster and better.\n\n\n\n\n\n\nLearning should fun.\n\n\nDocumentation should be useful to both experienced and novice developers alike.\n\n\nDocumentation should provide the needed info to experienced developers at a glance.\n\n\nMore in-depth documentation should be written in a ELI5 (Explain it Like I'm 5) style of explanation.\n\n\nDocumentation should be full of great examples to help bring understanding of the concepts.\n\n\n\n\n\n\nFlexible, Powerful, and Simple - Choose 3.\n\n\nCora should be able to accomodate a variety of programming styles.\n\n\nCora should be integratable into existing software projects.\n\n\nCora should provide developers with powerful tools to help make developing easier/faster.\n\n\nCora should be fully extendable and customizable.\n\n\nCora should do all this while staying simple.\n\n\n\n\n\n\n\n\nBeing a Trend-Setter for PHP\n\n\nPHP originally gained massive popularity for it's ease of entry and wide availability. While the wide availability is still there, \nit feels as though that focus on making PHP accessible to the masses has fallen off in recent years. As a result it could be argued that PHP\nhas lost its sense of identity, leaving it only as a mediocre contender amongst the group of popular programming languages where it can be argued that PHP has a syntax that\nis sub-par and lots of left-over baggage from it's pre-OOP days.\n\n\nIt's the hope of the Cora project to bring back that sense of excitement and identity that made PHP a standout language for so many years.\n\n\n\n\nNext: Installation",
             "title": "About"
         },
         {
-            "location": "/about/#welcome-to-mkdocs",
-            "text": "For full documentation visit  mkdocs.org .",
-            "title": "Welcome to MkDocs"
+            "location": "/about/#about-cora",
+            "text": "Cora is an MVC style framework for rapidly building scalable web applications. \nThe goal of the project is to make a powerful and well-built infrastructure that is EASY TO USE and well documented. \nThis is a project aimed at experienced world-class developers and the just starting out novice alike. We don't shy away\nfrom advanced design patterns, but rather make every effort to encapsulate that complexity away from the developer\nso that they can focus on creating apps, not wrestling with a framework. Our hope\nis that this results in cleaner, more understandable code for all involved.",
+            "title": "About Cora"
         },
         {
-            "location": "/about/#commands",
-            "text": "mkdocs new [dir-name]  - Create a new project.  mkdocs serve  - Start the live-reloading docs server.  mkdocs build  - Build the documentation site.  mkdocs help  - Print this help message.",
-            "title": "Commands"
+            "location": "/about/#core-values",
+            "text": "Cora should be easy to use.  You shouldn't need to spend a lot of time configuring things to get up and running.  You shouldn't need a degree in computer science to understand what is going on.  You shouldn't need to take a class on how to use the framework.  The framework should make your life as a developer easier, and help you work faster and better.    Learning should fun.  Documentation should be useful to both experienced and novice developers alike.  Documentation should provide the needed info to experienced developers at a glance.  More in-depth documentation should be written in a ELI5 (Explain it Like I'm 5) style of explanation.  Documentation should be full of great examples to help bring understanding of the concepts.    Flexible, Powerful, and Simple - Choose 3.  Cora should be able to accomodate a variety of programming styles.  Cora should be integratable into existing software projects.  Cora should provide developers with powerful tools to help make developing easier/faster.  Cora should be fully extendable and customizable.  Cora should do all this while staying simple.",
+            "title": "Core Values"
         },
         {
-            "location": "/about/#code-test",
-            "text": "<?php\nrequire ('redcarpet');\n$markdown = $Redcarpet.new(\"Hello World!\");\necho $markdown;\n$TEST",
-            "title": "Code Test"
+            "location": "/about/#being-a-trend-setter-for-php",
+            "text": "PHP originally gained massive popularity for it's ease of entry and wide availability. While the wide availability is still there, \nit feels as though that focus on making PHP accessible to the masses has fallen off in recent years. As a result it could be argued that PHP\nhas lost its sense of identity, leaving it only as a mediocre contender amongst the group of popular programming languages where it can be argued that PHP has a syntax that\nis sub-par and lots of left-over baggage from it's pre-OOP days.  It's the hope of the Cora project to bring back that sense of excitement and identity that made PHP a standout language for so many years.   Next: Installation",
+            "title": "Being a Trend-Setter for PHP"
+        },
+        {
+            "location": "/setup/install/",
+            "text": "Installation and Setup\n\n\nThere are three main ways you can download and start using Cora. The easiest is going to be just using Composer, \nthe 2nd easiest would be to clone the Github repository, and lastly you could just download the ZIP off Github.\nSee below for instructions for each. First before you do that though, make sure you have the needed supporting software\nrunning on your machine.\n\n\nSetting Up A Computer For PHP Development\n\n\nThroughout this documentation there are a few pieces of software which are assumed to be on your computer. If you don't have these programs,\nthen you'll need to get them if you want to follow along with any examples we give.\n\n\nRequired: \"AMP\" stack\n \n\nFirstly, it is necessary you have some sort of \"AMP\" stack available on your computer. If you aren't familiar with this term, it's usually short for\nApache+MySQL+PHP, but is used as a catch-all term for having a web server (like Apache), a database solution (such as MySQL),\nand a programming language (such as PHP or Python). If you are just getting into development work and do not already have this\nsetup available on your computer, see below for some recommendations on getting that in place:\n\n\n\n\nIf you are using Windows or Linux, we'd recommend trying \nXAMPP\n.\n\n\nIf you are using a Mac, we'd recommend trying \nMAMP\n.\n\n\n\n\nRequired: Git\n \n\nGit is a type of version control software. Its most important feature is it allows multiple developers \nto work on a project at the same time by automatically (mostly) combining the code written and allowing \neach developer to grab the latest version of the codebase when someone else submits changes. However, \nit's also highly useful when working alone too. It will allow you to easily undo code if you break something \nand want to return your project to an earlier point in time, it will allow you to work on multiple in-progress \nnew features simultaneously without worrying about one partially finished feature screwing things up for another piece, etc.\nSo it's essential if you end up working in a team, and useful if you're by yourself, and overall a REALLY good habit to get used\nto using it. Pretty much all software developers use Git nowadays.\n\n\nTo install Git:\n\n\n\n\nYour best bet is probably to download Github Desktop which includes a copy of Git with it: \nGithub Desktop\n.\n\n\nAlternatively you can check out the installation options \nhere\n.\n\n\n\n\nRequired: Terminal/Powershell Window\n \n\nGraphical User Interfaces (GUIs) are what made computing friendly for the average Joe Shmo and lead us to the digitally connected society \nwe have today. However, if you're planning on getting into development work, you'll find it much easier to do if you get familar with using a terminal.\nA terminal is just a text interface where you can give your computer commands. If you want to learn more about how to use terminals, try Googling \n\"beginnners guide to using a terminal\" and some results will pop up.\n\n\n\n\nUsing Windows\n: Search your computer for \"Powershell\". Then make a shortcut to Windows Powershell where you can easily access it. It's important to note that the Git install adds Unix style commands to it which you will need to follow along with our tutorials - SO MAKE SURE YOU INSTALL GIT from the instructions above!\n\n\nUsing a Mac\n: We'd recommend you download \niTerm2\n.\n\n\nUsing Linux\n: Let's be honest... you don't need me to tell you how to access the terminal. \ncough\n likey Ctrl+Alt+T \ncough\n\n\n\n\nHighly Recommended: Composer\n \n\nComposer is a dependancy manager that helps you install and update software libraries (aka code written by other people that\nyou end up using in your project). This includes Cora itself! You can use Composer as an easy way to install Cora (instructions in the \nInstallation Using Composer section below) and update to the latest version of Cora later on down the road if a newer release comes out\nafter you've already started your project (see \nHERE\n for details on using Composer with Cora).\n\n\n\n\nTo download Composer go here \nhttps://getcomposer.org/\n.\n\n\n\n\nInstallation Using Composer\n\n\nOpen up a Terminal window and navigate to the location where you'd like to put the Cora folder that holds the project files. \nIf you are installing to your root web directory, typically this will be named \"htdocs\" or \"public_html\". \n\n\nMac\n\n\nFor instance: if you're using a Mac and installed MAMP, you probably want to navigate to\n\n\ncd /Applications/MAMP/htdocs\n\n\n\n\nWindows\n\n\nIf you're using Windows and installed XAMPP, you likely want to go to\n\n\ncd C:\\xampp\\htdocs\n\n\n\n\nGet Cora\n\n\nOnce you are at the location you want to install Cora to, type:\n\n\nphp composer.phar create-project cora/cora\n\n\n\n\nOR if you installed Composer globally as part of your PATH (which we'd recommend doing if you know how) type:\n\n\ncomposer create-project cora/cora\n\n\n\n\nThat's it!\n If all went well you should now have a folder named \"Cora\" in your specified directory.\n\n\nInstallation Using Git\n\n\nOpen up a Terminal window and navigate to the location where you'd like to put the Cora folder that holds the project files. \nIf you are installing to your root web directory, typically this will be named \"htdocs\" or \"public_html\". \nFor instance: if you're using a Mac and installed MAMP, you probably want to navigate to\n\n\ncd /Applications/MAMP/htdocs\n\n\n\n\nIf you're using Windows and installed XAMPP, you likely want to go to\n\n\ncd C:\\xampp\\htdocs\n\n\n\n\nOnce you are at the location you want to install Cora to, type:\n\n\ngit clone https://github.com/joebubna/Cora.git\n\n\n\n\nThat's it!\n If all went well you should now have a folder named \"Cora\" in your specified directory.\n\n\nInstallation From ZIP File\n\n\nGo to \nhttps://github.com/joebubna/Cora\n and click the \"Download ZIP\" button on the right hand side\nof the page. Use your Finder or File Explorer in your OS and go to your web directory (probably either \"C:\\xampp\\htdocs\" if you're on Windows\nor \"/Applications/MAMP/htdocs\" if you're on a Mac). Unpack the contents of the ZIP file into this directory.\n\n\nThat's it!\n If all went well you should now have a folder named \"Cora\" in your specified directory.\n\n\nConfiguration to Get it Working\n\n\nThere's a few configuration options that might need to be setup first before you can start using Cora. Click below to continue to the Configuration instructions. \n\n\n\n\nNext: Configuration",
+            "title": "Installation"
+        },
+        {
+            "location": "/setup/install/#installation-and-setup",
+            "text": "There are three main ways you can download and start using Cora. The easiest is going to be just using Composer, \nthe 2nd easiest would be to clone the Github repository, and lastly you could just download the ZIP off Github.\nSee below for instructions for each. First before you do that though, make sure you have the needed supporting software\nrunning on your machine.",
+            "title": "Installation and Setup"
+        },
+        {
+            "location": "/setup/install/#setting-up-a-computer-for-php-development",
+            "text": "Throughout this documentation there are a few pieces of software which are assumed to be on your computer. If you don't have these programs,\nthen you'll need to get them if you want to follow along with any examples we give.  Required: \"AMP\" stack   \nFirstly, it is necessary you have some sort of \"AMP\" stack available on your computer. If you aren't familiar with this term, it's usually short for\nApache+MySQL+PHP, but is used as a catch-all term for having a web server (like Apache), a database solution (such as MySQL),\nand a programming language (such as PHP or Python). If you are just getting into development work and do not already have this\nsetup available on your computer, see below for some recommendations on getting that in place:   If you are using Windows or Linux, we'd recommend trying  XAMPP .  If you are using a Mac, we'd recommend trying  MAMP .   Required: Git   \nGit is a type of version control software. Its most important feature is it allows multiple developers \nto work on a project at the same time by automatically (mostly) combining the code written and allowing \neach developer to grab the latest version of the codebase when someone else submits changes. However, \nit's also highly useful when working alone too. It will allow you to easily undo code if you break something \nand want to return your project to an earlier point in time, it will allow you to work on multiple in-progress \nnew features simultaneously without worrying about one partially finished feature screwing things up for another piece, etc.\nSo it's essential if you end up working in a team, and useful if you're by yourself, and overall a REALLY good habit to get used\nto using it. Pretty much all software developers use Git nowadays.  To install Git:   Your best bet is probably to download Github Desktop which includes a copy of Git with it:  Github Desktop .  Alternatively you can check out the installation options  here .   Required: Terminal/Powershell Window   \nGraphical User Interfaces (GUIs) are what made computing friendly for the average Joe Shmo and lead us to the digitally connected society \nwe have today. However, if you're planning on getting into development work, you'll find it much easier to do if you get familar with using a terminal.\nA terminal is just a text interface where you can give your computer commands. If you want to learn more about how to use terminals, try Googling \n\"beginnners guide to using a terminal\" and some results will pop up.   Using Windows : Search your computer for \"Powershell\". Then make a shortcut to Windows Powershell where you can easily access it. It's important to note that the Git install adds Unix style commands to it which you will need to follow along with our tutorials - SO MAKE SURE YOU INSTALL GIT from the instructions above!  Using a Mac : We'd recommend you download  iTerm2 .  Using Linux : Let's be honest... you don't need me to tell you how to access the terminal.  cough  likey Ctrl+Alt+T  cough   Highly Recommended: Composer   \nComposer is a dependancy manager that helps you install and update software libraries (aka code written by other people that\nyou end up using in your project). This includes Cora itself! You can use Composer as an easy way to install Cora (instructions in the \nInstallation Using Composer section below) and update to the latest version of Cora later on down the road if a newer release comes out\nafter you've already started your project (see  HERE  for details on using Composer with Cora).   To download Composer go here  https://getcomposer.org/ .",
+            "title": "Setting Up A Computer For PHP Development"
+        },
+        {
+            "location": "/setup/install/#installation-using-composer",
+            "text": "Open up a Terminal window and navigate to the location where you'd like to put the Cora folder that holds the project files. \nIf you are installing to your root web directory, typically this will be named \"htdocs\" or \"public_html\".",
+            "title": "Installation Using Composer"
+        },
+        {
+            "location": "/setup/install/#mac",
+            "text": "For instance: if you're using a Mac and installed MAMP, you probably want to navigate to  cd /Applications/MAMP/htdocs",
+            "title": "Mac"
+        },
+        {
+            "location": "/setup/install/#windows",
+            "text": "If you're using Windows and installed XAMPP, you likely want to go to  cd C:\\xampp\\htdocs",
+            "title": "Windows"
+        },
+        {
+            "location": "/setup/install/#get-cora",
+            "text": "Once you are at the location you want to install Cora to, type:  php composer.phar create-project cora/cora  OR if you installed Composer globally as part of your PATH (which we'd recommend doing if you know how) type:  composer create-project cora/cora  That's it!  If all went well you should now have a folder named \"Cora\" in your specified directory.",
+            "title": "Get Cora"
+        },
+        {
+            "location": "/setup/install/#installation-using-git",
+            "text": "Open up a Terminal window and navigate to the location where you'd like to put the Cora folder that holds the project files. \nIf you are installing to your root web directory, typically this will be named \"htdocs\" or \"public_html\". \nFor instance: if you're using a Mac and installed MAMP, you probably want to navigate to  cd /Applications/MAMP/htdocs  If you're using Windows and installed XAMPP, you likely want to go to  cd C:\\xampp\\htdocs  Once you are at the location you want to install Cora to, type:  git clone https://github.com/joebubna/Cora.git  That's it!  If all went well you should now have a folder named \"Cora\" in your specified directory.",
+            "title": "Installation Using Git"
+        },
+        {
+            "location": "/setup/install/#installation-from-zip-file",
+            "text": "Go to  https://github.com/joebubna/Cora  and click the \"Download ZIP\" button on the right hand side\nof the page. Use your Finder or File Explorer in your OS and go to your web directory (probably either \"C:\\xampp\\htdocs\" if you're on Windows\nor \"/Applications/MAMP/htdocs\" if you're on a Mac). Unpack the contents of the ZIP file into this directory.  That's it!  If all went well you should now have a folder named \"Cora\" in your specified directory.",
+            "title": "Installation From ZIP File"
+        },
+        {
+            "location": "/setup/install/#configuration-to-get-it-working",
+            "text": "There's a few configuration options that might need to be setup first before you can start using Cora. Click below to continue to the Configuration instructions.    Next: Configuration",
+            "title": "Configuration to Get it Working"
+        },
+        {
+            "location": "/setup/configuration/",
+            "text": "Configuring Cora\n\n\nIF you installed Cora to your root web directory, it should already be working. Test by going to \n\n\nhttp://localhost/cora\n\n\n\n\nIf it loads something, then Cora is working. If it doesn't work, then you probably either need to enable .htaccess files usage in apache, \nenable mod_rewrite in apache, you changed the name of something before reaching this article, or you didn't install Cora to your root web directory.\nIf you are using one of the suggested AMP packages from the installation page, everything should theoretically be working though.\n\n\nIf you didn't install Cora into your root directory, no worries, you'll just need to run through the following config instructions first before\nthings will work.\n\n\nStep 1: Change the Name of the Directory to Match Your Project\n\n\nBy default, the folder for Cora that got copied into your web directory should be named \"cora\". Just a guess, but you probably want to change\nthis to match the name of the project you plan on building. If for instance you want to create an app called \"My Awesome Site\", go ahead and rename\nthat cora directory to \"MyAwesomeSite\". \n\n\nStep 2: Change Your .htaccess File to Match Your Directory Name\n\n\nContinuing our \"MyAwesomeSite\" example, next you would need to open up the hidden \".htaccess\" file located within that directory and change the third line \ndown to:\n\n\nRewriteBase /MyAwesomeSite\n\n\n\n\nOR, if you installed Cora into a subfolder within your web directory, then you will need to include the full path from your root like so:\n\n\nRewriteBase /someFolder/MyAwesomeSite\n\n\n\n\nPerformance Note\n \n\nWhile on this topic, it should be noted that using a .htaccess file does have a performance cost. If you are planning on making an enterprise level app\nthat serves a large number of users, you'll probably want to eventually get rid of the .htaccess file and instead place the mod_rewrite rules into your server config.\nDoing this is beyond the scope of this documentation, but it's just something of which you should be aware.\n\n\nStep 3: Update the Site_Url in Your Config\n\n\nNext you need to open up the \"cora/config/config.php\" file in your project. The full path to this file should look something similar to this:\n\n\n/htdocs/MyAwesomeSite/cora/config/config.php\n\n\n\n\nThe first thing you should see are some commented out examples of commonly changed options like:\n\n\n#$config['debug'] = true;\n#$config['debugHide'] = false;\n#$config['site_url'] = '/cora/';\n#$config['cora_extension'] = 'MyApp';\n\n\n\n\nNote that this config file overrides any defaults that are located in \n\n\n/htdocs/MyAwesomeSite/vendor/cora/cora-framework/system/config/config.php\n\n\n\n\nGo ahead and uncomment the line for 'site_url' and change the value to match your new directory name. If your project is embedded in\nsub-directories, you do not need to include the full path, just the name of the folder the Cora project files are within. Example:\n\n\n$config['site_url'] = '/MyAwesomeSite/';\n\n\n\n\nStep 4: Create Your Project Controller\n\n\nGo ahead and open up any of the example controllers that are included in the controllers directory. The class declaration should look something like:\n\n\nclass Articles extends \\MyApp {\n\n\n\n\nAnytime you create a new controller, you want to have it extend from some \"base\" controller, which in the case above is \"MyApp\". This allows you to\nhave shared data and methods across all your controllers when necessary. Although you can leave the name of this base controller as \"MyApp\" if you want to,\nwe're guessing you'll probably want to change this to something more offical sounding that matches the name of your project.\n\n\nNavigate to the \"cora/extensions/MyApp.php\" file in your project and make a copy of it, renaming the copy to \"MyAwesomeSite.php\". After you do this, make sure you open\nthe file and change the class name to MyAwesomeSite too. It should look like the following:\n\n\nclass MyAwesomeSite extends Cora\n\n\n\n\nThen go back and edit the Articles controller to extend from your new base class. Note that once you complete this setup guide and confirm everything is working, you'll then be able to go back and delete the MyApp file later if you want.\n\n\nStep 5: Make All Controllers Extend From Project Controller\n\n\nNow that you have your base project controller ready, you need to open up each of the controllers under your \"controllers\" directory and change them\nto extend from your new base controller instead of MyApp. They should all follow this format:\n\n\nclass Articles extends \\MyAwesomeSite {\n\n\n\n\nFinished!!!\n\n\nThat's it! You should be able to run your project and play around with it and the included demos now. \nIf you are an experienced user who wants to know about the advanced configuration options within Cora, or how Cora can be\nincorporated into an existing software project, click \nhere\n to view the advanced configuration tutorial.\nOtherwise, click below to continue on to the introductory tutorial to help you get acquainted with Cora.\n\n\n\n\nNext: Introduction to Cora",
+            "title": "Configuration"
+        },
+        {
+            "location": "/setup/configuration/#configuring-cora",
+            "text": "IF you installed Cora to your root web directory, it should already be working. Test by going to   http://localhost/cora  If it loads something, then Cora is working. If it doesn't work, then you probably either need to enable .htaccess files usage in apache, \nenable mod_rewrite in apache, you changed the name of something before reaching this article, or you didn't install Cora to your root web directory.\nIf you are using one of the suggested AMP packages from the installation page, everything should theoretically be working though.  If you didn't install Cora into your root directory, no worries, you'll just need to run through the following config instructions first before\nthings will work.",
+            "title": "Configuring Cora"
+        },
+        {
+            "location": "/setup/configuration/#step-1-change-the-name-of-the-directory-to-match-your-project",
+            "text": "By default, the folder for Cora that got copied into your web directory should be named \"cora\". Just a guess, but you probably want to change\nthis to match the name of the project you plan on building. If for instance you want to create an app called \"My Awesome Site\", go ahead and rename\nthat cora directory to \"MyAwesomeSite\".",
+            "title": "Step 1: Change the Name of the Directory to Match Your Project"
+        },
+        {
+            "location": "/setup/configuration/#step-2-change-your-htaccess-file-to-match-your-directory-name",
+            "text": "Continuing our \"MyAwesomeSite\" example, next you would need to open up the hidden \".htaccess\" file located within that directory and change the third line \ndown to:  RewriteBase /MyAwesomeSite  OR, if you installed Cora into a subfolder within your web directory, then you will need to include the full path from your root like so:  RewriteBase /someFolder/MyAwesomeSite  Performance Note   \nWhile on this topic, it should be noted that using a .htaccess file does have a performance cost. If you are planning on making an enterprise level app\nthat serves a large number of users, you'll probably want to eventually get rid of the .htaccess file and instead place the mod_rewrite rules into your server config.\nDoing this is beyond the scope of this documentation, but it's just something of which you should be aware.",
+            "title": "Step 2: Change Your .htaccess File to Match Your Directory Name"
+        },
+        {
+            "location": "/setup/configuration/#step-3-update-the-site_url-in-your-config",
+            "text": "Next you need to open up the \"cora/config/config.php\" file in your project. The full path to this file should look something similar to this:  /htdocs/MyAwesomeSite/cora/config/config.php  The first thing you should see are some commented out examples of commonly changed options like:  #$config['debug'] = true;\n#$config['debugHide'] = false;\n#$config['site_url'] = '/cora/';\n#$config['cora_extension'] = 'MyApp';  Note that this config file overrides any defaults that are located in   /htdocs/MyAwesomeSite/vendor/cora/cora-framework/system/config/config.php  Go ahead and uncomment the line for 'site_url' and change the value to match your new directory name. If your project is embedded in\nsub-directories, you do not need to include the full path, just the name of the folder the Cora project files are within. Example:  $config['site_url'] = '/MyAwesomeSite/';",
+            "title": "Step 3: Update the Site_Url in Your Config"
+        },
+        {
+            "location": "/setup/configuration/#step-4-create-your-project-controller",
+            "text": "Go ahead and open up any of the example controllers that are included in the controllers directory. The class declaration should look something like:  class Articles extends \\MyApp {  Anytime you create a new controller, you want to have it extend from some \"base\" controller, which in the case above is \"MyApp\". This allows you to\nhave shared data and methods across all your controllers when necessary. Although you can leave the name of this base controller as \"MyApp\" if you want to,\nwe're guessing you'll probably want to change this to something more offical sounding that matches the name of your project.  Navigate to the \"cora/extensions/MyApp.php\" file in your project and make a copy of it, renaming the copy to \"MyAwesomeSite.php\". After you do this, make sure you open\nthe file and change the class name to MyAwesomeSite too. It should look like the following:  class MyAwesomeSite extends Cora  Then go back and edit the Articles controller to extend from your new base class. Note that once you complete this setup guide and confirm everything is working, you'll then be able to go back and delete the MyApp file later if you want.",
+            "title": "Step 4: Create Your Project Controller"
+        },
+        {
+            "location": "/setup/configuration/#step-5-make-all-controllers-extend-from-project-controller",
+            "text": "Now that you have your base project controller ready, you need to open up each of the controllers under your \"controllers\" directory and change them\nto extend from your new base controller instead of MyApp. They should all follow this format:  class Articles extends \\MyAwesomeSite {",
+            "title": "Step 5: Make All Controllers Extend From Project Controller"
+        },
+        {
+            "location": "/setup/configuration/#finished",
+            "text": "That's it! You should be able to run your project and play around with it and the included demos now. \nIf you are an experienced user who wants to know about the advanced configuration options within Cora, or how Cora can be\nincorporated into an existing software project, click  here  to view the advanced configuration tutorial.\nOtherwise, click below to continue on to the introductory tutorial to help you get acquainted with Cora.   Next: Introduction to Cora",
+            "title": "Finished!!!"
+        },
+        {
+            "location": "/setup/advanced/",
+            "text": "Advanced Config Options\n\n\nDebugging\n\n\n$config['debug'] = false;\n$config['debugHide'] = false;\n\n\n\n\nThese options are for helping you problem solve if the router doesn't seem to be finding your\ncontroller. The \"hide\" option just makes the routing messages show up in the HTML comments.\n\n\nCase-Sensitivity\n\n\n$config['lowercase_url'] = true;\n\n\n\n\nBy default Cora converts URLs into lowercase so that you can have consistent behavior on case-sensitive servers (e.g. Linux systems) regardless of whether\nor not a user types capital letters into the URL. However, if you wanted your URLs to be case-sensitive, you can disable this option in the config. \n\n\nDefault Controller\n\n\n$config['default_controller'] = 'Home';\n\n\n\n\nIf a user just goes to your homepage 'www.mysite.com`, what controller should this request\nbe routed to? You can set that here.\n\n\nRESTful Routing\n\n\n$config['enable_RESTful'] = true;\n\n\n\n\nWe'd recommend against it, but if you want to turn off RESTful routing in Cora, you may do so.\nTo learn more about how routing works within Cora, see \nHERE\n.\n\n\nFile Paths\n\n\n$config['basedir'] = dirname(__FILE__).'/../../../../../';\n\n/**\n *  Path to models/classes directory relative to this file.\n */\n$config['pathToModels'] = $config['basedir'].'classes/';\n\n/**\n *  Path to views directory relative to this file.\n */\n$config['pathToViews'] = $config['basedir'].'views/';\n\n/**\n *  Path to controllers directory relative to this file.\n */\n$config['pathToControllers'] = $config['basedir'].'controllers/';\n\n/**\n *  Path to libraries directory relative to this file.\n */\n$config['pathToLibraries'] = $config['basedir'].'libraries/';\n\n/**\n *  Path to App's Cora directory relative to this file.\n */\n$config['pathToCora'] = $config['basedir'].'cora/';\n\n\n\n\nBy default all these folders are set to be in your project's root - on the same level as the 'vendor' directory.\nHowever, you can obviously change this however you want. Another thing to take special notice of is that the \nfolder names themselves are defined here and can be changed. This might come in useful if you are integrating Cora\ninto an existing software project that already has its class files located in a specific directory somewhere.\n\n\nFile Naming Conventions\n\n\n/**\n *  Model/Class file prefix. I.e. If your class files are named \"class.MyClass.inc.php\"\n *  then enter 'class.' for Prefix and '.inc' for postfix.\n */\n$config['modelsPrefix'] = 'class.';\n$config['modelsPostfix'] = '';\n\n/**\n *  View file prefix / postfix.\n */\n$config['viewsPrefix'] = 'view.';\n$config['viewsPostfix'] = '';\n\n/**\n *  Controller file prefix / postfix.\n */\n$config['controllersPrefix'] = 'controller.';\n$config['controllersPostfix'] = '';\n\n/**\n *  Library file prefix / postfix.\n */\n$config['librariesPrefix'] = '';\n$config['librariesPostfix'] = '';\n\n\n\n\nHere you can set optional prefix and postfix naming conventions for your files. For instance, if your views\nare named \"view.someView.php\", you tell Cora about that \"view.\" prefix here and then you don't have to worry about the prefix or postfix \nin your controllers. For example: you would be able to load the above view by \n\n\n$this->load->view('someView');",
+            "title": "Advanced Configuration"
+        },
+        {
+            "location": "/setup/advanced/#advanced-config-options",
+            "text": "",
+            "title": "Advanced Config Options"
+        },
+        {
+            "location": "/setup/advanced/#debugging",
+            "text": "$config['debug'] = false;\n$config['debugHide'] = false;  These options are for helping you problem solve if the router doesn't seem to be finding your\ncontroller. The \"hide\" option just makes the routing messages show up in the HTML comments.",
+            "title": "Debugging"
+        },
+        {
+            "location": "/setup/advanced/#case-sensitivity",
+            "text": "$config['lowercase_url'] = true;  By default Cora converts URLs into lowercase so that you can have consistent behavior on case-sensitive servers (e.g. Linux systems) regardless of whether\nor not a user types capital letters into the URL. However, if you wanted your URLs to be case-sensitive, you can disable this option in the config.",
+            "title": "Case-Sensitivity"
+        },
+        {
+            "location": "/setup/advanced/#default-controller",
+            "text": "$config['default_controller'] = 'Home';  If a user just goes to your homepage 'www.mysite.com`, what controller should this request\nbe routed to? You can set that here.",
+            "title": "Default Controller"
+        },
+        {
+            "location": "/setup/advanced/#restful-routing",
+            "text": "$config['enable_RESTful'] = true;  We'd recommend against it, but if you want to turn off RESTful routing in Cora, you may do so.\nTo learn more about how routing works within Cora, see  HERE .",
+            "title": "RESTful Routing"
+        },
+        {
+            "location": "/setup/advanced/#file-paths",
+            "text": "$config['basedir'] = dirname(__FILE__).'/../../../../../';\n\n/**\n *  Path to models/classes directory relative to this file.\n */\n$config['pathToModels'] = $config['basedir'].'classes/';\n\n/**\n *  Path to views directory relative to this file.\n */\n$config['pathToViews'] = $config['basedir'].'views/';\n\n/**\n *  Path to controllers directory relative to this file.\n */\n$config['pathToControllers'] = $config['basedir'].'controllers/';\n\n/**\n *  Path to libraries directory relative to this file.\n */\n$config['pathToLibraries'] = $config['basedir'].'libraries/';\n\n/**\n *  Path to App's Cora directory relative to this file.\n */\n$config['pathToCora'] = $config['basedir'].'cora/';  By default all these folders are set to be in your project's root - on the same level as the 'vendor' directory.\nHowever, you can obviously change this however you want. Another thing to take special notice of is that the \nfolder names themselves are defined here and can be changed. This might come in useful if you are integrating Cora\ninto an existing software project that already has its class files located in a specific directory somewhere.",
+            "title": "File Paths"
+        },
+        {
+            "location": "/setup/advanced/#file-naming-conventions",
+            "text": "/**\n *  Model/Class file prefix. I.e. If your class files are named \"class.MyClass.inc.php\"\n *  then enter 'class.' for Prefix and '.inc' for postfix.\n */\n$config['modelsPrefix'] = 'class.';\n$config['modelsPostfix'] = '';\n\n/**\n *  View file prefix / postfix.\n */\n$config['viewsPrefix'] = 'view.';\n$config['viewsPostfix'] = '';\n\n/**\n *  Controller file prefix / postfix.\n */\n$config['controllersPrefix'] = 'controller.';\n$config['controllersPostfix'] = '';\n\n/**\n *  Library file prefix / postfix.\n */\n$config['librariesPrefix'] = '';\n$config['librariesPostfix'] = '';  Here you can set optional prefix and postfix naming conventions for your files. For instance, if your views\nare named \"view.someView.php\", you tell Cora about that \"view.\" prefix here and then you don't have to worry about the prefix or postfix \nin your controllers. For example: you would be able to load the above view by   $this->load->view('someView');",
+            "title": "File Naming Conventions"
+        },
+        {
+            "location": "/tutorials/intro/",
+            "text": "Intro\n\n\n\n\n! This is some hidden text?",
+            "title": "Intro to Cora"
+        },
+        {
+            "location": "/tutorials/composer/",
+            "text": "Using Composer with Cora\n\n\nTest",
+            "title": "Using Composer"
+        },
+        {
+            "location": "/tutorials/composer/#using-composer-with-cora",
+            "text": "Test",
+            "title": "Using Composer with Cora"
+        },
+        {
+            "location": "/documentation/database/",
+            "text": "Test",
+            "title": "Database Class"
+        },
+        {
+            "location": "/documentation/database/#test",
+            "text": "",
+            "title": "Test"
         }
     ]
 }

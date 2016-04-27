@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+
+	<title>Configuration - Cora Framework Documentation</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Cora Framework Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../..">News</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../about/">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../install/">Installation</a>
+</li>
+
+                    
+                        
+<li class="active">
+    <a href="./">Configuration</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../advanced/">Advanced Configuration</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../documentation/database/">Database Class</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../install/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../advanced/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#configuring-cora">Configuring Cora</a></li>
+        
+            <li><a href="#step-1-change-the-name-of-the-directory-to-match-your-project">Step 1: Change the Name of the Directory to Match Your Project</a></li>
+        
+            <li><a href="#step-2-change-your-htaccess-file-to-match-your-directory-name">Step 2: Change Your .htaccess File to Match Your Directory Name</a></li>
+        
+            <li><a href="#step-3-update-the-site_url-in-your-config">Step 3: Update the Site_Url in Your Config</a></li>
+        
+            <li><a href="#step-4-create-your-project-controller">Step 4: Create Your Project Controller</a></li>
+        
+            <li><a href="#step-5-make-all-controllers-extend-from-project-controller">Step 5: Make All Controllers Extend From Project Controller</a></li>
+        
+            <li><a href="#finished">Finished!!!</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="configuring-cora">Configuring Cora</h1>
+<p>IF you installed Cora to your root web directory, it should already be working. Test by going to </p>
+<pre><code>http://localhost/cora
+</code></pre>
+
+<p>If it loads something, then Cora is working. If it doesn't work, then you probably either need to enable .htaccess files usage in apache, 
+enable mod_rewrite in apache, you changed the name of something before reaching this article, or you didn't install Cora to your root web directory.
+If you are using one of the suggested AMP packages from the installation page, everything should theoretically be working though.</p>
+<p>If you didn't install Cora into your root directory, no worries, you'll just need to run through the following config instructions first before
+things will work.</p>
+<h3 id="step-1-change-the-name-of-the-directory-to-match-your-project">Step 1: Change the Name of the Directory to Match Your Project</h3>
+<p>By default, the folder for Cora that got copied into your web directory should be named "cora". Just a guess, but you probably want to change
+this to match the name of the project you plan on building. If for instance you want to create an app called "My Awesome Site", go ahead and rename
+that cora directory to "MyAwesomeSite". </p>
+<h3 id="step-2-change-your-htaccess-file-to-match-your-directory-name">Step 2: Change Your .htaccess File to Match Your Directory Name</h3>
+<p>Continuing our "MyAwesomeSite" example, next you would need to open up the hidden ".htaccess" file located within that directory and change the third line 
+down to:</p>
+<pre><code class="php">RewriteBase /MyAwesomeSite
+</code></pre>
+
+<p>OR, if you installed Cora into a subfolder within your web directory, then you will need to include the full path from your root like so:</p>
+<pre><code>RewriteBase /someFolder/MyAwesomeSite
+</code></pre>
+
+<p><strong>Performance Note</strong> <br />
+While on this topic, it should be noted that using a .htaccess file does have a performance cost. If you are planning on making an enterprise level app
+that serves a large number of users, you'll probably want to eventually get rid of the .htaccess file and instead place the mod_rewrite rules into your server config.
+Doing this is beyond the scope of this documentation, but it's just something of which you should be aware.</p>
+<h3 id="step-3-update-the-site_url-in-your-config">Step 3: Update the Site_Url in Your Config</h3>
+<p>Next you need to open up the "cora/config/config.php" file in your project. The full path to this file should look something similar to this:</p>
+<pre><code class="php">/htdocs/MyAwesomeSite/cora/config/config.php
+</code></pre>
+
+<p>The first thing you should see are some commented out examples of commonly changed options like:</p>
+<pre><code class="php">#$config['debug'] = true;
+#$config['debugHide'] = false;
+#$config['site_url'] = '/cora/';
+#$config['cora_extension'] = 'MyApp';
+</code></pre>
+
+<p>Note that this config file overrides any defaults that are located in </p>
+<pre><code class="php">/htdocs/MyAwesomeSite/vendor/cora/cora-framework/system/config/config.php
+</code></pre>
+
+<p>Go ahead and uncomment the line for 'site_url' and change the value to match your new directory name. If your project is embedded in
+sub-directories, you do not need to include the full path, just the name of the folder the Cora project files are within. Example:</p>
+<pre><code class="php">$config['site_url'] = '/MyAwesomeSite/';
+</code></pre>
+
+<h3 id="step-4-create-your-project-controller">Step 4: Create Your Project Controller</h3>
+<p>Go ahead and open up any of the example controllers that are included in the controllers directory. The class declaration should look something like:</p>
+<pre><code class="php">class Articles extends \MyApp {
+</code></pre>
+
+<p>Anytime you create a new controller, you want to have it extend from some "base" controller, which in the case above is "MyApp". This allows you to
+have shared data and methods across all your controllers when necessary. Although you can leave the name of this base controller as "MyApp" if you want to,
+we're guessing you'll probably want to change this to something more offical sounding that matches the name of your project.</p>
+<p>Navigate to the "cora/extensions/MyApp.php" file in your project and make a copy of it, renaming the copy to "MyAwesomeSite.php". After you do this, make sure you open
+the file and change the class name to MyAwesomeSite too. It should look like the following:</p>
+<pre><code>class MyAwesomeSite extends Cora
+</code></pre>
+
+<p>Then go back and edit the Articles controller to extend from your new base class. Note that once you complete this setup guide and confirm everything is working, you'll then be able to go back and delete the MyApp file later if you want.</p>
+<h3 id="step-5-make-all-controllers-extend-from-project-controller">Step 5: Make All Controllers Extend From Project Controller</h3>
+<p>Now that you have your base project controller ready, you need to open up each of the controllers under your "controllers" directory and change them
+to extend from your new base controller instead of MyApp. They should all follow this format:</p>
+<pre><code class="php">class Articles extends \MyAwesomeSite {
+</code></pre>
+
+<h3 id="finished">Finished!!!</h3>
+<p>That's it! You should be able to run your project and play around with it and the included demos now. 
+If you are an experienced user who wants to know about the advanced configuration options within Cora, or how Cora can be
+incorporated into an existing software project, click <a href="../../setup/advanced">here</a> to view the advanced configuration tutorial.
+Otherwise, click below to continue on to the introductory tutorial to help you get acquainted with Cora.</p>
+<hr />
+<p><a href="/tutorials/intro" class="btn btn-primary">Next: Introduction to Cora</a></p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
