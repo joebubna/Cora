@@ -67,6 +67,10 @@ class Db_MySQL extends Database
             $actions += 1;
             $action = 'SELECT';
         }
+        if(!empty($this->create)) {
+            $actions += 1;
+            $action = 'CREATE';
+        }
         if ($actions > 1) {
             throw new \Exception("More than one query action specified! When using Cora's query builder class, only one type of query (select, update, delete, insert) can be done at a time.");
         }
@@ -179,6 +183,66 @@ class Db_MySQL extends Database
             $this->query .= ' LIMIT '.$this->limit;
         }
     }
+    
+    // Create a CREATE statement
+    protected function calculateCREATE()
+    {
+        $this->query .= 'CREATE TABLE IF NOT EXISTS ';
+        $this->query .= $this->create.' (';
+        $this->queryStringFromArray('fields', '', ', ', false);
+        $this->primaryKeyStringFromArray('primaryKeys', ', CONSTRAINT ');
+        $this->foreignKeyStringFromArray('foreignKeys', ', CONSTRAINT ');
+        $this->query .= ')';
+    }
+    
+    
+    /**
+     *  For outputting a string of the following form from the 'primaryKeys' array in Database.
+     *  CONSTRAINT pk_id_name PRIMARY KEY (id, name)
+     */
+    protected function primaryKeyStringFromArray($dataMember, $opening, $sep = ', ')
+    {
+        if (empty($this->$dataMember)) {
+            return 0;
+        }
+        $this->query .= $opening;
+        $constraintName = 'pk';
+        $query = ' PRIMARY KEY (';
+        $count = count($this->$dataMember);
+        for($i=0; $i<$count; $i++) {
+            $item = $this->$dataMember[$i];
+            $constraintName .= '_'.$item;
+            $query .= $item;
+            if ($count-1 != $i) {
+                $query .= $sep;
+            }
+        }
+        $query .= ')';
+        $this->query .= $constraintName.' '.$query;
+    }
+    
+    
+    /**
+     *  For outputting a string of the following form from the 'foreignKeys' array in Database.
+     *  CONSTRAINT fk_name FOREIGN KEY (name) REFERENCES users (name)
+     */
+    protected function foreignKeyStringFromArray($dataMember, $opening, $sep = ', ')
+    {
+        if (empty($this->$dataMember)) {
+            return 0;
+        }
+        //$query = '';
+        $count = count($this->$dataMember);
+        for($i=0; $i<$count; $i++) {
+            $item = $this->$dataMember[$i];
+            
+            $this->query .= ', CONSTRAINT '.'fk_'.$item[0].' FOREIGN KEY ('.$item[0].') REFERENCES '.$item[1].' ('.$item[2].')';
+            if ($count-1 != $i) {
+                $this->query .= $sep;
+            }
+        }
+    }
+    
     
     /**
      *  Create a string from a single-demensional Database class array.

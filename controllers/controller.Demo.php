@@ -25,6 +25,20 @@ class Demo extends \MyApp {
         $this->load->view('template', $this->data);
     }
     
+    public function dbCreate()
+    {
+        $db = new Cora\Db_MySQL();
+        $db ->create('locations')
+            ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+            ->field('name', 'varchar(255)')
+            ->field('address', 'varchar(255)')
+            ->field('user_id', 'int')
+            ->primaryKey('id')
+            ->foreignKey('user_id', 'users', 'id');
+        echo $db->getQuery();
+        $db->exec();
+    }
+    
     public function dbTest()
     {
         $db = new Cora\Db_MySQL();

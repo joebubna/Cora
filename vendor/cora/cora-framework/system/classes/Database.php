@@ -18,6 +18,9 @@ class Database
     protected $joins;
     protected $inserts;
     protected $values;
+    protected $create;
+    protected $primaryKeys;
+    protected $foreignKeys;
     protected $query;
     protected $queryDisplay;
     
@@ -164,6 +167,7 @@ class Database
         return $this;
     }
     
+    
     // Alias of $this->table
     public function into($table)
     {
@@ -171,9 +175,37 @@ class Database
         return $this;
     }
     
+    
     public function values($values)
     {
         $this->storeValue('values', $values);
+        return $this;
+    }
+    
+    
+    public function create($table)
+    {
+        $this->create = $table;
+        return $this;
+    }
+    
+    
+    public function field($name, $type, $attributes = ' ')
+    {
+        $this->store('keyValue', 'fields', $name, $attributes, $type);
+        return $this;
+    }
+    
+    
+    public function primaryKey($columns) {
+        $this->storeValue('primaryKeys', $columns);
+        return $this;
+    }
+    
+    
+    public function foreignKey($column, $foreignTable, $foreignColumn)
+    {
+        $this->store('keyValue', 'foreignKeys', $column, $foreignColumn, $foreignTable);
         return $this;
     }
     
@@ -200,11 +232,15 @@ class Database
         $this->joins    = array();
         $this->inserts  = array();
         $this->values   = array();
+        $this->fields   = array();
+        $this->primaryKeys  = array();
+        $this->foreignKeys  = array();
         
         $this->distinct = false;
         $this->delete   = false;
         $this->limit    = false;
         $this->offset   = false;
+        $this->create   = false;
         $this->query    = '';
         $this->queryDisplay = '';
     }
