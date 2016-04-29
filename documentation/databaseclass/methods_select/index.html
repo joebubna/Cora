@@ -327,6 +327,10 @@ $db-&gt;where('name', 'bob')
 // Only return results where the date is greater than or equal to january first 2014
 $db-&gt;where('date', '2014-01-01', '&gt;=')
 
+// If the above format of passing in the operator as an optional 3rd parameter bothers you,
+// you can use the array format which uses the [column, operator, value] ordering.
+$db-&gt;where(['date', '&gt;=', '2014-01-01'])
+
 // Only return results where the date is greater than or equal to january first 2014
 // and less than january 2016
 $db -&gt;where('date', '2014-01-01', '&gt;=')
