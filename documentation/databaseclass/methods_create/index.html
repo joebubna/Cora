@@ -7,14 +7,14 @@
         
         
         
-        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <link rel="shortcut icon" href="../../../img/favicon.ico">
 
-	<title>Intro to Cora - Cora Framework Documentation</title>
+	<title>CREATE Methods - Cora Framework Documentation</title>
 
-        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
-        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link rel="stylesheet" href="../../css/highlight.css">
-        <link href="../../css/base.css" rel="stylesheet">
+        <link href="../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../css/highlight.css">
+        <link href="../../../css/base.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -41,7 +41,7 @@
             </button>
 
             <!-- Main title -->
-            <a class="navbar-brand" href="../..">Cora Framework Documentation</a>
+            <a class="navbar-brand" href="../../..">Cora Framework Documentation</a>
         </div>
 
         <!-- Expanded navigation -->
@@ -51,13 +51,13 @@
             
             
                 <li >
-                    <a href="../..">News</a>
+                    <a href="../../..">News</a>
                 </li>
             
             
             
                 <li >
-                    <a href="../../about/">About</a>
+                    <a href="../../../about/">About</a>
                 </li>
             
             
@@ -68,40 +68,19 @@
                     
                         
 <li >
-    <a href="../../setup/install/">Installation</a>
+    <a href="../../../setup/install/">Installation</a>
 </li>
 
                     
                         
 <li >
-    <a href="../../setup/configuration/">Configuration</a>
+    <a href="../../../setup/configuration/">Configuration</a>
 </li>
 
                     
                         
 <li >
-    <a href="../../setup/advanced/">Advanced Configuration</a>
-</li>
-
-                    
-                    </ul>
-                </li>
-            
-            
-            
-                <li class="dropdown active">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                    
-                        
-<li class="active">
-    <a href="./">Intro to Cora</a>
-</li>
-
-                    
-                        
-<li >
-    <a href="../composer/">Using Composer</a>
+    <a href="../../../setup/advanced/">Advanced Configuration</a>
 </li>
 
                     
@@ -111,6 +90,27 @@
             
             
                 <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
@@ -121,43 +121,43 @@
         
             
 <li >
-    <a href="../../documentation/databaseclass/overview/">Overview</a>
+    <a href="../overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/databaseclass/methods_utility/">Utility Methods</a>
+    <a href="../methods_utility/">Utility Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/databaseclass/methods_select/">SELECT Methods</a>
+    <a href="../methods_select/">SELECT Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/databaseclass/methods_update/">UPDATE Methods</a>
+    <a href="../methods_update/">UPDATE Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/databaseclass/methods_insert/">INSERT Methods</a>
+    <a href="../methods_insert/">INSERT Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/databaseclass/methods_delete/">DELETE Methods</a>
+    <a href="../methods_delete/">DELETE Methods</a>
 </li>
 
         
             
-<li >
-    <a href="../../documentation/databaseclass/methods_create/">CREATE Methods</a>
+<li class="active">
+    <a href="./">CREATE Methods</a>
 </li>
 
         
@@ -179,12 +179,12 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../../setup/advanced/">
+                    <a rel="next" href="../methods_delete/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
-                <li >
-                    <a rel="prev" href="../composer/">
+                <li class="disabled">
+                    <a rel="prev" >
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -198,14 +198,103 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
+        <li class="main active"><a href="#database-class-methods">Database Class Methods</a></li>
+        
+            <li><a href="#create-method">create() method</a></li>
+        
+            <li><a href="#field-method">field() method</a></li>
+        
+            <li><a href="#primarykey-method">primaryKey() method</a></li>
+        
+            <li><a href="#foreignkey-method">foreignKey() method</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<p>Intro</p>
-<blockquote>
-<p>! This is some hidden text?</p>
-</blockquote></div>
+<h1 id="database-class-methods">Database Class Methods</h1>
+<h2 id="create-method">create() method</h2>
+<p><strong>Purpose:</strong> <br />
+The create() method tells the database class that you want to create a new table/collection.</p>
+<p><strong>Format:</strong>  </p>
+<pre><code class="php">create(new_table_name)
+</code></pre>
+
+<p><strong>Examples:</strong>  </p>
+<pre><code class="php">// Create a table/collection named 'locations'
+$db -&gt;create('locations')
+    -&gt;field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+    -&gt;field('name', 'varchar(255)')
+    -&gt;field('address', 'varchar(255)')
+    -&gt;field('user_id', 'int')
+    -&gt;primaryKey('id')
+    -&gt;foreignKey('user_id', 'users', 'id')
+    -&gt;exec();
+</code></pre>
+
+<h2 id="field-method">field() method</h2>
+<p><strong>Purpose:</strong> <br />
+The field() method denotes a column you want to create on a table.</p>
+<p><strong>Format:</strong>  </p>
+<pre><code class="php">field(column_name, column_type, special_attributes)
+</code></pre>
+
+<p><strong>Examples:</strong>  </p>
+<pre><code class="php">// Create a table/collection named 'locations'
+// Create id, name, address, and user_id columns on it.
+$db -&gt;create('locations')
+    -&gt;field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+    -&gt;field('name', 'varchar(255)')
+    -&gt;field('address', 'varchar(255)')
+    -&gt;field('user_id', 'int')
+    -&gt;primaryKey('id')
+    -&gt;foreignKey('user_id', 'users', 'id')
+    -&gt;exec();
+</code></pre>
+
+<h2 id="primarykey-method">primaryKey() method</h2>
+<p><strong>Purpose:</strong> <br />
+The primaryKey() method tells the database class you want to create a primary key index on a column if the underlying
+database supports it.</p>
+<p><strong>Format:</strong>  </p>
+<pre><code class="php">primaryKey(column_name)
+</code></pre>
+
+<p><strong>Examples:</strong>  </p>
+<pre><code class="php">// Create a table/collection named 'locations'
+// Sets the 'id' column as primary.
+$db -&gt;create('locations')
+    -&gt;field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+    -&gt;field('name', 'varchar(255)')
+    -&gt;field('address', 'varchar(255)')
+    -&gt;field('user_id', 'int')
+    -&gt;primaryKey('id')
+    -&gt;foreignKey('user_id', 'users', 'id')
+    -&gt;exec();
+</code></pre>
+
+<h2 id="foreignkey-method">foreignKey() method</h2>
+<p><strong>Purpose:</strong> <br />
+The foreignKey() method tells the database class that you want to create for foreign key relationship
+between a column on the table you are creating and a column in a different table.</p>
+<p><strong>Format:</strong>  </p>
+<pre><code class="php">foreignKey(column_name, foreign_table_name, foreign_column_name)
+</code></pre>
+
+<p><strong>Examples:</strong>  </p>
+<pre><code class="php">// Create a table/collection named 'locations'
+// Creates a relationship between the user_id column on this table and the
+// 'id' column on a different 'users' table.
+$db -&gt;create('locations')
+    -&gt;field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+    -&gt;field('name', 'varchar(255)')
+    -&gt;field('address', 'varchar(255)')
+    -&gt;field('user_id', 'int')
+    -&gt;primaryKey('id')
+    -&gt;foreignKey('user_id', 'users', 'id')
+    -&gt;exec();
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">
@@ -214,12 +303,12 @@
             <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
         </footer>
 
-        <script src="../../js/jquery-1.10.2.min.js"></script>
-        <script src="../../js/bootstrap-3.0.3.min.js"></script>
-        <script src="../../js/highlight.pack.js"></script>
-        <script>var base_url = '../..';</script>
-        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
-        <script src="../../js/base.js"></script>
+        <script src="../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../js/highlight.pack.js"></script>
+        <script>var base_url = '../../..';</script>
+        <script data-main="../../../mkdocs/js/search.js" src="../../../mkdocs/js/require.js"></script>
+        <script src="../../../js/base.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
             <div class="modal-dialog">
