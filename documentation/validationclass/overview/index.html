@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../../img/favicon.ico">
+
+	<title>Validate Class - Cora Framework Documentation</title>
+
+        <link href="../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../css/highlight.css">
+        <link href="../../../css/base.css" rel="stylesheet">
+        <link href="../../../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../..">Cora Framework Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../..">News</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../about/">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../setup/install/">Installation</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../setup/configuration/">Configuration</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../setup/advanced/">Advanced Configuration</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li class="active">
+    <a href="./">Validate Class</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Computer Science <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../computerscience/computability/">Computability</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../../databaseclass/methods_create/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../../../computerscience/computability/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#coras-validation-class">Cora's Validation class</a></li>
+        
+            <li><a href="#example-usage">Example Usage</a></li>
+        
+            <li><a href="#typical-usage-steps">Typical Usage Steps</a></li>
+        
+            <li><a href="#loading">Loading</a></li>
+        
+            <li><a href="#built-in-validation-checks">Built-In Validation Checks</a></li>
+        
+            <li><a href="#custom-validation-checks">Custom Validation Checks</a></li>
+        
+            <li><a href="#human-readable-field-names">Human Readable Field Names</a></li>
+        
+            <li><a href="#displaying-errors">Displaying errors</a></li>
+        
+            <li><a href="#repopulating-forms">Repopulating Forms</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="coras-validation-class">Cora's Validation class</h1>
+<p>The Validate class is for checking that data matches a set of restrictions. For instance, if you have a form for users to submit and want to require that they fill out the 'email' field and enter something that at least looks like a valid email, Validate can help with that. It's main usage will typically be for validating form submissions, but it can be used to validate any data you pass in.</p>
+<p><em>Note that the Validate class must be called from a Controller as any errors returned will be loaded into that controller's "errors" data member!</em></p>
+<p><strong>Front-end vs. Back-end Validation:</strong>   </p>
+<p>If you are unfamiliar with form validation, it's worth mentioning that front-end Javascript validators are easier to setup and can save you that tiny bit of server processing power if efficiency is important. The main drawbacks of front-end validation is that it can be <strong>bypassed</strong> (important to know if you didn't already know that) and you have to setup a special API in order to do things like check if a Username is already taken, etc. For this reason, for validation that is even remotely important, you should either use back-end validation like this Validation class provides, or use both a front-end validator and this class on the backend (in-case a user bypasses the front-end validation code).</p>
+<h2 id="example-usage">Example Usage</h2>
+<pre><code class="php">// This is a method within a controller.
+public function createPOST()
+{
+    // Load Validate
+    $this-&gt;load-&gt;library('Validate', $this, true);  
+
+    // Define validation rules for form inputs.
+    $this-&gt;Validate-&gt;rule('username', 'required|max_length[55]|trim');
+    $this-&gt;Validate-&gt;rule('email', 'required|valid_email');
+    $this-&gt;Validate-&gt;rule('password', 'required');
+    $this-&gt;Validate-&gt;rule('password2', 'required|matches[password]');
+
+    // Initiate validation
+    if ($this-&gt;Validate-&gt;run()) {        
+        // Form validation was successful! Do stuff with data.
+    }
+    else {      
+        // The form validation failed!
+        // Redisplay the form to the user so they can fix the errors.
+        $this-&gt;create();
+    }
+}
+</code></pre>
+
+<p>If you are using the Cora demo project, you can find an example form being used at:</p>
+<pre><code class="php">/controllers/articles/controller.News.php
+</code></pre>
+
+<p>Which can be navigated to in your web browser by going to:</p>
+<pre><code class="php">localhost/myProject/articles/news/create/
+</code></pre>
+
+<h2 id="typical-usage-steps">Typical Usage Steps</h2>
+<p>Usage typically includes the following steps:</p>
+<ol>
+<li>Load the validation class.</li>
+<li>Define any custom validation checks you need.</li>
+<li>Apply validation checks to pieces of data by defining the rules that data must obey.</li>
+<li>Run the validation checker.</li>
+<li>Display any errors to the user and repopulate the form they submitted if necessary.</li>
+</ol>
+<h2 id="loading">Loading</h2>
+<p>Although you can certainly load Validate like any other class, the recommended way of loading it into your controller is to use the Load class. The load class handles some references stuff for you automatically which I'll explain later. To use the Load class to get Validate, add the following to your controller:</p>
+<pre><code class="php">// Recommended way of setup
+$this-&gt;load-&gt;library('Validate', $this, true);
+</code></pre>
+
+<p>The fact that we're specifying that we want to load the Validate class as the first parameter should make sense. What you're probably wondering about is what the other two parameters do. For the 2nd parameter we're passing a reference to the current controller; Validate uses this reference to load any validation errors generated into that controller's "$this-&gt;errors" data member. The third parameter being true tells the Load class to create a reference in the calling controller to Validate for you. In other words it does the equivalent of this:</p>
+<pre><code class="php">$this-&gt;data-&gt;Validate = new \Validate($this);
+</code></pre>
+
+<p>Ok... but why do you need a reference to Validate in the controller like that? Because in order to use Validate's form repopulation methods within a View file, you need a reference to Validate in the data you pass to that view! If this doesn't make sense at the moment, don't worry about it. You might understand it better once you see usage examples below, and even if you don't, it's not important so long as you follow the recommended way of loading specified above.</p>
+<h2 id="built-in-validation-checks">Built-In Validation Checks</h2>
+<p>There are a few built-in validation checks for common concerns. They are:</p>
+<table>
+<tr>
+    <th>'Check' Name</th>
+    <th>Description</th>
+</tr>
+<tr>
+    <td>required</td>
+    <td>Specifies that a value must be entered for this field (specifying form fields that MUST be filled out).</td>
+</tr>
+<tr>
+    <td>valid_email</td>
+    <td>Specifies that the value must match a valid email pattern.</td>
+</tr>
+<tr>
+    <td>matches[name]</td>
+    <td>Specifies that this field must match the one specified in the brackets (I.E. does 'password' match 'password2'?)</tr>
+</tr>
+<tr>
+    <td>min_length[x]</td>
+    <td>Specifies that this field must be at least X characters in length.</td>
+</tr>
+<tr>
+    <td>max_length[x]</td>
+    <td>Specifies that this field must be at most X characters in length.</td>
+</tr>
+<tr>
+    <td>trim</td>
+    <td>Trims whitespace from the beginning and end of the field. Doesn't ever fail, this is just a utility method.</td>
+</tr>
+</table>
+
+<p>However, while these work great for general purpose kinda validations, there might be times when you need to check something specific such as "Is this username already taken?" In those scenarios you will need to define your own validation "check" which can then be applied to a field just like the built-in ones.</p>
+<h2 id="custom-validation-checks">Custom Validation Checks</h2>
+<p>Custom validation checks allow you to call a method from whatever class you want within your app and pass that method the input value. Below is an example of us defining a custom check that calls a method named "isNameAvailable" within our User class, so that we can check if a username a person wants is available when they register. (Note: The 4th parameter is the error message if the name isn't available.)</p>
+<p>Defining a custom validation check is easy. Here's an example:</p>
+<pre><code class="php">// Define the check
+$this-&gt;Validate-&gt;def('userNameAvailable', 'User','isNameAvailable', 'Username already taken.');
+
+// Use the check in a rule
+$this-&gt;Validate-&gt;rule('username', 'required|userNameAvailable');
+</code></pre>
+
+<p>The "def" method takes 4 required parameters, and an optional 5th one. Below is the function signature and a description of what each parameter does:</p>
+<pre><code class="php">$this-&gt;Validate-&gt;def($checkName, $class, $method, $errorMessageOnFailure, $passingResponse);
+</code></pre>
+
+<table>
+<tr>
+    <th>Parameter Name</th>
+    <th>Description</th>
+</tr>
+<tr>
+    <td>$checkName</td>
+    <td>This is the name of your new custom check. It's what you will include when defining your data rules.</td>
+</tr>
+<tr>
+    <td>$class</td>
+    <td>The class within your app that we want to invoke for this custom check.</td>
+</tr>
+<tr>
+    <td>$method</td>
+    <td>The method within that Class that we want to call and pass our input to.</tr>
+</tr>
+<tr>
+    <td>$errorMessageOnFailure</td>
+    <td>The message to display if this check does not pass.</td>
+</tr>
+<tr>
+    <td>$passingResponse</td>
+    <td>[OPTIONAL] Custom check methods are expected to return a TRUE or FALSE response when given the form input. This specifies which response is the passing one! By default this is set to TRUE. See below for examples.</td>
+</tr>
+</table>
+
+<p>So the optional 5th parameter when defining a custom check needs a little explaining. Basically, whatever methods you call for custom checks are expected to return True or False when given a certain input. However, which response "passes" the check, depends on how the method is written - and is why this optional 5th parameter exists. See the examples below:</p>
+<pre><code class="php">// Example 1 - A 'TRUE' value means the check passes.
+// Check passes if 'isNameAvailable' returns TRUE.
+$this-&gt;Validate-&gt;def('userNameAvailable', 'User','isNameAvailable', 'Username already taken.', TRUE);
+$this-&gt;Validate-&gt;rule('username', 'required|userNameAvailable');
+
+// Example 2 - A 'FALSE' value means the check passes.
+// Check passes if 'isNameTaken' returns FALSE.
+$this-&gt;Validate-&gt;def('userNameIsTaken', 'User','isNameTaken', 'Username already taken.', FALSE);
+$this-&gt;Validate-&gt;rule('username', 'required|userNameTaken');
+</code></pre>
+
+<h2 id="human-readable-field-names">Human Readable Field Names</h2>
+<p>If you have a form input that has a name which isn't super user friendly, you can replace the name of the input in any error messages with a custom specified name by specifying an optional 3rd parameter when making your rules:</p>
+<pre><code class="php">$this-&gt;Validate-&gt;rule('password2', 'required|matches[password]', 'Password Confirmation');
+</code></pre>
+
+<p>This will result in the following error message if validation fails: <br />
+<em>"Password Confirmation does not match password!"</em></p>
+<h2 id="displaying-errors">Displaying errors</h2>
+<p>From within a View, the array of errors can be found within the "$errors" variable. They can be displayed by using the Load class' "repeat" method (this is the easiest way), or else you can manually iterate over the errors. Both methods are shown below:</p>
+<p><strong>Repeat Method:</strong>   </p>
+<pre><code class="php">// Parameter 1 = Array to iterate over.
+// Parameter 2 = Tag to surround array items with.
+// Parameter 3 = CSS class to attach to each item.
+// Parameter 4 = Tag to wrap entire repeat block with.
+// Parameter 5 = CSS class to attach to wrapper.
+&lt;?= $this-&gt;repeat($errors, 'li', 'item', 'ul', 'list'); ?&gt;
+</code></pre>
+
+<p>Generates:</p>
+<pre><code class="html">&lt;ul class=&quot;list&quot;&gt;
+    &lt;li class=&quot;item&quot;&gt;Error 1&lt;/li&gt;
+    &lt;li class=&quot;item&quot;&gt;Error 2&lt;/li&gt;
+    ...
+&lt;/ul&gt;
+</code></pre>
+
+<p>OR</p>
+<p><strong>Manual Method:</strong>   </p>
+<pre><code class="php">&lt;?php if (isset($errors)) { ?&gt;
+    &lt;ul&gt;
+        &lt;?php foreach ($errors as $error) { ?&gt;
+            &lt;li&gt;&lt;?= $error; ?&gt;&lt;/li&gt;
+        &lt;?php } ?&gt;
+    &lt;/ul&gt;
+&lt;?php } ?&gt;
+</code></pre>
+
+<h2 id="repopulating-forms">Repopulating Forms</h2>
+<p>There's three methods in the Validate class that are designed to help you repopulate a form if validation fails.</p>
+<pre><code class="php">// For repopulating text boxes and text areas.
+$Validate-&gt;setField($fieldName, $defaultValue = '')
+
+// For repopulating check boxes and ratio buttons.
+$Validate-&gt;setCheckbox($fieldName, $fieldValue, $checkedByDefault = FALSE)
+
+// For repopulating select boxes.
+$Validate-&gt;setSelect($fieldName, $fieldValue, $selectedByDefault = FALSE)
+</code></pre>
+
+<p>These need to be echo'ed inside the HTML tag in question. See below for an example of a complete form with errors display and repopulation of the fields:</p>
+<div class="smaller"></div>
+
+<pre><code class="php">&lt;h1&gt;Create Article&lt;/h1&gt;
+&lt;form method=&quot;POST&quot;&gt;
+
+    &lt;?= $this-&gt;repeat($errors, 'li', 'item', 'ul', 'list'); ?&gt;
+
+
+    &lt;div&gt;
+        &lt;h3&gt;Title:&lt;/h3&gt;
+        &lt;input type=&quot;text&quot; name=&quot;title&quot; value=&quot;&lt;?= $Validate-&gt;setField('title', 'test'); ?&gt;&quot;&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;h3&gt;Content:&lt;/h3&gt;
+        &lt;textarea name=&quot;content&quot;&gt;&lt;?= $Validate-&gt;setField('content'); ?&gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+    &lt;br&gt;
+
+    &lt;div&gt;
+        Item 1:&lt;input type=&quot;checkbox&quot; name=&quot;mycheck[]&quot; value=&quot;1&quot; &lt;?=$Validate-&gt;setCheckbox('mycheck', '1');?&gt;&gt;
+        &lt;br&gt;
+        Item 2:&lt;input type=&quot;checkbox&quot; name=&quot;mycheck[]&quot; value=&quot;2&quot; &lt;?=$Validate-&gt;setCheckbox('mycheck', '2', true);?&gt;&gt;
+    &lt;/div&gt;
+    &lt;br&gt;
+
+    &lt;div&gt;
+        &lt;select name=&quot;myselect&quot;&gt;
+            &lt;option value=&quot;Option One&quot; &lt;?= $Validate-&gt;setSelect('myselect', 'Option One'); ?&gt; &gt;One&lt;/option&gt;
+            &lt;option value=&quot;Option Two&quot; &lt;?= $Validate-&gt;setSelect('myselect', 'Option Two', true); ?&gt; &gt;Two&lt;/option&gt;
+            &lt;option value=&quot;Option Three&quot; &lt;?= $Validate-&gt;setSelect('myselect', 'Option Three'); ?&gt; &gt;Three&lt;/option&gt;
+        &lt;/select&gt;
+    &lt;/div&gt;
+    &lt;br&gt;
+
+    &lt;input type=&quot;submit&quot; value=&quot;Submit&quot;&gt;
+&lt;/form&gt;
+</code></pre></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../js/highlight.pack.js"></script>
+        <script>var base_url = '../../..';</script>
+        <script data-main="../../../mkdocs/js/search.js" src="../../../mkdocs/js/require.js"></script>
+        <script src="../../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

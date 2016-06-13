@@ -4,7 +4,7 @@
     
     <url>
      <loc>None/</loc>
-     <lastmod>2016-04-28</lastmod>
+     <lastmod>2016-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
      <loc>None/about/</loc>
-     <lastmod>2016-04-28</lastmod>
+     <lastmod>2016-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -21,19 +21,19 @@
         
     <url>
      <loc>None/setup/install/</loc>
-     <lastmod>2016-04-28</lastmod>
+     <lastmod>2016-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/setup/configuration/</loc>
-     <lastmod>2016-04-28</lastmod>
+     <lastmod>2016-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/setup/advanced/</loc>
-     <lastmod>2016-04-28</lastmod>
+     <lastmod>2016-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -43,13 +43,13 @@
         
     <url>
      <loc>None/tutorials/intro/</loc>
-     <lastmod>2016-04-28</lastmod>
+     <lastmod>2016-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/tutorials/composer/</loc>
-     <lastmod>2016-04-28</lastmod>
+     <lastmod>2016-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -60,6 +60,22 @@
     <url>
      <loc>None</loc>
      <lastmod></lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/documentation/validationclass/overview/</loc>
+     <lastmod>2016-06-13</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>None/computerscience/computability/</loc>
+     <lastmod>2016-06-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
         

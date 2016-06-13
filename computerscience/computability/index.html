@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+
+	<title>Computability - Cora Framework Documentation</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link href="../../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Cora Framework Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../..">News</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../about/">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../setup/install/">Installation</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../setup/configuration/">Configuration</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../setup/advanced/">Advanced Configuration</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../documentation/databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../documentation/validationclass/overview/">Validate Class</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Computer Science <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li class="active">
+    <a href="./">Computability</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../../documentation/validationclass/overview/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li class="disabled">
+                    <a rel="prev" >
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#computability">Computability</a></li>
+        
+            <li><a href="#straight-up-non-computable">Straight up Non-Computable</a></li>
+        
+            <li><a href="#practically-uncomputable-with-our-current-algorithms">Practically Uncomputable (with our current algorithms)</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="computability">Computability</h1>
+<p>Modern computers are based on what's called a Turing Machine, which was the first general purpose type of computer. What can a Turing Machine based computer compute? What can’t a turing machine based computer compute? 
+What kind of problems are impractical to compute for anything other than really small data sets? We’ll briefly explore these questions below.</p>
+<h2 id="straight-up-non-computable">Straight up Non-Computable</h2>
+<p>Let's first talk about problems that current computers simply cannot compute.</p>
+<h3 id="the-halting-problem">The Halting Problem</h3>
+<p>If you are software developer, you undoubtably have encountered infinite loops. Unlike interpretted
+languages such as PHP which will time out, lower level languages such as C++ will just keep running in an infinite loop forever if one exists.
+With this in mind, it may seem like a good idea for someone to create a debugging program that detects those kinds of run-time errors in apps.
+However, you may be surprised to learn that <strong>the reason why no such program exists is because it's impossible for a computer to determine if an
+arbitrary computer program and input will finish running or not.</strong></p>
+<p>To informally prove this, let's assume we have a function called "does_it_halt" which we can pass an arbitrary program and input to and have it
+tell us if the program will halt or loop indefinitely.</p>
+<hr />
+<p><strong>Assumption:</strong> <br />
+There exists a way for a computer to detect if any arbitrary program and input will halt or not.</p>
+<hr />
+<p>With that assumption, let's assume someone wrote the following function as a simple way to utilize this knowledge:</p>
+<pre><code class="php">function does_it_halt(program, input) {
+    if (eventually halts)
+        return true;
+    else
+        return false;
+}
+</code></pre>
+
+<p>For simplicity's sake let's also say someone wrote wrapper for this function that passes the program as the input. Remember that our
+does_it_halt method is supposed to work on any arbitrary input, so passing in the memory location or text of a program works just fine.</p>
+<pre><code class="php">function debugApp(program) {
+    return does_it_halt(program, program);
+}
+</code></pre>
+
+<p>Alright, hopefully you'll agree this is pretty straight forward. Now let's say someone really smart informed us that our does_it_halt function
+couldn't possibly work, but we didn't believe him. As a result, he decided to write a cheeky little function called paradox that does the following:</p>
+<pre><code class="php">function paradox(program) {
+    if(debugApp(program))
+        while(1) {};
+    else
+        return true;
+}
+
+echo debugApp(paradox);
+</code></pre>
+
+<p>Ha ha ha... so this dude wrote a function that puts itself into an intentional infinite loop if the does_it_halt says the program stops,
+and returns "true" if the program does not stop. Then he follows this up by calling our debug function on his code. 
+Surely this is the most useless bit of code ever written right?</p>
+<p>Well, before we can answer that, we have to examine what happens when this dude calls debugApp(paradox).</p>
+<p>Let's say our debugApp() method returns true when passed Paradox. Let's logically think through what that means in terms of execution:</p>
+<ol>
+<li>First up, since "echo debugApp(Paradox)" returned True, that means that Paradox halts.</li>
+<li>In the process of testing if Paradox halts, does_it_halt(), somewhere in its magical logic would have to run Paradox with the given input. That input is also a reference to Paradox. So the call to paradox would look like "paradox(paradox)".</li>
+<li>However, inside of Paradox is also a call to debugApp()! This call to "debugApp(program)" within Paradox would resolve to "debugApp(Paradox)" at runtime.</li>
+<li>In order for does_it_halt to detect that Paradox halts, that means the call to "debugApp(Paradox)" within Paradox returns False, because otherwise Paradox would send itself into an infinite loop.</li>
+</ol>
+<p>Uhh oh! Turns out that little piece of code wasn't as useless as we originally thought because it just proved that our does_it_halt function can't possibly exist as we've defined it.
+We know from point #1 above that "echo debugApp(Paradox)" returns true, however, we also know that in order for that to happen, the call to "debugApp(Paradox)" as mentioned in point #4 above must return false. So two different calls to "debugApp(Paradox)" are returning differing results which is impossible. As such, our premise is proved false by what's called a Proof By Contradiction.</p>
+<p>This problem ("will a program halt") which is unsolvable by computers by is known commonly as The Halting Problem. Alan Turing proved back in 1936 that a general algorithm to solve it is not possible.</p>
+<h3 id="post-correspondance-problem-pcp">Post-Correspondance Problem (PCP)</h3>
+<p>Let's say you have a list of some arbitrary number of dominoes which look something like this:</p>
+<table>
+<thead>
+<tr>
+<th>c</th>
+<th>ac</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>c</th>
+<th>cb</th>
+<th>aa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cb</td>
+<td>a</td>
+<td>bc</td>
+<td>ba</td>
+<td>c</td>
+<td>ac</td>
+<td>c</td>
+<td>b</td>
+</tr>
+</tbody>
+</table>
+<p>You want to have a computer tell you whether there's a way in which you can order the dominoes such that the sequence of the top row matches the sequence of the bottom row.
+Here's an example of a match where both the top and the bottom read "abbcbba":</p>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>bb</th>
+<th>cb</th>
+<th>ba</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>abb</td>
+<td>c</td>
+<td>bb</td>
+<td>a</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Can a computer program be made for you that determines if there's a possible ordering that results in a match? The answer is "no". This is called the Post Correspondence Problem and was introduced by Emil Post back in 1946.</p>
+<h2 id="practically-uncomputable-with-our-current-algorithms">Practically Uncomputable (with our current algorithms)</h2>
+<h3 id="p-vs-np">P vs NP</h3>
+<p>"P" are a class of problems for which their exists an algorithm to both find and verify an answer in polynomial time.
+"NP" (non-deterministic polynomial time) are a class of problems for which their exists algorithms to verify an answer in polynomial time, but <strong>may or may not</strong> have algorithms to find an answer.
+Note the "may or may not" statement... P vs. NP is actually one of the biggest unknowns in Mathematics/CS because no-one has been able to prove definitively 
+that P = NP or that P != NP. </p>
+<p>If P = NP, then that means there DOES exist polynomial time algorithms to solve problems we lump into this category, but that we just haven't found them yet. If P != NP, then that would confirm that no such polynomial time algorithms exist, and we could stop looking. There has been a 1 million dollar reward on the table since the year 2000 for anyone that can prove this one way or the other.</p>
+<pre><code class="php">x^3 + 2x^2 + 3x = A Polynomial
+</code></pre>
+
+<p>The importance of polynomials is that they can be fastly solved by computers. Equations can be generally clumped into one of three different groups:</p>
+<pre><code class="php">y = 1       // Constant time
+y = x       // Linear time
+y = x^2     // Polynomial time
+y = 2^x     // Exponential time
+</code></pre>
+
+<p>The problems we will be discussing which fall into this "practically uncomputable" category are "NP" problems for which we have no good algorithms to solve them. These are technically referred to as the "NP-Complete" class of problems, a term coined in the 1970s by researchers who realized that these problems are all essentially variations of the same thing, and if a solution could be found for one of them, it would mean all of them could in turn be solved.</p>
+<p>For a good video on this topic, I'd recommend the following:</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/YX40hbAHx3s" frameborder="0" allowfullscreen></iframe>
+
+<h3 id="big-o-notation">Big-O Notation:</h3>
+<p>When talking about computation a c</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
