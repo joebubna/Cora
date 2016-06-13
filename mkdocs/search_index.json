@@ -162,8 +162,13 @@
         },
         {
             "location": "/tutorials/intro/",
-            "text": "Intro\n\n\n\n\n! This is some hidden text?",
+            "text": "Intro\n\n\nThis page is not written yet! In the meantime, please play around in the demo project and refer to the articles under the \"Documentation\" tab for documentation on specific classes.\n\n\nAnother good resource at this point is to view a presentation I made on Cora which has explanations of how the routing works and displaying data. That presentation can be found here: https://docs.google.com/presentation/d/1O7oEtpn2gB96y14XIUG0yCtl7msRJOelhlqtiFBkXHc/edit?usp=sharing",
             "title": "Intro to Cora"
+        },
+        {
+            "location": "/tutorials/intro/#intro",
+            "text": "This page is not written yet! In the meantime, please play around in the demo project and refer to the articles under the \"Documentation\" tab for documentation on specific classes.  Another good resource at this point is to view a presentation I made on Cora which has explanations of how the routing works and displaying data. That presentation can be found here: https://docs.google.com/presentation/d/1O7oEtpn2gB96y14XIUG0yCtl7msRJOelhlqtiFBkXHc/edit?usp=sharing",
+            "title": "Intro"
         },
         {
             "location": "/tutorials/composer/",
