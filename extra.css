@@ -2,3 +2,6 @@ table { border-collapse: collapse; }
 table, th, td { border: 1px solid #ddd; }
 .smalller { display: none; }
 .smaller+pre { font-size: 0.8em; }
+table.dominoes { margin-right: 10px; width: 40px; float: left;}
+table.floatLeft { margin-right: 20px; width: 200px; float: left; }
+.clear { clear: both; display: hidden; }

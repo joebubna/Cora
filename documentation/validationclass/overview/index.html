@@ -245,7 +245,7 @@
 
 <h1 id="coras-validation-class">Cora's Validation class</h1>
 <p>The Validate class is for checking that data matches a set of restrictions. For instance, if you have a form for users to submit and want to require that they fill out the 'email' field and enter something that at least looks like a valid email, Validate can help with that. It's main usage will typically be for validating form submissions, but it can be used to validate any data you pass in.</p>
-<p><em>Note that the Validate class must be called from a Controller as any errors returned will be loaded into that controller's "errors" data member!</em></p>
+<p><em>Note that the Validate class must be called from a Controller as any errors returned will be loaded into that controller's "$this-&gt;data-&gt;errors" data member!</em></p>
 <p><strong>Front-end vs. Back-end Validation:</strong>   </p>
 <p>If you are unfamiliar with form validation, it's worth mentioning that front-end Javascript validators are easier to setup and can save you that tiny bit of server processing power if efficiency is important. The main drawbacks of front-end validation is that it can be <strong>bypassed</strong> (important to know if you didn't already know that) and you have to setup a special API in order to do things like check if a Username is already taken, etc. For this reason, for validation that is even remotely important, you should either use back-end validation like this Validation class provides, or use both a front-end validator and this class on the backend (in-case a user bypasses the front-end validation code).</p>
 <h2 id="example-usage">Example Usage</h2>
@@ -296,7 +296,7 @@ public function createPOST()
 $this-&gt;load-&gt;library('Validate', $this, true);
 </code></pre>
 
-<p>The fact that we're specifying that we want to load the Validate class as the first parameter should make sense. What you're probably wondering about is what the other two parameters do. For the 2nd parameter we're passing a reference to the current controller; Validate uses this reference to load any validation errors generated into that controller's "$this-&gt;errors" data member. The third parameter being true tells the Load class to create a reference in the calling controller to Validate for you. In other words it does the equivalent of this:</p>
+<p>The fact that we're specifying that we want to load the Validate class as the first parameter should make sense. What you're probably wondering about is what the other two parameters do. For the 2nd parameter we're passing a reference to the current controller; Validate uses this reference to load any validation errors generated into that controller's "$this-&gt;data-&gt;errors" data member. The third parameter being true tells the Load class to create a reference in the calling controller to Validate for you. In other words it does the equivalent of this:</p>
 <pre><code class="php">$this-&gt;data-&gt;Validate = new \Validate($this);
 </code></pre>
 
@@ -385,7 +385,7 @@ $this-&gt;Validate-&gt;rule('username', 'required|userNameAvailable');
 // Example 2 - A 'FALSE' value means the check passes.
 // Check passes if 'isNameTaken' returns FALSE.
 $this-&gt;Validate-&gt;def('userNameIsTaken', 'User','isNameTaken', 'Username already taken.', FALSE);
-$this-&gt;Validate-&gt;rule('username', 'required|userNameTaken');
+$this-&gt;Validate-&gt;rule('username', 'required|userNameIsTaken');
 </code></pre>
 
 <h2 id="human-readable-field-names">Human Readable Field Names</h2>
@@ -400,9 +400,9 @@ $this-&gt;Validate-&gt;rule('username', 'required|userNameTaken');
 <p><strong>Repeat Method:</strong>   </p>
 <pre><code class="php">// Parameter 1 = Array to iterate over.
 // Parameter 2 = Tag to surround array items with.
-// Parameter 3 = CSS class to attach to each item.
-// Parameter 4 = Tag to wrap entire repeat block with.
-// Parameter 5 = CSS class to attach to wrapper.
+// Parameter 3 = [OPTIONAL] CSS class to attach to each item.
+// Parameter 4 = [OPTIONAL] Tag to wrap entire repeat block with.
+// Parameter 5 = [OPTIONAL] CSS class to attach to wrapper.
 &lt;?= $this-&gt;repeat($errors, 'li', 'item', 'ul', 'list'); ?&gt;
 </code></pre>
 
