@@ -1,11 +1,10 @@
-<?PHP
+<?php
 
-class MyApp extends Cora
-{   
+class MyModel extends \Cora\Model
+{
     public function __construct()
     {
         parent::__construct(); 
         
     }
-
 }

@@ -1,6 +1,6 @@
 <?php
 
-class Demo extends \MyApp {
+class DbDemo extends \MyApp {
     
     public function __construct()
     {   parent::__construct($this->container);
@@ -46,9 +46,11 @@ class Demo extends \MyApp {
         $db ->insert('name, email, type')
             ->into('users')
             ->values([
-                ['bob', 'bob@gmail.com', 'admin'], 
+                ['bob', "bob's@gmail.com", 'admin'], 
                 ['john', 'john@gmail.com', 'admin'],
-                ['john', 'john@gmail.com', 'scrub']
+                ['john', 'john@gmail.com', 'scrub'],
+                ['sally', 'sally@yahoo.com', 'user'],
+                ['susan', 'susan@aol.com', 'user']
             ])
             ->exec();
         
@@ -61,12 +63,17 @@ class Demo extends \MyApp {
             ->set('name', 'BigJohn')
             ->where('name', 'john')
             ->exec();
-        
+
+        // Create and execute query
         $db ->select('name')
-            ->from('users');
+            ->from('users')
+            ->where('name', 's%', 'LIKE');
         $query = $db->exec();
-        foreach($query->fetchAll() as $v)
-            echo $v['name'];
+
+        // Print all the names
+        foreach($query->fetchAll() as $user) {
+            echo $user['name'];
+        }
     }
     
     public function db()
@@ -104,6 +111,7 @@ class Demo extends \MyApp {
                 ->where($conditions)
                 ->orWhere($conditions)
                 ->in('name', 'value1, value2, value3')
+                ->in('name', 'SELECT * FROM users')
                 ->in('type', $groupBys)
                 ->groupBy($groupBys)
                 ->having($havings)
@@ -123,9 +131,10 @@ class Demo extends \MyApp {
                         ->join('members', [['users.user_id', '=', 'members.user_id']])
                         ->orderBy('users.user_id', 'ASC')
                         ->getQuery();
-        $result = $db->exec();
+        //$result = $db->exec();
+        $db->reset();
         echo $query.'<br>';
-        echo $result->rowCount();
+        //echo $result->rowCount();
         echo '<br><br>';
         
         $query  = $db   ->update('users')
@@ -151,8 +160,14 @@ class Demo extends \MyApp {
                 ->distinct()
                 ->from('users')
                 ->from('profile')
-                ->where('name', 'bob', '=')
-                ->where('date', '2014-01-01', '>=')
+                ->where([
+        ['created_time', '>=', '2016-01-01', 'OR'],
+        ['name', 'LIKE', 's%']
+    ])
+    ->where([
+        ['type', '=', 'admin', 'OR'],
+        ['type', '=', 'moderator']
+    ])
                 ->getQuery();
         $db->reset();
         echo '<br><br>';

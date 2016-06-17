@@ -8,6 +8,8 @@
     </ul>
     <?php } ?>
     
+    <?= $this->repeat($errors, 'li', 'item', 'ul', 'list'); ?>
+    
     
     <div><h3>Title:</h3><input type="text" name="title" value="<?= $Validate->setField('title', 'test'); ?>"></div>
     <div><h3>Content:</h3><textarea name="content"><?= $Validate->setField('content'); ?></textarea></div>

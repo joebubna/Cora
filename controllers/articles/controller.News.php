@@ -32,7 +32,7 @@ class News extends \MyApp
         
         // Define validation rules.
         $this->Validate->rule('title', ['required', 'articleExists', 'trim']);
-        $this->Validate->rule('content', ['required']);
+        $this->Validate->rule('content', 'required|matches[title]', 'Password Confirmation');
         
         // Initiate validation
         if ($this->Validate->run()) {        
