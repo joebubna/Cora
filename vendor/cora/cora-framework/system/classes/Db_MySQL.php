@@ -42,7 +42,9 @@ class Db_MySQL extends Database
         $this->calculate();
         $result = $this->db->query($this->query);
         $this->reset();
-        return $result;
+        
+        $dbResult = new Db_MySQLResult($result);
+        return $dbResult;
     }
     
     // Create the SQL string from Database class raw data.
@@ -210,7 +212,7 @@ class Db_MySQL extends Database
         $query = ' PRIMARY KEY (';
         $count = count($this->$dataMember);
         for($i=0; $i<$count; $i++) {
-            $item = $this->$dataMember[$i];
+            $item = $this->{$dataMember}[$i];
             $constraintName .= '_'.$item;
             $query .= $item;
             if ($count-1 != $i) {
@@ -234,7 +236,7 @@ class Db_MySQL extends Database
         //$query = '';
         $count = count($this->$dataMember);
         for($i=0; $i<$count; $i++) {
-            $item = $this->$dataMember[$i];
+            $item = $this->{$dataMember}[$i];
             
             $this->query .= ', CONSTRAINT '.'fk_'.$item[0].' FOREIGN KEY ('.$item[0].') REFERENCES '.$item[1].' ('.$item[2].')';
             if ($count-1 != $i) {
@@ -290,9 +292,9 @@ class Db_MySQL extends Database
      */
     protected function getArrayItem($dataMember, $offset, $quote = true)
     {
-        if(is_array($this->$dataMember[$offset])) {
-            if (count($this->$dataMember[$offset]) == 3) {
-                $item = $this->$dataMember[$offset];
+        if(is_array($this->{$dataMember}[$offset])) {
+            if (count($this->{$dataMember}[$offset]) == 3) {
+                $item = $this->{$dataMember}[$offset];
                 if($quote) {
                    return $item[0].' '.$item[1]." '".$this->clean($item[2])."'"; 
                 }
@@ -305,7 +307,7 @@ class Db_MySQL extends Database
             }
         }
         else {
-            return $this->clean($this->$dataMember[$offset]);
+            return $this->clean($this->{$dataMember}[$offset]);
         }
     }
     
@@ -341,7 +343,7 @@ class Db_MySQL extends Database
         $this->query .= $opening;
         $count = count($this->$dataMember);
         for($i=0; $i<$count; $i++) {
-            $statement = $this->$dataMember[$i];
+            $statement = $this->{$dataMember}[$i];
             $this->query .= '(';
             $sCount = count($statement[0]);
             for($j=0; $j<$sCount; $j++) {
@@ -361,7 +363,11 @@ class Db_MySQL extends Database
             }
             $this->query .= ')';
             if ($count-1 != $i) {
-                $this->query .= ' '.$this->$dataMember[$i+1][1].' ';
+//                echo $dataMember;
+//                var_dump($this->$dataMember);
+//                var_dump($this->{$dataMember}[$i+1]);
+//                echo $i;
+                $this->query .= ' '.$this->{$dataMember}[$i+1][1].' ';
             }
         }
     }
@@ -378,8 +384,8 @@ class Db_MySQL extends Database
      */
     protected function getArrayCondition($dataMember, $statementNum, $offset)
     {
-        if (count($this->$dataMember[$statementNum][0][$offset]) >= 3) {
-            $item = $this->$dataMember[$statementNum][0][$offset];
+        if (count($this->{$dataMember}[$statementNum][0][$offset]) >= 3) {
+            $item = $this->{$dataMember}[$statementNum][0][$offset];
             $result = '';
             
             if ($item[1] == 'IN') {
@@ -417,8 +423,8 @@ class Db_MySQL extends Database
      */
     protected function getArrayConditionSep($dataMember, $statementNum, $offset)
     {
-        if (isset($this->$dataMember[$statementNum][0][$offset][3])) {
-            return ' '.$this->$dataMember[$statementNum][0][$offset][3].' ';
+        if (isset($this->{$dataMember}[$statementNum][0][$offset][3])) {
+            return ' '.$this->{$dataMember}[$statementNum][0][$offset][3].' ';
         }
         return false;
     }
@@ -448,7 +454,7 @@ class Db_MySQL extends Database
         $result = '';
         $addParenthesis = false;
         for($i=0; $i<$count; $i++) {
-            if (!is_array($this->$dataMember[$i])) {
+            if (!is_array($this->{$dataMember}[$i])) {
                 $addParenthesis = true;
             }
             $result .= $this->getValuesList($dataMember, $i);
@@ -470,8 +476,8 @@ class Db_MySQL extends Database
      */
     protected function getValuesList($dataMember, $offset)
     {
-        if(is_array($this->$dataMember[$offset])) {
-            $items = $this->$dataMember[$offset];
+        if(is_array($this->{$dataMember}[$offset])) {
+            $items = $this->{$dataMember}[$offset];
             $count = count($items);
             $result = ' (';
             for($i=0; $i<$count; $i++) {
@@ -484,7 +490,7 @@ class Db_MySQL extends Database
             return $result;   
         }
         else {
-            return "'".$this->clean($this->$dataMember[$offset])."'";
+            return "'".$this->clean($this->{$dataMember}[$offset])."'";
         }
     }
     
@@ -502,7 +508,7 @@ class Db_MySQL extends Database
         $count = count($this->$dataMember);
         //var_dump($this->$dataMember);
         for($i=0; $i<$count; $i++) {
-            $statement = $this->$dataMember[$i];
+            $statement = $this->{$dataMember}[$i];
             $this->query .= ' '.$statement[2].' JOIN '.$statement[0].' ON ';
             $sCount = count($statement[1]);
             for($j=0; $j<$sCount; $j++) {
@@ -523,8 +529,8 @@ class Db_MySQL extends Database
      */
     protected function getArrayJoin($dataMember, $statementNum, $offset)
     {
-        if (count($this->$dataMember[$statementNum][1][$offset]) == 3) {
-            $item = $this->$dataMember[$statementNum][1][$offset];
+        if (count($this->{$dataMember}[$statementNum][1][$offset]) == 3) {
+            $item = $this->{$dataMember}[$statementNum][1][$offset];
             return $this->clean($item[0]).' '.$item[1]." ".$this->clean($item[2]);
         }
         else {

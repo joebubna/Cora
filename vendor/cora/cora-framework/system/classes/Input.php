@@ -21,9 +21,7 @@ class Input
         
         $this->postData = $this->_cleanInput($_POST);
         $this->getData  = $this->_cleanInput($_GET);
-        if (isset($_FILES)) {
-            $this->filesData = $this->_cleanFiles($_FILES);
-        }
+        $this->filesData = $this->_cleanFiles($_FILES);
     }
 
     
@@ -89,10 +87,12 @@ class Input
     protected function _cleanFiles($data)
     {
         $FileArray = array();
-        foreach ($data as $field_name => $files) {
-            $errors = $this->_getErrors($files);
-            $file_array = $this->rearrange($files);
-            $FileArray[$field_name] = $this->_clearErrors($file_array, $errors);
+        if (is_array($data)) {
+            foreach ($data as $field_name => $files) {
+                $errors = $this->_getErrors($files);
+                $file_array = $this->rearrange($files);
+                $FileArray[$field_name] = $this->_clearErrors($file_array, $errors);
+            }
         }
         return $FileArray;
     }
@@ -118,7 +118,7 @@ class Input
 
     public function hasFiles($field = null)
     {
-        if ($field) {;
+        if ($field) {
             if (count($this->files($field))) {
                 return true;
             }

@@ -30,6 +30,14 @@ class Database
     }
     
     
+    public function isSelectSet()
+    {
+        if(empty($this->selects))
+            return false;
+        return true;
+    }
+    
+    
     public function table($tables)
     {
         $this->storeValue('tables', $tables);
@@ -162,8 +170,11 @@ class Database
     
     public function insert($columns)
     {
-        //$this->store('keyValue', 'inserts', $data);
-        $this->storeValue('inserts', $columns);
+        $val = $columns;
+        if (!is_array($val)) {
+            $val = explode(',', $val);
+        }
+        $this->storeValue('inserts', $val);
         return $this;
     }
     
@@ -375,6 +386,20 @@ class Database
             $condition = array($item, $conjunction);
             array_push($dataMember, $condition);
         }
+    }
+    
+    
+    // Just a convenience method to invoke a result method without having to call exec() first.
+    public function fetch()
+    {
+        return $this->exec()->fetch();
+    }
+    
+    
+    // Just a convenience method to invoke a result method without having to call exec() first.
+    public function fetchAll()
+    {
+        return $this->exec()->fetchAll();
     }
     
     

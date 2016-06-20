@@ -1,9 +1,9 @@
 <?php
 namespace Cora;
 
-class Load extends Framework 
+class Load extends Framework
 {
-    
+
     /**
      *  For echo'ing data in Views only if that data is set.
      */
@@ -14,7 +14,7 @@ class Load extends Framework
         else
             echo '';
     }
-    
+
     /**
      *  For echo'ing data in Views that repeats.
      */
@@ -29,7 +29,7 @@ class Load extends Framework
                     $output .= $value;
                     $output .= '</'.$repeatTag.'>';
                 }
-            }   
+            }
             else {
                 $output .= '<'.$repeatTag.' class="'.$classes.'">';
                 $output .= $property;
@@ -41,10 +41,10 @@ class Load extends Framework
         else
             echo '';
     }
-    
+
     /**
      *  Include specified model.
-     *  
+     *
      *  This is included for people that like to specifically load their classes.
      *  It's recommended you not use this and just let the autoloader handle
      *  model loading.
@@ -58,11 +58,11 @@ class Load extends Framework
                     '.php';
         include_once($fullPath);
     }
-    
-    
+
+
     /**
      *  Include specified library.
-     *  
+     *
      *  if a reference to the calling class is passed in, then the specified library
      *  will be invoked and a reference passed back to the calling class.
      *
@@ -71,44 +71,44 @@ class Load extends Framework
      *  for use within a View file.
      */
     public function library($pathname, &$caller = false, $exposeToView = false) {
-        
+
         $name = $this->getName($pathname);
-        $path = $this->getPath($pathname);       
+        $path = $this->getPath($pathname);
         $fullPath = $this->config['pathToLibraries'] .
                     $path .
                     $this->config['librariesPrefix'] .
                     $name .
                     $this->config['librariesPostfix'] .
                     '.php';
-        
+
         // If the file exists in the Libraries directory, load it.
         if (file_exists($fullPath)) {
             include_once($fullPath);
         }
-        
+
         // Otherwise try and load it from the Cora system files.
         else {
             include_once($name.'.php');
         }
-              
+
         // If a reference to the calling object was passed, set an instance of
         // the library as one of its members.
         if ($caller) {
             $lib = '\\Library\\'.$name;
             $libObj = new $lib($caller);
-            
+
             // Set library to be available within a class via "$this->$libraryName"
             $caller->$name = $libObj;
-            
+
             // Set library to also be available via "$this->load->$libraryName"
             // This is so this library will be available within View files as $libraryName.
             if ($exposeToView)
                 $caller->setData($name, $libObj);
         }
-        
+
     }
-    
-    
+
+
     /**
      *  Load view OR return view depending on 2nd parameter.
      */
@@ -124,8 +124,8 @@ class Load extends Framework
         if ($pathname == '') {
             $pathname = $this->config['template'];
         }
-        
-        $fullPath = $this->config['pathToViews'] . 
+
+        $fullPath = $this->config['pathToViews'] .
                     $this->getPath($pathname);
         $path = $this->getPath($pathname);
 
@@ -149,7 +149,7 @@ class Load extends Framework
         $this->debug( 'View Path: ' . $this->getPath($pathname) );
         $this->debug( 'File Path: ' . $filePath);
         $this->debug('');
-        
+
         // Either return the view for storage in a variable, or output to browser.
         if ($return) {
             ob_start();
