@@ -7,10 +7,9 @@ namespace Cora;
 class Model 
 {
     protected $model_data;
-    
-    public function __construct($record = null)
+        
+    public function _populate($record = null)
     {
-        //$classProperties = get_object_vars($this);
         if($record) {
             foreach ($this->model_attributes as $key => $def) {
                 
@@ -34,7 +33,6 @@ class Model
         if (property_exists($class, $name)) {
             return $this->{$name};
         }
-        return $this->{$name};
         
         // If your DB id's aren't 'id', but instead something like "note_id",
         // but you always want to be able to refer to 'id' within a class.
@@ -44,6 +42,7 @@ class Model
             }
             return $this->{$this->id_name};
         }
+        return null;
     }
     
     
@@ -81,4 +80,5 @@ class Model
     {
         return true;
     }
+    
 }

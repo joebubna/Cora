@@ -2,9 +2,8 @@
 
 class MyModel extends \Cora\Model
 {
-    public function __construct($record = null)
+    public function __construct()
     {
-        parent::__construct($record); 
         
     }
 }

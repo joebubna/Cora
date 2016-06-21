@@ -24,8 +24,14 @@ class User extends MyModel {
         ]
     ];
     
-    public function test() {
-        return 'Bob';
+    public function __construct($name = null, $type = null)
+    {
+        $this->name = $name;
+        $this->type = $type;
+    }
+    
+    public function getName() {
+        return $this->name;
     }
 
 }

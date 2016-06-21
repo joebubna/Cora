@@ -4,7 +4,7 @@ namespace Cora;
 *
 */
 
-class ResultSet implements IteratorAggregate, Countable
+class ResultSet implements \IteratorAggregate, \Countable
 {
     
     protected $_results = array();

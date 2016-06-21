@@ -70,7 +70,7 @@ class Gateway
         }
         $query->from($this->tableName);
         
-        return $this->query->fetchAll();
+        return $query->fetchAll();
 	}
 
 
@@ -101,6 +101,20 @@ class Gateway
 
     protected function _create($model, $table, $id_name)
 	{
+        $columns = array();
+        $values = array();
         
+        $this->db->into($table);
+        
+        foreach ($model->model_attributes as $key => $prop) {
+            $modelValue = $model->$key;
+            if (!empty($modelValue)) {
+                $columns[]  = $key;
+                $values[]   = $modelValue;
+            }
+        }
+        $this->db->insert($columns);
+        $this->db->values($values);
+        return $this->db->exec();
 	}
 }

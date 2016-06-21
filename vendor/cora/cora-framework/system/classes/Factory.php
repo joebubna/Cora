@@ -18,7 +18,10 @@ class Factory
 			return null;
 		}
         $this->type = '\\'.$this->type;
-		return new $this->type($data);
+		//return new $this->type($data);
+        $obj = new $this->type();
+        $obj->_populate($data);
+        return $obj;
 	}
 
 	public function makeGroup($records)
