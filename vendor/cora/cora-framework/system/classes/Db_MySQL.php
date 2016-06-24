@@ -6,7 +6,7 @@ class Db_MySQL extends Database
     protected $db;
     protected $mysqli;
     
-    public function __construct()
+    public function __construct($connection = false)
     {
         parent::__construct();
         
@@ -19,15 +19,23 @@ class Db_MySQL extends Database
             include($config['basedir'].'cora/config/database.php');
         }
         
+        // If a connection was specified, use that. Otherwise use the default DB connection.
+        if (!$connection) {
+            $connection = $dbConfig['defaultConnection'];
+        }
+        
         // Create mysqli connection. This is needed for it's escape function to cleanse variable inputs.
-        $this->mysqli = new \mysqli($dbConfig['host'], $dbConfig['dbUser'], $dbConfig['dbPass'], $dbConfig['dbName']);
+        $this->mysqli = new \mysqli($dbConfig['connections'][$connection]['host'], 
+                                    $dbConfig['connections'][$connection]['dbUser'], 
+                                    $dbConfig['connections'][$connection]['dbPass'], 
+                                    $dbConfig['connections'][$connection]['dbName']);
         
         // Create PDO object for doing our queries.
         $errorMode = null;
         if ($config['mode'] == 'development') {
             $errorMode = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
         }
-        $this->db = new \PDO('mysql:host='.$dbConfig['host'].';dbname='.$dbConfig['dbName'], $dbConfig['dbUser'], $dbConfig['dbPass'], $errorMode);
+        $this->db = new \PDO('mysql:host='.$dbConfig['connections'][$connection]['host'].';dbname='.$dbConfig['connections'][$connection]['dbName'], $dbConfig['connections'][$connection]['dbUser'], $dbConfig['connections'][$connection]['dbPass'], $errorMode);
     }
     
     // Clean user provided input to make it safe for use in a database query.

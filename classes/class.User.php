@@ -4,7 +4,7 @@
 */
 class User extends MyModel {
     
-    public $model_connection = 'mysql';
+    public $model_connection = 'MySQL';
     public $model_attributes = [ 
         'id' => [
             'type'          => 'int',
@@ -20,7 +20,11 @@ class User extends MyModel {
             'type' => 'varchar'
         ],
         'location' => [
-            'model' => 'locations'
+            'model' => 'location'
+        ],
+        'articles' => [
+            'models' => 'article',
+            'via'    => 'owner'
         ]
     ];
     

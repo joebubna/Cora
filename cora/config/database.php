@@ -1,6 +1,11 @@
 <?php
-
-$dbConfig['host'] = 'localhost';
-$dbConfig['dbName'] = 'cora';
-$dbConfig['dbUser'] = 'root';
-$dbConfig['dbPass'] = 'root';
+$dbConfig['defaultConnection'] = 'MySQL';
+$dbConfig['connections'] = [
+    'MySQL' => [
+        'adaptor'   => 'MySQL',
+        'host'      => 'localhost',
+        'dbName'    => 'cora',
+        'dbUser'    => 'root',
+        'dbPass'    => 'root'
+    ]
+];

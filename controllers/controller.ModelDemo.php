@@ -8,8 +8,8 @@ class ModelDemo extends \MyApp {
     public function __construct()
     {
         parent::__construct();
-        $this->repo = \Cora\RepositoryFactory::make($this->db, 'User');
         $this->db   = new \Cora\Db_MySQL();
+        $this->repo = \Cora\RepositoryFactory::make('User');     
     }
     
     public function index() {
@@ -52,10 +52,17 @@ class ModelDemo extends \MyApp {
     
     public function testUpdateById() 
     {
-        $repo = \Cora\RepositoryFactory::make($this->db, 'User');
+        $repo = $this->repo;
         $user = $repo->find(53);
         $user->name = 'Josiah';
         $repo->save($user);
+    }
+    
+    public function testFetchClass()
+    {
+        $this->db->where('name', 'testUser');
+        $user = $this->repo->findBy($this->db)->get(0);
+        var_dump($user);
     }
     
     public function testLightClass()
