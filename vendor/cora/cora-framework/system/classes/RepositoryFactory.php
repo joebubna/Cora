@@ -3,7 +3,7 @@ namespace Cora;
 /**
 * 
 */
-class RepositoryFactory extends Framework
+class RepositoryFactory
 {
 
     public static function make($class, $idField = false, $table = false)

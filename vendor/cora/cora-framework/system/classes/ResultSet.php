@@ -16,7 +16,7 @@ class ResultSet implements \IteratorAggregate, \Countable
 
     public function getIterator()
     {
-        return new ArrayIterator($this->_results);
+        return new \ArrayIterator($this->_results);
     }
 
     public function count()

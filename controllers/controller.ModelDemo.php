@@ -40,7 +40,7 @@ class ModelDemo extends \MyApp {
     public function testUpdateByCustom()
     {
         $this->db->where('name', 'testUser');
-        $user = $this->repo->findBy($this->db)->get(0);
+        $user = $this->repo->findByQuery($this->db)->get(0);
         if ($user->type == 'Member') {
             $user->type = 'Admin';
         }
@@ -61,22 +61,32 @@ class ModelDemo extends \MyApp {
     public function testFetchClass()
     {
         $this->db->where('name', 'testUser');
-        $user = $this->repo->findBy($this->db)->get(0);
-        var_dump($user);
+        $user = $this->repo->findByQuery($this->db)->get(0);
+//        var_dump($user);
+//        echo $user->location->name.'<br>';
+//        foreach ($user->articles as $article) {
+//            echo $article->title.'<br>';
+//        }
+        foreach($user->guides as $guide) {
+            echo $guide->title.'<br>';
+        }
+        echo $user->job->title;
+//        var_dump($user);
+//        var_dump($user->location);
     }
     
     public function testLightClass()
     {
         $this->db->where('name', 'testUser');
         $this->db->select(['id', 'type']);
-        $user = $this->repo->findBy($this->db)->get(0);
+        $user = $this->repo->findByQuery($this->db)->get(0);
         var_dump($user);
     }
     
     public function testInternal()
     {
         $this->db->where('name', 'testUser');
-        $user = $this->repo->findBy($this->db)->get(0);
+        $user = $this->repo->findByQuery($this->db)->get(0);
         echo $user->getName();
     }
 }

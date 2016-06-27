@@ -3,6 +3,8 @@ namespace Cora;
 
 class Database
 {
+    public static $defaultDb;
+    
     protected $tables;
     protected $selects;
     protected $updates;
@@ -414,6 +416,29 @@ class Database
     {
         // To be implemented by specific DB adaptor.
         throw new Exception('getQuery() calls calculate(), which needs to be implemented by a specific database adaptor!');
+    }
+    
+    
+    public static function getDefaultDb()
+    {
+        // Check if default DB instance is already created.
+        if (isset(self::$defaultDb)) {
+            return self::$defaultDb;
+        }
+        // Load Cora DB settings
+        require(dirname(__FILE__).'/../config/config.php');
+        require(dirname(__FILE__).'/../config/database.php');
+
+        // Load app specific DB settings
+        if (file_exists($config['basedir'].'cora/config/database.php')) {
+            include($config['basedir'].'cora/config/database.php');
+        }
+
+        // Use Default Adaptor as defined in the settings.
+        $dbAdaptor = '\\Cora\\Db_'.$dbConfig['defaultConnection'];
+        self::$defaultDb = new $dbAdaptor();
+        
+        return self::$defaultDb;
     }
     
 }

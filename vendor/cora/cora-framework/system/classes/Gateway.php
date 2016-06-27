@@ -58,12 +58,32 @@ class Gateway
         
         return $this->db->fetchAll();
 	}
+    
+    
+    public function fetchBy($key, $value, $options)
+	{
+        $this->db   ->select('*')
+                    ->from($this->tableName);
+        
+        if (isset($options['order_by'])) {
+            $this->db->orderBy($options['orderBy'], $options['order']);
+        }
+
+        if (isset($options['limit'])) {
+            $this->db->limit($options['limit']);
+            if (isset($options['offset'])) {
+                $this->db->offset($options['offset']);
+            }
+        }
+
+		return $this->db->fetchAll();
+	}
 
     
     /**
      *  $query is an instance of a Cora database.
      */
-	public function fetchBy($query)
+	public function fetchByQuery($query)
 	{
         if(!$query->isSelectSet()) {
             $query->select('*');

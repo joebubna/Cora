@@ -2,7 +2,7 @@
 /**
 * 
 */
-class Article {
+class Article extends MyModel {
     
     public $model_attributes = [ 
         'id' => [

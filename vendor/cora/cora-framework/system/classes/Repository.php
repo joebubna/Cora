@@ -26,10 +26,16 @@ class Repository
         $all = $this->gateway->fetchAll();
         return $this->factory->makeGroup($all);
     }
-
-    public function findBy($coraDbQuery)
+    
+    public function findBy($prop, $value, $options = array())
     {
-        $all = $this->gateway->fetchBy($coraDbQuery);
+        $all = $this->gateway->fetchBy($prop, $value, $options);
+        return $this->factory->makeGroup($all);
+    }
+
+    public function findByQuery($coraDbQuery)
+    {
+        $all = $this->gateway->fetchByQuery($coraDbQuery);
         return $this->factory->makeGroup($all);
     }
 
