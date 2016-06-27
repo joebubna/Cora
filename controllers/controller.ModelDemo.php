@@ -63,10 +63,10 @@ class ModelDemo extends \MyApp {
         $this->db->where('name', 'testUser');
         $user = $this->repo->findByQuery($this->db)->get(0);
 //        var_dump($user);
-//        echo $user->location->name.'<br>';
-//        foreach ($user->articles as $article) {
-//            echo $article->title.'<br>';
-//        }
+        echo $user->location->name.'<br>';
+        foreach ($user->articles as $article) {
+            echo $article->title.'<br>';
+        }
         foreach($user->guides as $guide) {
             echo $guide->title.'<br>';
         }

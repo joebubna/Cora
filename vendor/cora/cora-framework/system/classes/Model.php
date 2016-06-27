@@ -18,7 +18,7 @@ class Model
                 if (isset($record[$key])) {
                     $this->model_data[$key] = $record[$key];
                 }
-                else if (isset($def['models'])) {
+                else if (isset($def['models']) || (isset($def['model']) && isset($def['usesRefTable']))) {
                     $this->model_data[$key] = 1;
                 }
             }
@@ -47,8 +47,8 @@ class Model
                     // In the rare case that we need to fetch a single related object, and the developer choose 
                     // to use a relation table to represent the relationship.
                     if (isset($def['usesRefTable'])) {
-                        $refTable = isset($def['refTable']) ? $def['refTable'] : false;
-                        $this->$name = $this->getModelFromRelationTable($def['model'], $refTable);
+                        //$refTable = isset($def['refTable']) ? $def['refTable'] : false;
+                        $this->$name = $this->getModelFromRelationTable($def['model']);
                     }
                     
                     // In the more common case of fetching a single object, where the related object's
@@ -90,7 +90,7 @@ class Model
         // then we need to dynamically fetch it.
         ///////////////////////////////////////////////////////////////////////
         else if (isset($this->model_attributes[$name])) {
-            //if ()
+            
             $this->$name = $this->fetchData($name);       
             return $this->model_data[$name];
         }
@@ -149,9 +149,25 @@ class Model
     }
     
     
-    protected function getModelFromRelationTable($objName, $relTable = false)
+    protected function getModelFromRelationTable($objName)
     {
+        $relatedObj = $this->fetchRelatedObj($objName);
         
+        // Grab relation table name and the name of this class.
+        $relTable = $this->getRelationTableName($relatedObj, $objName);
+        $className = strtolower((new \ReflectionClass($this))->getShortName());
+        $classId = $this->getPrimaryKey();
+        $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
+
+        // Create repo that uses the relationtable, but returns models populated
+        // with their IDs.
+        $repo = \Cora\RepositoryFactory::make($relatedClassName, false, $relTable);
+
+        // Define custom query for repository.
+        $db = $relatedObj->getDbAdaptor();
+        $db ->select($relatedClassName.' as '.$classId)
+            ->where($className, $this->$classId);
+        return $repo->findByQuery($db)->get(0);
     }
     
     
@@ -160,7 +176,7 @@ class Model
         $relatedObj = $this->fetchRelatedObj($objName);
         
         // Grab relation table name and the name of this class.
-        $relTable = $this->getRelationTableName($relatedObj);
+        $relTable = $this->getRelationTableName($relatedObj, $objName);
         $className = strtolower((new \ReflectionClass($this))->getShortName());
         $classId = $this->getPrimaryKey();
         $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
@@ -174,16 +190,6 @@ class Model
         $db ->select($relatedClassName.' as '.$classId)
             ->where($className, $this->$classId);
         return $repo->findByQuery($db);
-    }
-    
-    
-    /**
-     *  This object's table should have some sort of singular "relatedObj" column
-     *  that gives us the ID of the related object in another table.
-     */
-    protected function getModelFromTableColumn($relatedObj)
-    {
-        
     }
     
     
@@ -274,19 +280,24 @@ class Model
     }
     
     
-    public function getRelationTableName($relatedObj)
+    public function getRelationTableName($relatedObj, $attribute)
     {
-        $table1 = $this->getTableName();
-        $table2 = $relatedObj->getTableName();
-        $alphabeticalComparison = strcmp($table1, $table2);
-        
         $result = '';
-        if ($alphabeticalComparison > 0) {
-            $result = $table1.'_'.$table2;
+        if (isset($attribute['relTable'])) {
+            $result = $attribute['relTable'];
         }
         else {
-            $result = $table2.'_'.$table1;
-        }
+            $table1 = $this->getTableName();
+            $table2 = $relatedObj->getTableName();
+            $alphabeticalComparison = strcmp($table1, $table2);
+
+            if ($alphabeticalComparison > 0) {
+                $result = $table1.'_'.$table2;
+            }
+            else {
+                $result = $table2.'_'.$table1;
+            }
+        }      
         return $result;
     }
     
