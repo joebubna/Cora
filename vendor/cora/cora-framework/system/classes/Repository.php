@@ -13,6 +13,11 @@ class Repository
         $this->gateway = $gateway;
         $this->factory = $factory;
     }
+    
+    public function getDb()
+    {
+        return $this->gateway->getDb();
+    }
 
     public function find($id)
     {

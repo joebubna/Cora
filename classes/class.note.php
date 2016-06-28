@@ -2,11 +2,25 @@
 /**
 * 
 */
-class Note {
+class Note extends MyModel {
+    
+    //public $model_connection = 'MySQL';
+    public $model_attributes = [ 
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'note' => [
+            'type' => 'text'
+        ],
+        'owner' => [
+            'model' => 'user'
+        ]
+    ];
     
     public function __construct()
     {
-        echo 'This is a regular note.';
+        //echo 'This is a regular note.';
     }
 
     public function foo() {

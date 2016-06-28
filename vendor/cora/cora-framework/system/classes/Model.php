@@ -16,7 +16,12 @@ class Model
                 // If the data is present in the DB, assign to model.
                 // Otherwise ignore any data returned from the DB that isn't defined in the model.
                 if (isset($record[$key])) {
-                    $this->model_data[$key] = $record[$key];
+                    if (\Cora\Gateway::is_serialized($record[$key])) {
+                        $this->model_data[$key] = unserialize($record[$key]);
+                    }
+                    else {
+                        $this->model_data[$key] = $record[$key];
+                    }   
                 }
                 else if (isset($def['models']) || (isset($def['model']) && isset($def['usesRefTable']))) {
                     $this->model_data[$key] = 1;
@@ -48,7 +53,7 @@ class Model
                     // to use a relation table to represent the relationship.
                     if (isset($def['usesRefTable'])) {
                         //$refTable = isset($def['refTable']) ? $def['refTable'] : false;
-                        $this->$name = $this->getModelFromRelationTable($def['model']);
+                        $this->$name = $this->getModelFromRelationTable($name, $def['model']);
                     }
                     
                     // In the more common case of fetching a single object, where the related object's
@@ -78,7 +83,7 @@ class Model
                     // OR if the relationship is one-to-many and no 'owner' type column is set,
                     // meaning there needs to be a relation table.
                     else {
-                        $this->$name = $this->getModelsFromRelationTable($def['models']);
+                        $this->$name = $this->getModelsFromRelationTable($name, $def['models']);
                     }
                 }
             }
@@ -149,34 +154,19 @@ class Model
     }
     
     
-    protected function getModelFromRelationTable($objName)
+    protected function getModelFromRelationTable($attributeName, $objName)
     {
-        $relatedObj = $this->fetchRelatedObj($objName);
-        
-        // Grab relation table name and the name of this class.
-        $relTable = $this->getRelationTableName($relatedObj, $objName);
-        $className = strtolower((new \ReflectionClass($this))->getShortName());
-        $classId = $this->getPrimaryKey();
-        $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
-
-        // Create repo that uses the relationtable, but returns models populated
-        // with their IDs.
-        $repo = \Cora\RepositoryFactory::make($relatedClassName, false, $relTable);
-
-        // Define custom query for repository.
-        $db = $relatedObj->getDbAdaptor();
-        $db ->select($relatedClassName.' as '.$classId)
-            ->where($className, $this->$classId);
-        return $repo->findByQuery($db)->get(0);
+        // Same logic as grabbing multiple objects, we just return the first (and only expected) result.
+        return $this->getModelsFromRelationTable($attributeName, $objName)->get(0);
     }
     
     
-    protected function getModelsFromRelationTable($objName)
+    protected function getModelsFromRelationTable($attributeName, $objName)
     {
         $relatedObj = $this->fetchRelatedObj($objName);
         
         // Grab relation table name and the name of this class.
-        $relTable = $this->getRelationTableName($relatedObj, $objName);
+        $relTable = $this->getRelationTableName($relatedObj, $this->model_attributes[$attributeName]);
         $className = strtolower((new \ReflectionClass($this))->getShortName());
         $classId = $this->getPrimaryKey();
         $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
@@ -270,6 +260,8 @@ class Model
     
     public function getTableNameFromNamespace($classNamespace)
     {
+        // Uses the class name to determine table name if one isn't given.
+        // If value of $class is 'WorkOrder\\Note' then $tableName will be 'work_orders_notes'.
         $namespaces = explode('\\', $classNamespace);
         $tableName = '';
         foreach ($namespaces as $namespace) {
@@ -283,9 +275,13 @@ class Model
     public function getRelationTableName($relatedObj, $attribute)
     {
         $result = '';
+        
+        // Check if a custom relation table name is defined.
         if (isset($attribute['relTable'])) {
             $result = $attribute['relTable'];
         }
+        
+        // Otherwise determine the relation table by conjoining the two namespaces.
         else {
             $table1 = $this->getTableName();
             $table2 = $relatedObj->getTableName();

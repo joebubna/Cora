@@ -24,7 +24,8 @@ class User extends MyModel {
         ],
         'job' => [
             'model' => 'job',
-            'usesRefTable' => true
+            'usesRefTable' => true,
+            'relTable' => 'ref_users_jobs'
         ],
         'articles' => [
             'models' => 'article',
@@ -32,6 +33,10 @@ class User extends MyModel {
         ],
         'guides' => [
             'models' => 'guide'
+        ],
+        'notes' => [
+            'models' => 'task\\note',
+            'via'    => 'owner'
         ]
     ];
     

@@ -19,6 +19,12 @@ class Gateway
         }
         $this->idName = $id;
 	}
+    
+    
+    public function getDb()
+    {
+        return $this->db;
+    }
 
     
 	public function persist($model, $table = null, $id_name = null)
@@ -112,7 +118,24 @@ class Gateway
         foreach ($model->model_attributes as $key => $prop) {
             $modelValue = $model->$key;
             if (!empty($modelValue)) {
-                $this->db->set($key, $modelValue);   
+                
+                // If the data is an object, then we need to create a new repository to
+                // handle saving that object.
+                if (is_object($modelValue)) {
+                    
+                }
+                
+                // If the data is an array, then we need to serialize it for storage.
+                else if (is_array($modelValue)) {
+                    $str = serialize($modelValue);
+                    $this->db->set($key, $str);
+                }
+                
+                // If just some plain data.
+                else {
+                    $this->db->set($key, $modelValue);
+                }
+                   
             }
         }
         
@@ -137,4 +160,14 @@ class Gateway
         $this->db->values($values);
         return $this->db->exec();
 	}
+    
+    public static function is_serialized($value)
+    {
+        $unserialized = @unserialize($value);
+        if ($value === 'b:0;' || $unserialized !== false) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

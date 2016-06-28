@@ -1,4 +1,5 @@
 <?php
+use \Task\Note;
 
 class ModelDemo extends \MyApp {
     
@@ -8,8 +9,8 @@ class ModelDemo extends \MyApp {
     public function __construct()
     {
         parent::__construct();
-        $this->db   = new \Cora\Db_MySQL();
-        $this->repo = \Cora\RepositoryFactory::make('User');     
+        $this->repo = \Cora\RepositoryFactory::make('User');
+        $this->db = $this->repo->getDb();
     }
     
     public function index() {
@@ -70,7 +71,10 @@ class ModelDemo extends \MyApp {
         foreach($user->guides as $guide) {
             echo $guide->title.'<br>';
         }
-        echo $user->job->title;
+        echo $user->job->title.'<br>';
+        foreach($user->notes as $note) {
+            echo $note->note.'<br>';
+        }
 //        var_dump($user);
 //        var_dump($user->location);
     }
