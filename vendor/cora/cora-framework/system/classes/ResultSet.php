@@ -9,9 +9,15 @@ class ResultSet implements \IteratorAggregate, \Countable
     
     protected $_results = array();
 
-    public function __construct()
+    public function __construct($data = false)
     {
-        $this->_results = array();
+        //$this->_results = array();
+        if (is_array($data)) {
+            $this->merge($data);
+        }
+        else {
+            $this->add($data);
+        }
     }
 
     public function getIterator()

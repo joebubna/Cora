@@ -419,12 +419,13 @@ class Database
     }
     
     
-    public static function getDefaultDb()
+    public static function getDefaultDb($getFresh = false)
     {
         // Check if default DB instance is already created.
-        if (isset(self::$defaultDb)) {
+        if (isset(self::$defaultDb) && $getFresh == false) {
             return self::$defaultDb;
         }
+        
         // Load Cora DB settings
         require(dirname(__FILE__).'/../config/config.php');
         require(dirname(__FILE__).'/../config/database.php');
@@ -433,12 +434,19 @@ class Database
         if (file_exists($config['basedir'].'cora/config/database.php')) {
             include($config['basedir'].'cora/config/database.php');
         }
-
-        // Use Default Adaptor as defined in the settings.
-        $dbAdaptor = '\\Cora\\Db_'.$dbConfig['defaultConnection'];
-        self::$defaultDb = new $dbAdaptor();
         
-        return self::$defaultDb;
+        if ($getFresh) {
+            // Return a brand new default adaptor.
+            $dbAdaptor = '\\Cora\\Db_'.$dbConfig['defaultConnection'];
+            return new $dbAdaptor();
+        }
+        else {
+            // Use Default Adaptor as defined in the settings.
+            $dbAdaptor = '\\Cora\\Db_'.$dbConfig['defaultConnection'];
+            self::$defaultDb = new $dbAdaptor();
+
+            return self::$defaultDb;
+        }
     }
     
 }

@@ -17,5 +17,11 @@ class Job extends MyModel {
             'type' => 'varchar'
         ]
     ];
+    
+    public function __construct($title = null, $description = null)
+    {
+        $this->title = $title;
+        $this->description = $description;
+    }
 
 }

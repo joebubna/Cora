@@ -51,7 +51,7 @@ class Db_MySQL extends Database
         $result = $this->db->query($this->query);
         $this->reset();
         
-        $dbResult = new Db_MySQLResult($result);
+        $dbResult = new Db_MySQLResult($result, $this->db);
         return $dbResult;
     }
     

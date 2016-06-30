@@ -12,4 +12,9 @@ class Db_MySQLResult extends DatabaseResult
     {
         return $this->records->fetchAll(\PDO::FETCH_ASSOC);
     }
+    
+    public function lastInsertId()
+    {
+        return $this->db->lastInsertId();
+    }
 }

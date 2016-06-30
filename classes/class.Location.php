@@ -20,6 +20,7 @@ class Location extends MyModel {
     
     public function __construct($name = null, $city = null)
     {
-        
+        $this->name = $name;
+        $this->city = $city;
     }
 }

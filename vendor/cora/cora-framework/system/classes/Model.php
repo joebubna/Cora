@@ -31,6 +31,18 @@ class Model
     }
     
     
+    public function isPlaceholder($name)
+    {
+        // Ref this model's attributes in a shorter variable.
+        $def = $this->model_attributes[$name];
+        
+        if (isset($def['models']) || (isset($def['model']) && isset($def['usesRefTable']))) { 
+            return true;
+        }
+        return false;
+    }
+    
+    
     public function __get($name)
     {
         ///////////////////////////////////////////////////////////////////////
@@ -95,9 +107,14 @@ class Model
         // then we need to dynamically fetch it.
         ///////////////////////////////////////////////////////////////////////
         else if (isset($this->model_attributes[$name])) {
-            
-            $this->$name = $this->fetchData($name);       
-            return $this->model_data[$name];
+            if ($name != $this->getPrimaryKey()) {
+                $this->$name = $this->fetchData($name);       
+                return $this->model_data[$name];
+            }
+            else {
+                $this->$name = false;
+                return false;
+            }
         }
         
         ///////////////////////////////////////////////////////////////////////
@@ -153,6 +170,17 @@ class Model
         }
     }
     
+    /**
+     *  For getting model data without triggering dynamic data fetching.
+     */
+    public function getAttributeValue($name)
+    {
+        if (isset($this->model_data[$name])) {
+            return $this->model_data[$name];
+        }
+        return null;
+    }
+    
     
     protected function getModelFromRelationTable($attributeName, $objName)
     {
@@ -203,6 +231,13 @@ class Model
     }
     
     
+    public function getClassName($class = false)
+    {
+        if ($class == false) { $class = $this; }
+        return strtolower((new \ReflectionClass($class))->getShortName());
+    }
+    
+    
     protected function fetchRelatedObj($objFullName)
     {
         $objType = '\\'.$objFullName;
@@ -223,7 +258,7 @@ class Model
     }
     
     
-    public function getDbAdaptor()
+    public function getDbAdaptor($freshAdaptor = false)
     {
         // If a specific DB Connection is defined for this model, use it.
         if (isset($this->model_connection)) {
@@ -231,10 +266,33 @@ class Model
             return new $dbAdaptor();
         }
         
-        // If no DB Connection is specified, use the default defined in the config.
+        // If no DB Connection is specified... 
         else {
-            return \Cora\Database::getDefaultDb();
+            
+            // If specified that we need to return a new adaptor instance, do it.
+            // This becomes necessary when saving an object that has related objects attached to it.
+            // The way Cora's Database class is built, it only handles one query at a time.
+            // So if the Gateway starts building the query to save say a User to the database, but while
+            // doing so encounters an Article owned by that user which needs to be saved, initiating a save
+            // on that child object if it also uses the default DB adaptor will be problematic because it
+            // will end up altering the query getting built up for the parent. The solution is to set
+            // this fresh option and get a new Database instance.
+            if ($freshAdaptor) {
+                return \Cora\Database::getDefaultDb(true);
+            }
+            
+            // else use the default defined in the config.
+            // This references a static object for efficiency.
+            else {
+                return \Cora\Database::getDefaultDb();
+            }   
         }
+    }
+    
+    
+    public function getRepository()
+    {
+        return \Cora\RepositoryFactory::make(get_class($this));
     }
     
     
@@ -272,13 +330,13 @@ class Model
     }
     
     
-    public function getRelationTableName($relatedObj, $attribute)
+    public function getRelationTableName($relatedObj, $attributeDef)
     {
         $result = '';
         
         // Check if a custom relation table name is defined.
-        if (isset($attribute['relTable'])) {
-            $result = $attribute['relTable'];
+        if (isset($attributeDef['relTable'])) {
+            $result = $attributeDef['relTable'];
         }
         
         // Otherwise determine the relation table by conjoining the two namespaces.
@@ -295,6 +353,29 @@ class Model
             }
         }      
         return $result;
+    }
+    
+    
+    public function usesRelationTable($relatedObj, $attribute)
+    {
+        $def = $this->model_attributes[$attribute];
+        if (isset($def['models']) && !isset($def['via'])) {
+            return $this->getRelationTableName($relatedObj, $def);
+        }
+        else if (isset($def['model']) && isset($def['usesRefTable'])) {
+            return $this->getRelationTableName($relatedObj, $def);
+        }
+        return false;
+    }
+    
+    
+    public function usesViaColumn($relatedObj, $attribute)
+    {
+        $def = $this->model_attributes[$attribute];
+        if (isset($def['models']) && isset($def['via'])) {
+            return $def['via'];
+        }
+        return false;
     }
     
     
@@ -319,6 +400,13 @@ class Model
     public function delete()
     {
         return true;
+    }
+    
+    
+    public function save()
+    {
+        $repo = $this->getRepository();
+        $repo->save($this);
     }
     
 }

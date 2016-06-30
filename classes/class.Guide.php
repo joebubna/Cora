@@ -17,5 +17,10 @@ class Guide extends MyModel {
             'models' => 'user'
         ]
     ];
+    
+    public function __construct($title = null)
+    {
+        $this->title = $title;
+    }
 
 }

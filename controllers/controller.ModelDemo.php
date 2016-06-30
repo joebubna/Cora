@@ -51,11 +51,49 @@ class ModelDemo extends \MyApp {
         $this->repo->save($user);
     }
     
+    public function testUpdateSingleRefTable() 
+    {
+        $repo = $this->repo;
+        $user = $repo->find(64);
+        $user->job = new Job('Construction', 'Building things.');
+        $repo->save($user);
+    }
+    
+    public function testUpdateMultiRefTableWithResultSet() 
+    {
+        $repo = $this->repo;
+        $user = $repo->find(64);
+        $user->guides = new \Cora\ResultSet(new Guide('Building a Farm'));
+        $repo->save($user);
+    }
+    
+    public function testUpdateMultiRefTableWithSingleObject() 
+    {
+        $repo = $this->repo;
+        $user = $repo->find(64);
+        $user->guides = new Guide('Building a House');
+        $repo->save($user);
+    }
+    
+    public function testUpdateByIdExisting() 
+    {
+        $repo = $this->repo;
+        $user = $repo->find(64);
+        if ($user->location->city == 'Portland') {
+            $user->location->city = 'Camas';
+        }
+        else {
+            $user->location->city = 'Portland';
+        }
+        $repo->save($user);
+    }
+    
     public function testUpdateById() 
     {
         $repo = $this->repo;
-        $user = $repo->find(53);
-        $user->name = 'Josiah';
+        $user = $repo->find(64);
+        $user->location = new Location('Toms House', 'Portland');
+        //$user->location->city = 'Camas';
         $repo->save($user);
     }
     
