@@ -119,12 +119,14 @@ class Gateway
             $modelValue = $model->getAttributeValue($key);
             if (isset($modelValue)) {
                 
-                // If the data is a Cora model object, then we need to create a new repository to
+                /////////////////////////////////////////////////////////////////////////////////////////
+                // If the data is a single Cora model object, then we need to create a new repository to
                 // handle saving that object.
+                /////////////////////////////////////////////////////////////////////////////////////////
                 if (
                         is_object($modelValue) && 
                         $modelValue instanceof \Cora\Model &&
-                        $model->attributeIsCollection($key)
+                        !isset($prop['models'])
                    ) 
                 {
                     $relatedObj = $modelValue;
@@ -138,42 +140,13 @@ class Gateway
                     
                     if ($model->usesRelationTable($relatedObj, $key)) {
                         $db = $repo->getDb();
-
-                        // If a plural reference
-                        if (isset($prop['models'])) {
-                            throw new \Exception('Trying to assign a single object to what is supposed to be a collection of objects. Either add the object to the existing collection or make a new collection with just this item before doing assignment!');
-//                            $relTable = $model->getRelationTableName($relatedObj, $prop);
-//                            $modelId = $model->{$model->getPrimaryKey()};
-//                            $modelName = $model->getClassName();
-//                            $relatedObjName = $relatedObj->getClassName();
-//                            
-//                            // Unassign all existing relation table entries that match,
-//                            $db ->update($relTable)
-//                                ->set($relatedObjName, 0)
-//                                ->where($modelName, $modelId)
-//                                ->exec();
-//                            
-//                            // and then insert this new object as the sole entry.
-//                            $db ->insert([$modelName, $relatedObjName])
-//                                ->into($relTable)
-//                                ->values($modelId, $id)
-//                                ->exec();
-                        }
-
-                        // If a singular reference
-                        else {
-                            // Update the existing relation table entry to point to the new obj.
-                            $relTable = $model->getRelationTableName($relatedObj, $prop);
-                            $db ->update($relTable)
-                                ->set($relatedObj->getClassName(), $id)
-                                ->where($model->getClassName(), $model->{$model->getPrimaryKey()})
-                                ->exec();
-                        }           
-                    }
-                    else if ($model->usesViaColumn($modelValue, $key)) {
-                        // Delete all existing table entries with this owner and insert
-                        // a new row for this item.
-                        throw new \Exception('Trying to assign a single object to what is supposed to be a collection of objects. Either add the object to the existing collection or make a new collection with just this item before doing assignment!');
+                        
+                        // Update the existing relation table entry to point to the new obj.
+                        $relTable = $model->getRelationTableName($relatedObj, $prop);
+                        $db ->update($relTable)
+                            ->set($relatedObj->getClassName(), $id)
+                            ->where($model->getClassName(), $model->{$model->getPrimaryKey()})
+                            ->exec();       
                     }
                     else {
                         // The reference must be stored in the parent's table.
@@ -182,14 +155,15 @@ class Gateway
                     }
                 }
                 
-                // If the data is a set of objects.
+                /////////////////////////////////////////////////////////////////////////////////////////
+                // If the data is a set of objects and the definition in the model calls for a collection
+                /////////////////////////////////////////////////////////////////////////////////////////
                 else if (
                             is_object($modelValue) && 
                             ($modelValue instanceof \Cora\ResultSet) &&
-                            $model->attributeIsCollection($key)
+                            isset($prop['models'])
                         ) 
                 {
-                    echo 'Is Collection';
                     $collection = $modelValue;
                     
                     // Create a repository for whatever objects are supposed to make up this resultset
@@ -198,68 +172,87 @@ class Gateway
                     $relatedObjBlank = $model->fetchRelatedObj($objPath);
                     $repo = \Cora\RepositoryFactory::make(get_class($relatedObjBlank), false, false, true);
                     
-                    
-                    foreach ($collection as $relatedObj) {
-                        $id = $repo->save($relatedObj);
-                    
-                        // If no new object was inserted into the DB, then that means we already had an ID.
-                        if ($id == 0) {
-                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
-                        }
-                    }
-                    
-                    
-                    
-                    if ($model->usesRelationTable($relatedObj, $key)) {
+                    // If uses relation table
+                    if ($model->usesRelationTable($relatedObjBlank, $key)) {
                         $db = $repo->getDb();
+                        $relTable = $model->getRelationTableName($relatedObjBlank, $prop);
+                        $modelId = $model->{$model->getPrimaryKey()};
+                        $modelName = $model->getClassName();
+                        $relatedObjName = $relatedObjBlank->getClassName();
 
-                        // If a plural reference
-                        if (isset($prop['models'])) {
-                            $relTable = $model->getRelationTableName($relatedObj, $prop);
-                            $modelId = $model->{$model->getPrimaryKey()};
-                            $modelName = $model->getClassName();
-                            $relatedObjName = $relatedObj->getClassName();
+                        // Delete all existing relation table entries that match,
+                        $db ->delete()
+                            ->from($relTable)
+                            ->where($modelName, $modelId)
+                            ->exec();
+                        
+                        // Save each object in the collection
+                        foreach ($collection as $relatedObj) {
                             
-                            // Unassign all existing relation table entries that match,
-                            $db ->update($relTable)
-                                ->set($relatedObjName, 0)
-                                ->where($modelName, $modelId)
-                                ->exec();
+                            // If no new object was inserted into the DB, then that means the object 
+                            // already had an ID.
+                            $id = $repo->save($relatedObj);
+                            if ($id == 0) {
+                                $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            }
                             
-                            // and then insert this new object as the sole entry.
+                            // Insert reference to this object in ref table.
                             $db ->insert([$modelName, $relatedObjName])
                                 ->into($relTable)
-                                ->values($modelId, $id)
-                                ->exec();
-                        }
-
-                        // If a singular reference
-                        else {
-                            // Update the existing relation table entry to point to the new obj.
-                            throw new \Exception('Trying to save a collection of objects to an attribute ('.$key.' in '.$model->getClassName().') that is supposed to be a single object! Refer to your Cora model definition. Attribute defined to be a single object stored in a reference table.');
-                        }           
+                                ->values([$modelId, $id])
+                                ->exec(); 
+                        }    
                     }
-                    else if ($model->usesViaColumn($modelValue, $key)) {
-                        // Delete all existing table entries with this owner and insert
-                        // a new row for this item.
-                    }
+                    
+                    // If uses Via column
                     else {
-                        // A single reference stored in the parent's table.
-                        throw new \Exception('Trying to save a collection of objects to an attribute ('.$key.' in '.$model->getClassName().') that is supposed to be a single object! Refer to your Cora model definition. Attribute defined to be a single object reference stored in a column on the parent.');
+                        $db = $repo->getDb();
+                        $objTable = $relatedObjBlank->getTableName();
+                        $modelId = $model->{$model->getPrimaryKey()};
+                        
+                        // Set all existing table entries to blank owner.
+                        $db ->update($objTable)
+                            ->set($prop['via'], 0)
+                            ->where($prop['via'], $modelId)
+                            ->exec();
+                        
+                        // Save each object in the collection
+                        foreach ($collection as $relatedObj) {
+                            
+                            // If no new object was inserted into the DB, then that means the object 
+                            // already had an ID.
+                            $id = $repo->save($relatedObj);
+                            if ($id == 0) {
+                                $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            }
+                            
+                            // Update the object to have correct relation
+                            $db ->update($objTable)
+                                ->set($prop['via'], $modelId)
+                                ->where($relatedObj->getPrimaryKey(), $id);
+                            //echo $db->getQuery();
+                            $db->exec();
+                        }
                     }
                 }
                 
-                // If the data is an array, then we need to serialize it for storage.
+                /////////////////////////////////////////////////////////////////////////////////////////
+                // If the data is an array, or object that got past the first two IFs,
+                // then we need to serialize it for storage.
+                /////////////////////////////////////////////////////////////////////////////////////////
                 else if (is_array($modelValue) || is_object($modelValue)) {
                     $str = serialize($modelValue);
                     $this->db->set($key, $str);
                 }
                 
+                /////////////////////////////////////////////////////////////////////////////////////////
                 // If just some plain data.
                 // OR an abstract data reference (such as 'articles' => 1)
+                /////////////////////////////////////////////////////////////////////////////////////////
                 else {
                     // Check that this is actually a value that needs to be saved.
                     // It might just be a placeholder value for a model reference.
+                    // If it's a placeholder, we don't want to do anything here.
                     if (!$model->isPlaceholder($key)) {
                         $this->db->set($key, $modelValue);
                     }

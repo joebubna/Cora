@@ -63,7 +63,22 @@ class ModelDemo extends \MyApp {
     {
         $repo = $this->repo;
         $user = $repo->find(64);
-        $user->guides = new \Cora\ResultSet(new Guide('Building a Farm'));
+        $user->guides = new \Cora\ResultSet([
+                            new Guide('Building a Farm'),
+                            new Guide('Building a Farm Vol2')
+                        ]);
+        $repo->save($user);
+    }
+    
+    public function testUpdateMultiTableWithResultSet() 
+    {
+        $repo = $this->repo;
+        $user = $repo->find(64);
+//        $user->notes = new \Cora\ResultSet([
+//                            new Note('Hey O, Test Note #1'),
+//                            new Note('Hey O, Test Note #2')
+//                        ]);
+        $user->notes->add(new Note('Hey O, Test Note #3'));
         $repo->save($user);
     }
     

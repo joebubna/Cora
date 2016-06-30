@@ -238,7 +238,7 @@ class Model
     }
     
     
-    protected function fetchRelatedObj($objFullName)
+    public function fetchRelatedObj($objFullName)
     {
         $objType = '\\'.$objFullName;
         return new $objType();

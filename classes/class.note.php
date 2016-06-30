@@ -18,9 +18,9 @@ class Note extends MyModel {
         ]
     ];
     
-    public function __construct()
+    public function __construct($note = null)
     {
-        //echo 'This is a regular note.';
+        $this->note = $note;
     }
 
     public function foo() {
