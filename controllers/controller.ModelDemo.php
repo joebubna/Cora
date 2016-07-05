@@ -23,6 +23,22 @@ class ModelDemo extends \MyApp {
     }
     
     
+    public function testRepo()
+    {
+        $this->repo = \Cora\RepositoryFactory::make('Note');
+        $notes = $this->repo->findAll();
+        foreach ($notes as $note) {
+            echo $note->note.'<br>';
+        }
+        echo '<BR><BR><BR>';
+        $this->repo = \Cora\RepositoryFactory::make(Note::class);
+        $notes = $this->repo->findAll();
+        foreach ($notes as $note) {
+            echo $note->note.'<br>';
+        }
+    }
+    
+    
     public function testCreate()
     {
         $user = new \User();
@@ -32,10 +48,51 @@ class ModelDemo extends \MyApp {
         $this->repo->save($user);
     }
     
+    public function testDelete($id)
+    {
+        //$user = $this->repo->find($id);
+        $this->repo->delete($id);
+    }
+    
     public function testCreate2()
     {
-        $user = new \User('Joe', 'SuperAdmin');
+        $user = new \User('Joeeee', 'SuperAdmin');
+        $user->job      = new Job('Librarian', 'Keeper of knowledge!');
+        $user->guides   = new \Cora\ResultSet([
+                            new Guide('The Dewey Decimal System'),
+                            new Guide('How to Keep Kids Quiet')
+                        ]);
+        $user->notes    = new \Cora\ResultSet([
+                            new Note('Librarian Note!'),
+                            new Note('Librarian Note 2!')
+                        ]);
+        
+        $user->articles = new \Cora\ResultSet([
+                            new Article('Article Create2 #1'),
+                            new Article('Article Create2 #2')
+                        ]);
         $this->repo->save($user);
+    }
+    
+    public function testFetchClass($id = 64)
+    {
+        $user = $this->repo->find($id);
+        //var_dump($user);
+        
+        echo $user->location->name.'<br>';
+        foreach ($user->articles as $article) {
+            echo $article->title.'<br>';
+        }
+        foreach($user->guides as $guide) {
+            echo $guide->title.'<br>';
+        }
+        echo $user->job->title.'<br>';
+        foreach($user->notes as $note) {
+            echo $note->note.'<br>';
+        }
+        
+        //var_dump($user);
+        //var_dump($user->location);
     }
     
     public function testUpdateByCustom()
@@ -64,8 +121,8 @@ class ModelDemo extends \MyApp {
         $repo = $this->repo;
         $user = $repo->find(64);
         $user->guides = new \Cora\ResultSet([
-                            new Guide('Building a Farm'),
-                            new Guide('Building a Farm Vol2')
+                            new Guide('Building a House'),
+                            new Guide('Building a House Vol2')
                         ]);
         $repo->save($user);
     }
@@ -78,7 +135,7 @@ class ModelDemo extends \MyApp {
 //                            new Note('Hey O, Test Note #1'),
 //                            new Note('Hey O, Test Note #2')
 //                        ]);
-        $user->notes->add(new Note('Hey O, Test Note #3'));
+        $user->notes->add(new Note('Hey O, Test Note #5'));
         $repo->save($user);
     }
     
@@ -110,26 +167,6 @@ class ModelDemo extends \MyApp {
         $user->location = new Location('Toms House', 'Portland');
         //$user->location->city = 'Camas';
         $repo->save($user);
-    }
-    
-    public function testFetchClass()
-    {
-        $this->db->where('name', 'testUser');
-        $user = $this->repo->findByQuery($this->db)->get(0);
-//        var_dump($user);
-        echo $user->location->name.'<br>';
-        foreach ($user->articles as $article) {
-            echo $article->title.'<br>';
-        }
-        foreach($user->guides as $guide) {
-            echo $guide->title.'<br>';
-        }
-        echo $user->job->title.'<br>';
-        foreach($user->notes as $note) {
-            echo $note->note.'<br>';
-        }
-//        var_dump($user);
-//        var_dump($user->location);
     }
     
     public function testLightClass()

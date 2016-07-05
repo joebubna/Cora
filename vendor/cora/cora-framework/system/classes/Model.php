@@ -122,6 +122,8 @@ class Model
         ///////////////////////////////////////////////////////////////////////
         $class = get_class($this);
         if (property_exists($class, $name)) {
+            echo $name;
+            echo $this->{$name};
             return $this->{$name};
         }
         
@@ -246,15 +248,24 @@ class Model
     
     
     protected function fetchData($name)
-    {
-        $db = $this->getDbAdaptor();
-        $table = $this->getTableName();
-        $primaryIdentifier = $this->getPrimaryKey();
-        $db ->select($name)
-            ->from($this->getTableName())
-            ->where($primaryIdentifier, $this->{$primaryIdentifier});
-        $result = $db->fetch();
-        return $result[$name];
+    {   
+        $gateway = new \Cora\Gateway($this->getDbAdaptor(), $this->getTableName(), $this->getPrimaryKey());
+        return $gateway->fetchData($name, $this);
+        
+//        // If this model has no DB ID associated with it, then it's obviously not possible
+//        // to dynamically fetch this value from the DB.
+//        $primaryIdentifier = $this->getPrimaryKey();
+//        if ($this->$primaryIdentifier == null) {
+//            return null;
+//        }
+//        
+//        $table = $this->getTableName();
+//        $db = $this->getDbAdaptor();  
+//        $db ->select($name)
+//            ->from($this->getTableName())
+//            ->where($primaryIdentifier, $this->{$primaryIdentifier});
+//        $result = $db->fetch();
+//        return $result[$name];
     }
     
     

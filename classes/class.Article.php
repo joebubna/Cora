@@ -20,6 +20,11 @@ class Article extends MyModel {
         ]
     ];
     
+    public function __construct($title = null)
+    {
+        $this->title = $title;
+    }
+    
     public static function exists($title = false) {
         
         // Pretend we're checking if an article with this title already exists.

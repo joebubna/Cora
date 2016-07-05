@@ -60,7 +60,30 @@ class Repository
 
     public function save($model, $table = null, $id_name = null)
     {
-        return $this->gateway->persist($model, $table, $id_name);
+        if ($this->checkIfModel($model)) {
+            return $this->gateway->persist($model, $table, $id_name);
+        }
+        else if ($model instanceof \Cora\ResultSet) {
+            foreach ($model as $obj) {
+                if ($this->checkIfModel($obj)) {
+                    $this->gateway->persist($obj, $table, $id_name);
+                }
+                else {
+                    throw new \Exception("Cora's Repository class can only be used with models that extend the Cora Model class.");
+                }
+            }
+        }
+        else {
+            throw new \Exception("Cora's Repository class can only be used with models that extend the Cora Model class.");
+        }
+    }
+    
+    protected function checkIfModel($model)
+    {
+        if ($model instanceof \Cora\Model) {
+            return true;   
+        }
+        return false;
     }
 
 }
