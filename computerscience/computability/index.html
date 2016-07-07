@@ -52,13 +52,7 @@
             
             
                 <li >
-                    <a href="../..">News</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="../../about/">About</a>
+                    <a href="../..">About</a>
                 </li>
             
             
@@ -112,8 +106,80 @@
             
             
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Core Concepts <b class="caret"></b></a>
                     <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../documentation/mvc/overview/">MVC Pattern</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../documentation/routing/overview/">Routing</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../documentation/databaseclass/overview/">Database Class</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../documentation/amblend/overview/">AmBlend ORM</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../documentation/amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/amblend/repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/amblend/model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/amblend/gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/amblend/factory/">Factory</a>
+</li>
+
+        
+    </ul>
+  </li>
+
                     
                         
   <li class="dropdown-submenu">
@@ -162,8 +228,53 @@
 </li>
 
         
+            
+<li >
+    <a href="../../documentation/databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
     </ul>
   </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../documentation/mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/controllers/">Controllers</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../documentation/routing/overview/">Routing</a>
+</li>
 
                     
                         
@@ -178,7 +289,7 @@
             
             
                 <li class="dropdown active">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Computer Science <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">CS Topics <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
                         
@@ -368,7 +479,7 @@ Here's an example of a match where both the top and the bottom read "abbcbba":</
 <h3 id="p-vs-np">P vs NP</h3>
 <p>In order to discuss problems that fall into this "effectively uncomputable" category, we quickly need to discuss the concept of P vs. NP.
 "P" are a class of problems for which their exists an algorithm to both find and verify an answer in polynomial time.
-"NP" (non-deterministic polynomial time) are a class of problems for which their exists algorithms to verify an answer in polynomial time, but <strong>may or may not</strong> have algorithms to find an answer.
+"NP" (non-deterministic polynomial time) are a class of problems for which there exists algorithms to verify an answer in polynomial time, but <strong>may or may not</strong> have algorithms to find an answer.
 Note the "may or may not" statement... P vs. NP is actually one of the biggest unknowns in Mathematics/CS because no-one has been able to prove definitively 
 that P = NP or that P != NP. </p>
 <p>If P = NP, then that means there DOES exist polynomial time algorithms to solve problems we lump into this category, but that we just haven't found them yet. If P != NP, then that would confirm that no such polynomial time algorithms exist, and we could stop looking. There has been a 1 million dollar reward on the table since the year 2000 for anyone that can prove this one way or the other.</p>
@@ -476,28 +587,107 @@ y = x!      // Factorial time
 <p>Factorial growth is even worse than exponential growth!!!</p>
 <table class="floatLeft">
     <tr><th>n</th>  <th>n! (# of permutations)</th>         <th>~Time to Compute</th></tr>
-    <tr><td>4</td>  <td>24</td>                             <td>&nbsp;</td></tr>
-    <tr><td>5</td>  <td>120</td>                            <td>&nbsp;</td></tr>
-    <tr><td>6</td>  <td>720</td>                            <td>&nbsp;</td></tr>
-    <tr><td>7</td>  <td>5,040</td>                          <td>&nbsp;</td></tr>
-    <tr><td>8</td>  <td>40,320</td>                         <td>&nbsp;</td></tr>
-    <tr><td>9</td>  <td>362,880</td>                        <td>&nbsp;</td></tr>
-    <tr><td>10</td> <td>3,628,800</td>                      <td>&nbsp;</td></tr>
-    <tr><td>11</td> <td>39,916,800</td>                     <td>&nbsp;</td></tr>
-    <tr><td>12</td> <td>479,001,600</td>                    <td>&nbsp;</td></tr>
-    <tr><td>13</td> <td>6,227,020,800</td>                  <td>&nbsp;</td></tr>
-    <tr><td>14</td> <td>87,178,291,200</td>                 <td>&nbsp;</td></tr>
-    <tr><td>15</td> <td>1,307,674,368,000</td>              <td>&nbsp;</td></tr>
-    <tr><td>16</td> <td>20,922,789,888,000</td>             <td>&nbsp;</td></tr>
-    <tr><td>17</td> <td>355,687,428,096,000</td>            <td>&nbsp;</td></tr>
-    <tr><td>18</td> <td>6,402,373,705,728,000</td>          <td>&nbsp;</td></tr>
-    <tr><td>19</td> <td>121,645,100,408,832,000</td>        <td>&nbsp;</td></tr>
-    <tr><td>20</td> <td>2,432,902,008,176,640,000</td>      <td>&nbsp;</td></tr>
+    <tr>
+        <td>4</td>  
+        <td>24</td>                             
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>5</td>  
+        <td>120</td>                            
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>6</td>  
+        <td>720</td>                            
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>7</td>  
+        <td>5,040</td>                          
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>8</td>  
+        <td>40,320</td>                         
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>9</td>  
+        <td>362,880</td>                        
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>10</td> 
+        <td>3,628,800</td>                      
+        <td>3 seconds</td>
+    </tr>
+    <tr>
+        <td>11</td> 
+        <td>39,916,800</td>                     
+        <td>56 seconds</td>
+    </tr>
+    <tr>
+        <td>12</td> 
+        <td>479,001,600</td>                    
+        <td>>11 minutes</td>
+    </tr>
+    <tr>
+        <td>13</td> 
+        <td>6,227,020,800</td>                  
+        <td>~2.5 hours</td>
+    </tr>
+    <tr>
+        <td>14</td> 
+        <td>87,178,291,200</td>                 
+        <td>~34 hours</td>
+    </tr>
+    <tr>
+        <td>15</td> 
+        <td>1,307,674,368,000</td>              
+        <td>~21 days</td>
+    </tr>
+    <tr>
+        <td>16</td> 
+        <td>20,922,789,888,000</td>             
+        <td>~340 days</td>
+    </tr>
+    <tr>
+        <td>17</td> 
+        <td>355,687,428,096,000</td>            
+        <td>~15.8 years</td>
+    </tr>
+    <tr>
+        <td>18</td> 
+        <td>6,402,373,705,728,000</td>          
+        <td>~284 years</td>
+    </tr>
+    <tr>
+        <td>19</td> 
+        <td>121,645,100,408,832,000</td>        
+        <td>~5,411 years</td>
+    </tr>
+    <tr>
+        <td>20</td> 
+        <td>2,432,902,008,176,640,000</td>      
+        <td>~108,230 years</td>
+    </tr>
 </table>
 
-<h3 id="explanation-of-johnson-trotter-and-time-on-my-laptop">Explanation of Johnson-Trotter and time on my laptop</h3>
-<h3 id="most-efficent-algs-for-tsp">Most efficent Algs for TSP</h3>
-<h1 id="the-knapsack-problem">The Knapsack Problem</h1></div>
+<h3 id="explanation-of-factorial-growth">Explanation of Factorial Growth</h3>
+<p>Looking at the table to the left, you can see that factorial growth is extremely fast! We very quickly go from small, manageable numbers like the 4! we did an example of above, to astronomically large numbers very quickly. Why this matters is that in order to brute-force a solution to the Travelling Salesman problem, we have to calculate all the routes to determine the best one. So if there are 'n' route permutations (a permutation is a set of data where the order of the data matters), then that means 'n' routes we have to consider. And since the number of possible routes is growing factorially, this quickly means huge numbers as can be seen in the table.</p>
+<p>In order to give you an idea of how difficult solving the Travelling Salesman problem is for a modern computer, I decided to do some tests with my Macbook Pro, 2.4ghz Intel i7, with 16 gigs of RAM. I didn't have an exact implementation of the Travelling Salesman on hand for testing, however, I did have an implementation of the Johnson-Trotter algorithm that I wrote. The Johnson-Trotter algorithm is used to generate all the possible permutations of a number of length 'n'. For instance, if you run Johnson-Trotter on number sequences of length 3, you get the following: 
+123,
+132, 
+312, 
+321, 
+231, 
+213. A total of 6 permutations, which equals 3!. 
+In other words, this is the same factorial growth, consider all the possible permutations, type of problem that we are dealing with for the Travelling Salesman. I ran this algorithm for numbers of length 10 and 11 (thus calculating all the permutations of each), and used the calculation speed gathered from those tests to make estimates for the larger numbers. I think you can see how calculating the best route for the salesman via considering all the possible routes is simply not calculatable for any reasonably large number of cities.</p>
+<p>It's not all doom and gloom though! In the same way that humans can look at a map and know that traveling from LA to Boston, then to Seattle, then back to Florida is going to be a horribly inefficient route without even thinking about it, there are ways to figure out the TSP quicker than considering all the possible permutations. The current fastest methods are known as Branch and Bound methods, which you can research if you want to learn more.</p>
+<h1 id="the-knapsack-problem">The Knapsack Problem</h1>
+<p>Another problem that falls into the same NP-Complete category as the Travelling Salesman that you might find interesting is the Knapsack Problem. It goes like this: say you are a thief with a backpack that can hold a max of 50 pounds in weight. With a collection of different objects nearby of differing weights and values, you want to know what the most optimal set of items you should steal are that can fit into your pack. This problem is also a factorial growth example.</p>
+<p>Hope these examples peaked your interest into computability!</p></div>
         </div>
 
         <footer class="col-md-12">
