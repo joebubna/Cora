@@ -7,6 +7,7 @@ namespace Cora;
 class Model 
 {
     protected $model_data;
+    protected $model_dynamicOff;
         
     public function _populate($record = null)
     {
@@ -59,7 +60,7 @@ class Model
                 $def = $this->model_attributes[$name];
 
                 // If desired data is a reference to a singular object.
-                if (isset($def['model'])) {
+                if (isset($def['model']) && !isset($this->model_dynamicOff)) {
                     
                     // In the rare case that we need to fetch a single related object, and the developer choose 
                     // to use a relation table to represent the relationship.
@@ -84,7 +85,7 @@ class Model
                 }
                 
                 // If desired data is a reference to a collection of objects.
-                else if (isset($def['models'])) {
+                else if (isset($def['models']) && !isset($this->model_dynamicOff)) {
                     
                     // If the relationship is one-to-many.
                     if (isset($def['via'])) {
@@ -106,14 +107,14 @@ class Model
         // If the model DB data is defined, but not grabbed from the database,
         // then we need to dynamically fetch it.
         ///////////////////////////////////////////////////////////////////////
-        else if (isset($this->model_attributes[$name])) {
+        else if (isset($this->model_attributes[$name]) && !isset($this->model_dynamicOff)) {
             if ($name != $this->getPrimaryKey()) {
                 $this->$name = $this->fetchData($name);       
                 return $this->model_data[$name];
             }
             else {
-                $this->$name = false;
-                return false;
+                $this->$name = null;
+                return null;
             }
         }
         
@@ -251,21 +252,6 @@ class Model
     {   
         $gateway = new \Cora\Gateway($this->getDbAdaptor(), $this->getTableName(), $this->getPrimaryKey());
         return $gateway->fetchData($name, $this);
-        
-//        // If this model has no DB ID associated with it, then it's obviously not possible
-//        // to dynamically fetch this value from the DB.
-//        $primaryIdentifier = $this->getPrimaryKey();
-//        if ($this->$primaryIdentifier == null) {
-//            return null;
-//        }
-//        
-//        $table = $this->getTableName();
-//        $db = $this->getDbAdaptor();  
-//        $db ->select($name)
-//            ->from($this->getTableName())
-//            ->where($primaryIdentifier, $this->{$primaryIdentifier});
-//        $result = $db->fetch();
-//        return $result[$name];
     }
     
     
@@ -273,8 +259,9 @@ class Model
     {
         // If a specific DB Connection is defined for this model, use it.
         if (isset($this->model_connection)) {
-            $dbAdaptor = '\\Cora\\Db_'.$this->model_connection;
-            return new $dbAdaptor();
+            //$dbAdaptor = '\\Cora\\Db_'.$this->model_connection;
+            //return new $dbAdaptor();
+            return \Cora\Database::getDb($this->model_connection);
         }
         
         // If no DB Connection is specified... 
@@ -330,12 +317,22 @@ class Model
     public function getTableNameFromNamespace($classNamespace)
     {
         // Uses the class name to determine table name if one isn't given.
-        // If value of $class is 'WorkOrder\\Note' then $tableName will be 'work_orders_notes'.
+        // If value of $class is 'WorkOrder\\Note' then $tableName will be 'work_order_notes'.
         $namespaces = explode('\\', $classNamespace);
         $tableName = '';
-        foreach ($namespaces as $namespace) {
-            $tableName .= strtolower(preg_replace('/\B([A-Z])/', '_$1', str_replace('\\', '', $namespace))).'s_';
+        $length = count($namespaces);
+        for ($i = 0; $i < $length; $i++) {
+            $namespace = $namespaces[$i];
+            if ($i == $length-1) {
+                $tableName .= strtolower(preg_replace('/\B([A-Z])/', '_$1', str_replace('\\', '', $namespace))).'s_';
+            }
+            else {
+                $tableName .= strtolower(preg_replace('/\B([A-Z])/', '_$1', str_replace('\\', '', $namespace))).'_';
+            }
         }
+//        foreach ($namespaces as $namespace) {
+//            $tableName .= strtolower(preg_replace('/\B([A-Z])/', '_$1', str_replace('\\', '', $namespace))).'s_';
+//        }
         $tableName = substr($tableName, 0, -1);
         return $tableName;
     }

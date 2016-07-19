@@ -5,7 +5,7 @@ namespace Task;
 */
 class Note extends \Note {
     
-    //public $model_table = 'notes_tasks';
+    public $model_table = 'notes_tasks';
     public $model_attributes = [ 
         'id' => [
             'type'          => 'int',

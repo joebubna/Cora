@@ -35,7 +35,12 @@ class Db_MySQL extends Database
         if ($config['mode'] == 'development') {
             $errorMode = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
         }
-        $this->db = new \PDO('mysql:host='.$dbConfig['connections'][$connection]['host'].';dbname='.$dbConfig['connections'][$connection]['dbName'], $dbConfig['connections'][$connection]['dbUser'], $dbConfig['connections'][$connection]['dbPass'], $errorMode);
+        $this->db = new \PDO(
+            'mysql:host='.$dbConfig['connections'][$connection]['host'].';dbname='.$dbConfig['connections'][$connection]['dbName'], 
+            $dbConfig['connections'][$connection]['dbUser'], 
+            $dbConfig['connections'][$connection]['dbPass'], 
+            $errorMode
+        );
     }
     
     // Clean user provided input to make it safe for use in a database query.
@@ -199,7 +204,7 @@ class Db_MySQL extends Database
     {
         $this->query .= 'CREATE TABLE IF NOT EXISTS ';
         $this->query .= $this->create.' (';
-        $this->queryStringFromArray('fields', '', ', ', false);
+        $this->queryStringFromArray('fields', '', ', ', false, true);
         $this->primaryKeyStringFromArray('primaryKeys', ', CONSTRAINT ');
         $this->foreignKeyStringFromArray('foreignKeys', ', CONSTRAINT ');
         $this->query .= ')';
@@ -265,7 +270,7 @@ class Db_MySQL extends Database
      *  ]
      *  An item can be another array if getArrayItem() knows how to translate it into a string.
      */
-    protected function queryStringFromArray($dataMember, $opening, $sep, $quote = true)
+    protected function queryStringFromArray($dataMember, $opening, $sep, $quote = true, $set = false)
     {
         if (empty($this->$dataMember)) {
             return 0;
@@ -273,11 +278,39 @@ class Db_MySQL extends Database
         $this->query .= $opening;
         $count = count($this->$dataMember);
         for($i=0; $i<$count; $i++) {
-            $this->query .= $this->getArrayItem($dataMember, $i, $quote);
+            
+            // Is this a normal situation, or are we outputting SET values for table creation statement?
+            if ($set == false) {
+                $this->query .= $this->getArrayItem($dataMember, $i, $quote);
+            }
+            else {
+                // If we are creating a table, then we need to execute a diff method
+                // so we can do some type checking on the column value. I.E. 'varchar' = 'varchar[255]'
+                $this->query .= $this->getSetItem($dataMember, $i, $quote);
+            }
+            
             if ($count-1 != $i) {
                 $this->query .= $sep;
             }
         }
+    }
+    
+    /**
+     *  Converts field types to real values that match this adaptor's DB type.
+     */
+    protected function getSetItem($dataMember, $offset, $quote = true)
+    {
+        $item = $this->{$dataMember}[$offset];
+        switch ($item[1]) {
+            case 'varchar':
+                $type = 'varchar(255)';
+                break;
+            default:
+                $type = $item[1];
+        }
+        $this->{$dataMember}[$offset][1] = $type;
+        
+        return $this->getArrayItem($dataMember, $offset, $quote);
     }
     
     

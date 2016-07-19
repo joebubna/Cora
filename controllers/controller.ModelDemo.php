@@ -42,7 +42,7 @@ class ModelDemo extends \MyApp {
     public function testCreate()
     {
         $user = new \User();
-        $user->name     = 'testUser';
+        $user->name     = 'testMatt';
         $user->email    = 'testUser31@gmail.com';
         $user->type     = 'Member';
         $this->repo->save($user);
@@ -56,12 +56,16 @@ class ModelDemo extends \MyApp {
     
     public function testCreate2()
     {
-        $user = new \User('Joeeee', 'SuperAdmin');
+        $user = new \User('JoeTest', 'SuperAdmin');
+        
         $user->job      = new Job('Librarian', 'Keeper of knowledge!');
+        $user->location = new Location('JoesHouse', 'Portland');
+        
         $user->guides   = new \Cora\ResultSet([
                             new Guide('The Dewey Decimal System'),
                             new Guide('How to Keep Kids Quiet')
                         ]);
+        
         $user->notes    = new \Cora\ResultSet([
                             new Note('Librarian Note!'),
                             new Note('Librarian Note 2!')
@@ -74,19 +78,31 @@ class ModelDemo extends \MyApp {
         $this->repo->save($user);
     }
     
+    public function testCreate3()
+    {
+        $user = new \User('LocationTest', 'SuperAdmin');
+        $user->location = new Location('JoesHouse', 'Portland');
+        $this->repo->save($user);
+    }
+    
     public function testFetchClass($id = 64)
     {
         $user = $this->repo->find($id);
         //var_dump($user);
-        
+        //$user->model_dynamicOff = true;
+        echo $user->name.'<br>';
         echo $user->location->name.'<br>';
+        
         foreach ($user->articles as $article) {
             echo $article->title.'<br>';
         }
+        
         foreach($user->guides as $guide) {
             echo $guide->title.'<br>';
         }
+        
         echo $user->job->title.'<br>';
+        
         foreach($user->notes as $note) {
             echo $note->note.'<br>';
         }
@@ -127,15 +143,15 @@ class ModelDemo extends \MyApp {
         $repo->save($user);
     }
     
-    public function testUpdateMultiTableWithResultSet() 
+    public function testUpdateMultiTableWithResultSet($id = 77) 
     {
         $repo = $this->repo;
-        $user = $repo->find(64);
+        $user = $repo->find($id);
 //        $user->notes = new \Cora\ResultSet([
 //                            new Note('Hey O, Test Note #1'),
 //                            new Note('Hey O, Test Note #2')
 //                        ]);
-        $user->notes->add(new Note('Hey O, Test Note #5'));
+        $user->notes->add(new Note('Hi MATT!'));
         $repo->save($user);
     }
     
@@ -174,6 +190,8 @@ class ModelDemo extends \MyApp {
         $this->db->where('name', 'testUser');
         $this->db->select(['id', 'type']);
         $user = $this->repo->findByQuery($this->db)->get(0);
+        //$user->model_dynamicOff = true;
+        echo $user->name;
         var_dump($user);
     }
     

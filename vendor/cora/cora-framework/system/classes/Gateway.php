@@ -169,7 +169,8 @@ class Gateway
                         $db ->insert([$modelName, $relatedObjName])
                             ->into($relTable)
                             ->values([$modelId, $id])
-                            ->exec();       
+                            ->exec();   
+                        
                     }
                     else {
                         // The reference must be stored in the parent's table.
@@ -293,6 +294,7 @@ class Gateway
         
         $this->db->into($table);
         
+        
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // FIRST PASS 
         // Determine data being stored directly in this objects table and construct its insert query.
@@ -345,6 +347,7 @@ class Gateway
         }
         $this->db->insert($columns);
         $this->db->values($values);
+        //echo $this->db->getQuery()."<br>";
         $modelId = $this->db->exec()->lastInsertId();
         
         // Assign the database ID to the model.
@@ -399,10 +402,10 @@ class Gateway
                             ->exec();       
                     }
                     else {
-                        // The reference must be stored in the parent's table.
-                        // So add it to our insert.
-                        $columns[]  = $key;
-                        $values[]   = $id;
+                        $this->db   ->update($table)
+                                    ->set($key, $id)
+                                    ->where($model->getPrimaryKey(), $model->{$model->getPrimaryKey()});
+                        $this->db->exec();
                     }
                     
                 } 

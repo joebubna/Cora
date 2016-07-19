@@ -4,6 +4,7 @@
 */
 class User extends MyModel {
     
+    //public $model_table = 'notes_tasks';
     //public $model_connection = 'MySQL';
     public $model_attributes = [ 
         'id' => [
@@ -32,7 +33,8 @@ class User extends MyModel {
             'via'    => 'owner'
         ],
         'guides' => [
-            'models' => 'guide'
+            'models' => 'guide',
+            'passive' => true
         ],
         'notes' => [
             'models' => 'task\\note',
