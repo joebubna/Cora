@@ -6,11 +6,13 @@ namespace Cora;
 class Factory
 {
 	protected $type;
+    protected $db;
     protected $dbConfig;
     
-    public function __construct($type)
+    public function __construct($type, $db = false)
     {
         $this->type = $type;
+        $this->db   = $db;
     }
     
     public function make($data)
@@ -22,7 +24,7 @@ class Factory
         // Populate Object with data
         $type = '\\'.$this->type;
         $obj = new $type();
-        $obj->_populate($data);
+        $obj->_populate($data, $this->db);
         
         return $obj;
 	}

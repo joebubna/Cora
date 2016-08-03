@@ -7,25 +7,53 @@ namespace Cora;
 class Model 
 {
     protected $model_data;
-    protected $model_dynamicOff;
+    public $model_db = false;
+    public $model_dynamicOff;
         
-    public function _populate($record = null)
+    public function _populate($record = null, $db = false)
     {
+        // If this model is having a custom DB object passed into it,
+        // then we'll use that for any dynamic fetching instead of
+        // the connection defined on the model.
+        // This is to facilitate using a Test database when running tests.
+        if ($db) {
+            $this->model_db = $db;
+        }
+        
         if($record) {
+            // Populate model related data.
             foreach ($this->model_attributes as $key => $def) {
                 
                 // If the data is present in the DB, assign to model.
                 // Otherwise ignore any data returned from the DB that isn't defined in the model.
                 if (isset($record[$key])) {
                     if (\Cora\Gateway::is_serialized($record[$key])) {
-                        $this->model_data[$key] = unserialize($record[$key]);
+                        $value = unserialize($record[$key]);
+                        $this->beforeSet($key, $value); // Lifecycle callback
+                        $this->model_data[$key] = $value;
+                        $this->afterSet($key, $value); // Lifecycle callback
                     }
                     else {
-                        $this->model_data[$key] = $record[$key];
+                        $value = $record[$key];
+                        $this->beforeSet($key, $value); // Lifecycle callback
+                        $this->model_data[$key] = $value;
+                        $this->afterSet($key, $value); // Lifecycle callback
                     }   
                 }
                 else if (isset($def['models']) || (isset($def['model']) && isset($def['usesRefTable']))) {
                     $this->model_data[$key] = 1;
+                }
+            }
+            
+            // Populate non-model related data.
+            // If a custom query was passed in to the repository (that had a JOIN or something)
+            // and there was extra data fetched that doesn't directly below to the model,
+            // we'll assign it to a normal model property here. This data will obviously
+            // NOT be saved if a call is later made to save this object.
+            $nonObjectData = array_diff_key($record, $this->model_attributes);
+            if (count($nonObjectData) > 0) {
+                foreach ($nonObjectData as $key => $value) {
+                    $this->$key = $value;
                 }
             }
         }
@@ -47,7 +75,14 @@ class Model
     public function __get($name)
     {
         ///////////////////////////////////////////////////////////////////////
+        // -------------------------------------
         // If the model DB data is already set.
+        // -------------------------------------
+        // AmBlend allows fetching of only part of a model's data when fetching 
+        // a record. So we have to check if the data in question has been fetched 
+        // from the DB already or not. If it has been fetched, we have to check
+        // if it's a placeholder for a related model (related models can be set
+        // to boolean true, meaning we have to dynamically fetch the model)
         ///////////////////////////////////////////////////////////////////////
         if (isset($this->model_data[$name])) {
             
@@ -65,7 +100,6 @@ class Model
                     // In the rare case that we need to fetch a single related object, and the developer choose 
                     // to use a relation table to represent the relationship.
                     if (isset($def['usesRefTable'])) {
-                        //$refTable = isset($def['refTable']) ? $def['refTable'] : false;
                         $this->$name = $this->getModelFromRelationTable($name, $def['model']);
                     }
                     
@@ -100,7 +134,11 @@ class Model
                     }
                 }
             }
-            return $this->model_data[$name];
+            
+            $this->beforeGet($name); // Lifecycle callback
+            $returnValue = $this->model_data[$name];
+            $this->afterGet($name, $returnValue); // Lifecycle callback
+            return $returnValue;
         }
         
         ///////////////////////////////////////////////////////////////////////
@@ -109,12 +147,18 @@ class Model
         ///////////////////////////////////////////////////////////////////////
         else if (isset($this->model_attributes[$name]) && !isset($this->model_dynamicOff)) {
             if ($name != $this->getPrimaryKey()) {
-                $this->$name = $this->fetchData($name);       
-                return $this->model_data[$name];
+                $this->$name = $this->fetchData($name); 
+                $this->beforeGet($name); // Lifecycle callback
+                $returnValue = $this->model_data[$name];
+                $this->afterGet($name, $returnValue); // Lifecycle callback
+                return $returnValue;
             }
             else {
                 $this->$name = null;
-                return null;
+                $this->beforeGet($name); // Lifecycle callback
+                $returnValue = $this->model_data[$name];
+                $this->afterGet($name, $returnValue); // Lifecycle callback
+                return $returnValue;
             }
         }
         
@@ -123,9 +167,10 @@ class Model
         ///////////////////////////////////////////////////////////////////////
         $class = get_class($this);
         if (property_exists($class, $name)) {
-            echo $name;
-            echo $this->{$name};
-            return $this->{$name};
+            $this->beforeGet($name); // Lifecycle callback
+            $returnValue = $this->{$name};
+            $this->afterGet($name, $returnValue); // Lifecycle callback
+            return $returnValue;
         }
         
         ///////////////////////////////////////////////////////////////////////
@@ -135,33 +180,48 @@ class Model
         // but you always want to be able to refer to 'id' within a class.
         ///////////////////////////////////////////////////////////////////////
         if ($name == 'id' && property_exists($class, 'id_name')) {
+            $this->beforeGet($this->id_name); // Lifecycle callback
             if (isset($this->model_data[$this->id_name])) {
-                return $this->model_data[$this->id_name];
+                $returnValue = $this->model_data[$this->id_name];
             }
-            return $this->{$this->id_name};
+            else {
+                $returnValue = $this->{$this->id_name};
+            }
+            $this->afterGet($this->id_name, $returnValue); // Lifecycle callback
+            return $returnValue;
         }
-        return null;
+        
+        ///////////////////////////////////////////////////////////////////////
+        // No matching property was found! Normally this will return null.
+        // However, just-in-case the object has something special setup
+        // in the beforeGet() callback, we need to double check that the property
+        // still isn't set after that is called.
+        ///////////////////////////////////////////////////////////////////////
+        $this->beforeGet($name); // Lifecycle callback
+        if (property_exists($class, $name)) {
+            $returnValue = $this->{$name};
+        }
+        else {
+            $returnValue = null;
+        }
+        $this->afterGet($name, $returnValue); // Lifecycle callback
+        return $returnValue;
     }
     
     
     public function __set($name, $value)
     {
+        // Lifecycle callback
+        $this->beforeSet($name, $value);
+        
         // If a matching DB attribute is defined for this model.
         if (isset($this->model_attributes[$name])) {
             $this->model_data[$name] = $value;
         }
         
-        // Otherwise if a plain model attribute is defined.
-        else {
-            $class = get_class($this);
-            if (property_exists($class, $name)) {
-                $this->{$name} = $value;
-            }
-        }
- 
         // If your DB id's aren't 'id', but instead something like "note_id",
         // but you always want to be able to refer to 'id' within a class.
-        if ($name == 'id' && property_exists(get_class($this), 'id_name')) {
+        else if ($name == 'id' && property_exists(get_class($this), 'id_name')) {
             $id_name = $this->id_name;
             if (isset($this->model_attributes[$id_name])) {
                 $this->model_data[$id_name] = $value;
@@ -171,6 +231,18 @@ class Model
                 $this->{$id_name} = $value;
             }
         }
+        
+        // Otherwise if a plain model attribute is defined.
+        else {
+            $this->{$name} = $value;
+//            $class = get_class($this);
+//            if (property_exists($class, $name)) {
+//                $this->{$name} = $value;
+//            }
+        }
+        
+        // Lifecycle callback
+        $this->afterSet($name, $value);
     }
     
     /**
@@ -204,13 +276,13 @@ class Model
 
         // Create repo that uses the relationtable, but returns models populated
         // with their IDs.
-        $repo = \Cora\RepositoryFactory::make($relatedClassName, false, $relTable);
+        $repo = \Cora\RepositoryFactory::make($relatedClassName, false, $relTable, false, $this->model_db);
 
         // Define custom query for repository.
         $db = $relatedObj->getDbAdaptor();
         $db ->select($relatedClassName.' as '.$classId)
             ->where($className, $this->$classId);
-        return $repo->findByQuery($db);
+        return $repo->findAll($db);
     }
     
     
@@ -225,12 +297,12 @@ class Model
         $idField = $relatedObj->getPrimaryKey();
         
         //$relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
-        $repo = \Cora\RepositoryFactory::make($objName);
+        $repo = \Cora\RepositoryFactory::make($objName, false, false, false, $this->model_db);
                         
         $db = $relatedObj->getDbAdaptor();
         $db->where($relationColumnName, $this->{$this->getPrimaryKey()});
         $db->select($idField);
-        return $repo->findByQuery($db);
+        return $repo->findAll($db);
     }
     
     
@@ -257,8 +329,13 @@ class Model
     
     public function getDbAdaptor($freshAdaptor = false)
     {
-        // If a specific DB Connection is defined for this model, use it.
-        if (isset($this->model_connection)) {
+        // If a custom DB object was passed in, use that.
+        if ($this->model_db) {
+            return $this->model_db;
+        }
+        
+        // else if a specific DB Connection is defined for this model, use it.
+        else if (isset($this->model_connection)) {
             //$dbAdaptor = '\\Cora\\Db_'.$this->model_connection;
             //return new $dbAdaptor();
             return \Cora\Database::getDb($this->model_connection);
@@ -417,4 +494,39 @@ class Model
         $repo->save($this);
     }
     
+    
+    public function beforeSave()
+    {
+        //echo __FUNCTION__;
+    }
+    
+    
+    public function afterSave()
+    {
+        //echo __FUNCTION__;
+    }
+    
+    
+    public function beforeSet($prop, $value)
+    {
+        //echo __FUNCTION__;
+    }
+    
+    
+    public function afterSet($prop, $value)
+    {
+        //echo __FUNCTION__;
+    }
+    
+    
+    public function beforeGet($prop)
+    {
+        //echo __FUNCTION__;
+    }
+    
+    
+    public function afterGet($prop, $value)
+    {
+        //echo __FUNCTION__;
+    }
 }

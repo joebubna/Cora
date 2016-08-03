@@ -126,6 +126,8 @@ class Gateway
     
 	protected function _update($model, $table, $id_name)
 	{
+        $model->beforeSave(); // Lifecycle callback
+        
         $this->db   ->update($table)
                     ->where($id_name, $model->{$id_name});
         
@@ -284,11 +286,14 @@ class Gateway
             }
         }
         
+        $model->afterSave(); // Lifecycle callback
         return $this->db->exec()->lastInsertId();    
 	}
 
     protected function _create($model, $table, $id_name)
 	{
+        $model->beforeSave(); // Lifecycle callback
+        
         $columns = array();
         $values = array();
         
@@ -493,6 +498,7 @@ class Gateway
             }
         }
         
+        $model->afterSave(); // Lifecycle callback
         // Return the ID of the created record in the db.
         return $modelId;
 	}

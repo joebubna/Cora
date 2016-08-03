@@ -1,4 +1,5 @@
 <?php
+use Cora\Event;
 
 class Home extends \MyApp {
     
@@ -32,4 +33,18 @@ class Home extends \MyApp {
         echo $taskNote->foo();
     }
     
+    public function eventSetup() 
+    {        
+        $user = new \User('Joe', 'SuperAdmin');
+        $this->event->fire(new \Event\RegisterUser($user));
+        
+        
+        $this->event->listenFor('customEvent', function($event) {
+            echo $event->input->name.'<br>';
+        });
+        $this->event->listenFor('customEvent', function($event) {
+            echo 'Higher Priority!<br>';
+        }, 1);
+        $this->event->fire(new Event('customEvent', $user));
+    }
 }

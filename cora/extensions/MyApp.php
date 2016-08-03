@@ -8,6 +8,7 @@ class MyApp extends Cora
     {
         parent::__construct(); 
         $this->db = new \Cora\Db_MySQL();
+        $this->event = new \Cora\EventManager(new EventMapping);
     }
 
 }

@@ -23,8 +23,11 @@ class Route extends Framework
         
         // Register a autoloader function. Is called when an unloaded class is invoked.
         spl_autoload_register(array($this, 'autoLoader'));
-        spl_autoload_register(array($this, 'coraLoader'));
         spl_autoload_register(array($this, 'coraExtensionLoader'));
+        spl_autoload_register(array($this, 'coraLoader'));
+        spl_autoload_register(array($this, 'eventLoader'));
+        spl_autoload_register(array($this, 'listenerLoader'));
+        
         
         // For site specific data. This will be passed to Cora's controllers when they
         // are invoked in the routeExec() method.
@@ -366,6 +369,34 @@ class Route extends Framework
                     $this->config['modelsPrefix'] .
                     $this->getNameBackslash($className) .
                     $this->config['modelsPostfix'] .
+                    '.php';
+        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        if (file_exists($fullPath)) {
+            include($fullPath);
+        }
+    }
+    
+    protected function eventLoader($className)
+    {
+        $fullPath = $this->config['pathToEvents'] .
+                    $this->getPathBackslash($className, true) .
+                    $this->config['eventsPrefix'] .
+                    $this->getNameBackslash($className) .
+                    $this->config['eventsPostfix'] .
+                    '.php';
+        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        if (file_exists($fullPath)) {
+            include($fullPath);
+        }
+    }
+    
+    protected function listenerLoader($className)
+    {
+        $fullPath = $this->config['pathToListeners'] .
+                    $this->getPathBackslash($className, true) .
+                    $this->config['listenerPrefix'] .
+                    $this->getNameBackslash($className) .
+                    $this->config['listenerPostfix'] .
                     '.php';
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
         if (file_exists($fullPath)) {

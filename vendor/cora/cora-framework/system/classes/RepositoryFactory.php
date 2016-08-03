@@ -6,7 +6,7 @@ namespace Cora;
 class RepositoryFactory
 {
 
-    public static function make($class, $idField = false, $table = false, $freshAdaptor = false)
+    public static function make($class, $idField = false, $table = false, $freshAdaptor = false, $db = false)
     {      
         // Create an instance of the class desired for this repo.
         $className = '\\'.$class;
@@ -24,11 +24,19 @@ class RepositoryFactory
             $tableName = $classObj->getTableName();
         }
         
-        // Grab the correct DB Adaptor as defined for this model.
-        $db = $classObj->getDbAdaptor($freshAdaptor);
+        // If a specific DB Adaptor was passed in (maybe for testing purposes), use that.
+        // Otherwise, grab the correct DB Adaptor as defined for this model.
+        // Also create the factory here as we don't want to pass anything in to it if no
+        // specific database object was specified.
+        if ($db == false) {
+            $db = $classObj->getDbAdaptor($freshAdaptor);
+            $factory = new Factory($class);
+        }
+        else {
+            $factory = new Factory($class, $db);
+        }
         
-        // Creates Factory and Gateway the repository will use.
-        $factory = new Factory($class);
+        // Creates the Gateway the repository will use.
         $gateway = new Gateway($db, $tableName, $idField);
 
         return new Repository($gateway, $factory);

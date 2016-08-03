@@ -24,23 +24,27 @@ class Repository
         $record = $this->gateway->fetch($id);
         return $this->factory->make($record);
     }
-
-    // Add ability to filter and control results with Cora DB.
-    public function findAll()
+    
+    public function findOne($coraDbQuery)
     {
-        $all = $this->gateway->fetchAll();
+        $all = $this->gateway->fetchByQuery($coraDbQuery);
+        return $this->factory->makeGroup($all)->get(0);
+    }
+
+    public function findAll($coraDbQuery = false)
+    {
+        if ($coraDbQuery) {
+            $all = $this->gateway->fetchByQuery($coraDbQuery);
+        }
+        else {
+            $all = $this->gateway->fetchAll();
+        }
         return $this->factory->makeGroup($all);
     }
     
     public function findBy($prop, $value, $options = array())
     {
         $all = $this->gateway->fetchBy($prop, $value, $options);
-        return $this->factory->makeGroup($all);
-    }
-
-    public function findByQuery($coraDbQuery)
-    {
-        $all = $this->gateway->fetchByQuery($coraDbQuery);
         return $this->factory->makeGroup($all);
     }
 

@@ -90,6 +90,16 @@ $config['pathToControllers'] = $config['basedir'].'controllers/';
 $config['pathToLibraries'] = $config['basedir'].'libraries/';
 
 /**
+ *  Path to events directory relative to this file.
+ */
+$config['pathToEvents'] = $config['basedir'].'events/';
+
+/**
+ *  Path to listeners directory relative to this file.
+ */
+$config['pathToListeners'] = $config['basedir'].'listeners/';
+
+/**
  *  Path to App's Cora directory relative to this file.
  */
 $config['pathToCora'] = $config['basedir'].'cora/';
@@ -119,3 +129,15 @@ $config['controllersPostfix'] = '';
  */
 $config['librariesPrefix'] = '';
 $config['librariesPostfix'] = '';
+
+/**
+ *  Event file prefix / postfix.
+ */
+$config['eventsPrefix'] = 'event.';
+$config['eventsPostfix'] = '';
+
+/**
+ *  Listener file prefix / postfix.
+ */
+$config['listenerPrefix'] = 'listen.';
+$config['listenerPostfix'] = '';

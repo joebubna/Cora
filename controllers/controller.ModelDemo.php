@@ -85,6 +85,15 @@ class ModelDemo extends \MyApp {
         $this->repo->save($user);
     }
     
+    public function testCreate4()
+    {
+        $user = new \User('Josiah', 'SuperAdmin');
+        $user->location = new Location('JoesHouse', 'Portland');
+        $user->job      = new Job('Librarian', 'Keeper of knowledge!');
+        $repo = $user->getRepository();
+        $repo->save($user);
+    }
+    
     public function testFetchClass($id = 64)
     {
         $user = $this->repo->find($id);
@@ -114,7 +123,7 @@ class ModelDemo extends \MyApp {
     public function testUpdateByCustom()
     {
         $this->db->where('name', 'testUser');
-        $user = $this->repo->findByQuery($this->db)->get(0);
+        $user = $this->repo->findAll($this->db)->get(0);
         if ($user->type == 'Member') {
             $user->type = 'Admin';
         }
@@ -189,7 +198,7 @@ class ModelDemo extends \MyApp {
     {
         $this->db->where('name', 'testUser');
         $this->db->select(['id', 'type']);
-        $user = $this->repo->findByQuery($this->db)->get(0);
+        $user = $this->repo->findAll($this->db)->get(0);
         //$user->model_dynamicOff = true;
         echo $user->name;
         var_dump($user);
@@ -198,7 +207,7 @@ class ModelDemo extends \MyApp {
     public function testInternal()
     {
         $this->db->where('name', 'testUser');
-        $user = $this->repo->findByQuery($this->db)->get(0);
+        $user = $this->repo->findAll($this->db)->get(0);
         echo $user->getName();
     }
 }

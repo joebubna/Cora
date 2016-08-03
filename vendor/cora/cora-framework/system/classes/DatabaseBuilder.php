@@ -245,4 +245,11 @@ class DatabaseBuilder extends Framework
             include($fullPath);
         }
     }
+    
+    public function dummy($item1, $item2)
+    {
+        // For testing if calling an empty method
+        // OR
+        // using method_exists() is faster then doing lifecycle callbacks.
+    }
 }

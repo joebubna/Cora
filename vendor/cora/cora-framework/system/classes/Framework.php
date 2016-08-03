@@ -91,9 +91,14 @@ class Framework {
     /**
      *  Get the 'folder/folder' out of 'folder\folder\fileName.php
      */
-    protected function getPathBackslash($pathname) {
+    protected function getPathBackslash($pathname, $removeBaseName = false) {
         $arr = explode('\\', $pathname);
-        $partialPathArray = array_slice($arr, 0, count($arr)-1);
+        if ($removeBaseName) {
+            $partialPathArray = array_slice($arr, 1, count($arr)-2);
+        }
+        else {
+            $partialPathArray = array_slice($arr, 0, count($arr)-1);   
+        }
         array_walk($partialPathArray, array($this, '_lcfirst'));
         $path = implode('/', $partialPathArray);
         
