@@ -15,6 +15,12 @@ class DatabaseBuilder extends Framework
         $this->modelPath = realpath($this->config['pathToModels']);
     }
     
+    public function emptyDb($connection)
+    {
+        $db = \Cora\Database::getDb($connection);
+        $db->emptyDatabase();
+    }
+    
     public function build()
     {
         // Call recursive processing of models to build DB.
@@ -108,8 +114,10 @@ class DatabaseBuilder extends Framework
                             }
                             
                             // Grab column type and then set it.
-                            $attr = $this->getAttributes($props);
-                            $db ->field($key, $props['type'], $attr);
+                            //$attr = $this->getAttributes($props);
+                            $attr = $db->getAttributes($props);
+                            $type = $db->getType($props);
+                            $db ->field($key, $type, $attr);
                         }
                     }
                     

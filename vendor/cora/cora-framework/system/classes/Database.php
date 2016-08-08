@@ -412,6 +412,13 @@ class Database
     }
     
     
+    public function emptyDatabase()
+    {
+        // to be implemented by specific adaptor.
+        throw new Exception('emptyDatabase() needs to be implemented by a specific database adaptor!');
+    }
+    
+    
     protected function calculate()
     {
         // To be implemented by specific DB adaptor.

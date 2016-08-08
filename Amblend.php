@@ -16,7 +16,13 @@ if (!isset($argv[1])) {
 // Try executing command.
 switch ($argv[1]) {
     case 'build':
+        echo "\n\n\n\n\n\n";
         $builder->build();
+        break;
+    case 'emptyDb':
+        echo "\n\n\n\n\n\n";
+        $connection = $argv[2];
+        $builder->emptyDb($connection);
         break;
     default:
         echo "The command '".$argv[1]."' is not recognized. See Cora's /Amblend/DatabaseBuilder documentation.\r\n";

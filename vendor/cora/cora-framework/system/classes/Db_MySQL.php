@@ -5,6 +5,7 @@ class Db_MySQL extends Database
 {
     protected $db;
     protected $mysqli;
+    protected $dbName;
     
     public function __construct($connection = false)
     {
@@ -23,6 +24,9 @@ class Db_MySQL extends Database
         if (!$connection) {
             $connection = $dbConfig['defaultConnection'];
         }
+        
+        // Set DB name
+        $this->dbName = $dbConfig['connections'][$connection]['dbName'];
         
         // Create mysqli connection. This is needed for it's escape function to cleanse variable inputs.
         $this->mysqli = new \mysqli($dbConfig['connections'][$connection]['host'], 
@@ -59,6 +63,32 @@ class Db_MySQL extends Database
         $dbResult = new Db_MySQLResult($result, $this->db);
         return $dbResult;
     }
+    
+    
+    public function emptyDatabase()
+    {
+        $sql = "
+                USE $this->dbName;
+                SET FOREIGN_KEY_CHECKS = 0;
+                SET GROUP_CONCAT_MAX_LEN=32768;
+                SET @tables = NULL;
+                SELECT GROUP_CONCAT('`', table_name, '`') INTO @tables
+                  FROM information_schema.tables
+                  WHERE table_schema = (SELECT DATABASE());
+                SELECT IFNULL(@tables,'dummy') INTO @tables;
+
+                SET @tables = CONCAT('DROP TABLE IF EXISTS ', @tables);
+                PREPARE stmt FROM @tables;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+                SET FOREIGN_KEY_CHECKS = 1;
+        ";
+        
+        $result = $this->db->query($sql);
+        $this->reset();
+        return $result;
+    }
+    
     
     // Create the SQL string from Database class raw data.
     protected function calculate()
@@ -577,6 +607,75 @@ class Db_MySQL extends Database
         else {
             throw new \Exception("Cora's Query Builder class expects advanced query components to be in an array with form [column, operator, value]");
         }
+    }
+    
+    
+    
+    /**
+     *  Return a data type.
+     */
+    public function getType($props)
+    {
+        $result = '';
+        if (isset($props['type'])) {
+            
+            // If field is a string
+            if ($props['type'] == 'varchar' || $props['type'] == 'string') {
+                if (isset($props['size'])) {
+                    $result = 'varchar('.$props['size'].')';
+                }
+                else {
+                    $result = 'varchar(255)';
+                }
+            }
+            
+            // If field is an Int
+            else if ($props['type'] == 'int' || $props['type'] == 'integer') {
+                if (isset($props['size'])) {
+                    $result = 'int('.$props['size'].')';
+                }
+                else {
+                    $result = 'int';
+                }
+            }
+            
+            // If field is a float
+            else if ($props['type'] == 'float' || $props['type'] == 'double') {
+                if (isset($props['size']) && isset($props['precision'])) {
+                    $result = 'float('.$props['size'].', '.$props['precision'].')';
+                }
+                else {
+                    $result = 'float';
+                }
+            }
+            
+            // If nothing matches, just try returning what was set.
+            else {
+                if (isset($props['size'])) {
+                    $result = $props['type'].'('.$props['size'].')';
+                }
+                else {
+                    $result = $props['type'];
+                }
+            }
+        }
+        else {
+            return 'varchar(255)';
+        }
+        return $result;
+    }
+    
+    
+    /**
+     *  Return a field's attributes
+     */
+    public function getAttributes($props)
+    {
+        $attr = '';
+        if (isset($props['primaryKey'])) {
+            $attr .= 'NOT NULL AUTO_INCREMENT';
+        }
+        return $attr;
     }
     
 }

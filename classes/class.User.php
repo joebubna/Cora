@@ -12,7 +12,8 @@ class User extends MyModel {
             'primaryKey'    => true
         ],
         'name' => [
-            'type' => 'varchar'
+            'type' => 'varchar',
+            'size' => 155
         ],
         'email' => [
             'type' => 'varchar'
