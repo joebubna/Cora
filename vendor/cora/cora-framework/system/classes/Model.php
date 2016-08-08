@@ -494,6 +494,18 @@ class Model
     }
     
     
+    public function beforeCreate()
+    {
+        //echo __FUNCTION__;
+    }
+    
+    
+    public function afterCreate()
+    {
+        //echo __FUNCTION__;
+    }
+    
+    
     public function save()
     {
         $repo = $this->getRepository();

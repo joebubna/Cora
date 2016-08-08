@@ -56,7 +56,7 @@ class ModelDemo extends \MyApp {
     
     public function testCreate2()
     {
-        $user = new \User('JoeTest', 'SuperAdmin');
+        $user = new \User('JoeTest');
         
         $user->created = date('Y-m-d');
         $user->job      = new Job('Librarian', 'Keeper of knowledge!');

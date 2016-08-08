@@ -23,6 +23,7 @@ class Database
     protected $create;
     protected $primaryKeys;
     protected $foreignKeys;
+    protected $indexes;
     protected $query;
     protected $queryDisplay;
     
@@ -223,6 +224,12 @@ class Database
     }
     
     
+    public function index($columns) {
+        $this->storeValue('indexes', $columns);
+        return $this;
+    }
+    
+    
     public function getQuery()
     {
         $this->calculate();
@@ -248,6 +255,7 @@ class Database
         $this->fields   = array();
         $this->primaryKeys  = array();
         $this->foreignKeys  = array();
+        $this->indexes  = array();
         
         $this->distinct = false;
         $this->delete   = false;

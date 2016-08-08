@@ -237,7 +237,34 @@ class Db_MySQL extends Database
         $this->queryStringFromArray('fields', '', ', ', false, true);
         $this->primaryKeyStringFromArray('primaryKeys', ', CONSTRAINT ');
         $this->foreignKeyStringFromArray('foreignKeys', ', CONSTRAINT ');
+        $this->indexStringFromArray('indexes', ', INDEX ');
         $this->query .= ')';
+    }
+    
+    
+    /**
+     *  For outputting a string of the following form from the 'indexes' array in Database.
+     *  INDEX idx_id_name (id, name)
+     */
+    protected function IndexStringFromArray($dataMember, $opening, $sep = ', ')
+    {
+        if (empty($this->$dataMember)) {
+            return 0;
+        }
+        $this->query .= $opening;
+        $constraintName = 'idx';
+        $query = ' (';
+        $count = count($this->$dataMember);
+        for($i=0; $i<$count; $i++) {
+            $item = $this->{$dataMember}[$i];
+            $constraintName .= '_'.$item;
+            $query .= $item;
+            if ($count-1 != $i) {
+                $query .= $sep;
+            }
+        }
+        $query .= ')';
+        $this->query .= $constraintName.' '.$query;
     }
     
     
@@ -659,6 +686,16 @@ class Db_MySQL extends Database
                 $result = 'datetime';
             }
             
+            // If field is an enum
+            else if ($props['type'] == 'enum') {
+                if (isset($props['enum'])) {
+                    $result = 'ENUM('.$props['enum'].')';
+                }
+                else {
+                    $result = "ENUM('default')";
+                }
+            }
+            
             // If nothing matches, just try returning what was set.
             else {
                 if (isset($props['size'])) {
@@ -682,10 +719,27 @@ class Db_MySQL extends Database
     public function getAttributes($props)
     {
         $attr = '';
+        
         if (isset($props['primaryKey'])) {
-            $attr .= 'NOT NULL AUTO_INCREMENT';
+            $attr .= 'NOT NULL AUTO_INCREMENT ';
         }
+        
+        if (isset($props['defaultValue'])) {
+            $attr .= "DEFAULT '".$props['defaultValue']."'";
+        }
+        
         return $attr;
+    }
+    
+    
+    /**
+     *  Set an index if defined.
+     */
+    public function setIndex($key, $props)
+    {
+        if (isset($props['index'])) {
+            $this->index($key);
+        }
     }
     
 }

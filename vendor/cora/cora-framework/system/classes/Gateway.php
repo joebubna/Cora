@@ -292,6 +292,7 @@ class Gateway
 
     protected function _create($model, $table, $id_name)
 	{
+        $model->beforeCreate(); // Lifecycle callback
         $model->beforeSave(); // Lifecycle callback
         
         $columns = array();
@@ -352,7 +353,7 @@ class Gateway
         }
         $this->db->insert($columns);
         $this->db->values($values);
-        //echo $this->db->getQuery()."<br>";
+        echo $this->db->getQuery()."<br>";
         $modelId = $this->db->exec()->lastInsertId();
         
         // Assign the database ID to the model.
@@ -499,6 +500,7 @@ class Gateway
         }
         
         $model->afterSave(); // Lifecycle callback
+        $model->afterCreate(); // Lifecycle callback
         // Return the ID of the created record in the db.
         return $modelId;
 	}

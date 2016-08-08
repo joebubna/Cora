@@ -16,10 +16,13 @@ class User extends MyModel {
             'size' => 155
         ],
         'email' => [
-            'type' => 'varchar'
+            'type' => 'varchar',
+            'index' => true
         ],
         'type'  => [
-            'type' => 'varchar'
+            'type' => 'enum',
+            'enum' => "'User', 'Moderator', 'Admin'",
+            'defaultValue' => 'User'
         ],
         'created' => [
             'type' => 'datetime'  

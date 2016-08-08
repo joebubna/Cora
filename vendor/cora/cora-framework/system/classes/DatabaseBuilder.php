@@ -117,7 +117,11 @@ class DatabaseBuilder extends Framework
                             //$attr = $this->getAttributes($props);
                             $attr = $db->getAttributes($props);
                             $type = $db->getType($props);
-                            $db ->field($key, $type, $attr);
+                            $def = $type.' '.$attr;
+                            $db ->field($key, $def);
+                            
+                            // If the column is defined to have an index, create one.
+                            $db->setIndex($key, $props);
                         }
                     }
                     
