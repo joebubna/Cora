@@ -58,6 +58,7 @@ class ModelDemo extends \MyApp {
     {
         $user = new \User('JoeTest', 'SuperAdmin');
         
+        $user->created = date('Y-m-d');
         $user->job      = new Job('Librarian', 'Keeper of knowledge!');
         $user->location = new Location('JoesHouse', 'Portland');
         
@@ -100,6 +101,7 @@ class ModelDemo extends \MyApp {
         //var_dump($user);
         //$user->model_dynamicOff = true;
         echo $user->name.'<br>';
+        echo $user->created->format('Y-m-d').'<br>';
         echo $user->location->name.'<br>';
         
         foreach ($user->articles as $article) {

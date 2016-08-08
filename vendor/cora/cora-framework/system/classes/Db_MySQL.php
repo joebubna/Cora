@@ -649,6 +649,16 @@ class Db_MySQL extends Database
                 }
             }
             
+            // If field is a date
+            else if ($props['type'] == 'date') {
+                $result = 'date';
+            }
+            
+            // If field is a datetime
+            else if ($props['type'] == 'datetime') {
+                $result = 'datetime';
+            }
+            
             // If nothing matches, just try returning what was set.
             else {
                 if (isset($props['size'])) {

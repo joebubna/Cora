@@ -21,6 +21,9 @@ class User extends MyModel {
         'type'  => [
             'type' => 'varchar'
         ],
+        'created' => [
+            'type' => 'datetime'  
+        ],
         'location' => [
             'model' => 'location'
         ],

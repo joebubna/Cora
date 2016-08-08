@@ -33,6 +33,12 @@ class Model
                         $this->model_data[$key] = $value;
                         $this->afterSet($key, $value); // Lifecycle callback
                     }
+                    else if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime')) {
+                        $value = new \DateTime($record[$key]);
+                        $this->beforeSet($key, $value); // Lifecycle callback
+                        $this->model_data[$key] = $value;
+                        $this->afterSet($key, $value); // Lifecycle callback
+                    }
                     else {
                         $value = $record[$key];
                         $this->beforeSet($key, $value); // Lifecycle callback
