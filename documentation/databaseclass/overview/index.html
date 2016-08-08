@@ -105,42 +105,42 @@
             
             
             
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Core Concepts <b class="caret"></b></a>
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
                         
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
 <li >
     <a href="../../mvc/overview/">MVC Pattern</a>
 </li>
 
-                    
-                        
+        
+            
 <li >
     <a href="../../routing/overview/">Routing</a>
 </li>
 
-                    
-                        
+        
+            
 <li >
     <a href="./">Database Class</a>
 </li>
 
-                    
-                        
+        
+            
 <li >
     <a href="../../amblend/overview/">AmBlend ORM</a>
 </li>
 
-                    
-                    </ul>
-                </li>
-            
-            
-            
-                <li class="dropdown active">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
+        
+    </ul>
+  </li>
+
                     
                         
   <li class="dropdown-submenu">
@@ -150,6 +150,12 @@
             
 <li >
     <a href="../../amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/implementation/">Implementation</a>
 </li>
 
         
@@ -174,6 +180,12 @@
             
 <li >
     <a href="../../amblend/factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/lifecycle/">Lifecycle Callbacks</a>
 </li>
 
         
@@ -312,7 +324,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../../amblend/factory/">
+                    <a rel="next" href="../../amblend/lifecycle/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -333,11 +345,20 @@
     
         <li class="main active"><a href="#coras-database-class">Cora's Database class</a></li>
         
-            <li><a href="#currently-supported-databases">Currently Supported Databases</a></li>
+    
+        <li class="main "><a href="#how-its-implemented">How it's Implemented</a></li>
         
-            <li><a href="#introduction">Introduction</a></li>
+    
+        <li class="main "><a href="#currently-supported-databases">Currently Supported Databases</a></li>
         
-            <li><a href="#security">Security</a></li>
+    
+        <li class="main "><a href="#introduction">Introduction</a></li>
+        
+    
+        <li class="main "><a href="#security">Security</a></li>
+        
+    
+        <li class="main "><a href="#methods">Methods</a></li>
         
             <li><a href="#utility-methods">Utility Methods</a></li>
         
@@ -357,23 +378,43 @@
             <div class="col-md-9" role="main">
 
 <h1 id="coras-database-class">Cora's Database class</h1>
-<p><strong>IMPORTANT NOTE: IF YOU ARE GOING TO BE GRABBING CLASS RECORDS FROM A DATABASE, YOU SHOULD BE USING THE 
-REPOSITORY CLASS, NOT THIS LOWER LEVEL DATABASE CLASS.</strong></p>
-<p>The basic gist of how Cora's Database class works is that it functions as a database-independent medium for storing a desired query.
-When you construct an SQL statement using the Database class' query building methods, the resulting query parameters are stored as
-raw data within the Database class (mostly stored in arrays). In order to take that raw data and then execute a query, you have to 
+<p><div class="alert alert-warning"><strong>NOTE: IF YOU ARE GOING TO BE GRABBING CLASS RECORDS FROM A DATABASE, YOU SHOULD CONSIDER USING THE
+AMBLEND ORM, NOT THIS LOWER LEVEL DATABASE CLASS.</strong></div></p>
+<p>In a nutshell, Cora's Database class acts as a <a href="https://en.wikipedia.org/wiki/Data_access_object">Data Access Object</a>. It
+offers you a simple way to interact with a database, without having to worry about implementation specific details for different database types.
+The ELI5 explanation goes like this: <br />
+Say you build an application that uses Database-A, and Database-A uses commands that look like the following:</p>
+<pre><code class="sql">SELECT first_name FROM users WHERE id=12;
+</code></pre>
+
+<p>However, one day your boss says to you that he wants you to switch over to using Database-B. Database-B however uses a different
+command syntax though that looks something like this:</p>
+<pre><code class="sql">db.users.find( { id: 12 }, { first_name: 1 } );
+</code></pre>
+
+<p>WHOA NELLY! If you haven't been using a Data Access Object, then the fact that this new database uses a different syntax could be devastating.
+You might literally have to rewrite HUGE portions of your application to make everything work with this new format. NOT GOOD! This is where
+a DAO comes in handy. Let's say you've written all your database queries in your application using a DAO and it has its own format that looks something like so:</p>
+<pre><code class="php">$db -&gt;select('first_name')
+    -&gt;from('users')
+    -&gt;where('id', 12)
+    -&gt;exec();
+</code></pre>
+
+<p>If your app is using this DAO, now when your boss tells you to start using database-B, all that you need to do is write translation instructions (aka an 'adaptor') for your DAO
+so it knows how to turn the above into the instuction format database-B uses (or more likely, someone else has already written an adaptor, can you just have to download it).
+In this way, Cora's Database class acts as an abstraction layer that helps separate your application from any one specific database implementation.</p>
+<h1 id="how-its-implemented">How it's Implemented</h1>
+<p>When you construct an SQL statement using the Database class' query building methods, the resulting query parameters are stored as
+raw data within the Database class (mostly stored in arrays). In order to take that raw data and then execute a query, you have to
 utilize an adaptor that extends the Database class and implements the exec() method. The adaptor is responsible for taking that raw
 data and translating it into the format required by its associated Database in order to execute the query.</p>
-<p>It's important to know that Cora's Repository class is written using the Database class' query methods so that it can work across
-a multitude of different database types, and it is the preferred way you should be grabbing class records from a database. If you
-need a custom query, or want to limit the amount of data you are grabbing, this Database class offers more control by allowing you to
-construct your own queries.</p>
-<h2 id="currently-supported-databases">Currently Supported Databases</h2>
+<h1 id="currently-supported-databases">Currently Supported Databases</h1>
 <p>Cora currently has adaptor classes for:</p>
 <ul>
 <li>MySQL (Db_MySQL.php)</li>
 </ul>
-<h2 id="introduction">Introduction</h2>
+<h1 id="introduction">Introduction</h1>
 <p>Below is a basic example that grabs and echoes the name of all the users in a users table who's type is 'admin'.</p>
 <pre><code>// Create Database object with adaptor
 $db = new \Cora\Db_MySQL();
@@ -395,7 +436,7 @@ foreach($query-&gt;fetchAll() as $user) {
 <p>As you probably see, the basic formula is you create an instance of a database adaptor (Db_MySQL extends Database), construct
 some query using the Database class' methods, then call the exec() function to execute the query and return any expected result.
 Query methods can be chained together as you see above too.</p>
-<h2 id="security">Security</h2>
+<h1 id="security">Security</h1>
 <p>The Database class and its query building methods are extremely powerful, and as such, there are dangerous scenarios of which you need
 to be aware! Column VALUES are sanitized to protect your app from SQL Injection attacks. However, COLUMN name parameters and OPERATOR parameters (=, &gt;, &lt;, IN, etc)
 are NOT sanitized!!! For this reason you should never under any circumstance pass in a value you receive from a user into one of those fields!
@@ -416,6 +457,7 @@ $db -&gt;select('name')
 $query = $db-&gt;exec();
 </code></pre>
 
+<h1 id="methods">Methods</h1>
 <h2 id="utility-methods">Utility Methods</h2>
 <p>The following methods are available when creating any type of query:</p>
 <ul>

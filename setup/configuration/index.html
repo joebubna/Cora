@@ -106,41 +106,41 @@
             
             
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Core Concepts <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
                         
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
 <li >
     <a href="../../documentation/mvc/overview/">MVC Pattern</a>
 </li>
 
-                    
-                        
+        
+            
 <li >
     <a href="../../documentation/routing/overview/">Routing</a>
 </li>
 
-                    
-                        
+        
+            
 <li >
     <a href="../../documentation/databaseclass/overview/">Database Class</a>
 </li>
 
-                    
-                        
+        
+            
 <li >
     <a href="../../documentation/amblend/overview/">AmBlend ORM</a>
 </li>
 
-                    
-                    </ul>
-                </li>
-            
-            
-            
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
+        
+    </ul>
+  </li>
+
                     
                         
   <li class="dropdown-submenu">
@@ -150,6 +150,12 @@
             
 <li >
     <a href="../../documentation/amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/amblend/implementation/">Implementation</a>
 </li>
 
         
@@ -174,6 +180,12 @@
             
 <li >
     <a href="../../documentation/amblend/factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/amblend/lifecycle/">Lifecycle Callbacks</a>
 </li>
 
         
@@ -343,7 +355,9 @@
         
             <li><a href="#step-5-make-all-controllers-extend-from-project-controller">Step 5: Make All Controllers Extend From Project Controller</a></li>
         
-            <li><a href="#finished">Finished!!!</a></li>
+            <li><a href="#step-6-configure-your-database">Step 6: Configure Your Database</a></li>
+        
+            <li><a href="#finished">Finished</a></li>
         
     
     </ul>
@@ -351,11 +365,11 @@
             <div class="col-md-9" role="main">
 
 <h1 id="configuring-cora">Configuring Cora</h1>
-<p>IF you installed Cora to your root web directory, it should already be working. Test by going to </p>
+<p>IF you installed Cora to your root web directory, it should already be working. Test by going to</p>
 <pre><code>http://localhost/cora
 </code></pre>
 
-<p>If it loads something, then Cora is working. If it doesn't work, then you probably either need to enable .htaccess files usage in apache, 
+<p>If it loads something, then Cora is working. If it doesn't work, then you probably either need to enable .htaccess files usage in apache,
 enable mod_rewrite in apache, you changed the name of something before reaching this article, or you didn't install Cora to your root web directory.
 If you are using one of the suggested AMP packages from the installation page, everything should theoretically be working though.</p>
 <p>If you didn't install Cora into your root directory, no worries, you'll just need to run through the following config instructions first before
@@ -363,9 +377,9 @@ things will work.</p>
 <h3 id="step-1-change-the-name-of-the-directory-to-match-your-project">Step 1: Change the Name of the Directory to Match Your Project</h3>
 <p>By default, the folder for Cora that got copied into your web directory should be named "cora". Just a guess, but you probably want to change
 this to match the name of the project you plan on building. If for instance you want to create an app called "My Awesome Site", go ahead and rename
-that cora directory to "MyAwesomeSite". </p>
+that cora directory to "MyAwesomeSite".</p>
 <h3 id="step-2-change-your-htaccess-file-to-match-your-directory-name">Step 2: Change Your .htaccess File to Match Your Directory Name</h3>
-<p>Continuing our "MyAwesomeSite" example, next you would need to open up the hidden ".htaccess" file located within that directory and change the third line 
+<p>Continuing our "MyAwesomeSite" example, next you would need to open up the hidden ".htaccess" file located within that directory and change the third line
 down to:</p>
 <pre><code class="php">RewriteBase /MyAwesomeSite
 </code></pre>
@@ -390,7 +404,7 @@ Doing this is beyond the scope of this documentation, but it's just something of
 #$config['cora_extension'] = 'MyApp';
 </code></pre>
 
-<p>Note that this config file overrides any defaults that are located in </p>
+<p>Note that this config file overrides any defaults that are located in</p>
 <pre><code class="php">/htdocs/MyAwesomeSite/vendor/cora/cora-framework/system/config/config.php
 </code></pre>
 
@@ -406,7 +420,7 @@ sub-directories, you do not need to include the full path, just the name of the 
 
 <p>Anytime you create a new controller, you want to have it extend from some "base" controller, which in the case above is "MyApp". This allows you to
 have shared data and methods across all your controllers when necessary. Although you can leave the name of this base controller as "MyApp" if you want to,
-we're guessing you'll probably want to change this to something more offical sounding that matches the name of your project.</p>
+we're guessing you'll probably want to change this to something more official sounding that matches the name of your project.</p>
 <p>Navigate to the "cora/extensions/MyApp.php" file in your project and make a copy of it, renaming the copy to "MyAwesomeSite.php". After you do this, make sure you open
 the file and change the class name to MyAwesomeSite too. It should look like the following:</p>
 <pre><code>class MyAwesomeSite extends Cora
@@ -419,8 +433,10 @@ to extend from your new base controller instead of MyApp. They should all follow
 <pre><code class="php">class Articles extends \MyAwesomeSite {
 </code></pre>
 
-<h3 id="finished">Finished!!!</h3>
-<p>That's it! You should be able to run your project and play around with it and the included demos now. 
+<h3 id="step-6-configure-your-database">Step 6: Configure Your Database</h3>
+<p>[Info here]</p>
+<h3 id="finished">Finished</h3>
+<p>That's it! You should be able to run your project and play around with it and the included demos now.
 If you are an experienced user who wants to know about the advanced configuration options within Cora, or how Cora can be
 incorporated into an existing software project, click <a href="../../setup/advanced">here</a> to view the advanced configuration tutorial.
 Otherwise, click below to continue on to the introductory tutorial to help you get acquainted with Cora.</p>

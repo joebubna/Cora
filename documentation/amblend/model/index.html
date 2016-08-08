@@ -105,42 +105,42 @@
             
             
             
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Core Concepts <b class="caret"></b></a>
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
                         
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
 <li >
     <a href="../../mvc/overview/">MVC Pattern</a>
 </li>
 
-                    
-                        
+        
+            
 <li >
     <a href="../../routing/overview/">Routing</a>
 </li>
 
-                    
-                        
+        
+            
 <li >
     <a href="../../databaseclass/overview/">Database Class</a>
 </li>
 
-                    
-                        
+        
+            
 <li >
     <a href="../overview/">AmBlend ORM</a>
 </li>
 
-                    
-                    </ul>
-                </li>
-            
-            
-            
-                <li class="dropdown active">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
+        
+    </ul>
+  </li>
+
                     
                         
   <li class="dropdown-submenu">
@@ -150,6 +150,12 @@
             
 <li >
     <a href="../overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../implementation/">Implementation</a>
 </li>
 
         
@@ -174,6 +180,12 @@
             
 <li >
     <a href="../factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../lifecycle/">Lifecycle Callbacks</a>
 </li>
 
         
@@ -331,11 +343,167 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
+        <li class="main active"><a href="#model-class">Model Class</a></li>
+        
+    
+        <li class="main "><a href="#creating-a-cora-model">Creating a Cora Model</a></li>
+        
+    
+        <li class="main "><a href="#attributes">Attributes</a></li>
+        
+            <li><a href="#how-it-works">How it Works</a></li>
+        
+            <li><a href="#definition">Definition</a></li>
+        
+            <li><a href="#object-relations">Object Relations</a></li>
+        
+    
+        <li class="main "><a href="#using-multiple-databases">Using Multiple Databases</a></li>
+        
+    
+        <li class="main "><a href="#advanced-configuration">Advanced Configuration</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-</div>
+<h1 id="model-class">Model Class</h1>
+<p>The purpose of Cora's Model class is to provide methods that allow Gateways
+to examine the properties and relations of models, and to give models the knowledge
+of the Repository system's existence and the Repository's responsibility for grabbing and
+persisting models. This enables the ActiveRecord like features of AmBlend
+such as dynamic loading.</p>
+<h1 id="creating-a-cora-model">Creating a Cora Model</h1>
+<p>To create a Cora Model, you just need to have your model extend \Cora\Model like
+such:</p>
+<pre><code class="php">class SomeModel extends \Cora\Model {}
+</code></pre>
+
+<p>However, to actually make your model do anything useful, you need to define your
+model using some data members so that AmBlend knows how to use it. The core of
+this definition, is the "model_attributes" array.</p>
+<h1 id="attributes">Attributes</h1>
+<p>tl;dr - A Cora model's attributes define the data that composes the model.</p>
+<p>Normally when talking about data members for a class in PHP, the term "properties" is used.
+However, since it's possible to define properties on a Cora model just like you would any
+other class, "attributes" is the term I've coined to describe those model properties
+that relate directly to AmBlend so that the two don't get confused.</p>
+<p>Let's jump right in to how it works, as it's easier to describe using examples.</p>
+<h2 id="how-it-works">How it Works</h2>
+<p>Let's say you have a model definition that looks like the following:</p>
+<pre><code class="PHP">class User extends \Cora\Model {
+
+    // Normal properties
+    // These WON'T be saved to the database.
+    protected $lastAction;
+
+    // Amblend properties
+    // aka the model's &quot;Attributes&quot;
+    // These WILL be saved in the database.
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'type'  =&gt; [
+            'type' =&gt; 'varchar'
+        ]
+    ];
+
+    public function __construct($name = null, $email = null, $type = null)
+    {
+        $this-&gt;name     = $name;
+        $this-&gt;email    = $email;
+        $this-&gt;type     = $type;
+    }
+
+    public function changeName($newName) {
+        $this-&gt;name = $newName;
+        $this-&gt;lastAction = 'Changed Name';
+    }
+
+    public function getName() {
+        return $this-&gt;name;
+    }
+
+    public function getLastAction() {
+        return $this-&gt;lastAction;
+    }
+}
+</code></pre>
+
+<p>In the example, we've defined a normal property called "lastAction" which we're
+using to keep track of the last action that was performed by/on that user. However,
+since we defined it as a normal property and not a model attribute, that means
+the lastAction WILL NOT get saved to the database if we save the model. That's
+super important to understand! You can use normal class properties, but only those
+attributes defined in the $model_attributes property will be persisted (saved).
+This makes the "$model_attributes" property the backbone that supports all of
+AmBlend's functionality.</p>
+<p>In terms of implementation, as can be seen in the example above, $model_attributes
+is just an associative array where the key is the name of the attribute, and the
+value is another associative array for defining that attribute's details. The
+most basic detail which I always recommend including is that attribute's "type".
+By defining this, you can use AmBlend's automated database creation tool.</p>
+<h2 id="definition">Definition</h2>
+<p>Below are the properties you can use to describe an attribute definition.</p>
+<table>
+    <tr>
+        <th>Attribute Name</th>
+        <th>Valid Values</th>
+    </tr>
+    <tr>
+        <td>type</td>
+        <td>int (integer), varchar, char, float, date, datetime, bool (boolean), binary, text, mediumtext, longtext</td>
+    </tr>
+    <tr>
+        <td>primaryKey</td>
+        <td>true</td>
+    </tr>
+    <tr>
+        <td>defaultsTo</td>
+        <td>'Some String'</td>
+    </tr>
+    <tr>
+        <td>autoIncrement</td>
+        <td>true</td>
+    </tr>
+    <tr>
+        <td>unique</td>
+        <td>true</td>
+    </tr>
+    <tr>
+        <td>size</td>
+        <td>{integer}</td>
+    </tr>
+    <tr>
+        <td>precision</td>
+        <td>{integer}</td>
+    </tr>
+    <tr>
+        <td>enum</td>
+        <td>['value1', 'value2', 'value3']</td>
+    </tr>
+    <tr>
+        <td>columnName</td>
+        <td>{string}</td>
+    </tr>
+    <tr>
+        <td>index</td>
+        <td>true</td>
+    </tr>
+</table>
+
+<h2 id="object-relations">Object Relations</h2>
+<h1 id="using-multiple-databases">Using Multiple Databases</h1>
+<h1 id="advanced-configuration">Advanced Configuration</h1></div>
         </div>
 
         <footer class="col-md-12">
