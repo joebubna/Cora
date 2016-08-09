@@ -353,7 +353,7 @@ class Gateway
         }
         $this->db->insert($columns);
         $this->db->values($values);
-        echo $this->db->getQuery()."<br>";
+        //echo $this->db->getQuery()."<br>";
         $modelId = $this->db->exec()->lastInsertId();
         
         // Assign the database ID to the model.
