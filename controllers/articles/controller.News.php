@@ -70,8 +70,10 @@ class News extends \MyApp
     
     public function testLibraries()
     {
-        $this->load->library('TestLib');
-        $t = new \TestLib();
+        //$this->load->library('TestLib');
+        echo 'HERE<BR>';
+        $v = new \DateTime();
+        $t = new \Library\TestLib();
         $t->hi();
     }
     

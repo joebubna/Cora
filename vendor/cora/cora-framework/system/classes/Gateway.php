@@ -499,8 +499,8 @@ class Gateway
             }
         }
         
-        $model->afterSave(); // Lifecycle callback
         $model->afterCreate(); // Lifecycle callback
+        $model->afterSave(); // Lifecycle callback
         // Return the ID of the created record in the db.
         return $modelId;
 	}

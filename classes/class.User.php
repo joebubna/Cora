@@ -36,7 +36,7 @@ class User extends MyModel {
             'relTable' => 'ref_users_jobs'
         ],
         'articles' => [
-            'models' => 'article',
+            'models' => 'Article',
             'via'    => 'owner'
         ],
         'guides' => [

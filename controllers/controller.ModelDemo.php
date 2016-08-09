@@ -58,7 +58,7 @@ class ModelDemo extends \MyApp {
     {
         $user = new \User('JoeTest');
         
-        $user->created = date('Y-m-d');
+        $user->created = new DateTime();//date('Y-m-d');
         $user->job      = new Job('Librarian', 'Keeper of knowledge!');
         $user->location = new Location('JoesHouse', 'Portland');
         

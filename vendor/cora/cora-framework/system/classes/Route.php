@@ -25,8 +25,8 @@ class Route extends Framework
         spl_autoload_register(array($this, 'autoLoader'));
         spl_autoload_register(array($this, 'coraExtensionLoader'));
         spl_autoload_register(array($this, 'coraLoader'));
-        spl_autoload_register(array($this, 'eventLoader'));
-        spl_autoload_register(array($this, 'listenerLoader'));
+        //spl_autoload_register(array($this, 'eventLoader'));
+        //spl_autoload_register(array($this, 'listenerLoader'));
         
         
         // For site specific data. This will be passed to Cora's controllers when they
@@ -340,9 +340,12 @@ class Route extends Framework
      *  They are used to return part of that path in either Array or String form
      *  when asked to by the recursive calls of routeFind().
      */
-    protected function partialPathString($offset, $length = null)
+    protected function partialPathString($offset, $length = null, $dataArray = false)
     {
-        $partialPathArray = array_slice($this->path, $offset, $length);
+        if ($dataArray == false) {
+            $dataArray = $this->path;
+        }
+        $partialPathArray = array_slice($dataArray, $offset, $length);
         return implode('/', $partialPathArray);
     }
        
@@ -371,7 +374,22 @@ class Route extends Framework
                     $this->config['modelsPostfix'] .
                     '.php';
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
-        if (file_exists($fullPath)) {
+        
+        // Grab root of namespace.
+        $rootName = explode('\\', $className)[0];
+        
+        // Depending on the root of the namespace, possibly run one of several autoloaders.
+        if ($rootName == 'Event') {
+            $this->eventLoader($className);
+        }
+        else if ($rootName == 'Listener') {
+            $this->listenerLoader($className);
+        }
+        else if ($rootName == 'Library') {
+            $namespaceExcludingLibrary = $this->partialPathString(1, null, explode('\\', $className));
+            $this->libraryLoader($namespaceExcludingLibrary);
+        }
+        else if (file_exists($fullPath)) {
             include($fullPath);
         }
     }
@@ -426,6 +444,23 @@ class Route extends Framework
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
         if (file_exists($fullPath)) {
             include($fullPath);
+        }
+    }
+    
+    protected function libraryLoader($className)
+    {
+        $name = $this->getName($className);
+        $path = $this->getPath($className);
+        $fullPath = $this->config['pathToLibraries'] .
+                    $path .
+                    $this->config['librariesPrefix'] .
+                    $name .
+                    $this->config['librariesPostfix'] .
+                    '.php';
+
+        // If the file exists in the Libraries directory, load it.
+        if (file_exists($fullPath)) {
+            include_once($fullPath);
         }
     }
 } // end Class
