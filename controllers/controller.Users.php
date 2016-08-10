@@ -17,24 +17,11 @@ class Users extends \MyApp
      */
     public function register()
     {
-        // Grab our inputs. We'll just use fake data instead of
-        // actually capturing it from a form.
-        $name = $inputName;  // $this->input->post('name');
-        $type = $inputType; // $this->input->post('email');
-        
-        // Create a new User.
-        $user = new User($name, $type);
-        
-        // Assign the user a job.
-        $user->job = new Job('Athlete', 'Track and Field');
-        
-        // Save the user to the database.
-        $this->repo->save($user);
-        
-        // When the user was saved to the database, AmBlend
-        // assigned the object the unique ID the database provided it.
-        // Let's echo this user's ID.
-        echo $user->id;
+        $this->load->library('Validate', $this, true); 
+        $this->data->title = 'Register';
+        $this->_loadView(__FUNCTION__);
+        //$this->data->content = $this->load->view('forms/articles_create', $this->data, true);
+        //$this->load->view('', $this->data);
     }
     
     /**
@@ -42,10 +29,30 @@ class Users extends \MyApp
      */
     public function registerPOST()
     {
-        // Recommended way of setup
+        // Load validation library
         $this->load->library('Validate', $this, true); 
         
-        //$this->Validate->def('nameAvailable', 'Article','exists', 'This title already exists.', false);
+        // Define custom check
+        $this->Validate->def('accountExists', 'Library\\Auth','accountExists', 'An account with that username already exists.', false);
+        
+        // Define validation rules.
+        $this->Validate->rule('username', 'required|accountExists|trim');
+        $this->Validate->rule('email', 'required|trim');
+        $this->Validate->rule('password', 'required');
+        $this->Validate->rule('passwordConfirm', 'required|matches[password]', 'Password Confirmation');
+        
+        // Initiate validation
+        if ($this->Validate->run()) {        
+            // Submit was successful!
+            $user = new User($name, $type);
+            
+            // Save the user to the database.
+            $this->repo->save($user);
+        }
+        else {      
+            // Call the main method to redisplay the form.
+            $this->register();
+        }
     }
     
     /**

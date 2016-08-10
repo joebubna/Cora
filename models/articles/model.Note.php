@@ -12,7 +12,7 @@ class Note extends \Note {
 
     public function foo()
     {
-        return 'This is a task note.<br>';
+        return 'This is an article note.<br>';
     }
 
 }

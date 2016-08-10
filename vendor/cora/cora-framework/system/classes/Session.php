@@ -32,4 +32,9 @@ class Session
     {
         session_write_close();
     }
+    
+    public function destroy()
+    {
+        session_destroy();
+    }
 }

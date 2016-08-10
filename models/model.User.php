@@ -11,9 +11,11 @@ class User extends MyModel {
             'type'          => 'int',
             'primaryKey'    => true
         ],
-        'name' => [
-            'type' => 'varchar',
-            'size' => 155
+        'firstName' => [
+            'type' => 'varchar'
+        ],
+        'lastName' => [
+            'type' => 'varchar'
         ],
         'email' => [
             'type' => 'varchar',
@@ -24,7 +26,7 @@ class User extends MyModel {
             'enum' => "'User', 'Moderator', 'Admin'",
             'defaultValue' => 'User'
         ],
-        'created' => [
+        'createdDate' => [
             'type' => 'datetime'  
         ],
         'location' => [

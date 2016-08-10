@@ -18,7 +18,7 @@ class Load extends Framework
     /**
      *  For echo'ing data in Views that repeats.
      */
-    public function repeat($property, $repeatTag, $classes = '', $outerTag = false, $outerClasses = '')
+    public function repeat(&$property, $repeatTag, $classes = '', $outerTag = false, $outerClasses = '')
     {
         if (isset($property)) {
             $output = '';
@@ -160,7 +160,7 @@ class Load extends Framework
             include($filePath);
         }
     }
-
+    
     protected function _getFilePath($pathname, $fileName)
     {
         $path_steps = explode('/', $this->getPath($pathname));
