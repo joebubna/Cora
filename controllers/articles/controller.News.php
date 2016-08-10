@@ -6,7 +6,7 @@ class News extends \MyApp
     
     public function index() 
     {
-        echo 'This is the articles homepage.';
+        echo 'This is the news homepage.';
     }
     
     public function create()
@@ -52,29 +52,4 @@ class News extends \MyApp
         echo $p2 . '<br>';
         echo $p3 . '<br>';
     }
-    
-    public function testModels() 
-    {       
-        /**
-         *  You can explicitly load models if you want to, but it's not necessary
-         *  as Cora's autoloader will load models for you. Note that this does
-         *  NOT apply to other resources like Libraries; you must explicitly load
-         *  those.
-         */
-        //$this->load->model('note');
-        //$this->load->model('task/note');
-        
-        $note = new Note();
-        $taskNote = new \Task\Note();
-    }
-    
-    public function testLibraries()
-    {
-        //$this->load->library('TestLib');
-        echo 'HERE<BR>';
-        $v = new \DateTime();
-        $t = new \Library\TestLib();
-        $t->hi();
-    }
-    
 }

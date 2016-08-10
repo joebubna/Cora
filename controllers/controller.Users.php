@@ -15,7 +15,7 @@ class Users extends \MyApp
     /**
      *  Create a new user.
      */
-    public function register($inputName, $inputType)
+    public function register()
     {
         // Grab our inputs. We'll just use fake data instead of
         // actually capturing it from a form.
@@ -35,6 +35,17 @@ class Users extends \MyApp
         // assigned the object the unique ID the database provided it.
         // Let's echo this user's ID.
         echo $user->id;
+    }
+    
+    /**
+     *  Process user creation.
+     */
+    public function registerPOST()
+    {
+        // Recommended way of setup
+        $this->load->library('Validate', $this, true); 
+        
+        //$this->Validate->def('nameAvailable', 'Article','exists', 'This title already exists.', false);
     }
     
     /**

@@ -67,12 +67,12 @@ $config['enable_RESTful'] = true;
  *  The only conceivable reason you might want to change this is if you aren't using composer or the demo
  *  project to install Cora, and instead are placing the Cora system files in some custom place.
  */
-$config['basedir'] = dirname(__FILE__).'/../../../../../';
+$config['basedir'] = realpath(dirname(__FILE__).'/../../../../../').'/';
 
 /**
- *  Path to models/classes directory relative to this file.
+ *  Path to models directory relative to this file.
  */
-$config['pathToModels'] = $config['basedir'].'classes/';
+$config['pathToModels'] = $config['basedir'].'models/';
 
 /**
  *  Path to views directory relative to this file.
@@ -109,7 +109,7 @@ $config['pathToCora'] = $config['basedir'].'cora/';
  *  Model/Class file prefix. I.e. If your class files are named "class.MyClass.inc.php"
  *  then enter 'class.' for Prefix and '.inc' for postfix.
  */
-$config['modelsPrefix'] = 'class.';
+$config['modelsPrefix'] = 'model.';
 $config['modelsPostfix'] = '';
 
 /**

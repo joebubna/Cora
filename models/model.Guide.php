@@ -4,7 +4,7 @@
 */
 class Guide extends MyModel {
     
-    public $model_connection = 'MySQL3';
+    public $model_connection = 'MySQL2';
     public $model_attributes = [ 
         'id' => [
             'type'          => 'int',
