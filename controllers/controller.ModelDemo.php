@@ -50,49 +50,7 @@ class ModelDemo extends \MyApp {
     
     public function testDelete($id)
     {
-        //$user = $this->repo->find($id);
         $this->repo->delete($id);
-    }
-    
-    public function testCreate2()
-    {
-        $user = new \User('JoeTest');
-        
-        $user->created = new DateTime();//date('Y-m-d');
-        $user->job      = new Job('Librarian', 'Keeper of knowledge!');
-        $user->location = new Location('JoesHouse', 'Portland');
-        
-        $user->guides   = new \Cora\ResultSet([
-                            new Guide('The Dewey Decimal System'),
-                            new Guide('How to Keep Kids Quiet')
-                        ]);
-        
-        $user->notes    = new \Cora\ResultSet([
-                            new Note('Librarian Note!'),
-                            new Note('Librarian Note 2!')
-                        ]);
-        
-        $user->articles = new \Cora\ResultSet([
-                            new Article('Article Create2 #1'),
-                            new Article('Article Create2 #2')
-                        ]);
-        $this->repo->save($user);
-    }
-    
-    public function testCreate3()
-    {
-        $user = new \User('LocationTest', 'SuperAdmin');
-        $user->location = new Location('JoesHouse', 'Portland');
-        $this->repo->save($user);
-    }
-    
-    public function testCreate4()
-    {
-        $user = new \User('Josiah', 'SuperAdmin');
-        $user->location = new Location('JoesHouse', 'Portland');
-        $user->job      = new Job('Librarian', 'Keeper of knowledge!');
-        $repo = $user->getRepository();
-        $repo->save($user);
     }
     
     public function testFetchClass($id = 64)
@@ -101,25 +59,11 @@ class ModelDemo extends \MyApp {
         //var_dump($user);
         //$user->model_dynamicOff = true;
         echo $user->name.'<br>';
-        echo $user->created->format('Y-m-d').'<br>';
-        echo $user->location->name.'<br>';
+        echo $user->createdDate->format('Y-m-d').'<br>';
         
         foreach ($user->articles as $article) {
             echo $article->title.'<br>';
         }
-        
-        foreach($user->guides as $guide) {
-            echo $guide->title.'<br>';
-        }
-        
-        echo $user->job->title.'<br>';
-        
-        foreach($user->notes as $note) {
-            echo $note->note.'<br>';
-        }
-        
-        //var_dump($user);
-        //var_dump($user->location);
     }
     
     public function testUpdateByCustom()

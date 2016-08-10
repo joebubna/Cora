@@ -16,7 +16,10 @@ class Article extends MyModel {
             'type' => 'varchar'
         ],
         'owner' => [
-            'model' => 'user'
+            'model' => 'User'
+        ],
+        'comments' => [
+            'models' => 'Comment'
         ]
     ];
     

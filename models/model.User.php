@@ -4,17 +4,12 @@
 */
 class User extends MyModel {
     
-    //public $model_table = 'notes_tasks';
-    //public $model_connection = 'MySQL';
     public $model_attributes = [ 
         'id' => [
             'type'          => 'int',
             'primaryKey'    => true
         ],
-        'firstName' => [
-            'type' => 'varchar'
-        ],
-        'lastName' => [
+        'username' => [
             'type' => 'varchar'
         ],
         'email' => [
@@ -22,31 +17,15 @@ class User extends MyModel {
             'index' => true
         ],
         'type'  => [
-            'type' => 'enum',
-            'enum' => "'User', 'Moderator', 'Admin'",
+            'type' => 'varchar',
+            'side' => 55,
             'defaultValue' => 'User'
         ],
         'createdDate' => [
             'type' => 'datetime'  
         ],
-        'location' => [
-            'model' => 'location'
-        ],
-        'job' => [
-            'model' => 'job',
-            'usesRefTable' => true,
-            'relTable' => 'ref_users_jobs'
-        ],
         'articles' => [
             'models' => 'Article',
-            'via'    => 'owner'
-        ],
-        'guides' => [
-            'models' => 'guide',
-            'passive' => true
-        ],
-        'notes' => [
-            'models' => 'task\\note',
             'via'    => 'owner'
         ]
     ];
@@ -57,8 +36,8 @@ class User extends MyModel {
         $this->type = $type;
     }
     
-    public function getName() {
-        return $this->name;
+    public function beforeCreate() {
+        $this->createdDate = new \DateTime();
     }
 
 }
