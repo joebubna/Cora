@@ -95,8 +95,11 @@ class Users extends \MyApp
             $password   = $this->input->post('password');
             $rememberMe = $this->input->post('rememberMe');
             
-            if ($this->auth->login($username, $password, $rememberMe)) {
-                echo 'Valid username and password';
+            // Attempt login
+            $user = $this->auth->login($username, $password, $rememberMe)
+            
+            if ($user) {
+                $echo 'Valid username and password';
             }
             else {
                 

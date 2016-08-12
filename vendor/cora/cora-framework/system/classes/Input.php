@@ -119,7 +119,7 @@ class Input
     public function hasFiles($field = null)
     {
         if ($field) {
-            if (count($this->files($field))) {
+            if ($this->files($field)) {
                 return true;
             }
             return false;
