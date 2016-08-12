@@ -13,14 +13,15 @@ class Users extends \MyApp
     }
     
     /**
-     *  Create a new user.
+     *  Register User form.
      */
     public function register()
     {
         $this->load->library('Validate', $this, true); 
         $this->data->title = 'Register';
         $this->_loadView(__FUNCTION__);
-        //$this->data->content = $this->load->view('forms/articles_create', $this->data, true);
+        
+        //$this->data->content = $this->load->view('users/register', $this->data, true);
         //$this->load->view('', $this->data);
     }
     
@@ -33,21 +34,28 @@ class Users extends \MyApp
         $this->load->library('Validate', $this, true); 
         
         // Define custom check
-        $this->Validate->def('accountExists', 'Library\\Auth','accountExists', 'An account with that username already exists.', false);
+        $this->Validate->def('accountExists', 'Library\\Auth','accountExists', 'An account with that username already exists.', false, 'username');
         
         // Define validation rules.
         $this->Validate->rule('username', 'required|accountExists|trim');
         $this->Validate->rule('email', 'required|trim');
         $this->Validate->rule('password', 'required');
-        $this->Validate->rule('passwordConfirm', 'required|matches[password]', 'Password Confirmation');
+        $this->Validate->rule('password_confirm', 'required|matches[password]', 'Password Confirmation');
         
         // Initiate validation
         if ($this->Validate->run()) {        
             // Submit was successful!
-            $user = new User($name, $type);
             
-            // Save the user to the database.
-            $this->repo->save($user);
+            // Grab data
+            $username   = $this->input->post('username');
+            $email      = $this->input->post('email');
+            $password   = $this->input->post('password');
+            
+            // Create auth object and call for creation of user
+            $this->auth->userCreate($username, $email, $password);
+            
+            // Fire user created event
+            
         }
         else {      
             // Call the main method to redisplay the form.
@@ -55,42 +63,60 @@ class Users extends \MyApp
         }
     }
     
+    
+    /**
+     *  Login Form
+     */
+    public function login()
+    {
+        $this->load->library('Validate', $this, true); 
+        $this->data->title = 'Login';
+        $this->_loadView(__FUNCTION__);
+    }
+    
+    /**
+     *  Login Process
+     */
+    public function loginPOST()
+    {
+        $this->load->library('Validate', $this, true); 
+        $this->data->title = 'Login';
+        
+        // Define validation rules.
+        $this->Validate->rule('username', 'required|trim');
+        $this->Validate->rule('password', 'required');
+        
+         // Initiate validation
+        if ($this->Validate->run()) {
+            
+            // Grab data
+            $username   = $this->input->post('username');
+            $email      = $this->input->post('email');
+            $password   = $this->input->post('password');
+            $rememberMe = $this->input->post('rememberMe');
+            
+            if ($this->auth->login($username, $password, $rememberMe)) {
+                echo 'Valid username and password';
+            }
+            else {
+                
+                $this->data->errors = ['Invalid username and password.'];
+                $this->login();
+            }
+        }
+        else {
+            $this->login();
+        }
+    }
+    
+    
     /**
      *  Display a user's profile.
-     *  In this case, just echo their job title.
      */
     public function profile($id)
     {
         $user = $this->repo->find($id);
         //echo $user->job->title;
         var_dump($user);
-    }
-    
-    public function lightClassDemo($id)
-    {
-        $this->db->where('id', $id);
-        $this->db->select(['id', 'name']);
-        $user = $this->repo->findOne($this->db);  
-        var_dump($user);
-    }
-    
-    public function subsetDemo()
-    {
-        $this->db->where('type', 'Admin');
-        $users = $this->repo->findAll($this->db); 
-        
-        foreach ($users as $user) {
-            echo $user->name.'<br>';
-        }
-    }
-    
-    public function joinDemo($id)
-    {
-        $this->db->where('users.id', $id)
-                 ->select(['users.id', 'users.name', 'jobs.title'])
-                 ->join('ref_users_jobs', [['users.id', '=', 'ref_users_jobs.user']])
-                 ->join('jobs', [['ref_users_jobs.job', '=', 'jobs.id']]);
-        $user = $this->repo->findOne($this->db);  
-        echo $user->title;
     }
 }

@@ -83,7 +83,8 @@ class Gateway
     public function fetchBy($key, $value, $options)
 	{
         $this->db   ->select('*')
-                    ->from($this->tableName);
+                    ->from($this->tableName)
+                    ->where($key, $value);
         
         if (isset($options['order_by'])) {
             $this->db->orderBy($options['orderBy'], $options['order']);
@@ -95,7 +96,7 @@ class Gateway
                 $this->db->offset($options['offset']);
             }
         }
-
+        
 		return $this->db->fetchAll();
 	}
 

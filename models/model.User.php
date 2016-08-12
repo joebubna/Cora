@@ -16,23 +16,37 @@ class User extends MyModel {
             'type' => 'varchar',
             'index' => true
         ],
-        'type'  => [
-            'type' => 'varchar',
-            'side' => 55,
-            'defaultValue' => 'User'
+        'password' => [
+            'type' => 'varchar'  
         ],
         'createdDate' => [
             'type' => 'datetime'  
         ],
+        'primaryRole' => [
+            'type' => 'varchar',
+            'size' => 55,
+            'defaultValue' => 'User'
+        ],
+        'roles' => [
+            'models' => 'Role'  
+        ],
+        'permissions' => [
+            'models' => 'Permission'  
+        ],
+        'groups' => [
+            'models' => 'Group'
+        ],  
         'articles' => [
             'models' => 'Article',
-            'via'    => 'owner'
+            'via' => 'owner'
         ]
     ];
     
-    public function __construct($name = null, $type = null)
+    public function __construct($name = null, $email = null, $password = null, $type = null)
     {
-        $this->name = $name;
+        $this->username = $name;
+        $this->email = $email;
+        $this->password = $password;
         $this->type = $type;
     }
     

@@ -16,7 +16,15 @@ class Cora {
         // Init useful Cora classes
         $this->load = new Cora\Load();
         $this->input = new Cora\Input();
-
+        
+        // Load and set cora config.
+        require(dirname(__FILE__).'/../config/config.php');
+        
+        // Load custom app config
+        include($config['basedir'].'cora/config/config.php');
+        
+        // Store config settings as data member.
+        $this->config = $config;
     }
     
     public function setData($property, $value)
@@ -24,7 +32,7 @@ class Cora {
         $this->data->$property = $value;
     }
     
-    public function _loadView($method, $data = false)
+    protected function _loadView($method, $data = false)
     {
         if ($data == false) {
             $data = $this->data;

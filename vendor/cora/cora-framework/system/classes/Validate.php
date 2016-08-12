@@ -67,9 +67,9 @@ class Validate
     /**
      *  Stores a customly defined validation check.
      */
-    public function def ($checkName, $class, $method, $errorMessage, $passing = true)
+    public function def ($checkName, $class, $method, $errorMessage, $passing = true, $arguments = false)
     {
-        $this->customChecks->$checkName = ['_call', $class, $method, $passing];
+        $this->customChecks->$checkName = ['_call', $class, $method, $passing, $arguments];
         $this->lang->$checkName = $errorMessage;
     }
 
@@ -109,7 +109,7 @@ class Validate
                 $customType = $customCheckDef[0];
 
                 // Define the arguments that will be passed to the custom check.
-                $arguments = array($fieldData, $customCheckDef[1], $customCheckDef[2], $customCheckDef[3]);
+                $arguments = array($fieldData, $customCheckDef[1], $customCheckDef[2], $customCheckDef[3], $customCheckDef[4]);
 
                 // Call the custom check.
                 $checkResult = call_user_func_array(array($this, $customType), $arguments);
@@ -193,11 +193,11 @@ class Validate
      *          $user->nameExists($fieldData) you would want to return FALSE. So set $passing = false.
      *          $user->nameAvailable($fieldData) you would want to return TRUE. So set $passing = true.
      */
-    protected function _call($fieldData, $controller, $method, $passing)
+    protected function _call($fieldData, $controller, $method, $passing, $arguments)
     {
         // If data to be passed to the method isn't an array, put it in array format.
-        if (!is_array($fieldData))
-            $fieldData = array($fieldData);
+        $fieldData = array($fieldData, $arguments);
+            
 
         // Call custom controller->method and pass the data to it.
         $result = call_user_func_array(array($controller, $method), $fieldData);
