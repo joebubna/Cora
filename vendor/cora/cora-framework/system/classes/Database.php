@@ -205,7 +205,7 @@ class Database
     
     
     public function field($name, $type, $attributes = ' ')
-    {
+    {   
         $this->store('keyValue', 'fields', $name, $attributes, $type);
         return $this;
     }

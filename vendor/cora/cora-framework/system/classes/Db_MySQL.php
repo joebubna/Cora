@@ -742,4 +742,17 @@ class Db_MySQL extends Database
         }
     }
     
+    
+    
+    
+    public function field($name, $type, $attributes = ' ')
+    {   
+        // Set MySQL quotes around field. If this doesn't get done, then certain named fields
+        // such as 'group' will cause an error because they are reserved.
+        $name = '`'.$name.'`';
+        
+        $this->store('keyValue', 'fields', $name, $attributes, $type);
+        return $this;
+    }
+    
 }

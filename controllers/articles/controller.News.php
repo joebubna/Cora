@@ -13,8 +13,12 @@ class News extends \MyApp
     {
         $this->load->library('Validate', $this, true); 
         $this->data->title = 'A Simple Form';
-        $this->data->content = $this->load->view('forms/articles_create', $this->data, true);
-        $this->load->view('', $this->data);
+        $this->_loadView(__FUNCTION__);
+        
+        // THE ABOVE _loadView methods does the same thing as the two lines below!
+        
+        //$this->data->content = $this->load->view('articles/news/create', $this->data, true);
+        //$this->load->view('', $this->data);
     }
     
     public function createPOST() 
@@ -37,6 +41,14 @@ class News extends \MyApp
         // Initiate validation
         if ($this->Validate->run()) {        
             // Submit was successful!
+            
+            // Insert code to save article here.
+            // After saving, should display article, not homepage.
+            //
+            // ... code ...
+            //
+            
+            // Display News homepage. CHANGE THIS TO DISPLAY ARTICLE. Hint: $this->view($articleId);
             $this->index();
         }
         else {      

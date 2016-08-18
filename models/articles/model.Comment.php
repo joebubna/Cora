@@ -24,7 +24,7 @@ class Comment extends \Comment {
         ]
     ];
     
-    public function __construct($article, $user, $text) 
+    public function __construct($article = null, $user = null, $text = null) 
     {
         $this->owner = $article;
         $this->madeBy = $user;

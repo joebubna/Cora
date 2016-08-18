@@ -441,10 +441,10 @@ class Model
             $alphabeticalComparison = strcmp($table1, $table2);
 
             if ($alphabeticalComparison > 0) {
-                $result = $table1.'_'.$table2;
+                $result = 'ref_'.$table1.'_'.$table2;
             }
             else {
-                $result = $table2.'_'.$table1;
+                $result = 'ref_'.$table2.'_'.$table1;
             }
         }      
         return $result;
