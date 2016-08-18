@@ -128,18 +128,63 @@
         
             
 <li >
-    <a href="../../databaseclass/overview/">Database Class</a>
+    <a href="../overview/">AmBlend ORM</a>
 </li>
 
         
             
 <li >
-    <a href="../overview/">AmBlend ORM</a>
+    <a href="../../databaseclass/overview/">Database Class</a>
 </li>
 
         
     </ul>
   </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
 
                     
                         
@@ -186,6 +231,12 @@
             
 <li >
     <a href="../lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../database_gen/">Automated DB Creation</a>
 </li>
 
         
@@ -252,41 +303,41 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">MVC Pattern</a>
+    <a tabindex="-1" href="">Events</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../../mvc/overview/">Overview</a>
+    <a href="../../events/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/models/">Models</a>
+    <a href="../../events/eventmanager/">Event Manager</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/views/">Views</a>
+    <a href="../../events/eventmapping/">Event Mapping</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/controllers/">Controllers</a>
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
 </li>
 
         
     </ul>
   </li>
-
-                    
-                        
-<li >
-    <a href="../../routing/overview/">Routing</a>
-</li>
 
                     
                         
@@ -362,6 +413,16 @@
         
     
         <li class="main "><a href="#advanced-configuration">Advanced Configuration</a></li>
+        
+            <li><a href="#change-the-table-to-which-a-model-is-mapped">Change the table to which a model is mapped</a></li>
+        
+            <li><a href="#change-the-name-of-a-relation-table">Change the name of a relation table</a></li>
+        
+            <li><a href="#one-to-many-via-an-owner-column">One-to-Many via an "owner" column</a></li>
+        
+            <li><a href="#one-to-one-using-a-relation-table">One-to-One using a relation table</a></li>
+        
+            <li><a href="#namespaces">Namespaces</a></li>
         
     
     </ul>
@@ -453,57 +514,548 @@ value is another associative array for defining that attribute's details. The
 most basic detail which I always recommend including is that attribute's "type".
 By defining this, you can use AmBlend's automated database creation tool.</p>
 <h2 id="definition">Definition</h2>
-<p>Below are the properties you can use to describe an attribute definition.</p>
+<p>Below are the basic properties you can use to describe an attribute definition.</p>
 <table>
     <tr>
         <th>Attribute Name</th>
         <th>Valid Values</th>
+        <th>Description</th>
     </tr>
     <tr>
         <td>type</td>
-        <td>int (integer), varchar, char, float, date, datetime, bool (boolean), binary, text, mediumtext, longtext</td>
-    </tr>
-    <tr>
-        <td>primaryKey</td>
-        <td>true</td>
-    </tr>
-    <tr>
-        <td>defaultsTo</td>
-        <td>'Some String'</td>
-    </tr>
-    <tr>
-        <td>autoIncrement</td>
-        <td>true</td>
-    </tr>
-    <tr>
-        <td>unique</td>
-        <td>true</td>
+        <td>
+            <table class="unbreak">
+            <tr><td>tinyint, smallint, mediumint, int, bigint</td></tr>
+            <tr><td>varchar, char,</td></tr>
+            <tr><td>float,</td></tr>
+            <tr><td>date, datetime,</td></tr>
+            <tr><td>boolean,</td></tr>
+            <tr><td>binary,</td></tr>
+            <tr><td>tinytext, text, mediumtext, longtext</td></tr>
+            <tr><td>tinyblob, mediumblob, blob, longblob</td></tr>
+            </table>
+        </td>
+        <td>For setting the "type" field in a DB.</td>
     </tr>
     <tr>
         <td>size</td>
         <td>{integer}</td>
+        <td>The size of the field in the DB. If size is not set and the type is 'varchar', size will default to 255 when using MySQL adaptor.</td>
     </tr>
     <tr>
         <td>precision</td>
         <td>{integer}</td>
+        <td>If the type is a float, this sets the places after the decimal point.</td>
+    </tr>
+    <tr>
+        <td>primaryKey</td>
+        <td>true</td>
+        <td>This should only be set for ONE attribute per model.</td>
+    </tr>
+    <tr>
+        <td>autoIncrement</td>
+        <td>true</td>
+        <td>Is the field auto-incrementing in value?</td>
+    </tr>
+    <tr>
+        <td>defaultValue</td>
+        <td>'Some String'</td>
+        <td>
+            Sets a default value for this attribute. If this value needs to be
+            an object, or dynamically generated, then use the beforeCreate() lifecycle
+            callback to assign a default value. See the lifecycle callbacks section
+            for more info.
+        </td>
     </tr>
     <tr>
         <td>enum</td>
-        <td>['value1', 'value2', 'value3']</td>
+        <td>'value1', 'value2', 'value3'</td>
+        <td>The valid values if the field type is set to 'enum'.
+        I don't actually recommend you use ENUM if you're starting a new project
+        (it may be hard to support across various database types).
+        This feature is mostly present for integration with existing projects.</td>
     </tr>
     <tr>
-        <td>columnName</td>
-        <td>{string}</td>
+        <td>unique</td>
+        <td>true</td>
+        <td>Tells the database that the values of this attribute should be unique.</td>
     </tr>
     <tr>
         <td>index</td>
         <td>true</td>
+        <td>Make an index for this attribute.</td>
     </tr>
 </table>
 
+<p>For a slightly more detailed example, let's modify our User definition from above
+for the user 'type' attribute. Let's say we know we don't need 255 characters (the default)
+for the type, and also we want the default user type to be just 'User'. Furthermore,
+let's say we know we'll be searching a lot by email, so we want to index the email attribute:</p>
+<pre><code class="PHP">public $model_attributes = [
+    'id' =&gt; [
+        'type'          =&gt; 'int',
+        'primaryKey'    =&gt; true
+    ],
+    'name' =&gt; [
+        'type' =&gt; 'varchar'
+    ],
+    'email' =&gt; [
+        'type' =&gt; 'varchar',
+        'index' =&gt; true
+    ],
+    'type'  =&gt; [
+        'type' =&gt; 'varchar',
+        'size' =&gt; 55,
+        'defaultValue' =&gt; 'User'
+    ]
+];
+</code></pre>
+
+<p>Now if you generate a database using AmBlend's database generation tool, it will
+reflect these changes.</p>
 <h2 id="object-relations">Object Relations</h2>
+<p>Alright, hopefully the general gist of how to define a model's attributes is becoming
+clearer. An important thing we haven't addressed yet is how to setup relationships
+with other objects. This is where things get exciting and Cora's AmBlend really shines.
+Going back to our User object example, let's say a user has a Location associated
+with them as well as a number of articles they've written (maybe we're running a
+blogging site or something). We would setup this relationship like so:</p>
+<pre><code class="php">public $model_attributes = [
+    'id' =&gt; [
+        'type'          =&gt; 'int',
+        'primaryKey'    =&gt; true
+    ],
+    'name' =&gt; [
+        'type' =&gt; 'varchar'
+    ],
+    'email' =&gt; [
+        'type' =&gt; 'varchar',
+        'index' =&gt; true
+    ],
+    'type'  =&gt; [
+        'type' =&gt; 'varchar',
+        'size' =&gt; 55,
+        'defaultValue' =&gt; 'User'
+    ],
+    'location' =&gt; [
+        'model' =&gt; 'location'
+    ],
+    'articles' =&gt; [
+        'models' =&gt; 'article'
+    ]
+];
+</code></pre>
+
+<p>That's it! Notice the plural 's' on 'models' for referring to articles the user
+has written, and the singular 'model' for representing the user's location.</p>
+<p>Of course, now you may be wondering how to actually USE this, but that's equally
+as intuitive and easy. Going back to the non-relational attributes like 'Type',
+if you had an existing user and you wanted to change their user type from 'User'
+to 'Moderator', you would do that like this:</p>
+<pre><code class="php">// Grab user. 'repo' is a User repository.
+$user = $this-&gt;repo-&gt;find($id);
+
+// Change their type
+$user-&gt;type = 'Moderator';
+
+// Save the change
+$repo-&gt;save($user);
+</code></pre>
+
+<p>Working with related objects is the same concept! Let's associate a new Location
+and set of Articles with a user:</p>
+<pre><code class="php">// Grab user:
+$user = $this-&gt;repo-&gt;find($id);
+
+// Associate a location to this user:
+$user-&gt;location = new Location('Fuel Medical LLC', 'Camas', 'WA');
+
+// Associate a set of Articles to this user:
+$user-&gt;articles =   new \Cora\ResultSet([
+                        new Article('How to Write Good Code'),
+                        new Article('How to Unit Test')
+                    ]);
+
+// Save the changes
+$repo-&gt;save($user);
+</code></pre>
+
+<p>For basic usage with a single database, that's pretty much all you need to know.
+However, if you're an advanced user and will have your data spread across multiple
+databases and/or you want more control over the setup of the database
+(like maybe you're integrating Cora into an existing database), then read on.</p>
 <h1 id="using-multiple-databases">Using Multiple Databases</h1>
-<h1 id="advanced-configuration">Advanced Configuration</h1></div>
+<p>The database config file for Cora holds an array that let's you define multiple
+database connections. If you've gone through the setup process, you've undoubtably
+seen it, but here's a reminder of how this looks:</p>
+<pre><code class="PHP">$dbConfig['defaultConnection'] = 'mainDb';
+$dbConfig['connections'] = [
+    'mainDb' =&gt; [
+        'adaptor'   =&gt; 'MySQL',
+        'host'      =&gt; 'localhost:3306',
+        'dbName'    =&gt; 'cora',
+        'dbUser'    =&gt; 'root',
+        'dbPass'    =&gt; 'root'
+    ],
+    'secondaryDb' =&gt; [
+        'adaptor'   =&gt; 'MySQL',
+        'host'      =&gt; 'localhost:3306',
+        'dbName'    =&gt; 'cora2',
+        'dbUser'    =&gt; 'root',
+        'dbPass'    =&gt; 'root'
+    ],
+    'mongoDb' =&gt; [
+        'adaptor'   =&gt; 'MongoDb',
+        'host'      =&gt; 'localhost:3306',
+        'dbName'    =&gt; 'cora3',
+        'dbUser'    =&gt; 'root',
+        'dbPass'    =&gt; 'root'
+    ]
+];
+</code></pre>
+
+<p>In this config file you define the connection details for each database, tell
+it what Cora database adaptor to use with that connection, and give each connection
+a name.</p>
+<p>In order to make use of multiple connections, you have to specify that some of your
+models use a connection which is different from the default. Like so:</p>
+<pre><code class="php">class Guide extends MyModel {
+
+    public $model_connection = 'secondaryDb';
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'title' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'authors' =&gt; [
+            'models' =&gt; 'user'
+        ]
+    ];
+
+    public function __construct($title = null)
+    {
+        $this-&gt;title = $title;
+    }
+
+}
+</code></pre>
+
+<p>Now when you generate your database, the Guides table/collection will get created
+using the 'secondaryDb' connection instead of the main one. Similarly, grabbing
+Guide object from the DB using a repository will use this secondaryDb connection
+too:</p>
+<pre><code class="php">$repo = \Cora\RepositoryFactory::make('Guide');
+$guide = $repo-&gt;find($id);
+</code></pre>
+
+<p>The spot where you could run into trouble is when you want a two-way reference between
+objects in different databases. For example, looking at our Guide definition above
+you can see we have a reference to one or more User models representing the authors
+of said guide. But what if our Users model also keeps a reference to Guides a user
+has been an author of? Let's add a reference to Guides in our User model:</p>
+<p><em>Note: Because our User model was defined as using the default connection
+(we didn't tell it to use anything different) AmBlend will know to fetch the authors
+from the main database.</em></p>
+<pre><code class="php">public $model_attributes = [
+    'id' =&gt; [
+        'type'          =&gt; 'int',
+        'primaryKey'    =&gt; true
+    ],
+    'name' =&gt; [
+        'type' =&gt; 'varchar'
+    ],
+    'email' =&gt; [
+        'type' =&gt; 'varchar',
+        'index' =&gt; true
+    ],
+    'type'  =&gt; [
+        'type' =&gt; 'varchar',
+        'size' =&gt; 55,
+        'defaultValue' =&gt; 'User'
+    ],
+    'location' =&gt; [
+        'model' =&gt; 'location'
+    ],
+    'articles' =&gt; [
+        'models' =&gt; 'article'
+    ],
+    'guides' =&gt; [
+        'models' =&gt; 'guide'
+    ]
+];
+</code></pre>
+
+<p>So now we have a reference to Users from a Guide, and a reference to Guides from
+a User. The way these are related is by using a relation table. If you aren't
+familiar with relation tables, see the image below for the general idea. Basically
+it's a really simple table that holds relationships (shocking right!?). In this
+screenshot, guides 9 and 10 are associated with a user who's ID is '1', and
+guide 11 is associated with whoever user '2' is:</p>
+<p><img alt="dynamic_pattern" src="../../../img/relation_table_example.png" /></p>
+<p>The problem lies in the question of "Which database is going to hold the relation
+table?" Having to maintain redundant tables on each database and then remembering
+to alter both anytime a relationship changes is just plain dumb, and assuming
+that the relationship will be kept in the default database didn't feel like an
+assumption I could make for sure either. Thus, in order to solve this problem
+I've introduced the concept of 'passive' sides in a multi-database relationship.</p>
+<p>To fix our User &amp; Guide model definitions as we've defined them above, we need to
+mark one side of that relationship as the 'passive' side like so:</p>
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar',
+            'index' =&gt; true
+        ],
+        'type'  =&gt; [
+            'type' =&gt; 'varchar',
+            'size' =&gt; 55,
+            'defaultValue' =&gt; 'User'
+        ],
+        'location' =&gt; [
+            'model' =&gt; 'location'
+        ],
+        'articles' =&gt; [
+            'models' =&gt; 'article'
+        ],
+        'guides' =&gt; [
+            'models' =&gt; 'guide',
+            'passive' =&gt; true
+        ]
+    ];
+}
+</code></pre>
+
+<p>By marking the User side of the relationship as the passive side, AmBlend will
+now know to make the relationship table on the database represented by Guide's
+connection.</p>
+<h1 id="advanced-configuration">Advanced Configuration</h1>
+<p>Alright, using AmBlend's automated database creation feature and simply setting
+relationships as singular "model" or plural "models" and letting AmBlend handle the
+rest is nice and all for new projects. But let's talk about configuration options
+for incorporating AmBlend into a pre-existing database where you have to work within
+the constraints of the existing setup.</p>
+<p>First off, let's talk table names.</p>
+<h2 id="change-the-table-to-which-a-model-is-mapped">Change the table to which a model is mapped</h2>
+<p>By default, a table/collection name will be the plural version of the model. For
+instance: our User model will be stored in a table called "users". Our Guide model
+will be stored in a table called "guides" and so on and so forth. If this behavior
+won't work with your existing database for a particular model, you have the option
+to specify a different name.</p>
+<p>Let's say you are building an internal app to be used
+by your company and you want the User model to map to a table named "employees".
+You would specify that like so:</p>
+<pre><code class="php">class User extends \Cora\Model {
+
+    public $model_table = 'employees';
+    public $model_attributes = [
+        ... stuff here ...
+    ];
+}
+</code></pre>
+
+<h2 id="change-the-name-of-a-relation-table">Change the name of a relation table</h2>
+<p>Whenever you specify a simple plural relationship from one model to another like
+so:</p>
+<pre><code class="php">class User extends \Cora\Model {
+
+    public $model_attributes = [
+        'articles' =&gt; [
+            'models' =&gt; 'article'
+        ]
+    ];
+}
+</code></pre>
+
+<p>A relation table is used that is named by making the models involved plural and
+appending them together with an underscore in reverse alphabetical order.
+In the example above of a User associated with an Article the resulting relation
+table name would be "users_articles".</p>
+<p>If you're fine with the use of a relation table, but you need to change the name
+of it. You can do so by utilizing the 'relTable' setting like this:</p>
+<pre><code class="php">class User extends \Cora\Model {
+
+    public $model_attributes = [
+        'articles' =&gt; [
+            'models' =&gt; 'article',
+            'relTable' =&gt; 'some_custom_relation_table_name'
+        ]
+    ];
+}
+</code></pre>
+
+<p>The one caveat here is that at the time of this writing, I do not support custom
+column names within the relation table. The relation table column names must be
+the name of the model who's ID they hold. For the above example with User and
+Article, the relation table will need a 'user' column and an 'article' column. If
+you have existing relation tables that don't follow this format, you'll have to change
+them or else not use AmBlend.</p>
+<h2 id="one-to-many-via-an-owner-column">One-to-Many via an "owner" column</h2>
+<p>The default setup for plural relationships in AmBlend is the use of relation tables
+just because they are the most flexible. However, if you want to force the use of
+an "owner" type column in a one-to-many relationship either because it's your
+personal preference or it's necessary to integrate with an existing database, AmBlend
+makes this possible.</p>
+<p>What you'll need to do is just throw a 'via' setting in with a plural model definition.
+For instance, let's say we don't care about supporting multiple authors for an article
+on our site, but rather just want an article to have a single owner and we want to
+store a reference to this owner in the articles table via an "owner" column. We
+do that like this:</p>
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar',
+            'index' =&gt; true
+        ],
+        'type'  =&gt; [
+            'type' =&gt; 'varchar',
+            'size' =&gt; 55,
+            'defaultValue' =&gt; 'User'
+        ],
+        'location' =&gt; [
+            'model' =&gt; 'location'
+        ],
+        'articles' =&gt; [
+            'models' =&gt; 'article',
+            'via'    =&gt; 'owner'
+        ]
+    ];
+}
+</code></pre>
+
+<h2 id="one-to-one-using-a-relation-table">One-to-One using a relation table</h2>
+<p>By default, one-to-one relationships are stored as a column on the model's table.
+For instance, the following definition for a related Job object would be stored
+as seen in the picture below:</p>
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar',
+            'index' =&gt; true
+        ],
+        'type'  =&gt; [
+            'type' =&gt; 'varchar',
+            'size' =&gt; 55,
+            'defaultValue' =&gt; 'User'
+        ],
+        'job' =&gt; [
+            'model' =&gt; 'job'
+        ]
+    ];
+}
+</code></pre>
+
+<p><strong>"users" table:</strong> <br />
+<img alt="dynamic_pattern" src="../../../img/documentation_amblend_overview_table2.png" /></p>
+<p>However, if for some reason you wanted to force a single reference to use a relation
+table (maybe you felt it could change to a plural relationship in the future or something),
+you could do so by specifying "usesRefTable" as true:</p>
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar',
+            'index' =&gt; true
+        ],
+        'type'  =&gt; [
+            'type' =&gt; 'varchar',
+            'size' =&gt; 55,
+            'defaultValue' =&gt; 'User'
+        ],
+        'job' =&gt; [
+            'model' =&gt; 'job',
+            'usesRefTable' =&gt; true
+        ]
+    ];
+}
+</code></pre>
+
+<p>Optionally you can of course combine this with the previously talked about
+"relTable" option to specify the name of the relation table if the default naming
+doesn't work for you.</p>
+<h2 id="namespaces">Namespaces</h2>
+<p>Just a quick explanation of namespaces in the model definition...</p>
+<p>When defining related models in your $model_attributes array, namespaces are
+always absolute, never relative. See the namespaced Notes model below and the
+relationship definition added to User for an example:</p>
+<pre><code class="PHP">&lt;?php
+namespace Task;
+
+class Note extends \Note {
+
+    public $model_table = 'notes_tasks';
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'title' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'note' =&gt; [
+            'type' =&gt; 'text'
+        ],
+        'owner' =&gt; [
+            'model' =&gt; 'user'
+        ]
+    ];
+}
+</code></pre>
+
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar',
+            'index' =&gt; true
+        ],
+        'type'  =&gt; [
+            'type' =&gt; 'varchar',
+            'size' =&gt; 55,
+            'defaultValue' =&gt; 'User'
+        ],
+        'notes' =&gt; [
+            'models' =&gt; 'task\\note',
+            'via'    =&gt; 'owner'
+        ]
+    ];
+}
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

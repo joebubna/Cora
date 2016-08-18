@@ -4,7 +4,7 @@
     
     <url>
      <loc>None/</loc>
-     <lastmod>2016-08-08</lastmod>
+     <lastmod>2016-08-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -13,19 +13,19 @@
         
     <url>
      <loc>None/setup/install/</loc>
-     <lastmod>2016-08-08</lastmod>
+     <lastmod>2016-08-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/setup/configuration/</loc>
-     <lastmod>2016-08-08</lastmod>
+     <lastmod>2016-08-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/setup/advanced/</loc>
-     <lastmod>2016-08-08</lastmod>
+     <lastmod>2016-08-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -35,31 +35,19 @@
         
     <url>
      <loc>None/tutorials/intro/</loc>
-     <lastmod>2016-08-08</lastmod>
+     <lastmod>2016-08-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/tutorials/composer/</loc>
-     <lastmod>2016-08-08</lastmod>
+     <lastmod>2016-08-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     
 
     
-        
-    <url>
-     <loc>None</loc>
-     <lastmod></lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
-     <loc>None</loc>
-     <lastmod></lastmod>
-     <changefreq>daily</changefreq>
-    </url>
         
     <url>
      <loc>None</loc>
@@ -75,13 +63,31 @@
         
     <url>
      <loc>None/documentation/routing/overview/</loc>
-     <lastmod>2016-08-08</lastmod>
+     <lastmod>2016-08-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None</loc>
+     <lastmod></lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None</loc>
+     <lastmod></lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None</loc>
+     <lastmod></lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/documentation/validationclass/overview/</loc>
-     <lastmod>2016-08-08</lastmod>
+     <lastmod>2016-08-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -91,7 +97,7 @@
         
     <url>
      <loc>None/computerscience/computability/</loc>
-     <lastmod>2016-08-08</lastmod>
+     <lastmod>2016-08-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
         

@@ -9,7 +9,7 @@
         
         <link rel="shortcut icon" href="../../../img/favicon.ico">
 
-	<title>DELETE Methods - Cora Framework Documentation</title>
+	<title>Event - Cora Framework Documentation</title>
 
         <link href="../../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../../css/font-awesome-4.0.3.css" rel="stylesheet">
@@ -134,7 +134,7 @@
         
             
 <li >
-    <a href="../overview/">Database Class</a>
+    <a href="../../databaseclass/overview/">Database Class</a>
 </li>
 
         
@@ -251,49 +251,49 @@
         
             
 <li >
-    <a href="../overview/">Overview</a>
+    <a href="../../databaseclass/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../methods_utility/">Utility Methods</a>
+    <a href="../../databaseclass/methods_utility/">Utility Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../methods_select/">SELECT Methods</a>
+    <a href="../../databaseclass/methods_select/">SELECT Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../methods_update/">UPDATE Methods</a>
+    <a href="../../databaseclass/methods_update/">UPDATE Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../methods_insert/">INSERT Methods</a>
-</li>
-
-        
-            
-<li class="active">
-    <a href="./">DELETE Methods</a>
+    <a href="../../databaseclass/methods_insert/">INSERT Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../methods_create/">CREATE Methods</a>
+    <a href="../../databaseclass/methods_delete/">DELETE Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../databaseresult/">DatabaseResult Class</a>
+    <a href="../../databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/databaseresult/">DatabaseResult Class</a>
 </li>
 
         
@@ -308,31 +308,31 @@
         
             
 <li >
-    <a href="../../events/overview/">Overview</a>
+    <a href="../overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../events/eventmanager/">Event Manager</a>
+    <a href="../eventmanager/">Event Manager</a>
 </li>
 
         
             
 <li >
-    <a href="../../events/eventmapping/">Event Mapping</a>
+    <a href="../eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li class="active">
+    <a href="./">Event</a>
 </li>
 
         
             
 <li >
-    <a href="../../events/event/">Event</a>
-</li>
-
-        
-            
-<li >
-    <a href="../../events/listener/">Listener</a>
+    <a href="../listener/">Listener</a>
 </li>
 
         
@@ -375,12 +375,12 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../methods_insert/">
+                    <a rel="next" href="../eventmapping/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../methods_create/">
+                    <a rel="prev" href="../listener/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -394,171 +394,11 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#database-class-methods">Database Class Methods</a></li>
-        
-            <li><a href="#delete-method">delete() method</a></li>
-        
-            <li><a href="#from-method">from() method</a></li>
-        
-            <li><a href="#where-method">where() method</a></li>
-        
-            <li><a href="#orwhere-method">orWhere() method</a></li>
-        
-            <li><a href="#in-method">in() method</a></li>
-        
-            <li><a href="#orderby-method">orderBy() method</a></li>
-        
-            <li><a href="#limit-method">limit() method</a></li>
-        
-    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="database-class-methods">Database Class Methods</h1>
-<h2 id="delete-method">delete() method</h2>
-<p><strong>Purpose:</strong> <br />
-The delete() method tells the database class that you want to delete some records from a database table/collection.</p>
-<p><strong>Format:</strong>  </p>
-<pre><code class="php">delete()
-</code></pre>
-
-<p><strong>Examples:</strong>  </p>
-<pre><code class="php">// Delete all the records from a users table where their type is 'test'
-$db -&gt;delete()
-    -&gt;from('users')
-    -&gt;where('type', 'test')
-    -&gt;exec();
-</code></pre>
-
-<h2 id="from-method">from() method</h2>
-<p><strong>Alias:</strong> <br />
-This method is an alias of table().</p>
-<p><strong>Purpose:</strong> <br />
-The from() method is for selecting the table(s) you want to return or delete data from.</p>
-<p><strong>Format:</strong>  </p>
-<pre><code class="php">from(table_name | array(table_name1, table_name2, ...))
-</code></pre>
-
-<p><strong>Examples:</strong>   </p>
-<pre><code>// Grab a single table
-$db-&gt;from('users')
-
-// OR join multiple tables
-$db-&gt;from('users')
-   -&gt;from('user_profiles')
-
-// OR grab multiple tables by passing in an array
-$db-&gt;from(['users', 'user_profiles'])
-</code></pre>
-
-<h2 id="where-method">where() method</h2>
-<p><strong>Purpose:</strong> <br />
-The where() method is for limiting the records that get returned to only those that pass certain conditions.</p>
-<p><strong>Format:</strong> </p>
-<pre><code class="php">where(column_name, value [, operator] | array(array(column_name, operator, value [, conjunction])))
-</code></pre>
-
-<p><strong>Examples:</strong>  </p>
-<pre><code>// Only return results where name = 'bob'
-$db-&gt;where('name', 'bob')
-
-// Only return results where the date is greater than or equal to january first 2014
-$db-&gt;where('date', '2014-01-01', '&gt;=')
-
-// Only return results where the date is greater than or equal to january first 2014
-// and less than january 2016
-$db -&gt;where('date', '2014-01-01', '&gt;=')
-    -&gt;where('date', '2016-01-01', '&lt;')
-
-// Only return results where name = 'bob' OR name = 'jeff'
-$db -&gt;where('name', 'bob')
-    -&gt;orWhere('name', 'jeff')
-
-// Pass in an array...
-// Only return results where a user's name starts with 's' or was created after Jan 2016,
-// and the user is of type 'admin' or 'moderator'
-$db -&gt;where([
-        ['created_time', '&gt;=', '2016-01-01', 'OR'],
-        ['name', 'LIKE', 's%']
-    ])
-    -&gt;where([
-        ['type', '=', 'admin', 'OR'],
-        ['type', '=', 'moderator']
-    ])  
-// Using the MySQL adaptor, the above produces:
-// WHERE (created_time &gt;= '2016-01-01' OR name LIKE 's%') AND (type = 'admin' OR type = 'moderator')
-</code></pre>
-
-<h2 id="orwhere-method">orWhere() method</h2>
-<p><strong>Purpose:</strong> <br />
-The orWhere() method is for limiting the records that get returned to only those that pass certain conditions. </p>
-<p><strong>Similar To:</strong> <br />
-It works identically to the where() method except any conditions passed to it will be conjoined with 'OR' to any other Where declarations. See the where() section for more examples.</p>
-<p><strong>Examples:</strong>  </p>
-<pre><code class="php">// Only return users who are named bob and also admins, or users named jeff
-$db -&gt;where([
-        ['name', 'bob'],
-        ['type', 'admin']
-    ])
-    -&gt;orWhere('name', 'jeff')
-// Using the MySQL adaptor, the above produces:
-// WHERE (name = 'bob' AND type = 'admin') OR (name = 'jeff')
-</code></pre>
-
-<h2 id="in-method">in() method</h2>
-<p><strong>Purpose:</strong> <br />
-The in() method is for checking if a column's value exists in another set of data.</p>
-<p><strong>Format:</strong>   </p>
-<pre><code class="php">in(column, value | string(value1, value2, value3, ...) | array(value1, value2, value3, ...))
-</code></pre>
-
-<p><strong>Examples:</strong> </p>
-<pre><code class="php">// Check if column value matches a single value (same as using where statement)
-$db -&gt;in('name', 'bob')
-
-// Check if column value is present in a comma separated list
-// Note: The list gets translated into an array by the Database class.
-$db -&gt;in('name', 'bob, jeff, susan')
-
-// Check if column value is present in an array of values
-$db -&gt;in('name', ['bob', 'jeff', 'susan'])
-
-// NOT RECOMMENDED as it breaks cross-database functionality, but possible
-$db -&gt;in('name', 'SELECT name FROM users WHERE name LIKE s%')
-// The better way of doing the above is to do a query to grab all the names that start with 's',
-// then pass the result set as an array to the in() method. This would preserve cross-database
-// functionality and not lock you into databases that support your SQL statement.
-</code></pre>
-
-<h2 id="orderby-method">orderBy() method</h2>
-<p><strong>Purpose:</strong> <br />
-The orderBy() method is for ordering the returned results from your query.</p>
-<p><strong>Format:</strong> </p>
-<pre><code class="php">// sort_direction = DESC (descending) | ASC (ascending)
-orderBy(column_name, sort_direction)
-</code></pre>
-
-<p><strong>Examples:</strong> </p>
-<pre><code class="php">// Specifying a single column to order by...
-$db -&gt;orderBy('name', 'ASC')
-
-// Specifying multiple columns to order by...
-$db -&gt;orderBy('users.name', 'DESC')
-    -&gt;orderBy('locations.name', 'DESC')
-</code></pre>
-
-<h2 id="limit-method">limit() method</h2>
-<p><strong>Purpose:</strong> <br />
-The limit() method is for limiting the number of returned results from a query.</p>
-<p><strong>Format:</strong>   </p>
-<pre><code class="php">limit(number)
-</code></pre>
-
-<p><strong>Examples:</strong>   </p>
-<pre><code class="php">// Limit the number of result rows to 10
-$db -&gt;limit(10)
-</code></pre></div>
+</div>
         </div>
 
         <footer class="col-md-12">

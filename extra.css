@@ -10,6 +10,7 @@ table, th, td { border: 1px solid #ddd; }
 table.dominoes { margin-right: 10px; width: 40px; float: left;}
 table.floatLeft { margin-right: 20px; width: 400px; float: left; }
 .clear { clear: both; display: hidden; }
+.unbreak { white-space: nowrap; }
 
 /* HEADERS */
 h1 { margin-top: 44px; }

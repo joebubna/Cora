@@ -128,18 +128,63 @@
         
             
 <li >
-    <a href="../../databaseclass/overview/">Database Class</a>
+    <a href="../../amblend/overview/">AmBlend ORM</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/overview/">AmBlend ORM</a>
+    <a href="../../databaseclass/overview/">Database Class</a>
 </li>
 
         
     </ul>
   </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
 
                     
                         
@@ -186,6 +231,12 @@
             
 <li >
     <a href="../../amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/database_gen/">Automated DB Creation</a>
 </li>
 
         
@@ -252,41 +303,41 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">MVC Pattern</a>
+    <a tabindex="-1" href="">Events</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../../mvc/overview/">Overview</a>
+    <a href="../../events/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/models/">Models</a>
+    <a href="../../events/eventmanager/">Event Manager</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/views/">Views</a>
+    <a href="../../events/eventmapping/">Event Mapping</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/controllers/">Controllers</a>
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
 </li>
 
         
     </ul>
   </li>
-
-                    
-                        
-<li >
-    <a href="../../routing/overview/">Routing</a>
-</li>
 
                     
                         
@@ -324,7 +375,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../../routing/overview/">
+                    <a rel="next" href="../../events/listener/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -468,8 +519,8 @@ $this-&gt;Validate-&gt;def('userNameAvailable', 'User','isNameAvailable', 'Usern
 $this-&gt;Validate-&gt;rule('username', 'required|userNameAvailable');
 </code></pre>
 
-<p>The "def" method takes 4 required parameters, and an optional 5th one. Below is the function signature and a description of what each parameter does:</p>
-<pre><code class="php">$this-&gt;Validate-&gt;def($checkName, $class, $method, $errorMessageOnFailure, $passingResponse);
+<p>The "def" method takes 4 required parameters, with the 5th and 6th being optional. Below is the function signature and a description of what each parameter does:</p>
+<pre><code class="php">$this-&gt;Validate-&gt;def($checkName, $class, $method, $errorMessageOnFailure, $passingResponse, $arguments);
 </code></pre>
 
 <table>
@@ -497,6 +548,13 @@ $this-&gt;Validate-&gt;rule('username', 'required|userNameAvailable');
     <td>$passingResponse</td>
     <td>[OPTIONAL] Custom check methods are expected to return a TRUE or FALSE response when given the form input. This specifies which response is the passing one! By default this is set to TRUE. See below for examples.</td>
 </tr>
+<tr>
+    <td>$arguments</td>
+    <td>
+        [OPTIONAL] The method you call will always receive as its first argument the value of the field being validated. However,
+        there may be situations in which you need to pass along additional info. This parameter will get passed in as the 2nd argument to the custom check.
+    </td>
+</tr>
 </table>
 
 <p>So the optional 5th parameter when defining a custom check needs a little explaining. Basically, whatever methods you call for custom checks are expected to return True or False when given a certain input. However, which response "passes" the check, depends on how the method is written - and is why this optional 5th parameter exists. See the examples below:</p>
@@ -509,6 +567,22 @@ $this-&gt;Validate-&gt;rule('username', 'required|userNameAvailable');
 // Check passes if 'isNameTaken' returns FALSE.
 $this-&gt;Validate-&gt;def('userNameIsTaken', 'User','isNameTaken', 'Username already taken.', FALSE);
 $this-&gt;Validate-&gt;rule('username', 'required|userNameIsTaken');
+
+// Example 3 - A 'FALSE' value means the check passes. But we also need to pass along
+// whether accounts are identified by username or by email.
+// Check passes if 'accountExists' returns FALSE.
+$validationType = 'email'; // As opposed to 'username'
+$this-&gt;Validate-&gt;def('accountExists', 'Library\\Auth','accountExists', &quot;An account with that $validationType already exists.&quot;&quot;, false, $validationType);
+$this-&gt;Validate-&gt;rule('email', 'required|accountExists|trim');
+
+// Then in the Auth Library:
+public static function accountExists($authValue = false, $authField = false)
+{
+    // $authField is the field we are using for login validation, usually this is either 'username' or 'email'
+    // $authValue is the form data that was passed in. If validating by email, then presumably it's be the user's email address.
+
+    // Do stuff to figure out if an account exists, then return True or False.
+}
 </code></pre>
 
 <h2 id="human-readable-field-names">Human Readable Field Names</h2>

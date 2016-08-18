@@ -128,18 +128,63 @@
         
             
 <li >
-    <a href="../../documentation/databaseclass/overview/">Database Class</a>
+    <a href="../../documentation/amblend/overview/">AmBlend ORM</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/amblend/overview/">AmBlend ORM</a>
+    <a href="../../documentation/databaseclass/overview/">Database Class</a>
 </li>
 
         
     </ul>
   </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../documentation/mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../documentation/routing/overview/">Routing</a>
+</li>
 
                     
                         
@@ -186,6 +231,12 @@
             
 <li >
     <a href="../../documentation/amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/amblend/database_gen/">Automated DB Creation</a>
 </li>
 
         
@@ -252,41 +303,41 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">MVC Pattern</a>
+    <a tabindex="-1" href="">Events</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../../documentation/mvc/overview/">Overview</a>
+    <a href="../../documentation/events/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/mvc/models/">Models</a>
+    <a href="../../documentation/events/eventmanager/">Event Manager</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/mvc/views/">Views</a>
+    <a href="../../documentation/events/eventmapping/">Event Mapping</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/mvc/controllers/">Controllers</a>
+    <a href="../../documentation/events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/events/listener/">Listener</a>
 </li>
 
         
     </ul>
   </li>
-
-                    
-                        
-<li >
-    <a href="../../documentation/routing/overview/">Routing</a>
-</li>
 
                     
                         
@@ -434,7 +485,46 @@ to extend from your new base controller instead of MyApp. They should all follow
 </code></pre>
 
 <h3 id="step-6-configure-your-database">Step 6: Configure Your Database</h3>
-<p>[Info here]</p>
+<p>Next you need to open up the "cora/config/database.php" file in your project.
+The full path to this file should look something similar to this:</p>
+<pre><code class="php">/htdocs/MyAwesomeSite/cora/config/database.php
+</code></pre>
+
+<p>Within this file you'll find a listing of connections and a way to set the
+default connection. You need to edit this with the connection info for your
+database(s). It follows this format:</p>
+<pre><code class="php">$dbConfig['defaultConnection'] = 'MyFavoriteConnection';
+$dbConfig['connections'] = [
+    'Connection1' =&gt; [
+        'adaptor'   =&gt; 'MySQL',
+        'host'      =&gt; 'localhost:3306',
+        'dbName'    =&gt; 'cora',
+        'dbUser'    =&gt; 'root',
+        'dbPass'    =&gt; 'root'
+    ],
+    'Connection2' =&gt; [
+        'adaptor'   =&gt; 'MySQL',
+        'host'      =&gt; 'localhost:3306',
+        'dbName'    =&gt; 'cora2',
+        'dbUser'    =&gt; 'root',
+        'dbPass'    =&gt; 'root'
+    ],
+    'MyFavoriteConnection' =&gt; [
+        'adaptor'   =&gt; 'MySQL',
+        'host'      =&gt; 'localhost:3306',
+        'dbName'    =&gt; 'cora3',
+        'dbUser'    =&gt; 'root',
+        'dbPass'    =&gt; 'root'
+    ]
+];
+</code></pre>
+
+<p>If you are using a package like XAMPP, MAMP, etc, you'll probably want to go to</p>
+<pre><code>http://localhost/phpmyadmin
+</code></pre>
+
+<p>and create a database first before you can fill in this database config. So look
+into doing that if you haven't already.</p>
 <h3 id="finished">Finished</h3>
 <p>That's it! You should be able to run your project and play around with it and the included demos now.
 If you are an experienced user who wants to know about the advanced configuration options within Cora, or how Cora can be

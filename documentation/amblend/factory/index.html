@@ -128,18 +128,63 @@
         
             
 <li >
-    <a href="../../databaseclass/overview/">Database Class</a>
+    <a href="../overview/">AmBlend ORM</a>
 </li>
 
         
             
 <li >
-    <a href="../overview/">AmBlend ORM</a>
+    <a href="../../databaseclass/overview/">Database Class</a>
 </li>
 
         
     </ul>
   </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
 
                     
                         
@@ -186,6 +231,12 @@
             
 <li >
     <a href="../lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../database_gen/">Automated DB Creation</a>
 </li>
 
         
@@ -252,41 +303,41 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">MVC Pattern</a>
+    <a tabindex="-1" href="">Events</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../../mvc/overview/">Overview</a>
+    <a href="../../events/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/models/">Models</a>
+    <a href="../../events/eventmanager/">Event Manager</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/views/">Views</a>
+    <a href="../../events/eventmapping/">Event Mapping</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/controllers/">Controllers</a>
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
 </li>
 
         
     </ul>
   </li>
-
-                    
-                        
-<li >
-    <a href="../../routing/overview/">Routing</a>
-</li>
 
                     
                         
@@ -343,11 +394,41 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
+        <li class="main active"><a href="#factory-class">Factory Class</a></li>
+        
+    
+        <li class="main "><a href="#creating-a-factory">Creating a Factory</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-</div>
+<h1 id="factory-class">Factory Class</h1>
+<p>The Factory takes an array of info and turns it into objects. It's use within
+AmBlend is to receive from the Repository some data grabbed from the persistence
+layer via the Gateway. It then turns this data into one or more objects and
+gives these objects back to the Repository.</p>
+<h1 id="creating-a-factory">Creating a Factory</h1>
+<p>Normally you shouldn't be creating Factories yourself. If you refer to the
+Repository documentation and use the recommended Repository creation method of
+utilizing the RepositoryFactory class, then it will create a Factory for you
+and handle passing it off to the Repository.</p>
+<p>If for some reason you do need to create your own Factory object and you're
+using Cora's default Factory, then do so like this:</p>
+<pre><code class="php">// Create a User factory
+$factory = new Factory('User');
+</code></pre>
+
+<p>Optionally you can include a 2nd argument in the form of a Cora database adaptor.
+If you do this, the adaptor will get passed on to any objects created by the Factory.
+The reason for this is when you want to override the default database for a model.
+If for instance you have a model that normally is found in your main database, but
+for unit testing you want to use a separate test database, you can pass in a connection
+to the test database this way so it gets used.</p>
+<pre><code class="PHP">$db = \Cora\Database::getDb('name_of_db_connection_to_use');
+$factory = new Factory('User', $db);
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

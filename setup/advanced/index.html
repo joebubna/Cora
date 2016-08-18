@@ -128,18 +128,63 @@
         
             
 <li >
-    <a href="../../documentation/databaseclass/overview/">Database Class</a>
+    <a href="../../documentation/amblend/overview/">AmBlend ORM</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/amblend/overview/">AmBlend ORM</a>
+    <a href="../../documentation/databaseclass/overview/">Database Class</a>
 </li>
 
         
     </ul>
   </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../documentation/mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../documentation/routing/overview/">Routing</a>
+</li>
 
                     
                         
@@ -186,6 +231,12 @@
             
 <li >
     <a href="../../documentation/amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/amblend/database_gen/">Automated DB Creation</a>
 </li>
 
         
@@ -252,41 +303,41 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">MVC Pattern</a>
+    <a tabindex="-1" href="">Events</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../../documentation/mvc/overview/">Overview</a>
+    <a href="../../documentation/events/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/mvc/models/">Models</a>
+    <a href="../../documentation/events/eventmanager/">Event Manager</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/mvc/views/">Views</a>
+    <a href="../../documentation/events/eventmapping/">Event Mapping</a>
 </li>
 
         
             
 <li >
-    <a href="../../documentation/mvc/controllers/">Controllers</a>
+    <a href="../../documentation/events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../documentation/events/listener/">Listener</a>
 </li>
 
         
     </ul>
   </li>
-
-                    
-                        
-<li >
-    <a href="../../documentation/routing/overview/">Routing</a>
-</li>
 
                     
                         
@@ -375,7 +426,7 @@ controller. The "hide" option just makes the routing messages show up in the HTM
 </code></pre>
 
 <p>By default Cora converts URLs into lowercase so that you can have consistent behavior on case-sensitive servers (e.g. Linux systems) regardless of whether
-or not a user types capital letters into the URL. However, if you wanted your URLs to be case-sensitive, you can disable this option in the config. </p>
+or not a user types capital letters into the URL. However, if you wanted your URLs to be case-sensitive, you can disable this option in the config.</p>
 <h4 id="default-controller"><strong>Default Controller</strong></h4>
 <pre><code>$config['default_controller'] = 'Home';
 </code></pre>
@@ -412,13 +463,23 @@ $config['pathToControllers'] = $config['basedir'].'controllers/';
 $config['pathToLibraries'] = $config['basedir'].'libraries/';
 
 /**
+ *  Path to events directory relative to this file.
+ */
+$config['pathToEvents'] = $config['basedir'].'events/';
+
+/**
+ *  Path to listeners directory relative to this file.
+ */
+$config['pathToListeners'] = $config['basedir'].'listeners/';
+
+/**
  *  Path to App's Cora directory relative to this file.
  */
 $config['pathToCora'] = $config['basedir'].'cora/';
 </code></pre>
 
 <p>By default all these folders are set to be in your project's root - on the same level as the 'vendor' directory.
-However, you can obviously change this however you want. Another thing to take special notice of is that the 
+However, you can obviously change this however you want. Another thing to take special notice of is that the
 folder names themselves are defined here and can be changed. This might come in useful if you are integrating Cora
 into an existing software project that already has its class files located in a specific directory somewhere.</p>
 <h4 id="file-naming-conventions"><strong>File Naming Conventions</strong></h4>
@@ -446,11 +507,23 @@ $config['controllersPostfix'] = '';
  */
 $config['librariesPrefix'] = '';
 $config['librariesPostfix'] = '';
+
+/**
+ *  Event file prefix / postfix.
+ */
+$config['eventsPrefix'] = 'event.';
+$config['eventsPostfix'] = '';
+
+/**
+ *  Listener file prefix / postfix.
+ */
+$config['listenerPrefix'] = 'listen.';
+$config['listenerPostfix'] = '';
 </code></pre>
 
 <p>Here you can set optional prefix and postfix naming conventions for your files. For instance, if your views
-are named "view.someView.php", you tell Cora about that "view." prefix here and then you don't have to worry about the prefix or postfix 
-in your controllers. For example: you would be able to load the above view by </p>
+are named "view.someView.php", you tell Cora about that "view." prefix here and then you don't have to worry about the prefix or postfix
+in your controllers. For example: you would be able to load the above view by</p>
 <pre><code class="php">$this-&gt;load-&gt;view('someView');
 </code></pre></div>
         </div>

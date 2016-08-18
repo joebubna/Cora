@@ -128,18 +128,63 @@
         
             
 <li >
-    <a href="../../databaseclass/overview/">Database Class</a>
+    <a href="../overview/">AmBlend ORM</a>
 </li>
 
         
             
 <li >
-    <a href="../overview/">AmBlend ORM</a>
+    <a href="../../databaseclass/overview/">Database Class</a>
 </li>
 
         
     </ul>
   </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
 
                     
                         
@@ -186,6 +231,12 @@
             
 <li >
     <a href="../lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../database_gen/">Automated DB Creation</a>
 </li>
 
         
@@ -252,41 +303,41 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">MVC Pattern</a>
+    <a tabindex="-1" href="">Events</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../../mvc/overview/">Overview</a>
+    <a href="../../events/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/models/">Models</a>
+    <a href="../../events/eventmanager/">Event Manager</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/views/">Views</a>
+    <a href="../../events/eventmapping/">Event Mapping</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/controllers/">Controllers</a>
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
 </li>
 
         
     </ul>
   </li>
-
-                    
-                        
-<li >
-    <a href="../../routing/overview/">Routing</a>
-</li>
 
                     
                         
@@ -659,6 +710,39 @@ foreach ($users as $user) {
 
 // Save the changes.
 $repo-&gt;save($users);
+
+
+
+////////////////////////////////////////////
+// Assign a collection of objects to a user.
+////////////////////////////////////////////
+
+// Grab a user Object
+$user = $repo-&gt;find($id);
+
+// Assign a collection of articles to the user
+$user-&gt;articles =   new \Cora\ResultSet([
+                        new Article('How to Fly a Plane'),
+                        new Article('How to Make Money')
+                    ]);
+
+// Save the changes.
+$repo-&gt;save($user);
+
+
+
+////////////////////////////////////////////
+// Add to an existing collection of objects
+////////////////////////////////////////////
+
+// Grab a user Object
+$user = $repo-&gt;find($id);
+
+// Add a new article to the collection of articles this user has.
+$user-&gt;articles-&gt;add(new Article('How to Make Money Vol2'));
+
+// Save the changes.
+$repo-&gt;save($user);
 </code></pre></div>
         </div>
 

@@ -128,18 +128,63 @@
         
             
 <li >
-    <a href="./">Database Class</a>
+    <a href="../../amblend/overview/">AmBlend ORM</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/overview/">AmBlend ORM</a>
+    <a href="./">Database Class</a>
 </li>
 
         
     </ul>
   </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
 
                     
                         
@@ -186,6 +231,12 @@
             
 <li >
     <a href="../../amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/database_gen/">Automated DB Creation</a>
 </li>
 
         
@@ -252,41 +303,41 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">MVC Pattern</a>
+    <a tabindex="-1" href="">Events</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../../mvc/overview/">Overview</a>
+    <a href="../../events/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/models/">Models</a>
+    <a href="../../events/eventmanager/">Event Manager</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/views/">Views</a>
+    <a href="../../events/eventmapping/">Event Mapping</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/controllers/">Controllers</a>
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
 </li>
 
         
     </ul>
   </li>
-
-                    
-                        
-<li >
-    <a href="../../routing/overview/">Routing</a>
-</li>
 
                     
                         
@@ -324,7 +375,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../../amblend/lifecycle/">
+                    <a rel="next" href="../../amblend/database_gen/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -371,6 +422,9 @@
             <li><a href="#delete-statements">DELETE Statements</a></li>
         
             <li><a href="#create-statements">CREATE Statements</a></li>
+        
+    
+        <li class="main "><a href="#advanced-examples">Advanced Examples</a></li>
         
     
     </ul>
@@ -510,7 +564,94 @@ $query = $db-&gt;exec();
 <li><a href="../methods_create#field-method">field()</a></li>
 <li><a href="../methods_create#primarykey-method">primaryKey()</a></li>
 <li><a href="../methods_create#foreignkey-method">foreignKey()</a></li>
-</ul></div>
+</ul>
+<h1 id="advanced-examples">Advanced Examples</h1>
+<p>Creating a table:</p>
+<pre><code class="php">$db -&gt;create('locations')
+            -&gt;field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+            -&gt;field('name', 'varchar(255)')
+            -&gt;field('address', 'varchar(255)')
+            -&gt;field('user_id', 'int')
+            -&gt;primaryKey('id')
+            -&gt;foreignKey('user_id', 'users', 'id');
+$db-&gt;exec();
+</code></pre>
+
+<p>Inserting data:</p>
+<pre><code class="php">$db -&gt;insert('name, email, type')
+    -&gt;into('users')
+    -&gt;values([
+        ['bob', &quot;bob's@gmail.com&quot;, 'admin'],
+        ['john', 'john@gmail.com', 'admin'],
+        ['john', 'john@gmail.com', 'scrub'],
+        ['sally', 'sally@yahoo.com', 'user'],
+        ['susan', 'susan@aol.com', 'user']
+    ])
+    -&gt;exec();
+</code></pre>
+
+<p>More advanced Where statement:</p>
+<pre><code class="php">$db -&gt;select('id')
+    -&gt;distinct()
+    -&gt;from('users')
+    -&gt;from('profile')
+    -&gt;where([
+        ['created_time', '&gt;=', '2016-01-01', 'OR'],
+        ['name', 'LIKE', 's%']
+    ])
+    -&gt;where([
+        ['type', '=', 'admin', 'OR'],
+        ['type', '=', 'moderator']
+    ])
+    -&gt;exec();
+</code></pre>
+
+<p>Mega Query:</p>
+<pre><code class="php">$tables = array('table1', 'table2', 'table3');
+$fields = array('id', 'name', 'email');
+$conditions = array(
+    ['id', '&gt;', '100', 'OR'],
+    ['name', 'LIKE', '%s']
+);
+
+$groupBys = ['field1', 'field2', 'field3'];
+
+$havings = array(
+    ['amount', '&gt;', '1000'],
+    ['savings', '&gt;', '100']
+);
+
+$orHavings = array(
+    ['amount2', '&gt;', '1000'],
+    ['savings2', '&gt;', '100']
+);
+
+$joinConditions = array(
+    ['Orders.customerID', '=', 'Customers.customerID'],
+    ['User.type', '=', 'Customer.type']
+);
+
+
+$db = new Cora\Db_MySQL();
+
+echo $db-&gt;select($fields)
+        -&gt;from($tables)
+        -&gt;join('customers', $joinConditions, 'OUTER')
+        -&gt;where($conditions)
+        -&gt;orWhere($conditions)
+        -&gt;in('name', 'value1, value2, value3')
+        -&gt;in('name', 'SELECT * FROM users')
+        -&gt;in('type', $groupBys)
+        -&gt;groupBy($groupBys)
+        -&gt;having($havings)
+        -&gt;orHaving($orHavings)
+        -&gt;having($orHavings)
+        -&gt;orderBy('name', 'DESC')
+        -&gt;orderBy('type', 'ASC')
+        -&gt;limit(10)
+        -&gt;offset(20)
+        -&gt;getQuery();
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

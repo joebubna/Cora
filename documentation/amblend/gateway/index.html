@@ -128,18 +128,63 @@
         
             
 <li >
-    <a href="../../databaseclass/overview/">Database Class</a>
+    <a href="../overview/">AmBlend ORM</a>
 </li>
 
         
             
 <li >
-    <a href="../overview/">AmBlend ORM</a>
+    <a href="../../databaseclass/overview/">Database Class</a>
 </li>
 
         
     </ul>
   </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
 
                     
                         
@@ -186,6 +231,12 @@
             
 <li >
     <a href="../lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../database_gen/">Automated DB Creation</a>
 </li>
 
         
@@ -252,41 +303,41 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">MVC Pattern</a>
+    <a tabindex="-1" href="">Events</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../../mvc/overview/">Overview</a>
+    <a href="../../events/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/models/">Models</a>
+    <a href="../../events/eventmanager/">Event Manager</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/views/">Views</a>
+    <a href="../../events/eventmapping/">Event Mapping</a>
 </li>
 
         
             
 <li >
-    <a href="../../mvc/controllers/">Controllers</a>
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
 </li>
 
         
     </ul>
   </li>
-
-                    
-                        
-<li >
-    <a href="../../routing/overview/">Routing</a>
-</li>
 
                     
                         
@@ -343,11 +394,37 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
+        <li class="main active"><a href="#gateway-class">Gateway Class</a></li>
+        
+    
+        <li class="main "><a href="#creating-a-gateway">Creating a Gateway</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-</div>
+<h1 id="gateway-class">Gateway Class</h1>
+<p>The Gateway directly interacts with the persistence layer (databases, files) to
+grab and return data. It takes a request form a Repository, figures out how to
+grab the needed info, and then returns that info to the Repository.</p>
+<h1 id="creating-a-gateway">Creating a Gateway</h1>
+<p>Normally you shouldn't be creating Gateways yourself. If you refer to the
+Repository documentation and use the recommended Repository creation method of
+utilizing the RepositoryFactory class, then it will create a Gateway for you
+and handle passing it off to the Repository.</p>
+<p>If for some reason you do need to create your own Gateway object and you're
+using Cora's default Gateway, then do so like this:</p>
+<pre><code class="php">$db = \Cora\Database::getDb('name_of_db_connection_to_use');
+$gateway = new Gateway($db);
+</code></pre>
+
+<p>Optionally you can include a couple extra arguments in the form of setting the
+table to use and the unique identifying field of records in that table if it's
+something other than 'id':</p>
+<pre><code class="PHP">$db = \Cora\Database::getDb('name_of_db_connection_to_use');
+$gateway = new Gateway($db, 'users', 'email');
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">
