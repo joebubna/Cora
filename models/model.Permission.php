@@ -13,8 +13,8 @@ class Permission extends MyModel {
             'type' => 'varchar'
         ],
         'allow' => [
-            'type' => 'boolean',
-            'defaultValue' => true
+            'type' => 'int',
+            'defaultValue' => 1
         ],
         
         // The group restriction this permission applies to (if any)
