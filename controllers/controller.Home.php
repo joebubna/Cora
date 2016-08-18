@@ -1,15 +1,29 @@
 <?php
+use Cora\Event;
 
 class Home extends \MyApp {
     
     public function index() {
         $this->data->title = 'A Simple Form';
         $this->data->content = 'HOME PAGE';
+        
+        
+        if ($this->session->user) {
+            echo 'Logged in!';
+        }
         $this->load->view('', $this->data);
     }
     
     public function indexPOST() {
         echo $_POST['data'];
+    }
+    
+    public function test2()
+    {
+        $this->auth->access(new \Auth\LoggedIn);
+        
+        $repo = $this->app->repository('user');
+        echo $repo->find(5)->username;
     }
     
     public function view($p1, $p2, $p3) {
@@ -32,4 +46,18 @@ class Home extends \MyApp {
         echo $taskNote->foo();
     }
     
+    public function eventSetup() 
+    {        
+        $user = new \User('Joe', 'SuperAdmin');
+        $this->event->fire(new \Event\RegisterUser($user));
+        
+        
+        $this->event->listenFor('customEvent', function($event) {
+            echo $event->input->name.'<br>';
+        });
+        $this->event->listenFor('customEvent', function($event) {
+            echo 'Higher Priority!<br>';
+        }, 1);
+        $this->event->fire(new Event('customEvent', $user));
+    }
 }

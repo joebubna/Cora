@@ -7,6 +7,12 @@ $config['debugHide'] = false; // Hides debug info in HTML comments so you have t
 $config['mode'] = 'development';
 
 /**
+ *  This is your base URL.
+ *  I.E. www.MySite.com
+ */
+$config['base_url'] = 'http://localhost';
+
+/**
  *  If site URL is www.MySite.com
  *  set this to '/'
  *  If site URL is www.MySite.com/app/
@@ -21,6 +27,7 @@ $config['mode'] = 'development';
  *  by the router.
  */
 $config['site_url'] = '/cora/';
+
 
 /**
  *  Should URLs be converted to lowercase?
@@ -67,12 +74,12 @@ $config['enable_RESTful'] = true;
  *  The only conceivable reason you might want to change this is if you aren't using composer or the demo
  *  project to install Cora, and instead are placing the Cora system files in some custom place.
  */
-$config['basedir'] = dirname(__FILE__).'/../../../../../';
+$config['basedir'] = realpath(dirname(__FILE__).'/../../../../../').'/';
 
 /**
- *  Path to models/classes directory relative to this file.
+ *  Path to models directory relative to this file.
  */
-$config['pathToModels'] = $config['basedir'].'classes/';
+$config['pathToModels'] = $config['basedir'].'models/';
 
 /**
  *  Path to views directory relative to this file.
@@ -90,6 +97,16 @@ $config['pathToControllers'] = $config['basedir'].'controllers/';
 $config['pathToLibraries'] = $config['basedir'].'libraries/';
 
 /**
+ *  Path to events directory relative to this file.
+ */
+$config['pathToEvents'] = $config['basedir'].'events/';
+
+/**
+ *  Path to listeners directory relative to this file.
+ */
+$config['pathToListeners'] = $config['basedir'].'listeners/';
+
+/**
  *  Path to App's Cora directory relative to this file.
  */
 $config['pathToCora'] = $config['basedir'].'cora/';
@@ -99,7 +116,7 @@ $config['pathToCora'] = $config['basedir'].'cora/';
  *  Model/Class file prefix. I.e. If your class files are named "class.MyClass.inc.php"
  *  then enter 'class.' for Prefix and '.inc' for postfix.
  */
-$config['modelsPrefix'] = 'class.';
+$config['modelsPrefix'] = 'model.';
 $config['modelsPostfix'] = '';
 
 /**
@@ -119,3 +136,15 @@ $config['controllersPostfix'] = '';
  */
 $config['librariesPrefix'] = '';
 $config['librariesPostfix'] = '';
+
+/**
+ *  Event file prefix / postfix.
+ */
+$config['eventsPrefix'] = 'event.';
+$config['eventsPostfix'] = '';
+
+/**
+ *  Listener file prefix / postfix.
+ */
+$config['listenerPrefix'] = 'listen.';
+$config['listenerPostfix'] = '';

@@ -2,7 +2,7 @@
 /**
 * 
 */
-class Article {
+class Article extends MyModel {
     
     public $model_attributes = [ 
         'id' => [
@@ -16,9 +16,17 @@ class Article {
             'type' => 'varchar'
         ],
         'owner' => [
-            'model' => 'location'
+            'model' => 'User'
+        ],
+        'comments' => [
+            'models' => 'Comment'
         ]
     ];
+    
+    public function __construct($title = null)
+    {
+        $this->title = $title;
+    }
     
     public static function exists($title = false) {
         

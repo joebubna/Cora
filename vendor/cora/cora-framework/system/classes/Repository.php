@@ -13,23 +13,38 @@ class Repository
         $this->gateway = $gateway;
         $this->factory = $factory;
     }
+    
+    public function getDb()
+    {
+        return $this->gateway->getDb();
+    }
 
     public function find($id)
     {
         $record = $this->gateway->fetch($id);
         return $this->factory->make($record);
     }
-
-    // Add ability to filter and control results with Cora DB.
-    public function findAll()
+    
+    public function findOne($coraDbQuery)
     {
-        $all = $this->gateway->fetchAll();
-        return $this->factory->makeGroup($all);
+        $all = $this->gateway->fetchByQuery($coraDbQuery);
+        return $this->factory->makeGroup($all)->get(0);
     }
 
-    public function findBy($coraDbQuery)
+    public function findAll($coraDbQuery = false)
     {
-        $all = $this->gateway->fetchBy($coraDbQuery);
+        if ($coraDbQuery) {
+            $all = $this->gateway->fetchByQuery($coraDbQuery);
+        }
+        else {
+            $all = $this->gateway->fetchAll();
+        }
+        return $this->factory->makeGroup($all);
+    }
+    
+    public function findBy($prop, $value, $options = array())
+    {
+        $all = $this->gateway->fetchBy($prop, $value, $options);
         return $this->factory->makeGroup($all);
     }
 
@@ -49,7 +64,30 @@ class Repository
 
     public function save($model, $table = null, $id_name = null)
     {
-        return $this->gateway->persist($model, $table, $id_name);
+        if ($this->checkIfModel($model)) {
+            return $this->gateway->persist($model, $table, $id_name);
+        }
+        else if ($model instanceof \Cora\ResultSet) {
+            foreach ($model as $obj) {
+                if ($this->checkIfModel($obj)) {
+                    $this->gateway->persist($obj, $table, $id_name);
+                }
+                else {
+                    throw new \Exception("Cora's Repository class can only be used with models that extend the Cora Model class.");
+                }
+            }
+        }
+        else {
+            throw new \Exception("Cora's Repository class can only be used with models that extend the Cora Model class.");
+        }
+    }
+    
+    protected function checkIfModel($model)
+    {
+        if ($model instanceof \Cora\Model) {
+            return true;   
+        }
+        return false;
     }
 
 }

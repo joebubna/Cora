@@ -5,6 +5,7 @@ class Db_MySQL extends Database
 {
     protected $db;
     protected $mysqli;
+    protected $dbName;
     
     public function __construct($connection = false)
     {
@@ -24,6 +25,9 @@ class Db_MySQL extends Database
             $connection = $dbConfig['defaultConnection'];
         }
         
+        // Set DB name
+        $this->dbName = $dbConfig['connections'][$connection]['dbName'];
+        
         // Create mysqli connection. This is needed for it's escape function to cleanse variable inputs.
         $this->mysqli = new \mysqli($dbConfig['connections'][$connection]['host'], 
                                     $dbConfig['connections'][$connection]['dbUser'], 
@@ -35,7 +39,12 @@ class Db_MySQL extends Database
         if ($config['mode'] == 'development') {
             $errorMode = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
         }
-        $this->db = new \PDO('mysql:host='.$dbConfig['connections'][$connection]['host'].';dbname='.$dbConfig['connections'][$connection]['dbName'], $dbConfig['connections'][$connection]['dbUser'], $dbConfig['connections'][$connection]['dbPass'], $errorMode);
+        $this->db = new \PDO(
+            'mysql:host='.$dbConfig['connections'][$connection]['host'].';dbname='.$dbConfig['connections'][$connection]['dbName'], 
+            $dbConfig['connections'][$connection]['dbUser'], 
+            $dbConfig['connections'][$connection]['dbPass'], 
+            $errorMode
+        );
     }
     
     // Clean user provided input to make it safe for use in a database query.
@@ -51,9 +60,35 @@ class Db_MySQL extends Database
         $result = $this->db->query($this->query);
         $this->reset();
         
-        $dbResult = new Db_MySQLResult($result);
+        $dbResult = new Db_MySQLResult($result, $this->db);
         return $dbResult;
     }
+    
+    
+    public function emptyDatabase()
+    {
+        $sql = "
+                USE $this->dbName;
+                SET FOREIGN_KEY_CHECKS = 0;
+                SET GROUP_CONCAT_MAX_LEN=32768;
+                SET @tables = NULL;
+                SELECT GROUP_CONCAT('`', table_name, '`') INTO @tables
+                  FROM information_schema.tables
+                  WHERE table_schema = (SELECT DATABASE());
+                SELECT IFNULL(@tables,'dummy') INTO @tables;
+
+                SET @tables = CONCAT('DROP TABLE IF EXISTS ', @tables);
+                PREPARE stmt FROM @tables;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+                SET FOREIGN_KEY_CHECKS = 1;
+        ";
+        
+        $result = $this->db->query($sql);
+        $this->reset();
+        return $result;
+    }
+    
     
     // Create the SQL string from Database class raw data.
     protected function calculate()
@@ -199,10 +234,37 @@ class Db_MySQL extends Database
     {
         $this->query .= 'CREATE TABLE IF NOT EXISTS ';
         $this->query .= $this->create.' (';
-        $this->queryStringFromArray('fields', '', ', ', false);
+        $this->queryStringFromArray('fields', '', ', ', false, true);
         $this->primaryKeyStringFromArray('primaryKeys', ', CONSTRAINT ');
         $this->foreignKeyStringFromArray('foreignKeys', ', CONSTRAINT ');
+        $this->indexStringFromArray('indexes', ', INDEX ');
         $this->query .= ')';
+    }
+    
+    
+    /**
+     *  For outputting a string of the following form from the 'indexes' array in Database.
+     *  INDEX idx_id_name (id, name)
+     */
+    protected function IndexStringFromArray($dataMember, $opening, $sep = ', ')
+    {
+        if (empty($this->$dataMember)) {
+            return 0;
+        }
+        $this->query .= $opening;
+        $constraintName = 'idx';
+        $query = ' (';
+        $count = count($this->$dataMember);
+        for($i=0; $i<$count; $i++) {
+            $item = $this->{$dataMember}[$i];
+            $constraintName .= '_'.$item;
+            $query .= $item;
+            if ($count-1 != $i) {
+                $query .= $sep;
+            }
+        }
+        $query .= ')';
+        $this->query .= $constraintName.' '.$query;
     }
     
     
@@ -265,7 +327,7 @@ class Db_MySQL extends Database
      *  ]
      *  An item can be another array if getArrayItem() knows how to translate it into a string.
      */
-    protected function queryStringFromArray($dataMember, $opening, $sep, $quote = true)
+    protected function queryStringFromArray($dataMember, $opening, $sep, $quote = true, $set = false)
     {
         if (empty($this->$dataMember)) {
             return 0;
@@ -273,11 +335,39 @@ class Db_MySQL extends Database
         $this->query .= $opening;
         $count = count($this->$dataMember);
         for($i=0; $i<$count; $i++) {
-            $this->query .= $this->getArrayItem($dataMember, $i, $quote);
+            
+            // Is this a normal situation, or are we outputting SET values for table creation statement?
+            if ($set == false) {
+                $this->query .= $this->getArrayItem($dataMember, $i, $quote);
+            }
+            else {
+                // If we are creating a table, then we need to execute a diff method
+                // so we can do some type checking on the column value. I.E. 'varchar' = 'varchar[255]'
+                $this->query .= $this->getSetItem($dataMember, $i, $quote);
+            }
+            
             if ($count-1 != $i) {
                 $this->query .= $sep;
             }
         }
+    }
+    
+    /**
+     *  Converts field types to real values that match this adaptor's DB type.
+     */
+    protected function getSetItem($dataMember, $offset, $quote = true)
+    {
+        $item = $this->{$dataMember}[$offset];
+        switch ($item[1]) {
+            case 'varchar':
+                $type = 'varchar(255)';
+                break;
+            default:
+                $type = $item[1];
+        }
+        $this->{$dataMember}[$offset][1] = $type;
+        
+        return $this->getArrayItem($dataMember, $offset, $quote);
     }
     
     
@@ -543,6 +633,112 @@ class Db_MySQL extends Database
         }
         else {
             throw new \Exception("Cora's Query Builder class expects advanced query components to be in an array with form [column, operator, value]");
+        }
+    }
+    
+    
+    
+    /**
+     *  Return a data type.
+     */
+    public function getType($props)
+    {
+        $result = '';
+        if (isset($props['type'])) {
+            
+            // If field is a string
+            if ($props['type'] == 'varchar' || $props['type'] == 'string') {
+                if (isset($props['size'])) {
+                    $result = 'varchar('.$props['size'].')';
+                }
+                else {
+                    $result = 'varchar(255)';
+                }
+            }
+            
+            // If field is an Int
+            else if ($props['type'] == 'int' || $props['type'] == 'integer') {
+                if (isset($props['size'])) {
+                    $result = 'int('.$props['size'].')';
+                }
+                else {
+                    $result = 'int';
+                }
+            }
+            
+            // If field is a float
+            else if ($props['type'] == 'float' || $props['type'] == 'double') {
+                if (isset($props['size']) && isset($props['precision'])) {
+                    $result = 'float('.$props['size'].', '.$props['precision'].')';
+                }
+                else {
+                    $result = 'float';
+                }
+            }
+            
+            // If field is a date
+            else if ($props['type'] == 'date') {
+                $result = 'date';
+            }
+            
+            // If field is a datetime
+            else if ($props['type'] == 'datetime') {
+                $result = 'datetime';
+            }
+            
+            // If field is an enum
+            else if ($props['type'] == 'enum') {
+                if (isset($props['enum'])) {
+                    $result = 'ENUM('.$props['enum'].')';
+                }
+                else {
+                    $result = "ENUM('default')";
+                }
+            }
+            
+            // If nothing matches, just try returning what was set.
+            else {
+                if (isset($props['size'])) {
+                    $result = $props['type'].'('.$props['size'].')';
+                }
+                else {
+                    $result = $props['type'];
+                }
+            }
+        }
+        else {
+            return 'varchar(255)';
+        }
+        return $result;
+    }
+    
+    
+    /**
+     *  Return a field's attributes
+     */
+    public function getAttributes($props)
+    {
+        $attr = '';
+        
+        if (isset($props['primaryKey'])) {
+            $attr .= 'NOT NULL AUTO_INCREMENT ';
+        }
+        
+        if (isset($props['defaultValue'])) {
+            $attr .= "DEFAULT '".$props['defaultValue']."'";
+        }
+        
+        return $attr;
+    }
+    
+    
+    /**
+     *  Set an index if defined.
+     */
+    public function setIndex($key, $props)
+    {
+        if (isset($props['index'])) {
+            $this->index($key);
         }
     }
     
