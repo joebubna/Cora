@@ -23,7 +23,7 @@ class Home extends \MyApp {
         $this->auth->access(new \Auth\LoggedIn);
         
         $repo = $this->app->repository('user');
-        echo $repo->find(5)->username;
+        echo $repo->find(1)->username;
     }
     
     public function view($p1, $p2, $p3) {
