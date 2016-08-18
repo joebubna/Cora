@@ -24,6 +24,7 @@ class Route extends Framework
         // Register a autoloader function. Is called when an unloaded class is invoked.
         spl_autoload_register(array($this, 'autoLoader'));
         spl_autoload_register(array($this, 'coraExtensionLoader'));
+        spl_autoload_register(array($this, 'libraryLoader'));
         spl_autoload_register(array($this, 'coraLoader'));
         //spl_autoload_register(array($this, 'eventLoader'));
         //spl_autoload_register(array($this, 'listenerLoader'));
@@ -359,9 +360,9 @@ class Route extends Framework
     {
         
         require_once('Cora.php');    
-        require('CoraError.php');
-        $error = new \CoraError($this->container);
-        $error->index();
+        require('Error.php');
+        $error = new \Cora\Error($this->container);
+        $error->handle('404');
         
     }
     
@@ -385,10 +386,10 @@ class Route extends Framework
         else if ($rootName == 'Listener') {
             $this->listenerLoader($className);
         }
-        else if ($rootName == 'Library') {
-            $namespaceExcludingLibrary = $this->partialPathString(1, null, explode('\\', $className));
-            $this->libraryLoader($namespaceExcludingLibrary);
-        }
+//        else if ($rootName == 'Library') {
+//            $namespaceExcludingLibrary = $this->partialPathString(1, null, explode('\\', $className));
+//            $this->libraryLoader($namespaceExcludingLibrary);
+//        }
         else if (file_exists($fullPath)) {
             include($fullPath);
         }
@@ -449,15 +450,16 @@ class Route extends Framework
     
     protected function libraryLoader($className)
     {
-        $name = $this->getName($className);
-        $path = $this->getPath($className);
+        //$name = $this->getName($className);
+        //$path = $this->getPath($className);
         $fullPath = $this->config['pathToLibraries'] .
-                    $path .
+                    $this->getPathBackslash($className) .
                     $this->config['librariesPrefix'] .
-                    $name .
+                    $this->getNameBackslash($className) .
                     $this->config['librariesPostfix'] .
                     '.php';
-
+        
+        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
         // If the file exists in the Libraries directory, load it.
         if (file_exists($fullPath)) {
             include_once($fullPath);

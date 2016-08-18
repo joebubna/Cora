@@ -7,8 +7,9 @@ class Cora {
     
     public function __construct($container = false)
     {
-        // Blank object for storing stuff in.
-        $this->data = new stdClass();
+        // Blank objects for storing stuff in.
+        $this->data = new stdClass(); // Is passed in to Views
+        $this->site = new stdClass(); // Is for storing things such as the logged in User, etc.
         
         // If site specific data was passed along, store it.
         $this->data->site = $container;
@@ -16,14 +17,11 @@ class Cora {
         // Init useful Cora classes
         $this->load = new Cora\Load();
         $this->input = new Cora\Input();
-        
-        // Load and set cora config.
-        require(dirname(__FILE__).'/../config/config.php');
-        
-        // Load custom app config
-        include($config['basedir'].'cora/config/config.php');
+           
         
         // Store config settings as data member.
+        require(dirname(__FILE__).'/../config/config.php'); // Load and set cora config.
+        include($config['basedir'].'cora/config/config.php'); // Load custom app config 
         $this->config = $config;
     }
     

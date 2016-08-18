@@ -35,7 +35,7 @@ class User extends MyModel {
         ],
         'groups' => [
             'models' => 'Group'
-        ],  
+        ], 
         'articles' => [
             'models' => 'Article',
             'via' => 'owner'

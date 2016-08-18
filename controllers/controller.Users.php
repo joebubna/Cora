@@ -5,9 +5,9 @@ class Users extends \MyApp
     protected $repo;
     protected $db;
     
-    public function __construct()
+    public function __construct($container = false)
     {
-        parent::__construct();
+        parent::__construct($container);
         $this->repo = \Cora\RepositoryFactory::make('User');
         $this->db = $this->repo->getDb();
     }
@@ -34,7 +34,7 @@ class Users extends \MyApp
         $this->load->library('Validate', $this, true); 
         
         // Define custom check
-        $this->Validate->def('accountExists', 'Library\\Auth','accountExists', 'An account with that username already exists.', false, 'username');
+        $this->Validate->def('accountExists', 'Cora\\Auth','accountExists', 'An account with that username already exists.', false, 'username');
         
         // Define validation rules.
         $this->Validate->rule('username', 'required|accountExists|trim');
@@ -96,10 +96,11 @@ class Users extends \MyApp
             $rememberMe = $this->input->post('rememberMe');
             
             // Attempt login
-            $user = $this->auth->login($username, $password, $rememberMe)
+            $user = $this->auth->login($username, $password, $rememberMe);
             
             if ($user) {
-                $echo 'Valid username and password';
+                $this->site->user = $user;
+                $this->redirect->goto();
             }
             else {
                 
@@ -110,6 +111,13 @@ class Users extends \MyApp
         else {
             $this->login();
         }
+    }
+    
+    
+    public function logout()
+    {
+        $this->auth->logout();
+        $this->redirect->goto();
     }
     
     

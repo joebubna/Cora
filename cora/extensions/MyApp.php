@@ -4,14 +4,18 @@ class MyApp extends Cora
 {   
     protected $db;
     
-    public function __construct()
+    public function __construct($container = false)
     {
-        parent::__construct(); 
-        $this->db       = new \Cora\Db_MySQL();
-        $this->event    = new \Cora\EventManager(new EventMapping);
-        $this->session  = new \Cora\Session();
-        $this->cookie   = new \Cora\Cookie();
-        $this->auth     = new \Library\Auth();
+        parent::__construct($container); 
+        
+        $this->app = $container;
+        $this->db = $this->app->db();
+        $this->event = $this->app->event();
+        $this->session = $this->app->session();
+        $this->cookie = $this->app->cookie();
+        $this->redirect = $this->app->redirect();
+        
+        $this->auth = $this->app->auth($this->session->user, $this->session->loginSecure, 'username');
     }
 
 }

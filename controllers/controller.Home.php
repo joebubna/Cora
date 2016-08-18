@@ -6,11 +6,24 @@ class Home extends \MyApp {
     public function index() {
         $this->data->title = 'A Simple Form';
         $this->data->content = 'HOME PAGE';
+        
+        
+        if ($this->session->user) {
+            echo 'Logged in!';
+        }
         $this->load->view('', $this->data);
     }
     
     public function indexPOST() {
         echo $_POST['data'];
+    }
+    
+    public function test2()
+    {
+        $this->auth->access(new \Auth\LoggedIn);
+        
+        $repo = $this->app->repository('user');
+        echo $repo->find(5)->username;
     }
     
     public function view($p1, $p2, $p3) {

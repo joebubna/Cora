@@ -7,6 +7,12 @@ $config['debugHide'] = false; // Hides debug info in HTML comments so you have t
 $config['mode'] = 'development';
 
 /**
+ *  This is your base URL.
+ *  I.E. www.MySite.com
+ */
+$config['base_url'] = 'http://localhost';
+
+/**
  *  If site URL is www.MySite.com
  *  set this to '/'
  *  If site URL is www.MySite.com/app/
@@ -21,6 +27,7 @@ $config['mode'] = 'development';
  *  by the router.
  */
 $config['site_url'] = '/cora/';
+
 
 /**
  *  Should URLs be converted to lowercase?

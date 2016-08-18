@@ -1,5 +1,5 @@
 <?php
-namespace Library;
+namespace Cora;
 
 
 class Validate

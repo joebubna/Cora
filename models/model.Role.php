@@ -14,6 +14,9 @@ class Role extends MyModel {
         ],
         'permissions' => [
             'models' => 'Permission'
+        ],
+        'group' => [
+            'model' => 'Group'
         ]
     ];
     

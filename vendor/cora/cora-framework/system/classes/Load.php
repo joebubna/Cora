@@ -61,7 +61,7 @@ class Load extends Framework
 
 
     /**
-     *  Include specified library.
+     *  Include specified library. - Depreciated. Now let's autoloading handle the file include.
      *
      *  if a reference to the calling class is passed in, then the specified library
      *  will be invoked and a reference passed back to the calling class.
@@ -74,27 +74,19 @@ class Load extends Framework
 
         $name = $this->getName($pathname);
         $path = $this->getPath($pathname);
-        $fullPath = $this->config['pathToLibraries'] .
-                    $path .
-                    $this->config['librariesPrefix'] .
-                    $name .
-                    $this->config['librariesPostfix'] .
-                    '.php';
-
-        // If the file exists in the Libraries directory, load it.
-        if (file_exists($fullPath)) {
-            include_once($fullPath);
-        }
-
-        // Otherwise try and load it from the Cora system files.
-        else {
-            include_once($name.'.php');
-        }
-
+        
         // If a reference to the calling object was passed, set an instance of
         // the library as one of its members.
         if ($caller) {
-            $lib = '\\Library\\'.$name;
+            
+            // If no namespace is given, default to Cora namespace.
+            if ($this->getPathBackslash($pathname) == '') {
+                $lib = '\\Cora\\'.$name;
+            }
+            else {
+                $lib = $pathname;
+            }
+            
             $libObj = new $lib($caller);
 
             // Set library to be available within a class via "$this->$libraryName"
@@ -153,11 +145,21 @@ class Load extends Framework
         // Either return the view for storage in a variable, or output to browser.
         if ($return) {
             ob_start();
-            include($filePath);
+            $inc = include($filePath);
+            
+            // If in dev mode and the include failed, throw an exception.
+            if ($inc == false && $this->config['mode'] == 'development') { 
+                throw new \Exception("Can't find file '$fileName' using path '$filePath'"); 
+            }
             return ob_get_clean();
         }
         else {
-            include($filePath);
+            $inc = include($filePath);
+            
+            // If in dev mode and the include failed, throw an exception.
+            if ($inc == false && $this->config['mode'] == 'development') { 
+                throw new \Exception("Can't find file '$fileName' using path '$filePath'"); 
+            }
         }
     }
     
