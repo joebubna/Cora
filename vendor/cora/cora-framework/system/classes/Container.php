@@ -56,7 +56,7 @@ class Container
     /**
      *  Remove a resource.
      */
-    public function unset($name)
+    public function delete($name)
     {
         $this->signature->$name = null;
     }
