@@ -110,11 +110,38 @@ class Auth
     }
     
     
+    /**
+     *  Checks if a user has a permission.
+     *
+     *  $name is the permission name.
+     *  $groupId is for if you want to check if a user has permission to perform
+     *  an action within the context of a particular group.
+     */
     public function hasPermission($userId, $name, $groupId = null)
     {
         $user = $this->repo->find($userId);
         
-        // Check individual permissions first.
+        // Check if has individual permissions first:
+        if ($this->hasPermissionFromIndividual($user, $name, $groupId)) {
+            return true;
+        }
+        
+        // If no matching individual permission was found, then check permissions 
+        // inherited from Roles.
+        else if ($this->hasPermissionFromRole($user, $name, $groupId)) {
+            return true;
+        }
+        
+        // If no matching permission was found by this point, then no permission exists.
+        return false;
+    }
+    
+    /**
+     *  Checks if a user has an individual permission.
+     */
+    protected function hasPermissionFromIndividual($user, $name, $groupId = null)
+    {
+        // Check individual permissions
         foreach ($user->permissions as $perm) {
             if ($perm->name == $name) {
                 
@@ -145,8 +172,17 @@ class Auth
             }
         }
         
-        // If no matching individual permission was found, then check permissions 
-        // inherited from Roles.
+        // If nothing matching above was found, default to false.
+        return false;
+    }
+    
+    
+    /**
+     *  Check if a user inherits a permission from one of their Roles.
+     */
+    protected function hasPermissionFromRole($user, $name, $groupId = null)
+    {
+        // Check Role based permissions.
         foreach ($user->roles as $role) {
             
             // Since any 'Group' applied to a Role applies to any Permissions it grants, 
@@ -154,20 +190,43 @@ class Auth
             
             // If either side has a group defined.
             if (isset($role->group) || isset($groupId)) {
+                
+                // We know that at least either the permission we're checking or the permission
+                // we're iterating over have a group restriction. Since at least one has a group defined,
+                // check that the other also has a group defined or else it's not a match.
+                // If both have groups defined, then check if the groups matchs.
                 if (isset($groupId) && isset($perm->group) && $role->group->id == $groupId) {
                     
+                    // The permission we're checking and the role we're looking at both have the same
+                    // group restriction, so let's see if the permission we're looking for is granted
+                    // to this Role.
+                    foreach ($role->permissions as $perm) {
+                        if ($perm->name == $name) {
+                            if ($perm->allow == true) {
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                    }
                 }
             }
             
             // If we aren't dealing with groups.
             else {
-                
+                foreach ($role->permissions as $perm) {
+                    if ($perm->name == $name) {
+                        if ($perm->allow == true) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
             }
         }
-        
-        
-        // If no matching permission was found by this point, then no permission exists.
-        return false;
     }
     
     

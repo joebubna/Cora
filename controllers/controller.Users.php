@@ -100,7 +100,7 @@ class Users extends \MyApp
             
             if ($user) {
                 $this->site->user = $user;
-                $this->redirect->goto();
+                $this->redirect->url();
             }
             else {
                 
@@ -114,10 +114,57 @@ class Users extends \MyApp
     }
     
     
+    /**
+     *  Forgot Password Form
+     */
+    public function forgotPassword()
+    {
+        $this->load->library('Validate', $this, true); 
+        $this->data->title = 'Forgot Password';
+        $this->_loadView(__FUNCTION__);
+    }
+    
+    /**
+     *  Forgot password process
+     */
+    public function forgotPasswordPOST()
+    {
+        $this->load->library('Validate', $this, true); 
+        $this->data->title = 'Forgot Password';
+        
+        // Define validation rules.
+        $this->Validate->rule('username', 'required|trim');
+        
+         // Initiate validation
+        if ($this->Validate->run()) {
+            
+            // Grab data
+            $username = $this->input->post('username');
+            
+            // Grab user
+            $user = $this->repo->findBy('username', $username)->get(0);
+            
+            if ($user) {
+                // Send password reset email
+                $this->auth->userTokenCreate($user->id);
+                $this->event->fire(new \Event\PasswordReset($user, $this->app->mailer()));
+            }
+            else {
+                
+                $this->data->errors = ['No such account.'];
+                $this->forgotPassword();
+            }
+        }
+        else {
+            $this->forgotPassword();
+        }
+    }
+    
+    
     public function logout()
     {
         $this->auth->logout();
-        $this->redirect->goto();
+        $this->redirect->url();
     }
     
     

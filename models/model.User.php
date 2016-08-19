@@ -19,6 +19,9 @@ class User extends MyModel {
         'password' => [
             'type' => 'varchar'  
         ],
+        'token' => [
+            'type' => 'varchar'  
+        ],
         'createdDate' => [
             'type' => 'datetime'  
         ],
