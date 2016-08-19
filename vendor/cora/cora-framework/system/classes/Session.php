@@ -23,7 +23,7 @@ class Session
         $_SESSION[$name] = $value;
     }
     
-    public function unset($name)
+    public function delete($name)
     {
         unset($_SESSION[$name]);
     }

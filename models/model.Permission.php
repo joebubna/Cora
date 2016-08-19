@@ -14,7 +14,7 @@ class Permission extends MyModel {
         ],
         'allow' => [
             'type' => 'int',
-            'defaultValue' => 1
+            'defaultValue' => true
         ],
         
         // The group restriction this permission applies to (if any)

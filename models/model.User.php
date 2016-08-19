@@ -53,5 +53,14 @@ class User extends MyModel {
     public function beforeCreate() {
         $this->createdDate = new \DateTime();
     }
+    
+//    public function afterGet($prop, $value)
+//    {
+//        if ($prop == 'roles') {
+//            foreach ($values as $role) {
+//                foreach ($role->)
+//            }
+//        }
+//    }
 
 }
