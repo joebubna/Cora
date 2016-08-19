@@ -35,7 +35,7 @@ class Cookie
         setrawcookie($name, $value);    
     }
     
-    public function unset($name)
+    public function delete($name)
     {
         unset($_COOKIE[$name]);
     }
