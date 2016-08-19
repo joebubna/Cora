@@ -99,15 +99,75 @@ class Auth
     }
     
     
-    public function hasGroupMembership($userId, $name)
+    public function hasGroupMembership($userId, $groupName)
     {
+        $user = $this->repo->find($userId);
         
+        if ($user->groups->contains('name', $groupName)) {
+            return true;
+        }
+        return false;
     }
     
     
-    public function hasPermission($userId, $name, $group = false)
+    public function hasPermission($userId, $name, $groupId = null)
     {
+        $user = $this->repo->find($userId);
         
+        // Check individual permissions first.
+        foreach ($user->permissions as $perm) {
+            if ($perm->name == $name) {
+                
+                // If a group limitation is specified anywhere...
+                if (isset($groupId) || isset($perm->group)) {
+                    // If the permission we're checking and the permission we're iterating over both 
+                    // have groups defined, check that there's a match. If not, then do nothing
+                    // and proceed to next permission iteration.
+                    if (isset($groupId) && isset($perm->group) && $groupId == $perm->group->id) {
+                        if ($perm->allow == true) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
+                
+                // If we aren't dealing with groups.
+                else {
+                    if ($perm->allow == true) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        // If no matching individual permission was found, then check permissions 
+        // inherited from Roles.
+        foreach ($user->roles as $role) {
+            
+            // Since any 'Group' applied to a Role applies to any Permissions it grants, 
+            // let's do a group matching check first.
+            
+            // If either side has a group defined.
+            if (isset($role->group) || isset($groupId)) {
+                if (isset($groupId) && isset($perm->group) && $role->group->id == $groupId) {
+                    
+                }
+            }
+            
+            // If we aren't dealing with groups.
+            else {
+                
+            }
+        }
+        
+        
+        // If no matching permission was found by this point, then no permission exists.
+        return false;
     }
     
     
@@ -231,10 +291,10 @@ class Auth
          
         unset($this->user);
         unset($this->secureLogin);
-        $this->session->unset('user');
-        $this->session->unset('secureLogin');
-        $this->cookie->unset('user');
-        $this->cookie->unset('token');
+        $this->session->delete('user');
+        $this->session->delete('secureLogin');
+        $this->cookie->delete('user');
+        $this->cookie->delete('token');
     }
     
     
