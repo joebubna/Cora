@@ -33,5 +33,13 @@ $container->redirect = function($c) {
     return new \Cora\Redirect($c->session());
 };
 
+$container->mailer = function($c) {
+    return new \Cora\Mailer($c->PHPMailer());
+};
+
+$container->PHPMailer = function($c) {
+    return new PHPMailer;
+};
+
 
 

@@ -144,13 +144,18 @@ class Users extends \MyApp
             // Grab user
             $user = $this->repo->findBy('username', $username)->get(0);
             
+            // If User account exists, send password reset email
             if ($user) {
-                // Send password reset email
-                $this->auth->userTokenCreate($user->id);
+                // Generate a new token for this User
+                $token = $this->auth->userTokenCreate($user->id);
+                
+                // Update our current object with the new token (so we don't have to refetch from DB)
+                $user->token = $token;
+                
+                // Fire Password Reset Event to handle other actions such as sending reset email.
                 $this->event->fire(new \Event\PasswordReset($user, $this->app->mailer()));
             }
             else {
-                
                 $this->data->errors = ['No such account.'];
                 $this->forgotPassword();
             }
@@ -158,6 +163,17 @@ class Users extends \MyApp
         else {
             $this->forgotPassword();
         }
+    }
+    
+    
+    /**
+     *  Forgot Password verify token
+     */
+    public function forgotPasswordVerify()
+    {
+        $this->load->library('Validate', $this, true); 
+        $this->data->title = 'Forgot Password';
+        $this->_loadView(__FUNCTION__);
     }
     
     

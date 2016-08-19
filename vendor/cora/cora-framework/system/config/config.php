@@ -10,7 +10,7 @@ $config['mode'] = 'development';
  *  This is your base URL.
  *  I.E. www.MySite.com
  */
-$config['base_url'] = 'http://localhost';
+$config['base_url'] = 'localhost';
 
 /**
  *  If site URL is www.MySite.com
@@ -28,7 +28,6 @@ $config['base_url'] = 'http://localhost';
  */
 $config['site_url'] = '/cora/';
 
-
 /**
  *  Should URLs be converted to lowercase?
  *  If your project is hosted on a case-sensitive system (e.g. Linux) and you want a URL to
@@ -36,6 +35,17 @@ $config['site_url'] = '/cora/';
  *  can be useful. If however you want your URLs to be case sensitive, then turn this off.
  */
 $config['lowercase_url'] = true;
+
+
+/**
+ *  Email settings. Need to set these if you want to send emails using Cora's Mailer class.
+ */
+$config['smtp_host'] = '';
+$config['smtp_port'] = 587;
+$config['smtp_secure'] = 'tls';
+$config['smtp_auth'] = 'true';
+$config['smtp_username'] = '';
+$config['smtp_password'] = '';
 
 /**
  *  If you want to extend the base Cora controller class, add

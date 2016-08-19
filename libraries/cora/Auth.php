@@ -264,7 +264,7 @@ class Auth
         if ($user) {
             $user->token = $this->tokenCreate();
             $this->repo->save($user);
-            return true;
+            return $user->token;
         }
         return false; 
     }
@@ -416,7 +416,7 @@ class Auth
      */
     protected function tokenCreate()
     {
-        return password_hash($this->randomString, PASSWORD_DEFAULT);
+        return password_hash($this->randomString(), PASSWORD_DEFAULT);
     }
     
     
