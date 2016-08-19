@@ -88,7 +88,7 @@ class Auth
             // Redirect to login page.
             // With Saved URL for redirect after login.
             $this->redirect->saveUrl();
-            $this->redirect->goto('/users/login');
+            $this->redirect->url('/users/login');
         }
         else {
             // Show Forbidden 403 code.
