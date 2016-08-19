@@ -48,7 +48,7 @@ namespace Cora;
     /**
      *  Redirects the browser.
      */
-    public function goto($url = null, $append = '')
+    public function url($url = null, $append = '')
     {
         unset($_POST);
         unset($_FILES);
