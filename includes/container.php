@@ -41,5 +41,13 @@ $container->PHPMailer = function($c) {
     return new PHPMailer;
 };
 
+$container->load = function($c) {
+    return new \Cora\Load();
+};
+
+$container->input = function($c) {
+    return new \Cora\Input();
+};
+
 
 

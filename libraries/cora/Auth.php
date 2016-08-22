@@ -283,6 +283,36 @@ class Auth
     }
     
     
+    public function userResetTokenCreate($userId)
+    {
+        $user = $this->repo->find($userId);
+        
+        if ($user) {
+            $user->resetToken = $this->tokenCreate();
+            $user->resetTokenExpire = (new \DateTime())->modify('+1 day');
+            $this->repo->save($user);
+            return $user->resetToken;
+        }
+        return false; 
+    }
+    
+    
+    public function userResetTokenVerify($userId, $token)
+    {
+        $user = $this->repo->find($userId);
+        
+        if ($user) {
+            // If there's a token match and the token isn't empty.
+            if ($user->resetToken == $token && !empty($token) && ($user->resetTokenExpire >= new \DateTime())) {
+                $user->resetToken = '';
+                $this->repo->save($user);
+                return true;
+            }
+        }
+        return false; 
+    }
+    
+    
     public function passwordUpdate($userId, $plainTextPassword)
     {
         $user = $this->repo->find($userId);
@@ -304,34 +334,38 @@ class Auth
         // Setup
         $result = false;
         
-        // Hash password
-        $hashedPassword = $this->passwordCreate($password);
-        
         // Attempt to grab user
         $users = $this->repo->findBy($this->authField, $authField);
         
         // If a single matching user was found, return it.
         if ($users->count() == 1) {
             
-            // Grab user and set it as the return value.
+            // Grab user
             $user = $users->get(0);
-            $result = $user;
             
-            // Set a logged-in user in session.
-            $this->session->user = $user->id;
-            $this->session->secureLogin = true;
-            $this->user = $user->id;
-            $this->secureLogin = true;
+            // Check if password matches
+            if (password_verify($password, $user->password)) {
+               
+                // Set user as return value.
+                $result = $user;
             
-            // Set cookie if necessary
-            if ($rememberMe) {
-                $this->setRememberMe($user);
+                // Set a logged-in user in session.
+                $this->session->user = $user->id;
+                $this->session->secureLogin = true;
+                $this->user = $user->id;
+                $this->secureLogin = true;
+
+                // Set cookie if necessary
+                if ($rememberMe) {
+                    $this->setRememberMe($user);
+                }
+                
+                // If there's a saved URL, return to it.
+                if ($this->redirect->isSaved()) {
+                    $this->redirect->gotoSaved();
+                    exit;
+                }
             }
-        }
-        
-        if ($this->redirect->isSaved()) {
-            $this->redirect->gotoSaved();
-            exit;
         }
         return $result;
     }
@@ -388,7 +422,7 @@ class Auth
     protected function setRememberMe($user)
     {
         // Generate a new token.
-        $toke = $this->tokenCreate();
+        $token = $this->tokenCreate();
         
         // Store token in cookie on user's machine.
         $this->cookie->user = $user->id;

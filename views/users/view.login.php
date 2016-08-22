@@ -1,6 +1,7 @@
 <h1>Login</h1>
 <form method="POST">
     
+    <?= $this->repeat($notices, 'li', 'item', 'ul', 'list'); ?>
     <?= $this->repeat($errors, 'li', 'item', 'ul', 'list'); ?>
     
     
