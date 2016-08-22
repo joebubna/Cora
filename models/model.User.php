@@ -19,6 +19,15 @@ class User extends MyModel {
         'password' => [
             'type' => 'varchar'  
         ],
+        'token' => [
+            'type' => 'varchar'  
+        ],
+        'resetToken' => [
+            'type' => 'varchar'
+        ],
+        'resetTokenExpire' => [
+            'type' => 'datetime'  
+        ],
         'createdDate' => [
             'type' => 'datetime'  
         ],

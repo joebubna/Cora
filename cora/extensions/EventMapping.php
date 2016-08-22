@@ -6,6 +6,9 @@ class EventMapping extends \Cora\EventMapping
         'Event\\RegisterUser' => [
             ['Listener\\ThankYouForRegistering'],
             ['Listener\\NewRegistrationEmail']
+        ],
+        'Event\\PasswordReset' => [
+            ['Listener\\SendPasswordResetToken']
         ]
     ];
 }
