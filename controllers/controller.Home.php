@@ -7,10 +7,6 @@ class Home extends \MyApp {
         $this->data->title = 'A Simple Form';
         $this->data->content = 'HOME PAGE';
         
-        
-        if ($this->session->user) {
-            echo 'Logged in!';
-        }
         $this->load->view('', $this->data);
     }
     
