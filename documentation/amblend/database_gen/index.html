@@ -452,10 +452,10 @@ Ctrl+Alt+T.</li>
 that and then in the "htdocs" folder within.</li>
 </ul>
 </li>
-<li>Once at the root of your project, type "php Amblend.php build" to have
+<li>Once at the root of your project, type "php Amblend.php dbBuild" to have
 AmBlend build your database for you.</li>
 </ol>
-<pre><code class="php">php Amblend.php build
+<pre><code class="php">php Amblend.php dbBuild
 </code></pre>
 
 <div class="alert alert-warning">
@@ -482,9 +482,9 @@ this on a live app. Use this only during development and know you will have to
 re-insert your test data afterwards.</div>  
 </div>
 
-<p>To make this happen, you need to use the "emptyDb" command and then specify a
+<p>To make this happen, you need to use the "dbEmpty" command and then specify a
 database connection from your project's database config file:</p>
-<pre><code class="php">php Amblend.php emptyDb NameOfConnection
+<pre><code class="php">php Amblend.php dbEmpty NameOfConnection
 </code></pre></div>
         </div>
 
