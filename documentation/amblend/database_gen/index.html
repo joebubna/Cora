@@ -400,6 +400,8 @@
         
             <li><a href="#empty-a-database">Empty a Database</a></li>
         
+            <li><a href="#automatic-data-loading">Automatic Data Loading</a></li>
+        
     
     </ul>
 </div></div>
@@ -485,6 +487,22 @@ re-insert your test data afterwards.</div>
 <p>To make this happen, you need to use the "dbEmpty" command and then specify a
 database connection from your project's database config file:</p>
 <pre><code class="php">php Amblend.php dbEmpty NameOfConnection
+</code></pre>
+
+<h2 id="automatic-data-loading">Automatic Data Loading</h2>
+<p>By default, when you run the "dbBuild" command, AmBlend will look for a file named 
+"data.php" in the following directory:</p>
+<pre><code>/includes/data.php
+</code></pre>
+
+<p>If it finds a matching file, it will include it after it does the build. The expected
+use case is "data.php" uses Cora's database class to run some Insert commands to load
+data into the database for you. However, the file can do whatever you want, and you can
+use whatever tools you want within it (obviously). It's just a way for you to execute 
+some code to populate your database with test data during development.</p>
+<p>If you want to include a file other than "data.php", you can specify a different file
+after the build command like so:</p>
+<pre><code>php Amblend.php dbBuild myfile.php
 </code></pre></div>
         </div>
 
