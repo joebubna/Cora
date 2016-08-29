@@ -1,7 +1,7 @@
 <?php
 namespace Articles;
 
-class News extends \MyApp 
+class News extends \App 
 {
     
     public function index() 

@@ -1,6 +1,6 @@
 <?php
 
-class Articles extends \MyApp {
+class Articles extends \App {
     
     public function index($p = false) {
         $this->data->title = 'This is Awesome!!!';

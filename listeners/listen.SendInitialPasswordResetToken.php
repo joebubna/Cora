@@ -1,7 +1,7 @@
 <?php
 namespace Listener;
 
-class SendPasswordResetToken extends \Cora\Listener
+class SendInitialPasswordResetToken extends \Cora\Listener
 {
     public function handle($event)
     {
@@ -14,7 +14,7 @@ class SendPasswordResetToken extends \Cora\Listener
         
         $mail->Subject = 'Password Reset';
         $this->data->resetLink = $this->getLink($user->id, $user->resetToken);
-        $mail->Body = $load->view('emails/passwordReset', $this->data, true);
+        $mail->Body = $load->view('emails/initialPasswordReset', $this->data, true);
         $mail->send();
     }
     

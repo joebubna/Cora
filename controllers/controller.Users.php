@@ -1,6 +1,6 @@
 <?php
 
-class Users extends \MyApp
+class Users extends \App
 {
     protected $repo;
     protected $db;
@@ -19,10 +19,8 @@ class Users extends \MyApp
     {
         $this->load->library('Validate', $this, true); 
         $this->data->title = 'Register';
-        $this->_loadView(__FUNCTION__);
-        
-        //$this->data->content = $this->load->view('users/register', $this->data, true);
-        //$this->load->view('', $this->data);
+        $this->data->content = $this->load->view('users/register', $this->data, true);
+        $this->load->view('', $this->data);
     }
     
     /**
@@ -34,25 +32,22 @@ class Users extends \MyApp
         $this->load->library('Validate', $this, true); 
         
         // Define custom check
-        $this->Validate->def('accountExists', 'Cora\\Auth','accountExists', 'An account with that username already exists.', false, 'username');
+        $this->Validate->def('accountExists', 'Cora\\Auth','accountExists', 'An account with that username already exists.', false, 'email');
         
         // Define validation rules.
-        $this->Validate->rule('username', 'required|accountExists|trim');
-        $this->Validate->rule('email', 'required|trim');
+        $this->Validate->rule('email', 'required|accountExists|trim');
         $this->Validate->rule('password', 'required');
         $this->Validate->rule('password_confirm', 'required|matches[password]', 'Password Confirmation');
         
         // Initiate validation
         if ($this->Validate->run()) {        
-            // Submit was successful!
             
             // Grab data
-            $username   = $this->input->post('username');
             $email      = $this->input->post('email');
             $password   = $this->input->post('password');
             
             // Create auth object and call for creation of user
-            $this->auth->userCreate($username, $email, $password);
+            $userId = $this->auth->userCreate($email, $password);
             
             // Fire user created event
             
@@ -83,20 +78,19 @@ class Users extends \MyApp
         $this->data->title = 'Login';
         
         // Define validation rules.
-        $this->Validate->rule('username', 'required|trim');
+        $this->Validate->rule('email', 'required|valid_email|trim');
         $this->Validate->rule('password', 'required');
         
          // Initiate validation
         if ($this->Validate->run()) {
             
             // Grab data
-            $username   = $this->input->post('username');
             $email      = $this->input->post('email');
             $password   = $this->input->post('password');
             $rememberMe = $this->input->post('rememberMe');
             
             // Attempt login
-            $user = $this->auth->login($username, $password, $rememberMe);
+            $user = $this->auth->login($email, $password, $rememberMe);
             
             if ($user) {
                 $this->site->user = $user;
@@ -104,7 +98,7 @@ class Users extends \MyApp
             }
             else {
                 
-                $this->data->errors = ['Invalid username and password.'];
+                $this->data->errors = ['Invalid account and password.'];
                 $this->login();
             }
         }
@@ -133,16 +127,16 @@ class Users extends \MyApp
         $this->data->title = 'Forgot Password';
         
         // Define validation rules.
-        $this->Validate->rule('username', 'required|trim');
+        $this->Validate->rule('email', 'required|valid_email|trim');
         
          // Initiate validation
         if ($this->Validate->run()) {
             
             // Grab data
-            $username = $this->input->post('username');
+            $email = $this->input->post('email');
             
             // Grab user
-            $user = $this->repo->findBy('username', $username)->get(0);
+            $user = $this->repo->findBy('email', $email)->get(0);
             
             // If User account exists, send password reset email
             if ($user) {
@@ -194,6 +188,10 @@ class Users extends \MyApp
     
     public function resetPassword()
     {
+        if (!$this->session->resetId) {
+            $this->redirect->url('/users/login/');    
+        }     
+        
         $this->load->library('Validate', $this, true); 
         $this->data->title = 'Reset Password';
         $this->_loadView(__FUNCTION__);
@@ -218,7 +216,7 @@ class Users extends \MyApp
             // Update password
             //$test = $_SESSION['resetId'];
             $this->auth->passwordUpdate($this->session->resetId, $password);
-            //$this->session->delete('resetId');
+            $this->session->delete('resetId');
             
             // Make user login
             $this->data->notices[] = 'Password Updated!';
@@ -236,15 +234,10 @@ class Users extends \MyApp
         $this->auth->logout();
         $this->redirect->url();
     }
-    
-    
-    /**
-     *  Display a user's profile.
-     */
-    public function profile($id)
-    {
-        $user = $this->repo->find($id);
-        //echo $user->job->title;
-        var_dump($user);
-    }
 }
+
+
+
+
+
+

@@ -1,7 +1,7 @@
 <?php
 use Cora\Event;
 
-class Home extends \MyApp {
+class Home extends \App {
     
     public function index() {
         $this->data->title = 'A Simple Form';
@@ -19,7 +19,9 @@ class Home extends \MyApp {
         $this->auth->access(new \Auth\LoggedIn);
         
         $repo = $this->app->repository('user');
-        echo $repo->find(1)->username;
+        $user = $repo->find(2);
+        $user->resetToken = false;
+        $repo->save($user);
     }
     
     public function view($p1, $p2, $p3) {

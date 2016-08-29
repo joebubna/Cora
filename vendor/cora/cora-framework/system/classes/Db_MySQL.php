@@ -393,12 +393,19 @@ class Db_MySQL extends Database
         if(is_array($this->{$dataMember}[$offset])) {
             if (count($this->{$dataMember}[$offset]) == 3) {
                 $item = $this->{$dataMember}[$offset];
-                if($quote) {
-                   return $item[0].' '.$item[1]." '".$this->clean($item[2])."'"; 
+                
+                // If the value is string 'NULL', output without quotes and without cleaning.
+                if ($item[2] === 'NULL') {
+                    return $item[0].' '.$item[1]." ".$item[2]; 
                 }
                 else {
-                   return $item[0].' '.$item[1]." ".$this->clean($item[2]); 
-                }    
+                    if($quote) {
+                       return $item[0].' '.$item[1]." '".$this->clean($item[2])."'"; 
+                    }
+                    else {
+                       return $item[0].' '.$item[1]." ".$this->clean($item[2]); 
+                    } 
+                }   
             }
             else {
                 throw new \Exception("Cora's Query Builder class expects query components to be in an array with form [column, operator, value]");

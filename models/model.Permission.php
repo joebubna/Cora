@@ -2,7 +2,7 @@
 /**
 * 
 */
-class Permission extends MyModel {
+class Permission extends AppModel {
     
     public $model_attributes = [ 
         'id' => [

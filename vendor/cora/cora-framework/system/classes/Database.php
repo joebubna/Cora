@@ -298,8 +298,13 @@ class Database
                 $key = $fields;
                 $this->storeKeyValue($dataMember, $value, $key, $comparison);
             }
+            
+            // If the value passed in is FALSE, then convert that into string 'NULL'.
             else {
-                $this->storeKeyValue($dataMember, $fields);
+                $value = 'NULL';
+                $key = $fields;
+                $this->storeKeyValue($dataMember, $value, $key, $comparison);
+                //$this->storeKeyValue($dataMember, $fields);
             }
         }
         

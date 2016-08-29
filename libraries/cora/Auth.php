@@ -84,7 +84,7 @@ class Auth
         if ($this->accessCheck($authModelInput)) {
             return true;
         }
-        else if (!isset($this->session->user)) {
+        else if (!$this->session->user) {
             // Redirect to login page.
             // With Saved URL for redirect after login.
             $this->redirect->saveUrl();
@@ -182,6 +182,7 @@ class Auth
      */
     protected function hasPermissionFromRole($user, $name, $groupId = null)
     {
+        
         // Check Role based permissions.
         foreach ($user->roles as $role) {
             
@@ -230,13 +231,13 @@ class Auth
     }
     
     
-    public function userCreate($username, $email, $plainTextPassword)
+    public function userCreate($email, $plainTextPassword)
     {
         // Hash password
         $hashedPassword = $this->passwordCreate($plainTextPassword);
         
         // Create User
-        $user = new \User($username, $email, $hashedPassword);
+        $user = new \User($email, $hashedPassword);
             
         // Save the user to the database.
         $this->repo->save($user);
@@ -283,13 +284,13 @@ class Auth
     }
     
     
-    public function userResetTokenCreate($userId)
+    public function userResetTokenCreate($userId, $days = 1)
     {
         $user = $this->repo->find($userId);
         
         if ($user) {
             $user->resetToken = $this->tokenCreate();
-            $user->resetTokenExpire = (new \DateTime())->modify('+1 day');
+            $user->resetTokenExpire = (new \DateTime())->modify("+$days day");
             $this->repo->save($user);
             return $user->resetToken;
         }
@@ -327,7 +328,7 @@ class Auth
     
     
     /**
-     *  Normal login with a username and password.
+     *  Normal login with a unique field and password.
      */
     public function login($authField, $password, $rememberMe = false)
     {
@@ -443,8 +444,7 @@ class Auth
     {
         return password_hash($plainTextPassword, PASSWORD_DEFAULT);
     }
-    
-    
+
     /**
      *  Generate a hash from a random string and return it.
      */
@@ -457,7 +457,7 @@ class Auth
     /**
      *  Return a random string.
      */ 
-    protected function randomString($length = 50) {
+    public function randomString($length = 50) {
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
 		$string = '';
 

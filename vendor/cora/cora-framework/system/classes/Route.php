@@ -386,10 +386,6 @@ class Route extends Framework
         else if ($rootName == 'Listener') {
             $this->listenerLoader($className);
         }
-//        else if ($rootName == 'Library') {
-//            $namespaceExcludingLibrary = $this->partialPathString(1, null, explode('\\', $className));
-//            $this->libraryLoader($namespaceExcludingLibrary);
-//        }
         else if (file_exists($fullPath)) {
             include($fullPath);
         }

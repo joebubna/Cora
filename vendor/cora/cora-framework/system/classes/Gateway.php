@@ -288,6 +288,7 @@ class Gateway
         }
         
         $model->afterSave(); // Lifecycle callback
+        //echo $this->db->getQuery();
         return $this->db->exec()->lastInsertId();    
 	}
 

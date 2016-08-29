@@ -2,7 +2,7 @@
 /**
 * 
 */
-class Role extends MyModel {
+class Role extends AppModel {
     
     public $model_attributes = [ 
         'id' => [

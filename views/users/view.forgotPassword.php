@@ -4,7 +4,7 @@
     <?= $this->repeat($errors, 'li', 'item', 'ul', 'list'); ?>
     
     Enter your username and a password reset email will be sent:
-    <div><h3>Username:</h3><input type="text" name="username" value="<?= $Validate->setField('username'); ?>"></div>
+    <div><h3>Email:</h3><input type="text" name="email" value="<?= $Validate->setField('email'); ?>"></div>
 
     <br>
     

@@ -9,22 +9,36 @@ class DatabaseBuilder extends Framework
     {
         parent::__construct();
         spl_autoload_register(array($this, 'autoLoader'));
-        spl_autoload_register(array($this, 'coraLoader'));
         spl_autoload_register(array($this, 'coraExtensionLoader'));
+        spl_autoload_register(array($this, 'libraryLoader'));
+        spl_autoload_register(array($this, 'coraLoader'));
         
         $this->modelPath = realpath($this->config['pathToModels']);
     }
     
-    public function emptyDb($connection)
+    public function dbEmpty($connection)
     {
         $db = \Cora\Database::getDb($connection);
         $db->emptyDatabase();
     }
     
-    public function build()
+    public function dbBuild($data)
     {
         // Call recursive processing of models to build DB.
-        $this->examine('');   
+        $this->examine('');
+        
+        // If no datafile name was passed in, set default.
+        if ($data == '') {
+            $data = 'data.php';
+        }
+        
+        // Determine path
+        $path = $this->config['basedir'].'includes/'.$data;
+        
+        // If a data PHP file to include exists, include it.
+        if (file_exists($path)) {
+            include($path);
+        }
     }
     
     protected function examine($partialPath)
@@ -228,6 +242,45 @@ class DatabaseBuilder extends Framework
                     $this->config['modelsPostfix'] .
                     '.php';
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        
+        // Grab root of namespace.
+        $rootName = explode('\\', $className)[0];
+        
+        // Depending on the root of the namespace, possibly run one of several autoloaders.
+        if ($rootName == 'Event') {
+            $this->eventLoader($className);
+        }
+        else if ($rootName == 'Listener') {
+            $this->listenerLoader($className);
+        }
+        else if (file_exists($fullPath)) {
+            include($fullPath);
+        }
+    }
+    
+    protected function eventLoader($className)
+    {
+        $fullPath = $this->config['pathToEvents'] .
+                    $this->getPathBackslash($className, true) .
+                    $this->config['eventsPrefix'] .
+                    $this->getNameBackslash($className) .
+                    $this->config['eventsPostfix'] .
+                    '.php';
+        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        if (file_exists($fullPath)) {
+            include($fullPath);
+        }
+    }
+    
+    protected function listenerLoader($className)
+    {
+        $fullPath = $this->config['pathToListeners'] .
+                    $this->getPathBackslash($className, true) .
+                    $this->config['listenerPrefix'] .
+                    $this->getNameBackslash($className) .
+                    $this->config['listenerPostfix'] .
+                    '.php';
+        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
         if (file_exists($fullPath)) {
             include($fullPath);
         }
@@ -255,6 +308,24 @@ class DatabaseBuilder extends Framework
         //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
         if (file_exists($fullPath)) {
             include($fullPath);
+        }
+    }
+    
+    protected function libraryLoader($className)
+    {
+        //$name = $this->getName($className);
+        //$path = $this->getPath($className);
+        $fullPath = $this->config['pathToLibraries'] .
+                    $this->getPathBackslash($className) .
+                    $this->config['librariesPrefix'] .
+                    $this->getNameBackslash($className) .
+                    $this->config['librariesPostfix'] .
+                    '.php';
+        
+        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        // If the file exists in the Libraries directory, load it.
+        if (file_exists($fullPath)) {
+            include_once($fullPath);
         }
     }
     

@@ -1,7 +1,7 @@
 <?php
 $container = new \Cora\Container();
 
-$container->auth = function($c, $user = false, $secureLogin = false, $authField = 'username') {
+$container->auth = function($c, $user = false, $secureLogin = false, $authField = 'email') {
     return new \Cora\Auth($user, $secureLogin, $authField, $c->repository('user'), $c->event(), $c->session(), $c->cookie(), $c->redirect());
 };
 

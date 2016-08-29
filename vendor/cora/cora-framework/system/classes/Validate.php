@@ -198,7 +198,6 @@ class Validate
         // If data to be passed to the method isn't an array, put it in array format.
         $fieldData = array($fieldData, $arguments);
             
-
         // Call custom controller->method and pass the data to it.
         $result = call_user_func_array(array($controller, $method), $fieldData);
 

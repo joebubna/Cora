@@ -2,15 +2,12 @@
 /**
 * 
 */
-class User extends MyModel {
+class User extends AppModel {
     
     public $model_attributes = [ 
         'id' => [
             'type'          => 'int',
             'primaryKey'    => true
-        ],
-        'username' => [
-            'type' => 'varchar'
         ],
         'email' => [
             'type' => 'varchar',
@@ -51,9 +48,8 @@ class User extends MyModel {
         ]
     ];
     
-    public function __construct($name = null, $email = null, $password = null, $type = null)
+    public function __construct($email = null, $password = null, $type = null)
     {
-        $this->username = $name;
         $this->email = $email;
         $this->password = $password;
         $this->type = $type;

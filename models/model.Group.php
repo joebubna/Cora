@@ -2,7 +2,7 @@
 /**
 * 
 */
-class Group extends MyModel {
+class Group extends AppModel {
     
     public $model_attributes = [ 
         'id' => [

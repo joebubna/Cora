@@ -2,7 +2,7 @@
 /**
 * 
 */
-class Comment extends MyModel {
+class Comment extends AppModel {
     
     public $model_attributes = [ 
         'id' => [
