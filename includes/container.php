@@ -1,8 +1,5 @@
 <?php
-$GLOBALS['container'] = $container = new \Cora\Container();
-$GLOBALS['savedModelsList'] = array();
-$GLOBALS['coraSaveStarted'] = false;
-//$container->setInstance('savedModelsList', array());
+$container = new \Cora\Container();
 
 /*******************************************************************
  *

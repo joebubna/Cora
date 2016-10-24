@@ -13,7 +13,7 @@ class Gateway
     protected $savedModelsList = [];
     protected $viewQuery = 0;
 
-	public function __construct(Database $db, $tableName, $id, $container)
+	public function __construct(Database $db, $tableName, $id)
 	{
 		$this->db = $db;
         $this->tableName = $tableName;
@@ -22,7 +22,6 @@ class Gateway
             $id = 'id';
         }
         $this->idName = $id;
-        $this->app = $container;
         
         $this->savedModelsList = &$GLOBALS['savedModelsList'];
 	}
@@ -236,7 +235,7 @@ class Gateway
                    ) 
                 {
                     $relatedObj = $modelValue;
-                    $repo = $this->app->repository('\\'.get_class($relatedObj), false, false, true);
+                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, false, true);
                     
                     // Check if this object has already been saved during this recursive call series.
                     // If not, save it.
@@ -294,7 +293,7 @@ class Gateway
                     // based on the model definition.
                     $objPath = isset($prop['models']) ? $prop['models'] : $prop['model'];
                     $relatedObjBlank = $model->fetchRelatedObj($objPath);
-                    $repo = $this->app->repository('\\'.get_class($relatedObjBlank), false, false, true);
+                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObjBlank), false, false, true);
                     
                     // If uses relation table
                     if ($model->usesRelationTable($relatedObjBlank, $key)) {
@@ -511,7 +510,7 @@ class Gateway
                    ) 
                 {
                     $relatedObj = $modelValue;
-                    $repo = $this->app->repository('\\'.get_class($relatedObj), false, false, true);
+                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, false, true);
                     
                     // Check if this object has already been saved during this recursive call series.
                     // If not, save it.
@@ -570,7 +569,7 @@ class Gateway
                     // based on the model definition.
                     $objPath = isset($prop['models']) ? $prop['models'] : $prop['model'];
                     $relatedObjBlank = $model->fetchRelatedObj($objPath);
-                    $repo = $this->app->repository('\\'.get_class($relatedObjBlank), false, false, true);
+                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObjBlank), false, false, true);
                     
                     // If uses relation table
                     if ($model->usesRelationTable($relatedObjBlank, $key)) {

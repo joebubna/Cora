@@ -60,17 +60,10 @@ class RepositoryFactory
             $idField = $classObj->getPrimaryKey();
         }
         
-        // Grab some globals. These are necessary unfortunately, as getting rid of them would require dependency
-        // injection into the model class, which would prevent empty models getting created with no arguments.
-        // The ability to create model instances without dependencies is viewed as vital.
-        // Models instantiate RepositoryFactories in order to perform DB operations.
-        $container = $GLOBALS['container'];
-        //$savedModelsList = &$GLOBALS['savedModelsList'];
-        
         // Creates the Gateway the repository will use.
-        $gateway = new Gateway($db, $tableName, $idField, $container);
+        $gateway = new Gateway($db, $tableName, $idField);
         
         //echo print_r($GLOBALS['savedModelsList']);
-        return new Repository($gateway, $factory, $GLOBALS['savedModelsList']);
+        return new Repository($gateway, $factory);
     }
 }

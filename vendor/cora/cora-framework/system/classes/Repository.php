@@ -10,18 +10,12 @@ class Repository
     protected $saveStarted;
     //protected $savedModelsList;
 
-    public function __construct(Gateway $gateway, Factory $factory, &$savedModelsArray)
+    public function __construct(Gateway $gateway, Factory $factory)
     {
         $this->gateway = $gateway;
         $this->factory = $factory;
         
         $this->saveStarted = &$GLOBALS['coraSaveStarted'];
-        if ($savedModelsArray || true) {
-            //$this->savedModelsList = &$GLOBALS['savedModelsList']; //&$savedModelsArray;
-            //$this->savedModelsList[] = 'Bob'; //count($this->savedModelsList);\
-            //$GLOBALS['savedModelsList2'][] = 'Bob';
-            //print_r($GLOBALS['savedModelsList']);
-        }
     }
     
     public function viewQuery($bool = true)
