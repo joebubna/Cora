@@ -50,7 +50,7 @@ class Input
     }
     
     
-    public function get($name = null)
+    public function get($name = null, $defaultValue = null)
     {
         if (!$name) {
             return $this->getData;
@@ -58,7 +58,7 @@ class Input
         if (isset($this->getData[$name])) {
             return $this->getData[$name];
         }
-        return false;
+        return $defaultValue;
     }
 
     public function files($name = null)

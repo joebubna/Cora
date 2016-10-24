@@ -1,5 +1,5 @@
 <?php
-namespace Listener;
+namespace Listeners;
 
 class ThankYouForRegistering extends \Cora\Listener
 {

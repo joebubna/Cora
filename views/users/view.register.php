@@ -1,4 +1,4 @@
-<h1>Register Account</h1>
+<h1>Register Provider Account</h1>
 <form method="POST">
     
     <?= $this->repeat($errors, 'li', 'item', 'ul', 'list'); ?>

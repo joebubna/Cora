@@ -1,5 +1,5 @@
 <?php
-namespace Listener;
+namespace Listeners;
 
 class NewRegistrationEmail extends \Cora\Listener
 {

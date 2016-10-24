@@ -48,8 +48,13 @@ class Cora {
     protected function _convertClassNameToPath($sep = '_')
     {
         $path_string = '';
+        
         //get all namespace levels
         $namespaces = explode('\\', get_class($this));
+        
+        // Cut off the base namespace. Should be 'Controllers'
+        array_shift($namespaces);
+        
         foreach ($namespaces as $namespace) {
             //convert namespace name from camel case to underscores
             $path_string .= strtolower(str_replace('\\', '/', (preg_replace('/(?:(?<!^)([A-Z]))/', $sep.'$1', $namespace)))).'/';

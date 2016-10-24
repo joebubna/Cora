@@ -1,8 +1,9 @@
 <?php 
+namespace Models;
 /**
 * 
 */
-class Comment extends AppModel {
+class Comment extends \Cora\App\Model {
     
     public $model_attributes = [ 
         'id' => [
@@ -10,7 +11,7 @@ class Comment extends AppModel {
             'primaryKey'    => true
         ],
         'madeBy' => [
-            'model' => 'user'
+            'model' => 'User'
         ],
         'timestamp' => [
             'type' => 'datetime'
@@ -20,13 +21,9 @@ class Comment extends AppModel {
         ]
     ];
     
-    public function __construct($text = null)
+    public function __construct($madeBy = null, $text = null)
     {
+        $this->madeBy = $madeBy;
         $this->text = $text;
     }
-
-    public function foo() {
-        return 'This is a generic comment.';
-    }
-
 }

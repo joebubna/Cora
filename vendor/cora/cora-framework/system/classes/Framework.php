@@ -18,6 +18,11 @@ class Framework {
         $this->config = $config;
     }
     
+    public function getConfig()
+    {
+        return $this->config;
+    }
+    
     protected function debug($message = '', $newLine = true) {
         if ($this->config['debug'] == true) {
             

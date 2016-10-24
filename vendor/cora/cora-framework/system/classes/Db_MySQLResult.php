@@ -17,4 +17,14 @@ class Db_MySQLResult extends DatabaseResult
     {
         return $this->db->lastInsertId();
     }
+    
+    public function rowCount()
+    {
+        return $this->records->rowCount();
+    }
+    
+    public function result()
+    {
+        return $this->records;
+    }
 }

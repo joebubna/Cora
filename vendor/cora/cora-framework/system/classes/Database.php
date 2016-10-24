@@ -27,6 +27,14 @@ class Database
     protected $query;
     protected $queryDisplay;
     
+    // For calculating total row from last query within LIMIT
+    protected $last_wheres;
+    protected $last_distinct;
+    protected $last_ins;
+    protected $last_groupBys;
+    protected $last_havings;
+    protected $last_joins;
+    
     public function __construct()
     {
         $this->reset();
@@ -38,6 +46,11 @@ class Database
         if(empty($this->selects))
             return false;
         return true;
+    }
+    
+    public function resetSelect()
+    {
+        $this->selects  = array();
     }
     
     
@@ -56,9 +69,9 @@ class Database
     }
     
     
-    public function select($fields)
+    public function select($fields, $delim = false)
     {
-        $this->storeValue('selects', $fields);
+        $this->storeValue('selects', $fields, $delim);
         return $this;
     }
     
@@ -232,9 +245,12 @@ class Database
     
     public function getQuery()
     {
-        $this->calculate();
+        if ($this->query == '') {
+            $this->calculate();
+        }
         $this->queryDisplay = $this->query;
         $this->query = '';
+        
         return $this->queryDisplay;
     }
     
@@ -325,19 +341,25 @@ class Database
      *  STORAGE FORMAT:
      *  [item1, item2, item3]
      */
-    protected function storeValue($type, $data)
+    protected function storeValue($type, $data, $delim = false)
     {
         $dataMember = &$this->$type;
         // If array or object full of data was passed in, add all data
         // to appropriate data member.
         if (is_array($data) || is_object($data)) {
             foreach ($data as $value) {
+                if ($delim) {
+                    $value = $delim.$value.$delim;
+                }
                 array_push($dataMember, $value);
             }
         }
         
         // Add singular data item to data member.
         else {
+            if ($delim) {
+                $data = $delim.$data.$delim;
+            }
             array_push($dataMember, $data);
         }
     }

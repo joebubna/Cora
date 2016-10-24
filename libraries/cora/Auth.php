@@ -1,5 +1,6 @@
 <?php
-namespace Cora;
+namespace Libraries\Cora;
+use Models\User;
 
 class Auth
 {
@@ -9,7 +10,8 @@ class Auth
     protected $authField;
     
     // Dependencies
-    protected $repo;
+    protected $users;
+    protected $roles;
     protected $db;
     protected $event;
     protected $session;
@@ -17,15 +19,19 @@ class Auth
     protected $redirect;
     
     
-    public function __construct($userId = false, $secureLogin = false, $authField = 'username', $repo, $event, $session, $cookie, $redirect)
+    public function __construct($userId = false, $secureLogin = false, $authField = 'username', $repoUser, $repoRole, $event, $session, $cookie, $redirect, $container)
     {
-        // Dependencies
-        $this->repo = $repo;
-        $this->db = $this->repo->getDb();
+        // Repository Dependencies
+        $this->users = $repoUser;
+        $this->roles = $repoRole;
+        
+        // Utility Dependencies
+        $this->db = $this->users->getDb();
         $this->event = $event;
         $this->session = $session;
         $this->cookie = $cookie;
         $this->redirect = $redirect;
+        $this->container = $container;
         
         // The unique field to use for authentication. Usually 'username' or 'email'.
         $this->authField = $authField;
@@ -41,10 +47,27 @@ class Auth
     }
     
     
-    public static function accountExists($authValue = false, $authField = false)
+    public static function accountExists($authValue = false, $args = 'email')
     {
-        $repo = \Cora\RepositoryFactory::make('User');
-        $numberOfMatchingUsers = $repo->findBy($authField, $authValue)->count();
+        // If you are updating a user's account info, you want to check that their email
+        // doesn't already exist if they try and change it, BUT you want to make an exception
+        // if the email entered is the same as their existing email (their existing email is "acceptable")
+        $acceptable = false;
+        $authField = $args;
+        if (is_array($args)) {
+            $authField = $args[0];
+            $acceptable = $args[1];
+        }
+        
+        // Setup
+        $users = \Cora\RepositoryFactory::make('User');
+        $db = $users->getDb();
+        
+        if ($acceptable) {
+            $db->where($authField, $acceptable, '<>');
+        }
+        $db->where($authField, $authValue);
+        $numberOfMatchingUsers = $users->count($db);
         
         return $numberOfMatchingUsers > 0 ? true : false;
     }
@@ -89,19 +112,21 @@ class Auth
             // With Saved URL for redirect after login.
             $this->redirect->saveUrl();
             $this->redirect->url('/users/login');
+            return false;
         }
         else {
             // Show Forbidden 403 code.
-            $error = new \Cora\Error();
+            //$error = new \Cora\App\Error($this->container);
+            $error = $this->container->error;
             $error->handle('403');
-            exit;
+            return false;
         }
     }
     
     
     public function hasGroupMembership($userId, $groupName)
     {
-        $user = $this->repo->find($userId);
+        $user = $this->users->find($userId);
         
         if ($user->groups->contains('name', $groupName)) {
             return true;
@@ -119,7 +144,12 @@ class Auth
      */
     public function hasPermission($userId, $name, $groupId = null)
     {
-        $user = $this->repo->find($userId);
+        // Make sure $userId is set.
+        if ($userId === false || $userId == null) {
+            return false;
+        }
+        
+        $user = $this->users->find($userId);
         
         // Check if has individual permissions first:
         if ($this->hasPermissionFromIndividual($user, $name, $groupId)) {
@@ -195,7 +225,7 @@ class Auth
                 // We know that at least either the permission we're checking or the permission
                 // we're iterating over have a group restriction. Since at least one has a group defined,
                 // check that the other also has a group defined or else it's not a match.
-                // If both have groups defined, then check if the groups matchs.
+                // If both have groups defined, then check if the groups match.
                 if (isset($groupId) && isset($perm->group) && $role->group->id == $groupId) {
                     
                     // The permission we're checking and the role we're looking at both have the same
@@ -231,16 +261,42 @@ class Auth
     }
     
     
+    public function userSetPrimaryRoleByName($userId, $roleName)
+    {
+        // Grab our new user
+        $user = $this->users->find($userId);
+
+        // Assign the Provider role
+        $user->primaryRole = $this->roles->findBy('name', $roleName)->get(0);
+        $this->users->save($user);
+    }
+    
+    
+    /**
+     *  Get the currently logged in user as an object.
+     *  If viewer is not logged in, return a default user.
+     */
+    public function userGetCurrent()
+    {
+        if (!$this->session->user) {
+            return new \Models\User(null, null, new \Models\Role('User'));
+        }
+        else {
+            return $this->users->find($this->session->user);
+        }
+    }
+    
+    
     public function userCreate($email, $plainTextPassword)
     {
         // Hash password
         $hashedPassword = $this->passwordCreate($plainTextPassword);
         
         // Create User
-        $user = new \User($email, $hashedPassword);
+        $user = new User($email, $hashedPassword);
             
         // Save the user to the database.
-        $this->repo->save($user);
+        $this->users->save($user);
         
         return $user->id;
     }
@@ -248,7 +304,7 @@ class Auth
     
     public function userDelete($userId)
     {
-        $user = $this->repo->find($userId);
+        $user = $this->users->find($userId);
         
         if ($user) {
             $user->delete();
@@ -260,11 +316,11 @@ class Auth
     
     public function userTokenCreate($userId)
     {
-        $user = $this->repo->find($userId);
+        $user = $this->users->find($userId);
         
         if ($user) {
             $user->token = $this->tokenCreate();
-            $this->repo->save($user);
+            $this->users->save($user);
             return $user->token;
         }
         return false; 
@@ -273,7 +329,7 @@ class Auth
     
     public function userTokenVerify($userId, $token)
     {
-        $user = $this->repo->find($userId);
+        $user = $this->users->find($userId);
         
         if ($user) {
             if ($user->token == $token) {
@@ -286,12 +342,12 @@ class Auth
     
     public function userResetTokenCreate($userId, $days = 1)
     {
-        $user = $this->repo->find($userId);
+        $user = $this->users->find($userId);
         
         if ($user) {
             $user->resetToken = $this->tokenCreate();
             $user->resetTokenExpire = (new \DateTime())->modify("+$days day");
-            $this->repo->save($user);
+            $this->users->save($user);
             return $user->resetToken;
         }
         return false; 
@@ -300,13 +356,13 @@ class Auth
     
     public function userResetTokenVerify($userId, $token)
     {
-        $user = $this->repo->find($userId);
+        $user = $this->users->find($userId);
         
         if ($user) {
             // If there's a token match and the token isn't empty.
             if ($user->resetToken == $token && !empty($token) && ($user->resetTokenExpire >= new \DateTime())) {
                 $user->resetToken = '';
-                $this->repo->save($user);
+                $this->users->save($user);
                 return true;
             }
         }
@@ -316,11 +372,11 @@ class Auth
     
     public function passwordUpdate($userId, $plainTextPassword)
     {
-        $user = $this->repo->find($userId);
+        $user = $this->users->find($userId);
         
         if ($user) {
             $user->password = $this->passwordCreate($plainTextPassword);
-            $this->repo->save($user);
+            $this->users->save($user);
             return true;
         }
         return false; 
@@ -336,7 +392,7 @@ class Auth
         $result = false;
         
         // Attempt to grab user
-        $users = $this->repo->findBy($this->authField, $authField);
+        $users = $this->users->findBy($this->authField, $authField);
         
         // If a single matching user was found, return it.
         if ($users->count() == 1) {
@@ -345,21 +401,13 @@ class Auth
             $user = $users->get(0);
             
             // Check if password matches
-            if (password_verify($password, $user->password)) {
+            if ($this->passwordVerify($user, $password)) {
                
                 // Set user as return value.
                 $result = $user;
-            
-                // Set a logged-in user in session.
-                $this->session->user = $user->id;
-                $this->session->secureLogin = true;
-                $this->user = $user->id;
-                $this->secureLogin = true;
-
-                // Set cookie if necessary
-                if ($rememberMe) {
-                    $this->setRememberMe($user);
-                }
+                
+                // Perform Actual Login
+                $this->loginProcess($user, $rememberMe);
                 
                 // If there's a saved URL, return to it.
                 if ($this->redirect->isSaved()) {
@@ -372,18 +420,47 @@ class Auth
     }
     
     
+    /**
+     *  Checks if a password is valid for a given user.
+     *
+     *  @return boolean
+     */
+    protected function passwordVerify($user, $password)
+    {
+        return password_verify($password, $user->password);
+    }
+    
+    
+    /**
+     *  Perform the actual login.
+     */
+    protected function loginProcess($user, $rememberMe = false)
+    {
+        // Set a logged-in user in session.
+        $this->session->user = $user->id;
+        $this->session->secureLogin = true;
+        $this->user = $user->id;
+        $this->secureLogin = true;
+
+        // Set cookie if necessary
+        if ($rememberMe) {
+            $this->setRememberMe($user);
+        }
+    }
+    
+    
     public function logout()
     {
         // If a user is logged in, remove their token in the DB.
         // (to prevent passive cookie login on next visit)
         $userId = $this->session->user;
         if ($userId) {
-            $user = $this->repo->find($userId);
+            $user = $this->users->find($userId);
             $user->token = null;
-            $this->repo->save($user);
+            $this->users->save($user);
         }
          
-        unset($this->user);
+        unset($this->userId);
         unset($this->secureLogin);
         $this->session->delete('user');
         $this->session->delete('secureLogin');
@@ -398,9 +475,8 @@ class Auth
     protected function insecureLogin($userId = false, $token = false)
     {
         if ($userId && $token) {
-            
             // Try and grab user from DB.
-            $user = $this->repo->find($userId);
+            $user = $this->users->find($userId);
         
             if ($user) {
                 if ($user->token == $token) {
@@ -433,7 +509,7 @@ class Auth
         $user->token = $token;
         
         // save the user.
-        $this->repo->save($user);
+        $this->users->save($user);
     }
     
     

@@ -1,68 +1,147 @@
 <?php
+// Setup
+date_default_timezone_set("America/Los_Angeles");
 include('container.php');
-$db = $container->db();
+$app = $container;
+
+// Calculate the hash of the password "test".
 $testPass = password_hash('test', PASSWORD_DEFAULT);
 
-/////////////////////////////////
-// ROLES
-/////////////////////////////////
-$db ->insert('name')
-    ->into('roles')
-    ->values([
-        ['Provider'], 
-        ['Admin'],
-        ['Developer']
-    ])
-    ->exec();
+// Create repositories
+$comments   = $app->comments;
+$perms      = $container->repository('Permission');
+$roles      = $container->repository('Role');
+$users      = $container->repository('User');
+
+
 
 /////////////////////////////////
 // PERMISSIONS
 /////////////////////////////////
-$db ->insert('name')
-    ->into('permissions')
-    ->values([
-        ['isAdmin'], 
-        ['isDev']
-    ])
-    ->exec();
+$permsList = $app->container(false, [
+    new \Models\Permission('isUser'),
+    new \Models\Permission('isAdmin'),
+    new \Models\Permission('isDev')
+], 'name');
+$perms->save($permsList);
+
+
 
 /////////////////////////////////
-// REF_ROLES_PERMISSIONS
+// ROLES
 /////////////////////////////////
-$db ->insert('role, permission')
-    ->into('ref_roles_permissions')
-    ->values([
-        [2, 1], 
-        [3, 2]
-    ])
-    ->exec();
+
+//-------------------------------
+// Declare roles
+//-------------------------------
+$rolesList = $app->container(false, [
+    new \Models\Role('User'),
+    new \Models\Role('Admin'),
+    new \Models\Role('Developer')
+], 'name');
+
+//-------------------------------
+// Assign Permissions to roles
+//-------------------------------
+$rolesList->User->permissions = $app->resultSet([
+    $permsList->isUser
+]);
+
+$rolesList->Admin->permissions = $app->resultSet([
+    $permsList->isAdmin
+]);
+
+$rolesList->Developer->permissions = $app->resultSet([
+    $permsList->isAdmin,
+    $permsList->isDev
+]);
+
+// Save to DB.
+$roles->save($rolesList);
+
+
 
 /////////////////////////////////
 // USERS
 /////////////////////////////////
-$db ->insert('email, password, primaryRole')
-    ->into('users')
-    ->values([
-        ['pmargason@fuelmedical.com', $testPass, 2], 
-        ['jbubna@fuelmedical.com', $testPass, 3],
-        ['mkeene@fuelmedical.com', $testPass, 3],
-        ['bob@gmail.com', $testPass, 1], 
-        ['john@gmail.com', $testPass, 1],
-        ['susan@gmail.com', $testPass, 1]
-    ])
-    ->exec();
+
+//-------------------------------
+// Declare users
+//-------------------------------
+$usersList = $app->container(false, [
+    new \Models\User('coraTestUser1@gmail.com', $testPass, $rolesList->User->id),
+    new \Models\User('coraTestAdmin1@gmail.com', $testPass, $rolesList->Admin->id),
+    new \Models\User('coraTestDev1@gmail.com', $testPass, $rolesList->Developer->id),
+    new \Models\User('coraTestUser2@gmail.com', $testPass, $rolesList->User->id)
+], 'email');
+
+//-------------------------------
+// Assign non-required attributes
+//-------------------------------
+$curDate = date("Y-m-d");
+
+// User1
+$user = $usersList->{'coraTestUser1@gmail.com'};
+$user->roles = $app->resultSet([$rolesList->User]);
+$user->firstName = 'Bob';
+$user->lastName = 'Ross';
+$user->createdDate = $curDate;
+$user->comments = $app->container(false, [
+    new \Models\Comment($user, 'Test Comment 1'),
+    new \Models\Comment($user, 'Test Comment 2'),
+    new \Models\Comment($user, 'Test Comment 3')
+]);
+
+// User2
+$user2 = $usersList->{'coraTestUser2@gmail.com'};
+$user2->roles = $app->resultSet([$rolesList->User]);
+$user2->firstName = 'Susan';
+$user2->lastName = 'Wachoski';
+$user2->createdDate = $curDate;
+
+// Admin
+$admin = $usersList->{'coraTestAdmin1@gmail.com'};
+$admin->roles = $app->resultSet([$rolesList->Admin]);
+$admin->firstName = 'Captain';
+$admin->lastName = 'America';
+$admin->createdDate = $curDate;
+
+// Developer
+$developer = $usersList->{'coraTestDev1@gmail.com'};
+$developer->roles = $app->resultSet([$rolesList->Developer]);
+$developer->firstName = 'Josiah';
+$developer->lastName = 'Bubna';
+$developer->createdDate = $curDate;
+
+//-------------------------------
+// Large set of fake users for pagination.
+//-------------------------------
+for ($i = 3; $i < 1000; $i++) {
+    $user = new \Models\User("coraTestUser$i@gmail.com", $testPass, $rolesList->User->id);
+    $user->firstName = "Bob$i";
+    $user->lastName = "Ross$i";
+    $user->createdDate = $curDate;
+    $usersList->add($user, false, 'email');
+}
+
+// Save to DB.
+$users->save($usersList);
+
+
 
 /////////////////////////////////
-// REF_USERS_ROLES
+// Comments
 /////////////////////////////////
-$db ->insert('user, role')
-    ->into('ref_users_roles')
-    ->values([
-        [1, 2], 
-        [2, 3],
-        [3, 3],
-        [4, 1], 
-        [5, 1],
-        [6, 1]
-    ])
-    ->exec();
+
+////-------------------------------
+//// Declare comments
+////-------------------------------
+//$commentsList = $app->container(false, [
+//    new \Models\Comment($user, 'Test Comment 1'),
+//    new \Models\Comment($user, 'Test Comment 2'),
+//    new \Models\Comment($user, 'Test Comment 3')
+//]);
+//
+//// Save to DB.
+//$comments->save($commentsList);
+

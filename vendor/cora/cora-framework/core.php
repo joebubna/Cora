@@ -1,5 +1,6 @@
 <?php
 require_once('system/classes/Framework.php');
+require_once('system/classes/Autoload.php');
 require_once('system/classes/Container.php');
 require_once('system/classes/Route.php');
 require_once('system/classes/Load.php');

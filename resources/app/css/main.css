@@ -1,0 +1,94 @@
+body {
+  /* Required for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+  padding-top: 70px;
+  font-size: 15px;
+  font-family: "Helvetica Neue", "Segoe UI", "Open Sans", Roboto, Arial, sans-serif; }
+
+.container-fluid {
+  max-width: 970px; }
+
+.page-header {
+  margin-top: 1em; }
+  .page-header .btn {
+    margin-right: 4px;
+    margin-left: 4px; }
+  .page-header .btn:first-child {
+    margin-right: 0px; }
+  .page-header .btn:last-child {
+    margin-left: 18px; }
+
+footer .wrapper {
+  padding-top: 2rem;
+  margin: 20px 0 40px;
+  border-top: 1px solid #eee; }
+footer .bottom {
+  margin-top: 5rem; }
+footer p {
+  font-size: 1.2rem;
+  color: #888; }
+
+.resultset-filters {
+  margin-bottom: 20px; }
+
+.resultset-filters .nav-pills li a {
+  padding: 3px 4px 3px 3px; }
+
+.table td:last-child, .table th:last-child {
+  text-align: center; }
+
+.navbar-nav .glyphicon {
+  margin-right: 5px; }
+
+.jumbotron {
+  margin-top: 15px; }
+
+.card__quick-link .glyphicon {
+  float: left;
+  font-size: 5rem; }
+.card__quick-link .glyphicon-plus {
+  margin: 1rem 1.5rem 0rem 0.5rem; }
+.card__quick-link .glyphicon-list {
+  margin: 1rem 1.8rem 0rem 0.5rem; }
+
+@media (min-width: 768px) {
+  .card-deck {
+    display: table;
+    width: 100%;
+    margin-bottom: .75rem;
+    table-layout: fixed;
+    border-spacing: 1.25rem 0; }
+
+  .card-deck .card {
+    display: table-cell;
+    margin-bottom: 0;
+    vertical-align: top; } }
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: .25rem;
+  display: block; }
+  .card__quick-link {
+    color: #FFF; }
+    .card__quick-link:hover, .card__quick-link:focus {
+      color: #FFF;
+      text-decoration: none; }
+  .card__card-title {
+    font-size: 2.3rem; }
+  .card__card-subtitle {
+    font-size: 1.8rem; }
+
+.card-block {
+  padding: 1.25rem; }
+
+.card-img-top {
+  border-top-right-radius: .25rem;
+  border-top-left-radius: .25rem; }
+
+dd {
+  margin-bottom: 0.7em; }
+
+.subsection {
+  background: #337ab7;
+  padding: 6px 10px;
+  color: #FFF; }
+
+/*# sourceMappingURL=main.css.map */

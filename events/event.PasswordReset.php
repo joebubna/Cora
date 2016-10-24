@@ -1,15 +1,12 @@
 <?php
-namespace Event;
+namespace Events;
 
 class PasswordReset extends \Cora\Event
 {
     public $user;
-    public $mailer;
     
-    public function __construct(\User $user, $mailer, $load)
+    public function __construct($user)
     {
         $this->user = $user;
-        $this->mailer = $mailer;
-        $this->load = $load;
     }
 }

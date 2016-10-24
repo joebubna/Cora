@@ -6,6 +6,9 @@ class Db_MySQL extends Database
     protected $db;
     protected $mysqli;
     protected $dbName;
+    protected $reservedWords = [
+        'order' => true
+    ];
     
     public function __construct($connection = false)
     {
@@ -47,19 +50,56 @@ class Db_MySQL extends Database
         );
     }
     
+    public function __destruct()
+    {
+        $this->mysqli->close();
+        $this->db = null;
+    }
+    
+    
+    protected function sanitize($value, $dataMember)
+    {
+        $returnValue = $value;
+        if (isset($this->reservedWords[$value])) {
+            $returnValue = '`'.$value.'`';
+        }
+        return $returnValue;
+    }
+    
     // Clean user provided input to make it safe for use in a database query.
     protected function clean($value)
     {
         return $this->mysqli->real_escape_string($value);
     }
     
+    public function resetToLastMinusLimit()
+    {
+        $this->wheres = $this->last_wheres;
+        $this->distinct = $this->last_distinct;
+        $this->ins = $this->last_ins;
+        $this->groupBys = $this->last_groupBys;
+        $this->havings = $this->last_havings;
+        $this->joins = $this->last_joins;
+    }
+    
     // Create SQL string and execute it on our database.
     public function exec()
     {
+        // Save copy of relevant data so we can calculate the total rows of this query
+        // Does not save LIMIT as this is for use with pagination.
+        $this->last_wheres = $this->wheres;
+        $this->last_distinct = $this->distinct;
+        $this->last_ins = $this->ins;
+        $this->last_groupBys = $this->groupBys;
+        $this->last_havings = $this->havings;
+        $this->last_joins = $this->joins;
+        
+        // Execute this query
         $this->calculate();
         $result = $this->db->query($this->query);
         $this->reset();
         
+        // Return Result
         $dbResult = new Db_MySQLResult($result, $this->db);
         return $dbResult;
     }
@@ -188,6 +228,7 @@ class Db_MySQL extends Database
         if ($this->limit) {
             $this->query .= ' LIMIT '.$this->limit;
         }
+        //echo $this->query.'<br><br>';
     }
     
     // Create an INSERT statement.
@@ -393,17 +434,26 @@ class Db_MySQL extends Database
         if(is_array($this->{$dataMember}[$offset])) {
             if (count($this->{$dataMember}[$offset]) == 3) {
                 $item = $this->{$dataMember}[$offset];
+                $column = $item[0];
+                
+                // Normally, Don't include column quotes because the column may be a function like:
+                // COUNT(*) which doesn't work if it's entered as `COUNT(*)`.
+                // However, in the case of "UPDATE table SET column = value", the column shouldn't be a 
+                // function, so we want to quote it to avoid conflict with reserved MySQL names.
+                if ($dataMember == 'updates') {
+                    $column = '`'.$column.'`';
+                }
                 
                 // If the value is string 'NULL', output without quotes and without cleaning.
                 if ($item[2] === 'NULL') {
-                    return $item[0].' '.$item[1]." ".$item[2]; 
+                    return $column.' '.$item[1]." ".$item[2]; 
                 }
                 else {
                     if($quote) {
-                       return $item[0].' '.$item[1]." '".$this->clean($item[2])."'"; 
+                       return $column.' '.$item[1]." '".$this->clean($item[2])."'"; 
                     }
                     else {
-                       return $item[0].' '.$item[1]." ".$this->clean($item[2]); 
+                       return $column.' '.$item[1]." ".$this->clean($item[2]); 
                     } 
                 }   
             }
@@ -412,7 +462,11 @@ class Db_MySQL extends Database
             }
         }
         else {
-            return $this->clean($this->{$dataMember}[$offset]);
+            $item = $this->clean($this->{$dataMember}[$offset]);
+            if ($dataMember == 'inserts') {
+                $item = '`'.$item.'`';
+            }
+            return $item;
         }
     }
     
@@ -507,7 +561,8 @@ class Db_MySQL extends Database
             }
             else {
                 // Return string of form 'COLUMN >= VALUE'
-                $result = $item[0].' '.$item[1]." '".$this->clean($item[2])."'";
+                $column = $this->sanitize($item[0], $dataMember);
+                $result = $column.' '.$item[1]." '".$this->clean($item[2])."'";
             }
             return $result;
         }

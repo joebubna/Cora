@@ -31,9 +31,11 @@ class Validate
         // Setting this up for future language localization.
         $this->lang->required       = '%s is required!';
         $this->lang->valid_email    = "%s must be a valid email address.";
+        $this->lang->valid_date     = "%s must be a valid date.";
         $this->lang->matches        = "%s does not match %s!";
         $this->lang->min_length     = "%s must be at least %s characters.";
         $this->lang->max_length     = "%s must be at most %s characters.";
+        $this->lang->is_numeric     = '%s must be numeric. Make sure to remove any $ symbol.';
     }
 
 
@@ -174,7 +176,7 @@ class Validate
      */
     protected function _required($fieldData)
     {
-        if ($fieldData)
+        if ($fieldData !== false && $fieldData != null && $fieldData != '')
             return true;
         else
             return false;
@@ -214,11 +216,56 @@ class Validate
         $fieldData = trim($fieldData);
         return true;
     }
+    
+    protected function _is_numeric($fieldData)
+    {
+        if ($fieldData == '') {
+            return true;
+        }
+        return is_numeric($fieldData);
+    }
 
     // valid_email
     protected function _valid_email($fieldData)
     {
-        if (preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/', $fieldData)) {
+        if ($fieldData == '') {
+            return true;
+        }
+        else if (preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/', $fieldData)) {
+            return true;
+        }
+        return false;
+    }
+    
+    protected function _valid_date($fieldData)
+    {
+        // Check if mm/dd/yyyy
+        $date = \DateTime::createFromFormat('m/d/Y', $fieldData);
+        if ($date && $date->format('m/d/Y') === $fieldData) {
+            return true;
+        }
+        
+        // Check if yyyy/mm/dd
+        $date = \DateTime::createFromFormat('Y/m/d', $fieldData);
+        if ($date && $date->format('Y/m/d') === $fieldData) {
+            return true;
+        }
+        
+        // Check if yyyy-mm-dd
+        $date = \DateTime::createFromFormat('Y-m-d', $fieldData);
+        if ($date && $date->format('Y-m-d') === $fieldData) {
+            return true;
+        }
+        
+        // Check if dd-mm-yyyy
+        $date = \DateTime::createFromFormat('d-m-Y', $fieldData);
+        if ($date && $date->format('d-m-Y') === $fieldData) {
+            return true;
+        }
+        
+        // Check if dd.mm.yyyy
+        $date = \DateTime::createFromFormat('d.m.Y', $fieldData);
+        if ($date && $date->format('d.m.Y') === $fieldData) {
             return true;
         }
         return false;

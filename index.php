@@ -6,14 +6,17 @@ error_reporting(E_ALL);
 // Load Cora framework.
 require('vendor/cora/cora-framework/core.php');
 
-// Load app container.
-require('includes/container.php');
-
-// Create a router. This register's Cora's autoload functions.
-$Route = new Cora\Route($container);
+// This register's Cora's autoload functions.
+$autoload = new Cora\Autoload();
 
 // Register Composer Autoloader as fallback if Cora's don't find class.
 require 'vendor/autoload.php';
+
+// Load app container.
+require('includes/container.php');
+
+// Create a router. 
+$Route = new Cora\Route($container);
 
 // Find route.
 $Route->routeFind();

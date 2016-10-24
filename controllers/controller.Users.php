@@ -1,6 +1,7 @@
 <?php
+namespace Controllers;
 
-class Users extends \App
+class Users extends \Cora\App\Controller
 {
     protected $repo;
     protected $db;
@@ -81,7 +82,7 @@ class Users extends \App
         $this->Validate->rule('email', 'required|valid_email|trim');
         $this->Validate->rule('password', 'required');
         
-         // Initiate validation
+        // Initiate validation
         if ($this->Validate->run()) {
             
             // Grab data
@@ -98,7 +99,7 @@ class Users extends \App
             }
             else {
                 
-                $this->data->errors = ['Invalid account and password.'];
+                $this->data->errors = ['Invalid username and password.'];
                 $this->login();
             }
         }
@@ -234,6 +235,35 @@ class Users extends \App
         $this->auth->logout();
         $this->redirect->url();
     }
+    
+    
+    /**
+     *  Display a user's profile.
+     */
+    // public function profile($id)
+    // {
+    //     $user = $this->repo->find($id);
+    //     // echo $user->job->title;
+    //     // echo $user->email;
+    //     // var_dump($user);
+    // }
+
+//  MOVED TO controller.PROFILE.php
+    // public function providerProfile($id)
+    // {
+    //     $this->data->user = $this->repo->find($id);
+    //     $this->data->title = $this->repo->find($id)->firstName . ' ' . $this->repo->find($id)->lastName;
+
+    //     //echo $user->job->title;
+    //     // var_dump($user);
+    //     // $this->data->title = user;
+
+    //     //Grab our viewProviders HTML
+    //     $this->data->content = $this->load->view('users/providerProfile', $this->data, true);
+
+    //     // Load partial view and other data into our template.
+    //     $this->load->view('', $this->data);    
+    // }
 }
 
 

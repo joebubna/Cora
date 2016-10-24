@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /cora
+RewriteBase /
 
 # if file or directory doesnt exist for state requests, send them to our main location handling file
 
@@ -11,6 +11,5 @@ RewriteRule ^(.*)/$ index.php [L]
 
 RewriteCond %{REQUEST_URI} !(/$|\.) 
 RewriteRule (.*) %{REQUEST_URI}/ [R=301,L] 
-
 
 </IfModule>

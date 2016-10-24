@@ -78,6 +78,15 @@ class Model
     }
     
     
+    public function __isset($name)
+    {
+        if ($this->$name != null) {
+            return true;
+        }
+        return false;
+    }
+    
+    
     public function __get($name)
     {
         ///////////////////////////////////////////////////////////////////////
@@ -150,13 +159,37 @@ class Model
         ///////////////////////////////////////////////////////////////////////
         // If the model DB data is defined, but not grabbed from the database,
         // then we need to dynamically fetch it.
+        // OR, we need to return an empty collection or NULL
+        // in the case of the attribute pointing to models.
         ///////////////////////////////////////////////////////////////////////
         else if (isset($this->model_attributes[$name]) && !isset($this->model_dynamicOff)) {
+            
+            // If the attribute isn't the primary key of our current model, do dynamic fetch.
             if ($name != $this->getPrimaryKey()) {
                 $this->$name = $this->fetchData($name); 
                 $this->beforeGet($name); // Lifecycle callback
                 $returnValue = $this->model_data[$name];
                 $this->afterGet($name, $returnValue); // Lifecycle callback
+                
+                // Ref this model's attributes in a shorter variable.
+                $def = $this->model_attributes[$name];
+                
+                // If the unset attribute is defined as a collection, return an empty one.
+                if (isset($def['models'])) {
+                    if ($returnValue == null) {
+                        return new \Cora\Container(); 
+                    }
+                    else {
+                        return $this->__get($name);
+                    }
+                }
+                // If the unset attribute is defined as a single model, return null.
+                else if (isset($def['model'])) {
+                    if ($returnValue != null) {
+                        return $this->__get($name);   
+                    }
+                }
+                
                 return $returnValue;
             }
             else {
@@ -204,7 +237,8 @@ class Model
         // still isn't set after that is called.
         ///////////////////////////////////////////////////////////////////////
         $this->beforeGet($name); // Lifecycle callback
-        if (property_exists($class, $name)) {
+        //if (property_exists($class, $name)) {
+        if (isset($this->{$name})) {
             $returnValue = $this->{$name};
         }
         else {
@@ -222,7 +256,14 @@ class Model
         
         // If a matching DB attribute is defined for this model.
         if (isset($this->model_attributes[$name])) {
-            $this->model_data[$name] = $value;
+            $def = $this->model_attributes[$name];
+            if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime') && is_string($value)) {
+                $value = new \DateTime($value);
+                $this->model_data[$name] = $value;
+            }
+            else {
+                $this->model_data[$name] = $value;
+            }
         }
         
         // If your DB id's aren't 'id', but instead something like "note_id",
@@ -325,7 +366,13 @@ class Model
     
     public function fetchRelatedObj($objFullName)
     {
-        $objType = '\\'.$objFullName;
+        // Load and set cora config.
+        require(dirname(__FILE__).'/../config/config.php');
+        
+        // Load custom app config
+        include($config['basedir'].'cora/config/config.php');
+        
+        $objType = CORA_MODEL_NAMESPACE.$objFullName;
         return new $objType();
     }
     
@@ -406,6 +453,10 @@ class Model
         // Uses the class name to determine table name if one isn't given.
         // If value of $class is 'WorkOrder\\Note' then $tableName will be 'work_order_notes'.
         $namespaces = explode('\\', $classNamespace);
+        
+        // Remove type of class from namespace (i.e. remove 'models')
+        array_shift($namespaces);
+        
         $tableName = '';
         $length = count($namespaces);
         for ($i = 0; $i < $length; $i++) {

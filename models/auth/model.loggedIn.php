@@ -1,5 +1,5 @@
 <?php
-namespace Auth;
+namespace Models\Auth;
 
 class LoggedIn
 {

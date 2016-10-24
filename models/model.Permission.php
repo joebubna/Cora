@@ -1,8 +1,9 @@
 <?php 
+namespace Models;
 /**
 * 
 */
-class Permission extends AppModel {
+class Permission extends \Cora\App\Model {
     
     public $model_attributes = [ 
         'id' => [

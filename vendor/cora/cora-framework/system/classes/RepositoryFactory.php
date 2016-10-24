@@ -8,8 +8,27 @@ class RepositoryFactory
 
     public static function make($class, $idField = false, $table = false, $freshAdaptor = false, $db = false)
     {      
+        // Load and set cora config.
+        require(dirname(__FILE__).'/../config/config.php');
+        
+        // Load custom app config
+        include($config['basedir'].'cora/config/config.php');
+        
+        // ---------------------------------------------------------------------------------
         // Create an instance of the class desired for this repo.
-        $className = '\\'.$class;
+        // ---------------------------------------------------------------------------------
+        
+        // If the class is specified like '/Models/User' then do nothing special.
+        if ($class[0] == '\\') {
+            $className = $class;
+        }
+        
+        // If the class is specified like 'User', then prepend the model namespace to it.
+        else {
+            $className = CORA_MODEL_NAMESPACE.ucfirst($class);
+        }
+        
+        //echo $className.'<br>';
         $classObj = new $className();
         
         // ---------------------------------------------------------------------------------
@@ -36,9 +55,22 @@ class RepositoryFactory
             $factory = new Factory($class, $db);
         }
         
+        // If no specific ID field was passed in, then grab from model.
+        if ($idField == false) {
+            $idField = $classObj->getPrimaryKey();
+        }
+        
+        // Grab some globals. These are necessary unfortunately, as getting rid of them would require dependency
+        // injection into the model class, which would prevent empty models getting created with no arguments.
+        // The ability to create model instances without dependencies is viewed as vital.
+        // Models instantiate RepositoryFactories in order to perform DB operations.
+        $container = $GLOBALS['container'];
+        //$savedModelsList = &$GLOBALS['savedModelsList'];
+        
         // Creates the Gateway the repository will use.
-        $gateway = new Gateway($db, $tableName, $idField);
-
-        return new Repository($gateway, $factory);
+        $gateway = new Gateway($db, $tableName, $idField, $container);
+        
+        //echo print_r($GLOBALS['savedModelsList']);
+        return new Repository($gateway, $factory, $GLOBALS['savedModelsList']);
     }
 }

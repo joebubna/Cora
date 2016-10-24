@@ -23,7 +23,9 @@ namespace Cora;
                 // If they are different, then add current URL to history.
                 $lastUrlInHistoryArray = count($_SESSION['redirect']['history']) - 1;
                 if ($_SERVER['HTTP_REFERER'] != $_SESSION['redirect']['history'][$lastUrlInHistoryArray]) {
-                    $_SESSION['redirect']['history'][] = $_SERVER['HTTP_REFERER'];
+                    if (empty($_POST)) {
+                        $_SESSION['redirect']['history'][] = $_SERVER['HTTP_REFERER'];
+                    }
                 }
                 
                 // If there's more than 10 items in the history array (higher index = newer)
