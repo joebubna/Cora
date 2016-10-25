@@ -1,9 +1,9 @@
 <?php 
-namespace Models;
+namespace Models\Orders;
 /**
 * 
 */
-abstract class Date extends \Cora\App\Model {
+class Date extends \Cora\App\Model {
     
     public $model_attributes = [ 
         'id' => [

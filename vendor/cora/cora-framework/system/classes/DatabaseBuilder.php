@@ -79,12 +79,13 @@ class DatabaseBuilder extends Framework
                 if ($fileinfo['extension'] == 'php') {
                     
                     $model = $this->getModel($relPath);
+                    $refModel = new \ReflectionClass($model);
                     $this->output("//////////////////////");
                     $this->output('MODEL: '.$model);
                     $this->output("//////////////////////");
 
                     // Only build a table for this model if extends Cora's Model class.
-                    if (is_subclass_of($model, '\\Cora\\Model')) {
+                    if (is_subclass_of($model, '\\Cora\\Model') && $refModel->isAbstract() == false) {
                         $object = new $model();
 
                         $db         = $object->getDbAdaptor();
