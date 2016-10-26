@@ -128,7 +128,9 @@ class Model
                         // references it. When we try and grab data from this new object,
                         // dynamic data fetching will trigger on it.
                         $relatedObj = $this->fetchRelatedObj($def['model']);
-                        $relatedObj->id = $this->model_data[$name];
+                        
+                        // Populate the new obj with data we have about it (should only be primaryKey/ID)
+                        $relatedObj->_populate([$relatedObj->getPrimaryKey() => $this->model_data[$name]]);
                         $this->$name = $relatedObj;
                     }
                 }

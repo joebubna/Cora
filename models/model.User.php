@@ -48,7 +48,11 @@ class User extends \Cora\App\Model {
             'models' => 'Group'
         ],
         'comments' => [
-            'models' => 'Comment'
+            'models' => 'Comment',
+            'via' => 'madeBy'
+        ],
+        'parent' => [
+            'model' => 'User'
         ]
     ];
 

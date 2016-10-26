@@ -34,11 +34,11 @@ class Home extends \Cora\App\Controller {
     
     public function test1()
     {
-        $_POST['list'] = ['Item1', 'Item2', 'Item3'];
-        $this->testArray = &$_POST['list'];
-        $this->test1_1();
-        //$list[get_class($this).'1'] = true;
-        //echo isset($list[get_class($this).'1']) ? 'YES' : 'NO';
+        $user = $this->app->users->findOneBy('email', 'coraTestUser2@gmail.com');
+        var_dump($user->parent);
+        foreach ($user->parent->comments as $comment) {
+            echo $comment->text;
+        }
     }
     
     public function test1_1()

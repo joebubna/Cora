@@ -98,6 +98,7 @@ $user2->roles = $app->resultSet([$rolesList->User]);
 $user2->firstName = 'Susan';
 $user2->lastName = 'Wachoski';
 $user2->createdDate = $curDate;
+$user2->parent = $user;
 
 // Admin
 $admin = $usersList->{'coraTestAdmin1@gmail.com'};
