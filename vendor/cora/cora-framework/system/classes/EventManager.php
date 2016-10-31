@@ -1,7 +1,7 @@
 <?php
 namespace Cora;
 
-class EventManager extends Framework
+class EventManager
 {
     protected $eventMapping;
     
@@ -59,15 +59,25 @@ class EventManager extends Framework
         // Loop through the event listeners and call them.
         foreach ($listeners as $listener) {
             
-            // If the listener is a closure function, execute it.
-            if (is_callable($listener[0])) {
-                $handleResult = $listener[0]($ev);
+            $objOrClosure = $listener[0];
+            
+            // If the listener is inside a container class, grab it.
+            if ($objOrClosure instanceof \Cora\Listener) {
+                $listenerObj = $objOrClosure;
+                $handleResult = $listenerObj->handle($ev);
             }
             
-            // If the listener is a listener class name, call it.
+            // If the listener is a closure function, execute it.
+            else if (is_callable($objOrClosure)) {
+                $listenerObj = $objOrClosure($this->eventMapping->app);
+                $handleResult = $listenerObj->handle($ev);
+            }
+            
+            // If the listener is a listener class name (string), call it.
             else {
-                $listenObj = new $listener[0];
-                $handleResult = $listenObj->handle($ev);
+                $listenerClass = $listener[0];
+                $listenerObj = new $listenerClass;
+                $handleResult = $listenerObj->handle($ev);
             }
             
             $continueEventChain = isset($handleResult) ? $handleResult : true;

@@ -1,8 +1,9 @@
 <?php 
+namespace Models;
 /**
 * 
 */
-class Role extends MyModel {
+class Role extends \Cora\App\Model {
     
     public $model_attributes = [ 
         'id' => [

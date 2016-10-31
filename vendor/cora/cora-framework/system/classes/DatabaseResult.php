@@ -30,4 +30,15 @@ class DatabaseResult
     {
         return false;
     }
+    
+    public function rowCount()
+    {
+        return false;
+    }
+    
+    // If there's any kind of PDO object that contains the result, return that.
+    public function result()
+    {
+        return false;
+    }
 }

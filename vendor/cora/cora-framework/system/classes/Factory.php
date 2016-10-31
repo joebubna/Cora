@@ -9,10 +9,11 @@ class Factory
     protected $db;
     protected $dbConfig;
     
-    public function __construct($type, $db = false)
+    public function __construct($type, $db = false, $namespaceType = 'Models\\')
     {
         $this->type = $type;
         $this->db   = $db;
+        $this->namespaceType = $namespaceType;
     }
     
     public function make($data)
@@ -22,7 +23,7 @@ class Factory
 		}
         
         // Populate Object with data
-        $type = '\\'.$this->type;
+        $type = '\\'.$this->namespaceType.$this->type;
         $obj = new $type();
         $obj->_populate($data, $this->db);
         

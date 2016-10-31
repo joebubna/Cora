@@ -57,4 +57,21 @@ class Mailer extends Framework
             $this->message->$name = $value;
         }
     }
+    
+    public function send()
+    {
+        if ($this->config['mode'] == 'development') {
+            $recipients = $this->message->getAllRecipientAddresses();
+            $subject = $this->message->Subject;
+            $subject .= ' TO: ';
+            foreach ($recipients as $key => $value) {
+                $subject .= $key.'+';
+            }
+            $this->message->ClearAllRecipients();
+            $this->message->addAddress($this->config['admin_email']);
+            //echo $subject;
+            $this->message->Subject = $subject;
+        }
+        $this->message->send();
+    }
 }

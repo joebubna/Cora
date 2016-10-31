@@ -3,7 +3,14 @@ namespace Cora;
 
 class Load extends Framework
 {
-
+    protected $neverOutput;
+    public function __construct($neverOutput = false)
+    {
+        parent::__construct(); // Call parent constructor too so we don't lose functionality.
+        
+        $this->neverOutput = $neverOutput;
+    }
+    
     /**
      *  For echo'ing data in Views only if that data is set.
      */
@@ -130,7 +137,7 @@ class Load extends Framework
 
 
         // Determine full filepath to View
-        // $filePath = $fullPath . $fileName;
+        //$filePath = $fullPath . $fileName;
 
         $filePath = $this->_getFilePath($pathname, $fileName);
 
@@ -143,10 +150,10 @@ class Load extends Framework
         $this->debug('');
 
         // Either return the view for storage in a variable, or output to browser.
-        if ($return) {
+        if ($return || $this->neverOutput) {
             ob_start();
             $inc = include($filePath);
-            
+
             // If in dev mode and the include failed, throw an exception.
             if ($inc == false && $this->config['mode'] == 'development') { 
                 throw new \Exception("Can't find file '$fileName' using path '$filePath'"); 
@@ -155,7 +162,7 @@ class Load extends Framework
         }
         else {
             $inc = include($filePath);
-            
+
             // If in dev mode and the include failed, throw an exception.
             if ($inc == false && $this->config['mode'] == 'development') { 
                 throw new \Exception("Can't find file '$fileName' using path '$filePath'"); 

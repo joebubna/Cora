@@ -37,6 +37,6 @@ class Cookie
     
     public function delete($name)
     {
-        unset($_COOKIE[$name]);
+        setcookie($name, '', time() - 3600, $this->domain);
     }
 }

@@ -5,9 +5,7 @@ class Session
 {
     public function __construct($data = false)
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
+        $this->start();
     }
     
     public function __get($name)
@@ -21,6 +19,13 @@ class Session
     public function __set($name, $value)
     {
         $_SESSION[$name] = $value;
+    }
+    
+    public function start()
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
     }
     
     public function delete($name)

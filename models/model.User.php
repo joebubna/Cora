@@ -1,68 +1,78 @@
-<?php 
+<?php
+namespace Models;
 /**
-* 
+*
 */
-class User extends MyModel {
-    
-    public $model_attributes = [ 
+class User extends \Cora\App\Model {
+
+    public $model_attributes = [
         'id' => [
             'type'          => 'int',
             'primaryKey'    => true
-        ],
-        'username' => [
-            'type' => 'varchar'
         ],
         'email' => [
             'type' => 'varchar',
             'index' => true
         ],
         'password' => [
-            'type' => 'varchar'  
+            'type' => 'varchar'
+        ],
+        'firstName' => [
+            'type' => 'varchar'
+        ],
+        'lastName' => [
+            'type' => 'varchar'
         ],
         'token' => [
-            'type' => 'varchar'  
+            'type' => 'varchar'
         ],
         'resetToken' => [
             'type' => 'varchar'
         ],
         'resetTokenExpire' => [
-            'type' => 'datetime'  
+            'type' => 'datetime'
         ],
         'createdDate' => [
-            'type' => 'datetime'  
+            'type' => 'datetime'
         ],
         'primaryRole' => [
-            'type' => 'varchar',
-            'size' => 55,
-            'defaultValue' => 'User'
+            'model' => 'Role'
         ],
         'roles' => [
-            'models' => 'Role'  
+            'models' => 'Role'
         ],
         'permissions' => [
-            'models' => 'Permission'  
+            'models' => 'Permission'
         ],
         'groups' => [
             'models' => 'Group'
-        ], 
-        'articles' => [
-            'models' => 'Article',
-            'via' => 'owner'
+        ],
+        'comments' => [
+            'models' => 'Comment',
+            'via' => 'madeBy'
+        ],
+        'parent' => [
+            'model' => 'User'
         ]
     ];
-    
-    public function __construct($name = null, $email = null, $password = null, $type = null)
+
+    public function __construct($email = null, $password = null, $type = null)
     {
-        $this->username = $name;
         $this->email = $email;
         $this->password = $password;
-        $this->type = $type;
+        $this->primaryRole = $type;
     }
-    
+
+    public function beforeGet($name) {
+        if ($name == 'name') {
+            $this->name = $this->firstName.' '.$this->lastName;
+        }
+    }
+
     public function beforeCreate() {
         $this->createdDate = new \DateTime();
     }
-    
+
 //    public function afterGet($prop, $value)
 //    {
 //        if ($prop == 'roles') {

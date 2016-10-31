@@ -8,6 +8,10 @@ class Gateway
 	protected $db;
     protected $tableName;
     protected $idName;
+    protected $app;
+    protected $idFallback;
+    protected $savedModelsList = [];
+    protected $viewQuery = 0;
 
 	public function __construct(Database $db, $tableName, $id)
 	{
@@ -18,7 +22,15 @@ class Gateway
             $id = 'id';
         }
         $this->idName = $id;
+        
+        $this->savedModelsList = &$GLOBALS['savedModelsList'];
 	}
+    
+    
+    public function viewQuery($bool)
+    {
+        $this->viewQuery = $bool;
+    }
     
     
     public function fetchData($name, $object) {
@@ -30,9 +42,14 @@ class Gateway
         }
         
         $db = $object->getDbAdaptor();  
-        $db ->select($name)
+        $db ->select($name, '`')
             ->from($this->tableName)
             ->where($primaryIdentifier, $object->{$primaryIdentifier});
+        
+        if ($this->viewQuery) {
+            echo $db->getQuery();
+        }
+        
         $result = $db->fetch();
         return $result[$name];
     }
@@ -67,6 +84,10 @@ class Gateway
                     ->from($this->tableName)
                     ->where($this->idName, $id);
         
+        if ($this->viewQuery) {
+            echo $this->db->getQuery();
+        }
+        
         return $this->db->fetch();           
 	}
 
@@ -75,6 +96,10 @@ class Gateway
 	{   
         $this->db   ->select('*')
                     ->from($this->tableName);
+        
+        if ($this->viewQuery) {
+            echo $this->db->getQuery();
+        }
         
         return $this->db->fetchAll();
 	}
@@ -97,6 +122,10 @@ class Gateway
             }
         }
         
+        if ($this->viewQuery) {
+            echo $this->db->getQuery();
+        }
+        
 		return $this->db->fetchAll();
 	}
 
@@ -111,7 +140,57 @@ class Gateway
         }
         $query->from($this->tableName);
         
+        if ($this->viewQuery) {
+            echo $query->getQuery();
+        }
+        
         return $query->fetchAll();
+	}
+    
+    
+    /**
+     *  $query is an instance of a Cora database.
+     */
+	public function count($query)
+	{
+        // If no partial query was passed in, use data-member db instance.
+        if (!isset($query)) {
+            $query = $this->db;
+        }
+        
+        // Clear out any existing SELECT parameters.
+        $query->resetSelect();
+        
+        // Establish COUNT
+        $query->select('COUNT(*)');
+        $query->from($this->tableName);
+        
+        if ($this->viewQuery) {
+            echo $query->getQuery();
+        }
+        
+        $result = $query->fetch();
+        return array_pop($result);
+	}
+    
+    
+	public function countPrev()
+	{
+        $query = $this->db;
+        
+        // Restore last query's parameters.
+        $query->resetToLastMinusLimit();
+        
+        // Establish COUNT
+        $query->select('COUNT(*)');
+        $query->from($this->tableName);
+        
+        if ($this->viewQuery) {
+            echo $query->getQuery();
+        }
+        
+        $result = $query->fetch();
+        return array_pop($result);
 	}
 
 
@@ -120,6 +199,10 @@ class Gateway
         $this->db   ->delete()
                     ->from($this->tableName)
                     ->where($this->idName, $id);
+        
+        if ($this->viewQuery) {
+            echo $this->db->getQuery();
+        }
         
         return $this->db->exec();
 	}
@@ -131,6 +214,11 @@ class Gateway
         
         $this->db   ->update($table)
                     ->where($id_name, $model->{$id_name});
+        
+        // Mark this model as saved.
+        if (!$this->getSavedModel($model)) {
+            $this->addSavedModel($model);
+        }
         
         foreach ($model->model_attributes as $key => $prop) {
             $modelValue = $model->getAttributeValue($key);
@@ -147,12 +235,20 @@ class Gateway
                    ) 
                 {
                     $relatedObj = $modelValue;
-                    $repo = \Cora\RepositoryFactory::make(get_class($relatedObj), false, false, true);
-                    $id = $repo->save($relatedObj);
+                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, false, true);
                     
-                    // If no new object was inserted into the DB, then that means we already had an ID.
-                    if ($id == 0) {
-                        $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                    // Check if this object has already been saved during this recursive call series.
+                    // If not, save it.
+                    $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                    if (!$this->getSavedModel($relatedObj)) {
+                        if ($id) {
+                            $this->addSavedModel($relatedObj);
+                            $repo->save($relatedObj);
+                        }
+                        else {
+                            $id = $repo->save($relatedObj);
+                            $this->addSavedModel($relatedObj);
+                        }
                     }
                     
                     if ($model->usesRelationTable($relatedObj, $key)) {
@@ -187,7 +283,7 @@ class Gateway
                 /////////////////////////////////////////////////////////////////////////////////////////
                 else if (
                             is_object($modelValue) && 
-                            ($modelValue instanceof \Cora\ResultSet) &&
+                            ($modelValue instanceof \Cora\Container || $modelValue instanceof \Cora\ResultSet) &&
                             isset($prop['models'])
                         ) 
                 {
@@ -197,7 +293,7 @@ class Gateway
                     // based on the model definition.
                     $objPath = isset($prop['models']) ? $prop['models'] : $prop['model'];
                     $relatedObjBlank = $model->fetchRelatedObj($objPath);
-                    $repo = \Cora\RepositoryFactory::make(get_class($relatedObjBlank), false, false, true);
+                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObjBlank), false, false, true);
                     
                     // If uses relation table
                     if ($model->usesRelationTable($relatedObjBlank, $key)) {
@@ -216,11 +312,18 @@ class Gateway
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
                             
-                            // If no new object was inserted into the DB, then that means the object 
-                            // already had an ID.
-                            $id = $repo->save($relatedObj);
-                            if ($id == 0) {
-                                $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            // Check if this object has already been saved during this recursive call series.
+                            // If not, save it.
+                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            if (!$this->getSavedModel($relatedObj)) {
+                                if ($id) {
+                                    $this->addSavedModel($relatedObj);
+                                    $repo->save($relatedObj);
+                                }
+                                else {
+                                    $id = $repo->save($relatedObj);
+                                    $this->addSavedModel($relatedObj);
+                                }
                             }
                             
                             // Insert reference to this object in ref table.
@@ -246,18 +349,29 @@ class Gateway
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
                             
-                            // If no new object was inserted into the DB, then that means the object 
-                            // already had an ID.
-                            $id = $repo->save($relatedObj);
-                            if ($id == 0) {
-                                $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            // Check if this object has already been saved during this recursive call series.
+                            // If not, save it.
+                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            if (!$this->getSavedModel($relatedObj)) {
+                                if ($id) {
+                                    $this->addSavedModel($relatedObj);
+                                    $repo->save($relatedObj);
+                                }
+                                else {
+                                    $id = $repo->save($relatedObj);
+                                    $this->addSavedModel($relatedObj);
+                                }
                             }
                             
                             // Update the object to have correct relation
                             $db ->update($objTable)
                                 ->set($prop['via'], $modelId)
                                 ->where($relatedObj->getPrimaryKey(), $id);
-                            //echo $db->getQuery();
+                            
+                            if ($this->viewQuery) {
+                                echo $db->getQuery();
+                            }
+
                             $db->exec();
                         }
                     }
@@ -288,7 +402,12 @@ class Gateway
         }
         
         $model->afterSave(); // Lifecycle callback
-        return $this->db->exec()->lastInsertId();    
+        
+        if ($this->viewQuery) {
+            echo $this->db->getQuery();
+        }
+        
+        return $this->db->exec()->lastInsertId();  
 	}
 
     protected function _create($model, $table, $id_name)
@@ -326,7 +445,7 @@ class Gateway
                 /////////////////////////////////////////////////////////////////////////////////////////
                 else if (
                             is_object($modelValue) && 
-                            ($modelValue instanceof \Cora\ResultSet) &&
+                            ($modelValue instanceof \Cora\Container || $modelValue instanceof \Cora\ResultSet) &&
                             isset($prop['models'])
                         ) 
                 {
@@ -354,11 +473,20 @@ class Gateway
         }
         $this->db->insert($columns);
         $this->db->values($values);
+        
+        if ($this->viewQuery) {
+            echo $this->db->getQuery();
+        }
         //echo $this->db->getQuery()."<br>";
         $modelId = $this->db->exec()->lastInsertId();
         
         // Assign the database ID to the model.
         $model->id = $modelId;
+        
+        // Mark this object as saved.
+        if (!$this->getSavedModel($model)) {
+            $this->addSavedModel($model);
+        }
         
         
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -382,12 +510,20 @@ class Gateway
                    ) 
                 {
                     $relatedObj = $modelValue;
-                    $repo = \Cora\RepositoryFactory::make(get_class($relatedObj), false, false, true);
-                    $id = $repo->save($relatedObj);
+                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, false, true);
                     
-                    // If no new object was inserted into the DB, then that means we already had an ID.
-                    if ($id == 0) {
-                        $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                    // Check if this object has already been saved during this recursive call series.
+                    // If not, save it.
+                    $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                    if (!$this->getSavedModel($relatedObj)) {
+                        if ($id) {
+                            $this->addSavedModel($relatedObj);
+                            $repo->save($relatedObj);
+                        }
+                        else {
+                            $id = $repo->save($relatedObj);
+                            $this->addSavedModel($relatedObj);
+                        }
                     }
                     
                     if ($model->usesRelationTable($relatedObj, $key)) {
@@ -423,7 +559,7 @@ class Gateway
                 /////////////////////////////////////////////////////////////////////////////////////////
                 else if (
                             is_object($modelValue) && 
-                            ($modelValue instanceof \Cora\ResultSet) &&
+                            ($modelValue instanceof \Cora\Container || $modelValue instanceof \Cora\ResultSet) &&
                             isset($prop['models'])
                         ) 
                 {
@@ -433,7 +569,7 @@ class Gateway
                     // based on the model definition.
                     $objPath = isset($prop['models']) ? $prop['models'] : $prop['model'];
                     $relatedObjBlank = $model->fetchRelatedObj($objPath);
-                    $repo = \Cora\RepositoryFactory::make(get_class($relatedObjBlank), false, false, true);
+                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObjBlank), false, false, true);
                     
                     // If uses relation table
                     if ($model->usesRelationTable($relatedObjBlank, $key)) {
@@ -451,11 +587,18 @@ class Gateway
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
                             
-                            // If no new object was inserted into the DB, then that means the object 
-                            // already had an ID.
-                            $id = $repo->save($relatedObj);
-                            if ($id == 0) {
-                                $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            // Check if this object has already been saved during this recursive call series.
+                            // If not, save it.
+                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            if (!$this->getSavedModel($relatedObj)) {
+                                if ($id) {
+                                    $this->addSavedModel($relatedObj);
+                                    $repo->save($relatedObj);
+                                }
+                                else {
+                                    $id = $repo->save($relatedObj);
+                                    $this->addSavedModel($relatedObj);
+                                }
                             }
                             
                             // Insert reference to this object in ref table.
@@ -481,17 +624,28 @@ class Gateway
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
                             
-                            // If no new object was inserted into the DB, then that means the object 
-                            // already had an ID.
-                            $id = $repo->save($relatedObj);
-                            if ($id == 0) {
-                                $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            // Check if this object has already been saved during this recursive call series.
+                            // If not, save it.
+                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            if (!$this->getSavedModel($relatedObj)) {
+                                if ($id) {
+                                    $this->addSavedModel($relatedObj);
+                                    $repo->save($relatedObj);
+                                }
+                                else {
+                                    $id = $repo->save($relatedObj);
+                                    $this->addSavedModel($relatedObj);
+                                }
                             }
                             
                             // Update the object to have correct relation
                             $db ->update($objTable)
                                 ->set($prop['via'], $modelId)
                                 ->where($relatedObj->getPrimaryKey(), $id);
+                            
+                            if ($this->viewQuery) {
+                                echo $db->getQuery();
+                            }
                             //echo $db->getQuery();
                             $db->exec();
                         }
@@ -502,6 +656,7 @@ class Gateway
         
         $model->afterCreate(); // Lifecycle callback
         $model->afterSave(); // Lifecycle callback
+        
         // Return the ID of the created record in the db.
         return $modelId;
 	}
@@ -515,5 +670,22 @@ class Gateway
         else {
             return false;
         }
+    }
+    
+    protected function getModelSavedId($model)
+    {
+        $modelId    = $model->{$model->getPrimaryKey()};
+        $modelName  = get_class($model);
+        return $modelName.$modelId;
+    }
+    
+    protected function getSavedModel($model)
+    {
+        return isset($this->savedModelsList[$this->getModelSavedId($model)]);
+    }
+    
+    protected function addSavedModel($model)
+    {
+        $this->savedModelsList[$this->getModelSavedId($model)] = true;
     }
 }

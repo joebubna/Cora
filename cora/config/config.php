@@ -1,7 +1,7 @@
 <?php
 #$config['debug'] = true;
 #$config['debugHide'] = false;
-#$config['site_url'] = '/cora/';
+$config['site_url'] = '/';
 #$config['cora_extension'] = 'MyApp';
 
 /**

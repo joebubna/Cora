@@ -1,8 +1,9 @@
 <?php 
+namespace Models;
 /**
 * 
 */
-class Group extends MyModel {
+class Group extends \Cora\App\Model {
     
     public $model_attributes = [ 
         'id' => [

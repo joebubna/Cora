@@ -1,21 +1,50 @@
 <?php
+namespace Controllers;
 use Cora\Event;
 
-class Home extends \MyApp {
+class Home extends \Cora\App\Controller {
+    
+    protected $testArray = [];
     
     public function index() {
         $this->data->title = 'A Simple Form';
-        $this->data->content = 'HOME PAGE';
+        $this->data->user = $this->site->user;
         
+        // Grab our homepage HTML
+        $this->data->content = $this->load->view('home/index', $this->data, true);
         
-        if ($this->session->user) {
-            echo 'Logged in!';
-        }
-        $this->load->view('', $this->data);
+        // Load partial view and other data into our template.
+        $this->load->view('template', $this->data);
     }
     
+    public function tester() {
+        $stuff = new \stdClass();
+        $stuff->title = 'A Simple Form';
+        $stuff->content = 'Hello MATT';
+        
+        // Grab our homepage HTML
+        $this->data->content = $this->load->view('home/index', $stuff, true);
+        
+        // Load partial view and other data into our template.
+        $this->load->view('template', $stuff);
+    }
     public function indexPOST() {
         echo $_POST['data'];
+    }
+    
+    public function test1()
+    {
+        $user = $this->app->users->findOneBy('email', 'coraTestUser2@gmail.com');
+        var_dump($user->parent);
+        foreach ($user->parent->comments as $comment) {
+            echo $comment->text;
+        }
+    }
+    
+    public function test1_1()
+    {
+        $this->testArray = ['Color1', 'Color2'];
+        print_r($_POST['list']);
     }
     
     public function test2()
@@ -23,7 +52,15 @@ class Home extends \MyApp {
         $this->auth->access(new \Auth\LoggedIn);
         
         $repo = $this->app->repository('user');
-        echo $repo->find(1)->username;
+        echo $repo->find(1)->email;
+    }
+    
+    public function test3()
+    {
+        $this->auth->access([new \Auth\LoggedIn, new \Auth\CanAccessAdmin]);
+        
+        $repo = $this->app->repository('user');
+        echo $repo->find(1)->email;
     }
     
     public function view($p1, $p2, $p3) {
