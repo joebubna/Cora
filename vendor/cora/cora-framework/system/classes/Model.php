@@ -426,7 +426,7 @@ class Model
     
     public function getRepository()
     {
-        return \Cora\RepositoryFactory::make(get_class($this));
+        return \Cora\RepositoryFactory::make('\\'.get_class($this));
     }
     
     
