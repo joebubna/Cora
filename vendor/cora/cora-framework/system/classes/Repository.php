@@ -69,6 +69,9 @@ class Repository
      */ 
     public function count($coraDbQuery = false)
     {
+        if (!$coraDbQuery) {
+            $coraDbQuery = $this->gateway->getDb();
+        }
         return $this->gateway->count($coraDbQuery);
     }
     

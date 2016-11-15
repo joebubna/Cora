@@ -166,3 +166,19 @@ $container->listeners->emails->sendInitialPasswordResetToken = function($c) {
     return new \Listeners\Emails\SendInitialPasswordResetToken($c->mailer, $c->load);
 };
 
+
+
+
+
+/*******************************************************************
+ *
+ *  TESTING RESOURCES
+ *  THE FOLLOWING IS USED BY CORA'S UNIT TESTS
+ *
+ *******************************************************************/
+
+$container->tests = new \Cora\Container($container);
+
+$container->tests->users = function($c) {
+    return $c->repository('Tests\User');  
+};
