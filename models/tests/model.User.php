@@ -17,7 +17,7 @@ class User extends \Cora\App\Model {
             'type' => 'varchar'
         ],
         'comments' => [
-            'models' => 'Comment',
+            'models' => 'Tests\Users\Comment',
             'via' => 'madeBy'
         ],
         'parent' => [

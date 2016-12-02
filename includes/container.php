@@ -182,3 +182,7 @@ $container->tests = new \Cora\Container($container);
 $container->tests->users = function($c) {
     return $c->repository('Tests\User');  
 };
+
+$container->tests->userComments = function($c) {
+    return $c->repository('Tests\Users\Comment');  
+};
