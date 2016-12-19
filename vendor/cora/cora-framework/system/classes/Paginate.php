@@ -219,20 +219,27 @@ class Paginate
      *  $this->filters = ['query' => 'Showing %s that contain "%s"'];
      *  RETURNED RESULT: ['Showing practices that contain "Happy"']
      */
-    public function getFilters($columnDescriptions)
-    {
-        $filters = [];
+     public function getFilters($columnDescriptions = [], $activeFieldName = false)
+     {
+         $filters = [];
 
-        if (count($this->filtersArray) > 0) {
-            foreach ($this->filtersArray as $key => $value) {
-                if (isset($this->filters[$key])) {
-                    $filters[] = sprintf($this->filters[$key], $columnDescriptions[$this->filtersArray['orderBy']], $value);
-                    //$filters[] = call_user_func_array("sprintf", [$this->filters[$key], ]);
-                }
-            }
-        }
-        return $filters;
-    }
+         if (count($this->filtersArray) > 0) {
+             foreach ($this->filtersArray as $key => $value) {
+                 if (isset($this->filters[$key])) {
+
+                     // Filters are active on the active data column
+                     $activeFieldName = $activeFieldName?: $this->filtersArray['orderBy'];
+
+                     // There may optionally be passed in a more human friendly name for the active field.
+                     $friendlyFieldName = isset($columnDescriptions[$activeFieldName]) ? $columnDescriptions[$activeFieldName] : $activeFieldName;
+
+                     $filters[] = sprintf($this->filters[$key], $friendlyFieldName, $value);
+                     //$filters[] = call_user_func_array("sprintf", [$this->filters[$key], ]);
+                 }
+             }
+         }
+         return $filters;
+     }
 
 
     public function view($url = '_partials/paginate')
