@@ -481,7 +481,9 @@ class Gateway
         $modelId = $this->db->exec()->lastInsertId();
         
         // Assign the database ID to the model.
-        $model->id = $modelId;
+        $record['id'] = $modelId;
+        $model->_populate($record);
+        //$model->id = $modelId;
         
         // Mark this object as saved.
         if (!$this->getSavedModel($model)) {
