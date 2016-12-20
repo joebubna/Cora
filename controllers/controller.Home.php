@@ -49,10 +49,15 @@ class Home extends \Cora\App\Controller {
     
     public function test2()
     {
-        $this->auth->access(new \Auth\LoggedIn);
-        
-        $repo = $this->app->repository('user');
-        echo $repo->find(1)->email;
+        $user = $this->app->users->findOneBy('email', 'coraTestUser1@gmail.com');
+        var_dump($user->comments);
+        foreach ($user->comments as $comment) {
+            echo "{$comment->text}<br>";
+        }
+
+        // foreach ($user->comments->where('status', 'Deleted', '<>') as $comment) {
+        //     echo "{$comment->text}<br>";
+        // }
     }
     
     public function test3()

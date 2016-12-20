@@ -635,24 +635,36 @@ class Db_MySQL extends Database
      *  part of an INSERT statement.
      */
     protected function getValuesList($dataMember, $offset)
-    {
-        if(is_array($this->{$dataMember}[$offset])) {
-            $items = $this->{$dataMember}[$offset];
-            $count = count($items);
-            $result = ' (';
-            for($i=0; $i<$count; $i++) {
-                $result .= "'".$this->clean($items[$i])."'";
-                if ($count-1 != $i) {
-                    $result .= ', ';
-                }
-            }
-            $result .= ')';
-            return $result;   
-        }
-        else {
-            return "'".$this->clean($this->{$dataMember}[$offset])."'";
-        }
-    }
+     {
+         if(is_array($this->{$dataMember}[$offset])) {
+             $items = $this->{$dataMember}[$offset];
+             $count = count($items);
+             $result = ' (';
+             for($i=0; $i<$count; $i++) {
+
+                 if ($items[$i] == 'NULL') {
+                     $result .= $items[$i];
+                 }
+                 else {
+                     $result .= "'".$this->clean($items[$i])."'";
+                 }
+
+                 if ($count-1 != $i) {
+                     $result .= ', ';
+                 }
+             }
+             $result .= ')';
+             return $result;
+         }
+         else {
+             if ($this->{$dataMember}[$offset] == 'NULL') {
+                 return $this->{$dataMember}[$offset];
+             }
+             else {
+                 return "'".$this->clean($this->{$dataMember}[$offset])."'";
+             }
+         }
+     }
     
     
     /**

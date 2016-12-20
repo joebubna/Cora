@@ -53,7 +53,12 @@ class User extends \Cora\App\Model {
         ],
         'parent' => [
             'model' => 'User'
-        ]
+        ],
+        // 'roleName' => [
+        //     'from' => 'roles',
+        //     'select' => 'name',
+        //     'where' => ['primaryRole', '=', 'id']
+        // ]
     ];
 
     public function __construct($email = null, $password = null, $type = null)

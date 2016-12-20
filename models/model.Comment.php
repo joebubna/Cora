@@ -18,6 +18,10 @@ class Comment extends \Cora\App\Model {
         ],
         'text' => [
             'type' => 'text'
+        ],
+        'status' => [
+            'type' => 'varchar',
+            'defaultValue' => 'Active'
         ]
     ];
     
