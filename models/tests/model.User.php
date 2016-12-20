@@ -23,6 +23,9 @@ class User extends \Cora\App\Model {
         'parent' => [
             'model' => 'User'
         ],
+        'friends' => [
+            'models' => 'User'
+        ]
         // 'roleName' => [
         //     'from' => 'roles',
         //     'select' => 'name',
