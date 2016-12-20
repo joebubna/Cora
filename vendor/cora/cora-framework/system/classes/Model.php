@@ -322,7 +322,7 @@ class Model
         $relatedObj = $this->fetchRelatedObj($objName);
 
         // Grab relation table name and the name of this class.
-        $relTable = $this->getRelationTableName($relatedObj, $this->model_attributes[$attributeName]);
+        $relTable = $this->getRelationTableName($relatedObj, $attributeName, $this->model_attributes[$attributeName]);
         $className = strtolower((new \ReflectionClass($this))->getShortName());
         $classId = $this->getPrimaryKey();
         $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
@@ -478,7 +478,7 @@ class Model
     }
 
 
-    public function getRelationTableName($relatedObj, $attributeDef)
+    public function getRelationTableName($relatedObj, $attribute, $attributeDef)
     {
         $result = '';
 
@@ -494,10 +494,10 @@ class Model
             $alphabeticalComparison = strcmp($table1, $table2);
 
             if ($alphabeticalComparison > 0) {
-                $result = 'ref_'.$table1.'_'.$table2;
+                $result = 'ref_'.$table1.'__'.$attribute.'__'.$table2;
             }
             else {
-                $result = 'ref_'.$table2.'_'.$table1;
+                $result = 'ref_'.$table2.'__'.$attribute.'__'.$table1;
             }
         }
         return $result;
@@ -508,10 +508,10 @@ class Model
     {
         $def = $this->model_attributes[$attribute];
         if (isset($def['models']) && !isset($def['via'])) {
-            return $this->getRelationTableName($relatedObj, $def);
+            return $this->getRelationTableName($relatedObj, $attribute, $def);
         }
         else if (isset($def['model']) && isset($def['usesRefTable'])) {
-            return $this->getRelationTableName($relatedObj, $def);
+            return $this->getRelationTableName($relatedObj, $attribute, $def);
         }
         return false;
     }
