@@ -258,17 +258,11 @@ class Gateway
                         $modelName = $model->getClassName();
                         $relatedObjName = $relatedObj->getClassName();
 
-                        // Delete the existing relation table entry if set,
-                        $db ->delete()
-                            ->from($relTable)
-                            ->where($modelName, $modelId)
-                            ->exec();
+                        // Delete the existing relation table entry if set 
+                        $this->refDelete($db, $relTable, $modelName, $modelId, $relatedObjName);
 
-                        // Insert reference to this object in ref table.
-                        $db ->insert([$modelName, $relatedObjName])
-                            ->into($relTable)
-                            ->values([$modelId, $id])
-                            ->exec();
+                        // Insert reference to this object in ref table
+                        $this->refInsert($db, $relTable, $modelName, $modelId, $relatedObjName, $id);
 
                     }
                     else {
@@ -304,10 +298,7 @@ class Gateway
                         $relatedObjName = $relatedObjBlank->getClassName();
 
                         // Delete all existing relation table entries that match,
-                        $db ->delete()
-                            ->from($relTable)
-                            ->where($modelName, $modelId)
-                            ->exec();
+                        $this->refDelete($db, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
@@ -327,10 +318,7 @@ class Gateway
                             }
 
                             // Insert reference to this object in ref table.
-                            $db ->insert([$modelName, $relatedObjName])
-                                ->into($relTable)
-                                ->values([$modelId, $id])
-                                ->exec();
+                            $this->refInsert($db, $relTable, $modelName, $modelId, $relatedObjName, $id);
                         }
                     }
 
@@ -534,17 +522,11 @@ class Gateway
                         $modelName = $model->getClassName();
                         $relatedObjName = $relatedObj->getClassName();
 
-                        // Delete the existing relation table entry if set,
-                        $db ->delete()
-                            ->from($relTable)
-                            ->where($modelName, $modelId)
-                            ->exec();
+                        // Delete the existing relation table entry if set 
+                        $this->refDelete($db, $relTable, $modelName, $modelId, $relatedObjName);
 
-                        // Insert reference to this object in ref table.
-                        $db ->insert([$modelName, $relatedObjName])
-                            ->into($relTable)
-                            ->values([$modelId, $id])
-                            ->exec();
+                        // Insert reference to this object in ref table. 
+                        $this->refInsert($db, $relTable, $modelName, $modelId, $relatedObjName, $id);
                     }
                     else {
                         $this->db   ->update($table)
@@ -580,11 +562,8 @@ class Gateway
                         $modelName = $model->getClassName();
                         $relatedObjName = $relatedObjBlank->getClassName();
 
-                        // Delete all existing relation table entries that match,
-                        $db ->delete()
-                            ->from($relTable)
-                            ->where($modelName, $modelId);
-                        $db->exec();
+                        // Delete all existing relation table entries that match 
+                        $this->refDelete($db, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
@@ -603,11 +582,8 @@ class Gateway
                                 }
                             }
 
-                            // Insert reference to this object in ref table.
-                            $db ->insert([$modelName, $relatedObjName])
-                                ->into($relTable)
-                                ->values([$modelId, $id])
-                                ->exec();
+                            // Insert reference to this object in ref table. 
+                            $this->refInsert($db, $relTable, $modelName, $modelId, $relatedObjName, $id);
                         }
                     }
 
@@ -671,6 +647,47 @@ class Gateway
         }
         else {
             return false;
+        }
+    }
+
+    protected function refDelete($db, $relTable, $modelName, $modelId, $relModelName)
+    {
+        // GENERAL CASE
+        // Delete related objects.
+        $db ->delete()
+            ->from($relTable)
+            ->where($modelName, $modelId)
+            ->exec();
+
+        // EDGE CASE 
+        // If the objects being related ARE the same type. I.E. a User being related to another User...
+        // Then the reference might be in $modelName or $modelName.'2'...
+        if ($modelName == $relModelName) {
+            $db ->delete()
+                ->from($relTable)
+                ->where($modelName.'2', $modelId)
+                ->exec();
+        }
+    }
+
+    protected function refInsert($db, $relTable, $modelName, $modelId, $relModelName, $relModelId)
+    {
+        // SIMPLE CASE
+        // If the objects that are related aren't the same type of object...
+        if ($modelName != $relModelName) {
+            $db ->insert([$modelName, $relModelName])
+                ->into($relTable)
+                ->values([$modelId, $relModelId])
+                ->exec();
+        }
+
+        // EDGE CASE 
+        // If the objects being related ARE the same type. I.E. a User being related to another User...
+        else {
+            $db ->insert([$modelName, $relModelName.'2'])
+                ->into($relTable)
+                ->values([$modelId, $relModelId])
+                ->exec();
         }
     }
 

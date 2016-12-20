@@ -330,12 +330,41 @@ class Model
         // Create repo that uses the relationtable, but returns models populated
         // with their IDs.
         $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, $relTable, false, $this->model_db);
-
+        
+        ///////////////////////////////////////
         // Define custom query for repository.
+        ///////////////////////////////////////
         $db = $relatedObj->getDbAdaptor();
-        $db ->select($relatedClassName.' as '.$classId)
-            ->where($className, $this->$classId);
-        return $repo->findAll($db);
+
+        // DEFAULT CASE 
+        // The objects that are related aren't the same class of object...
+        if ($className != $relatedClassName) {
+            $db ->select($relatedClassName.' as '.$classId)
+                ->where($className, $this->$classId);
+
+            return $repo->findAll($db);
+        }
+        
+        // EDGE CASE 
+        // The objects that are related ARE the same class of object...
+        // If two Users are related to each other, can't have two "user" columns in the ref table. Instead 2nd column gets named "User2" 
+        // TABLE: ref_users__example__users
+        // COLUMNS:   User      |  User2 
+        //            Bob's ID     Bob's relative's ID
+        else {
+            // Fetch related objects where the subject is the left side reference.
+            $db ->select($relatedClassName.'2'.' as '.$classId)
+                ->where($className, $this->$classId);
+            $leftSet = $repo->findAll($db);
+
+            // Fetch related objects where the subject is the right side reference.
+            $db ->select($relatedClassName.' as '.$classId)
+                ->where($className.'2', $this->$classId);
+            $rightSet = $repo->findAll($db);
+
+            $allRefs = $leftSet->merge($rightSet);
+            return $allRefs;
+        }
     }
 
 

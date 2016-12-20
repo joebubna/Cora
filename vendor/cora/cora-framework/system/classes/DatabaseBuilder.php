@@ -122,14 +122,32 @@ class DatabaseBuilder extends Framework
                                     }
 
                                     // Build relation table.
-                                    $rdb->create($rTable)
-                                        ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
-                                        ->field($object->getClassName(), 'int')
-                                        ->field($relatedObj->getClassName(), 'int')
-                                        ->primaryKey('id');
-                                    $this->output($rdb->getQuery(), 2);
-                                    //$rdb->reset();
-                                    $rdb->exec();
+                                    $className = $object->getClassName();
+                                    $relClassName = $relatedObj->getClassName();
+                                    
+                                    // NORMAL CASE
+                                    if ($className != $relClassName) {
+                                        $rdb->create($rTable)
+                                            ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+                                            ->field($className, 'int')
+                                            ->field($relClassName, 'int')
+                                            ->primaryKey('id');
+                                        $this->output($rdb->getQuery(), 2);
+                                        //$rdb->reset();
+                                        $rdb->exec();
+                                    }
+
+                                    // EDGE CASE
+                                    else {
+                                        $rdb->create($rTable)
+                                            ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+                                            ->field($className, 'int')
+                                            ->field($relClassName.'2', 'int')
+                                            ->primaryKey('id');
+                                        $this->output($rdb->getQuery(), 2);
+                                        //$rdb->reset();
+                                        $rdb->exec();
+                                    }
                                 }
 
                                 // Model either is a direct reference to a single object,
