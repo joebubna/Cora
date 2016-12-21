@@ -112,4 +112,120 @@ class AmblendTest extends \Cora\App\TestCase
         $this->assertEquals($users->find($user->id)->comments->count(), 2);
     }
 
+
+    /**
+     *  If a User has a collection of Dates related to it using a Via column,
+     *  make sure that collection can be replaced.
+     *
+     *  @test
+     */
+    public function canReplaceRelatedCollectionByVia()
+    {
+        //$this->app->dbBuilder->reset();
+
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob', 'Admin');
+        $users->save($user);
+
+        // Check that user has no stored dates
+        $this->assertEquals($user->dates->count(), 0);
+
+        // Replace dates associated with User
+        $user->dates = $this->app->container(false, [
+            new \Models\Tests\Date('Birthday', '10/10/1980'),
+            new \Models\Tests\Date('Turned 21', '10/10/2001'),
+            new \Models\Tests\Date('Bought First House', '02/14/2008')
+        ]);
+        $users->save($user);
+
+        // Check that user has now has 3 dates
+        $this->assertEquals($user->dates->count(), 3);
+
+        // Pull user fresh from DB just to make sure dates were saved on server.
+        $this->assertEquals($users->find($user->id)->dates->count(), 3);
+    }
+
+    /**
+     *  If a User has a collection of Users related to it using a reference table,
+     *  make sure that collection can be replaced.
+     *
+     *  @test
+     */
+    public function canReplaceRelatedCollectionByRef()
+    {
+        //$this->app->dbBuilder->reset();
+
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob', 'Admin');
+        $users->save($user);
+
+        // Check that user has no stored friends
+        $this->assertEquals($user->friends->count(), 0);
+
+        // Create new list of friends for this User
+        $user->friends = $this->app->container(false, [
+            new \Models\Tests\User('Suzzy'),
+            new \Models\Tests\User('Jeff'),
+            new \Models\Tests\User('Randel')
+        ]);
+        $users->save($user);
+
+        // Check that user has now has 3 dates
+        $this->assertEquals($user->friends->count(), 3);
+
+        // Pull user fresh from DB just to make sure dates were saved on server.
+        $this->assertEquals($users->find($user->id)->friends->count(), 3);
+    }
+
+
+    /**
+     *  If a User has a collection of Users related to it using a reference table,
+     *  make sure that collection can be updated.
+     *
+     *  @test
+     */
+    public function canEditRelatedCollectionByRef()
+    {
+        //$this->app->dbBuilder->reset();
+
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob', 'Admin');
+        $users->save($user);
+
+        // Check that user has no stored friends
+        $this->assertEquals($user->friends->count(), 0);
+
+        // Create new list of friends for this User
+        $user->friends = $this->app->container(false, [
+            new \Models\Tests\User('Suzzy'),
+            new \Models\Tests\User('Jeff')
+        ]);
+        $users->save($user);
+
+        // Check that user has now has 2 dates
+        $this->assertEquals($user->friends->count(), 2);
+
+        // Pull user fresh from DB just to make sure dates were saved on server.
+        $this->assertEquals($users->find($user->id)->friends->count(), 2);
+
+        // Add a new Friend
+        $user->friends->add(new \Models\Tests\User('Randel'));
+        $users->save($user);
+
+         // Check that user has now has 3 dates
+        $this->assertEquals($user->friends->count(), 3);
+
+        // Pull user fresh from DB just to make sure dates were saved on server.
+        $this->assertEquals($users->find($user->id)->friends->count(), 3);
+    }
+
 }

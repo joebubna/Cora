@@ -322,7 +322,7 @@ class Model
         $relatedObj = $this->fetchRelatedObj($objName);
 
         // Grab relation table name and the name of this class.
-        $relTable = $this->getRelationTableName($relatedObj, $this->model_attributes[$attributeName]);
+        $relTable = $this->getRelationTableName($relatedObj, $attributeName, $this->model_attributes[$attributeName]);
         $className = strtolower((new \ReflectionClass($this))->getShortName());
         $classId = $this->getPrimaryKey();
         $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
@@ -330,12 +330,40 @@ class Model
         // Create repo that uses the relationtable, but returns models populated
         // with their IDs.
         $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, $relTable, false, $this->model_db);
-
+        
+        ///////////////////////////////////////
         // Define custom query for repository.
+        ///////////////////////////////////////
         $db = $relatedObj->getDbAdaptor();
-        $db ->select($relatedClassName.' as '.$classId)
-            ->where($className, $this->$classId);
-        return $repo->findAll($db);
+
+        // DEFAULT CASE 
+        // The objects that are related aren't the same class of object...
+        if ($className != $relatedClassName) {
+            $db ->select($relatedClassName.' as '.$classId)
+                ->where($className, $this->$classId);
+
+            return $repo->findAll($db);
+        }
+        
+        // EDGE CASE 
+        // The objects that are related ARE the same class of object...
+        // If two Users are related to each other, can't have two "user" columns in the ref table. Instead 2nd column gets named "User2" 
+        // TABLE: ref_users__example__users
+        // COLUMNS:   User      |  User2 
+        //            Bob's ID     Bob's relative's ID
+        else {
+            // Fetch related objects where the subject is the left side reference.
+            $db ->select($relatedClassName.'2'.' as '.$classId)
+                ->where($className, $this->$classId);
+            $leftSet = $repo->findAll($db);
+
+            // Fetch related objects where the subject is the right side reference.
+            $db ->select($relatedClassName.' as '.$classId)
+                ->where($className.'2', $this->$classId);
+            $rightSet = $repo->findAll($db);
+            $leftSet->merge($rightSet);
+            return $leftSet;
+        }
     }
 
 
@@ -478,7 +506,7 @@ class Model
     }
 
 
-    public function getRelationTableName($relatedObj, $attributeDef)
+    public function getRelationTableName($relatedObj, $attribute, $attributeDef)
     {
         $result = '';
 
@@ -494,10 +522,10 @@ class Model
             $alphabeticalComparison = strcmp($table1, $table2);
 
             if ($alphabeticalComparison > 0) {
-                $result = 'ref_'.$table1.'_'.$table2;
+                $result = 'ref_'.$table1.'__'.$attribute.'__'.$table2;
             }
             else {
-                $result = 'ref_'.$table2.'_'.$table1;
+                $result = 'ref_'.$table2.'__'.$attribute.'__'.$table1;
             }
         }
         return $result;
@@ -508,10 +536,10 @@ class Model
     {
         $def = $this->model_attributes[$attribute];
         if (isset($def['models']) && !isset($def['via'])) {
-            return $this->getRelationTableName($relatedObj, $def);
+            return $this->getRelationTableName($relatedObj, $attribute, $def);
         }
         else if (isset($def['model']) && isset($def['usesRefTable'])) {
-            return $this->getRelationTableName($relatedObj, $def);
+            return $this->getRelationTableName($relatedObj, $attribute, $def);
         }
         return false;
     }
