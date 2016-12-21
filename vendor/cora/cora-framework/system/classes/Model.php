@@ -361,9 +361,8 @@ class Model
             $db ->select($relatedClassName.' as '.$classId)
                 ->where($className.'2', $this->$classId);
             $rightSet = $repo->findAll($db);
-
-            $allRefs = $leftSet->merge($rightSet);
-            return $allRefs;
+            $leftSet->merge($rightSet);
+            return $leftSet;
         }
     }
 

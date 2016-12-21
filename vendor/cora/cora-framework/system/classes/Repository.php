@@ -111,6 +111,7 @@ class Repository
         }
         
         if ($this->checkIfModel($model)) {
+            //echo $model->getClassName()."\n";
             $return = $this->gateway->persist($model, $table, $id_name);
         }
         else if ($model instanceof \Cora\Container || $model instanceof \Cora\ResultSet) {

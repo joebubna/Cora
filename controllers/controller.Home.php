@@ -102,4 +102,87 @@ class Home extends \Cora\App\Controller {
         }, 1);
         $this->event->fire(new Event('customEvent', $user));
     }
+
+    public function fizzBuzz()
+    {
+        $result[1] = 'Fizz';
+        $result[2] = 'Buzz';
+        $result[3] = 'FizzBuzz';
+        
+        for ($i=1; $i <= 100; $i++) {
+            $result[0] = $i;
+            
+            $value = 0;
+            $value += $i % 3 == 0 ? 1 : 0;
+            $value += $i % 5 == 0 ? 2 : 0;
+            echo $result[$value].'<br>';
+        }
+    }
+
+    public function fizzBuzz2()
+    {
+        for ($i=1; $i <= 100; $i++) {
+            $result = '';
+            if ($i % 3 == 0 && $i % 5 == 0) {
+                $result = 'FizzBuzz';
+            }
+            else if ($i % 3 == 0) {
+                $result = 'Fizz';
+            }
+            else if ($i % 5 == 0) {
+                $result = 'Buzz';
+            }
+            else {
+                $result = $i;
+            }
+            echo $result.'<br>';
+        }
+    }
+
+    public function fizzBuzz3($i = 1)
+    {
+        $result = '';
+        if ($i % 3 == 0 && $i % 5 == 0) {
+            $result = 'FizzBuzz';
+        }
+        else if ($i % 3 == 0) {
+            $result = 'Fizz';
+        }
+        else if ($i % 5 == 0) {
+            $result = 'Buzz';
+        }
+        else {
+            $result = $i;
+        }
+        echo $result.'<br>';
+        
+        $i += 1;
+        if ($i <= 100) {
+            $this->fizzBuzz3($i);
+        }
+    }
+
+    public function fizzBuzz4()
+    {
+        for ($i=0; $i < 10; $i++) {
+            for ($j=1; $j <= 10; $j++) {
+                $result = '';
+                $value = ($i * 10) + $j;
+
+                if ($value % 3 == 0 && $value % 5 == 0) {
+                    $result = 'FizzBuzz';
+                }
+                else if ($value % 3 == 0) {
+                    $result = 'Fizz';
+                }
+                else if ($value % 5 == 0) {
+                    $result = 'Buzz';
+                }
+                else {
+                    $result = $value;
+                }
+                echo $result.'<br>';
+            }
+        }
+    }
 }

@@ -21,6 +21,10 @@ $container->container = function($c, $parent = false, $data = false, $dataKey = 
     return new \Cora\Container($parent, $data, $dataKey);  
 };
 
+$container->collection = function($c, $data = false, $dataKey = false, $parent = false) {
+    return new \Cora\Container($parent, $data, $dataKey);  
+};
+
 $container->cookie = function($c) {
     return new \Cora\Cookie();
 };

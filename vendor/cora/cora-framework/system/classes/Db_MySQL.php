@@ -9,6 +9,7 @@ class Db_MySQL extends Database
     protected $reservedWords = [
         'order' => true
     ];
+    protected $config;
     
     public function __construct($connection = false)
     {
@@ -21,6 +22,9 @@ class Db_MySQL extends Database
         // Load custom app config
         if (file_exists($config['basedir'].'cora/config/database.php')) {
             include($config['basedir'].'cora/config/database.php');
+        }
+        if (file_exists($config['basedir'].'cora/config/config.php')) {
+            include($config['basedir'].'cora/config/config.php');
         }
         
         // If a connection was specified, use that. Otherwise use the default DB connection.
@@ -39,6 +43,7 @@ class Db_MySQL extends Database
         
         // Create PDO object for doing our queries.
         $errorMode = null;
+        $this->config = $config;
         if ($config['mode'] == 'development') {
             $errorMode = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
         }
@@ -96,7 +101,15 @@ class Db_MySQL extends Database
         
         // Execute this query
         $this->calculate();
-        $result = $this->db->query($this->query);
+        try {
+            $result = $this->db->query($this->query);
+        }
+        catch (\PDOException $e) {
+            if ($this->config['mode'] == 'development') {
+                echo $this->getQuery();
+            }
+            throw $e;
+        }
         $this->reset();
         
         // Return Result

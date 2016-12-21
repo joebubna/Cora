@@ -21,10 +21,14 @@ class User extends \Cora\App\Model {
             'via' => 'madeBy'
         ],
         'parent' => [
-            'model' => 'User'
+            'model' => 'Tests\User'
         ],
         'friends' => [
-            'models' => 'User'
+            'models' => 'Tests\User'
+        ],
+        'dates' => [
+            'models' => 'Tests\Date',
+            'via' => 'owner'
         ]
         // 'roleName' => [
         //     'from' => 'roles',
