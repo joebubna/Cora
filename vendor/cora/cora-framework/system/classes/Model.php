@@ -334,6 +334,12 @@ class Model
         ///////////////////////////////////////
         // Define custom query for repository.
         ///////////////////////////////////////
+
+        // Get DB adaptor to use. 
+        // In situations where multiple DBs are being used and there's a relation table 
+        // between data on different DBs, we can't be sure which DB holds the relation table. 
+        // First try the DB the related object is on. If that doesn't contain the relation table,
+        // then try the current object's DB.
         $db = $relatedObj->getDbAdaptor();
         if (!$db->tableExists($relTable)) {
             $db = $this->getDbAdaptor();
