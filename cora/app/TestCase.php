@@ -116,8 +116,11 @@ class TestCase extends \PHPUnit\Framework\TestCase
         // Load test container.
         require('includes/container.php');
         
-        // Reset DB.
+        // Reset primary DB.
         $container->dbBuilder->reset();
+
+        // Since testing using a 2nd database, have to specify we want that one reset too.
+        $container->dbBuilder->reset('MySQL2');
     }
     
     
@@ -128,5 +131,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         
         // Reset DB.
         $container->dbBuilder->reset();
+
+        // Since testing using a 2nd database, have to specify we want that one reset too.
+        $container->dbBuilder->reset('MySQL2');
     }
 }

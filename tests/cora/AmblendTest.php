@@ -108,7 +108,7 @@ class AmblendTest extends \Cora\App\TestCase
         // Check that user has now has 2 comments
         $this->assertEquals($user->comments->count(), 2);
 
-        // Pull user fresh from DB just to make sure comments were saved on server.
+        // Pull user fresh from DB just to make sure comments were saved on DB.
         $this->assertEquals($users->find($user->id)->comments->count(), 2);
     }
 
@@ -144,7 +144,7 @@ class AmblendTest extends \Cora\App\TestCase
         // Check that user has now has 3 dates
         $this->assertEquals($user->dates->count(), 3);
 
-        // Pull user fresh from DB just to make sure dates were saved on server.
+        // Pull user fresh from DB just to make sure dates were saved on DB.
         $this->assertEquals($users->find($user->id)->dates->count(), 3);
     }
 
@@ -179,7 +179,7 @@ class AmblendTest extends \Cora\App\TestCase
         // Check that user has now has 3 dates
         $this->assertEquals($user->friends->count(), 3);
 
-        // Pull user fresh from DB just to make sure dates were saved on server.
+        // Pull user fresh from DB just to make sure dates were saved on DB.
         $this->assertEquals($users->find($user->id)->friends->count(), 3);
     }
 
@@ -224,8 +224,226 @@ class AmblendTest extends \Cora\App\TestCase
          // Check that user has now has 3 dates
         $this->assertEquals($user->friends->count(), 3);
 
-        // Pull user fresh from DB just to make sure dates were saved on server.
+        // Pull user fresh from DB just to make sure dates were saved on DB.
         $this->assertEquals($users->find($user->id)->friends->count(), 3);
+    }
+
+
+    /**
+     *  If a User has a relationship with another singular model,
+     *  test that we can set and modify this field.
+     *
+     *  @test
+     */
+    public function canEditSingleModelRef()
+    {
+        //$this->app->dbBuilder->reset();
+
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no stored friends
+        $this->assertEquals($user->father, NULL);
+
+        // Set and create father 
+        $dad = new \Models\Tests\User('George');
+        $user->father = $dad;
+        $users->save($user);
+
+        // Check that dad was set to current User
+        $this->assertEquals(get_class($user->father), get_class($dad));
+        
+        // Pull user fresh from DB just to make sure changes were saved on DB.
+        $this->assertEquals(get_class($users->find($user->id)->father), get_class($dad));
+    }
+
+
+    /**
+     *  If a User has a relationship with another singular model,
+     *  test that we can set and modify this field when the useRefTable setting is active.
+     *
+     *  @test
+     */
+    public function canEditSingleModelRefUsesRefTable()
+    {
+        //$this->app->dbBuilder->reset();
+
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no existing model relationship
+        $this->assertEquals($user->mother, NULL);
+
+        // Set and create reference
+        $mother = new \Models\Tests\User('Janice');
+        $user->mother = $mother;
+        $users->save($user);
+
+        // Check that dad was set to current User
+        $this->assertEquals(get_class($user->mother), get_class($mother));
+        
+        // Pull user fresh from DB just to make sure changes were saved on DB.
+        $this->assertEquals(get_class($users->find($user->id)->mother), get_class($mother));
+    }
+
+
+    /**
+     *  The "relTable" setting is for specifying a custom table name to read from. 
+     *  The "mother" attribute uses a relation table to store the single reference to the User's mother. 
+     *  The goal here is to create a "mother2" attribute which reads from the same table as "mother" and 
+     *  should return the same result. If successful, that means the "relTable" setting is working correctly.
+     *
+     *  @test
+     */
+    public function canUseRelTableAttributeOnSingle()
+    {
+        //$this->app->dbBuilder->reset();
+
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no existing model relationship
+        $this->assertEquals($user->mother, NULL);
+
+        // Set and create reference
+        $mother = new \Models\Tests\User('Janice');
+        $user->mother = $mother;
+        $users->save($user);
+        
+        // Pull user fresh from DB just to make sure changes were saved on DB.
+        // In the previous step we set the "mother" field, the "mother2" field is set to read 
+        // from the same table as "mother", so we should get the result if the "relTable" setting 
+        // is working correctly.
+        $this->assertEquals(get_class($users->find($user->id)->mother2), get_class($mother));
+    }
+
+
+    /**
+     *  The "relTable" setting is for specifying a custom table name to read from. 
+     *  Here we are testing that the "friends2" attribute returns the same value as the 
+     *  "friends" attribute. This is accomplished by telling "friends2" to use a custom table 
+     *  which is specified to be the same one "friends" uses.
+     *
+     *  @test
+     */
+    public function canUseRelTableAttributeOnCollection()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob', 'Admin');
+        $users->save($user);
+
+        // Check that user has no stored friends
+        $this->assertEquals($user->friends->count(), 0);
+
+        // Create new list of friends for this User
+        $user->friends = $this->app->container(false, [
+            new \Models\Tests\User('Suzzy'),
+            new \Models\Tests\User('Jeff')
+        ]);
+        $users->save($user);
+
+        // Check that user has now has 2 relations
+        $this->assertEquals($user->friends->count(), 2);
+
+        // Pull user fresh from DB just to make sure relations were saved on server.
+        $this->assertEquals($users->find($user->id)->friends->count(), 2);
+
+        // Add a new Friend using the "friends2" attribute.
+        $user->friends2->add(new \Models\Tests\User('Randel'));
+        $users->save($user);
+
+         // Check that user has now has 3 relations
+        $this->assertEquals($user->friends2->count(), 3);
+
+        // Pull user fresh from DB just to make sure relations were saved on DB.
+        // Check that both friends and friends2 return the same number of results.
+        $this->assertEquals($users->find($user->id)->friends->count(), 3);
+        $this->assertEquals($users->find($user->id)->friends2->count(), 3);
+    }
+
+
+    /**
+     *  If a User object is stored in the primary database, we want to make sure 
+     *  that user can reference objects located in a secondary DB. 
+     *  In this test, the collection is referenced by the "Via" keyword.
+     *
+     *  @test
+     */
+    public function canManipulateCollectionInOtherDatabaseByVia()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no stored references
+        $this->assertEquals($user->blogposts->count(), 0);
+
+        // Set collection of data
+        $user->blogposts = $this->app->collection([
+            new \Models\Tests\BlogPost('Hello World 1'),
+            new \Models\Tests\BlogPost('Hello World 2'),
+            new \Models\Tests\BlogPost('Hello World 3')
+        ]);
+        $users->save($user);
+
+        // Check that user has now has correct # of objects
+        $this->assertEquals($user->blogposts->count(), 3);
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        $this->assertEquals($users->find($user->id)->blogposts->count(), 3);
+    }
+
+
+    /**
+     *  If a User object is stored in the primary database, we want to make sure 
+     *  that user can reference objects located in a secondary DB. 
+     *  In this test, the collection is referenced by a reference table.
+     *
+     *  @test
+     */
+    public function canManipulateCollectionInOtherDatabaseByRefTable()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no stored references
+        //$this->assertEquals($user->articles->count(), 0);
+
+        // Set collection of data
+        $user->articles = $this->app->collection([
+            new \Models\Tests\Article('My Favorite Books Vol 1'),
+            new \Models\Tests\Article('My Favorite Books Vol 2'),
+            new \Models\Tests\Article('My Favorite Books Vol 3')
+        ]);
+        $users->save($user);
+        
+        // Check that user has now has correct # of objects
+        //$this->assertEquals($user->articles->count(), 3);
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        //$this->assertEquals($users->find($user->id)->articles->count(), 3);
     }
 
 }

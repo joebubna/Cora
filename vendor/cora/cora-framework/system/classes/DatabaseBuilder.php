@@ -14,9 +14,9 @@ class DatabaseBuilder extends Framework
         $this->displayOutput = $displayOutput;
     }
     
-    public function reset()
+    public function reset($connection = false)
     {
-        $this->dbEmpty();
+        $this->dbEmpty($connection);
         $this->dbBuild();
     }
     

@@ -33,6 +33,10 @@ $container->db = function($c) {
     return new \Cora\Db_MySQL();
 };
 
+$container->database = function($c) {
+    return new \Cora\Database();
+};
+
 $container->dbBuilder = function($c) {
     return new \Cora\DatabaseBuilder(false);
 };
