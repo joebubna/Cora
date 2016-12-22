@@ -113,41 +113,28 @@ class DatabaseBuilder extends Framework
                                     $this->output("Creating Relation Table: ".$rTable);
 
                                     // Checking dominance
-                                    $rdb;
+                                    $rdb = $object->getDbAdaptor(true);
                                     if (isset($props['passive'])) {
                                         $rdb = $relatedObj->getDbAdaptor(true);
-                                    }
-                                    else {
-                                        $rdb = $object->getDbAdaptor(true);
                                     }
 
                                     // Build relation table.
                                     $className = $object->getClassName();
                                     $relClassName = $relatedObj->getClassName();
                                     
-                                    // NORMAL CASE
-                                    if ($className != $relClassName) {
-                                        $rdb->create($rTable)
-                                            ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
-                                            ->field($className, 'int')
-                                            ->field($relClassName, 'int')
-                                            ->primaryKey('id');
-                                        $this->output($rdb->getQuery(), 2);
-                                        //$rdb->reset();
-                                        $rdb->exec();
+                                    // EDGE CASE - if a relation is being created between the same model.
+                                    if ($className == $relClassName) {
+                                        $relClassName = $relClassName.'2';
                                     }
 
-                                    // EDGE CASE
-                                    else {
-                                        $rdb->create($rTable)
-                                            ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
-                                            ->field($className, 'int')
-                                            ->field($relClassName.'2', 'int')
-                                            ->primaryKey('id');
-                                        $this->output($rdb->getQuery(), 2);
-                                        //$rdb->reset();
-                                        $rdb->exec();
-                                    }
+                                    $rdb->create($rTable)
+                                        ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+                                        ->field($className, 'int')
+                                        ->field($relClassName, 'int')
+                                        ->primaryKey('id');
+                                    $this->output($rdb->getQuery(), 2);
+                                    //$rdb->reset();
+                                    $rdb->exec();
                                 }
 
                                 // Model either is a direct reference to a single object,
