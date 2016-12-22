@@ -470,6 +470,12 @@ class Database
         throw new Exception('getQuery() calls calculate(), which needs to be implemented by a specific database adaptor!');
     }
 
+    public function tableExists($name)
+    {
+        // Implemented by Adaptor.
+        throw new Exception('tableExists() needs to be implemented by a specific database adaptor!');
+    }
+
 
     public static function getDefaultDb($getFresh = false)
     {

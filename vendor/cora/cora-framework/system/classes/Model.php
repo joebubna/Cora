@@ -335,6 +335,9 @@ class Model
         // Define custom query for repository.
         ///////////////////////////////////////
         $db = $relatedObj->getDbAdaptor();
+        if (!$db->tableExists($relTable)) {
+            $db = $this->getDbAdaptor();
+        }
 
         // DEFAULT CASE 
         // The objects that are related aren't the same class of object...
@@ -452,9 +455,9 @@ class Model
     }
 
 
-    public function getRepository()
+    public function getRepository($fresh = false)
     {
-        return \Cora\RepositoryFactory::make('\\'.get_class($this));
+        return \Cora\RepositoryFactory::make('\\'.get_class($this), false, false, $fresh);
     }
 
 

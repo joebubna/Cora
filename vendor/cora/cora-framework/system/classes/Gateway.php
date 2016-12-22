@@ -253,16 +253,17 @@ class Gateway
 
                     if ($model->usesRelationTable($relatedObj, $key)) {
                         $db = $repo->getDb();
+                        $db2 = $model->getDbAdaptor(true);
                         $relTable = $model->getRelationTableName($relatedObj, $key, $prop);
                         $modelId = $model->{$model->getPrimaryKey()};
                         $modelName = $model->getClassName();
                         $relatedObjName = $relatedObj->getClassName();
 
                         // Delete the existing relation table entry if set 
-                        $this->refDelete($db, $relTable, $modelName, $modelId, $relatedObjName);
+                        $this->refDelete($db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Insert reference to this object in ref table
-                        $this->refInsert($db, $relTable, $modelName, $modelId, $relatedObjName, $id);
+                        $this->refInsert($db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
 
                     }
                     else {
@@ -292,13 +293,14 @@ class Gateway
                     // If uses relation table
                     if ($model->usesRelationTable($relatedObjBlank, $key)) {
                         $db = $repo->getDb();
+                        $db2 = $model->getDbAdaptor(true);
                         $relTable = $model->getRelationTableName($relatedObjBlank, $key, $prop);
                         $modelId = $model->{$model->getPrimaryKey()};
                         $modelName = $model->getClassName();
                         $relatedObjName = $relatedObjBlank->getClassName();
 
                         // Delete all existing relation table entries that match,
-                        $this->refDelete($db, $relTable, $modelName, $modelId, $relatedObjName);
+                        $this->refDelete($db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
@@ -308,17 +310,20 @@ class Gateway
                             $id = $relatedObj->{$relatedObj->getPrimaryKey()};
                             if (!$this->getSavedModel($relatedObj)) {
                                 if ($id) {
+                                    // It has an ID, so add it to the savedModelsList before saving.
                                     $this->addSavedModel($relatedObj);
                                     $repo->save($relatedObj);
                                 }
                                 else {
-                                    $id = $repo->save($relatedObj);
+                                    // IT doesn't have an ID, so save first to get it an ID, then add to list.
+                                    //$id = $repo->save($relatedObj);
+                                    $id = $relatedObj->getRepository(true)->save($relatedObj);
                                     $this->addSavedModel($relatedObj);
                                 }
                             }
 
                             // Insert reference to this object in ref table.
-                            $this->refInsert($db, $relTable, $modelName, $modelId, $relatedObjName, $id);
+                            $this->refInsert($db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
                         }
                     }
 
@@ -518,15 +523,16 @@ class Gateway
 
                     if ($model->usesRelationTable($relatedObj, $key)) {
                         $db = $repo->getDb();
+                        $db2 = $model->getDbAdaptor(true);
                         $relTable = $model->getRelationTableName($relatedObj, $key, $prop);
                         $modelName = $model->getClassName();
                         $relatedObjName = $relatedObj->getClassName();
 
                         // Delete the existing relation table entry if set 
-                        $this->refDelete($db, $relTable, $modelName, $modelId, $relatedObjName);
+                        $this->refDelete($db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Insert reference to this object in ref table. 
-                        $this->refInsert($db, $relTable, $modelName, $modelId, $relatedObjName, $id);
+                        $this->refInsert($db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
                     }
                     else {
                         $this->db   ->update($table)
@@ -558,12 +564,13 @@ class Gateway
                     // If uses relation table
                     if ($model->usesRelationTable($relatedObjBlank, $key)) {
                         $db = $repo->getDb();
+                        $db2 = $model->getDbAdaptor(true);
                         $relTable = $model->getRelationTableName($relatedObjBlank, $key, $prop);
                         $modelName = $model->getClassName();
                         $relatedObjName = $relatedObjBlank->getClassName();
 
                         // Delete all existing relation table entries that match 
-                        $this->refDelete($db, $relTable, $modelName, $modelId, $relatedObjName);
+                        $this->refDelete($db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
@@ -583,7 +590,7 @@ class Gateway
                             }
 
                             // Insert reference to this object in ref table. 
-                            $this->refInsert($db, $relTable, $modelName, $modelId, $relatedObjName, $id);
+                            $this->refInsert($db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
                         }
                     }
 
@@ -650,11 +657,12 @@ class Gateway
         }
     }
 
-    protected function refDelete($db, $relTable, $modelName, $modelId, $relModelName)
+    protected function refDelete($db, $db2, $relTable, $modelName, $modelId, $relModelName)
     {
+        $dba = $db->tableExists($relTable) ? $db : $db2;
         // GENERAL CASE
         // Delete related objects.
-        $db ->delete()
+        $dba->delete()
             ->from($relTable)
             ->where($modelName, $modelId)
             ->exec();
@@ -663,19 +671,20 @@ class Gateway
         // If the objects being related ARE the same type. I.E. a User being related to another User...
         // Then the reference might be in $modelName or $modelName.'2'...
         if ($modelName == $relModelName) {
-            $db ->delete()
+            $dba->delete()
                 ->from($relTable)
                 ->where($modelName.'2', $modelId)
                 ->exec();
         }
     }
 
-    protected function refInsert($db, $relTable, $modelName, $modelId, $relModelName, $relModelId)
+    protected function refInsert($db, $db2, $relTable, $modelName, $modelId, $relModelName, $relModelId)
     {
+        $dba = $db->tableExists($relTable) ? $db : $db2;
         // SIMPLE CASE
         // If the objects that are related aren't the same type of object...
         if ($modelName != $relModelName) {
-            $db ->insert([$modelName, $relModelName])
+            $dba->insert([$modelName, $relModelName])
                 ->into($relTable)
                 ->values([$modelId, $relModelId])
                 ->exec();
@@ -684,12 +693,94 @@ class Gateway
         // EDGE CASE 
         // If the objects being related ARE the same type. I.E. a User being related to another User...
         else {
-            $db ->insert([$modelName, $relModelName.'2'])
+            $dba->insert([$modelName, $relModelName.'2'])
                 ->into($relTable)
                 ->values([$modelId, $relModelId])
                 ->exec();
         }
     }
+
+    // protected function refDelete($db, $db2, $relTable, $modelName, $modelId, $relModelName)
+    // {
+    //     try {
+    //         // GENERAL CASE
+    //         // Delete related objects.
+    //         $db ->delete()
+    //             ->from($relTable)
+    //             ->where($modelName, $modelId)
+    //             ->exec();
+
+    //         // EDGE CASE 
+    //         // If the objects being related ARE the same type. I.E. a User being related to another User...
+    //         // Then the reference might be in $modelName or $modelName.'2'...
+    //         if ($modelName == $relModelName) {
+    //             $db ->delete()
+    //                 ->from($relTable)
+    //                 ->where($modelName.'2', $modelId)
+    //                 ->exec();
+    //         }
+    //     }
+    //     catch (\PDOException $e) {
+    //         // GENERAL CASE
+    //         // Delete related objects.
+    //         $db2->delete()
+    //             ->from($relTable)
+    //             ->where($modelName, $modelId)
+    //             ->exec();
+
+    //         // EDGE CASE 
+    //         // If the objects being related ARE the same type. I.E. a User being related to another User...
+    //         // Then the reference might be in $modelName or $modelName.'2'...
+    //         if ($modelName == $relModelName) {
+    //             $db2->delete()
+    //                 ->from($relTable)
+    //                 ->where($modelName.'2', $modelId)
+    //                 ->exec();
+    //         }
+    //     }
+    // }
+
+    // protected function refInsert($db, $db2, $relTable, $modelName, $modelId, $relModelName, $relModelId)
+    // {
+    //     try {
+    //         // SIMPLE CASE
+    //         // If the objects that are related aren't the same type of object...
+    //         if ($modelName != $relModelName) {
+    //             $db ->insert([$modelName, $relModelName])
+    //                 ->into($relTable)
+    //                 ->values([$modelId, $relModelId])
+    //                 ->exec();
+    //         }
+
+    //         // EDGE CASE 
+    //         // If the objects being related ARE the same type. I.E. a User being related to another User...
+    //         else {
+    //             $db ->insert([$modelName, $relModelName.'2'])
+    //                 ->into($relTable)
+    //                 ->values([$modelId, $relModelId])
+    //                 ->exec();
+    //         }
+    //     }
+    //     catch (\PDOException $e) {
+    //         // SIMPLE CASE
+    //         // If the objects that are related aren't the same type of object...
+    //         if ($modelName != $relModelName) {
+    //             $db2->insert([$modelName, $relModelName])
+    //                 ->into($relTable)
+    //                 ->values([$modelId, $relModelId])
+    //                 ->exec();
+    //         }
+
+    //         // EDGE CASE 
+    //         // If the objects being related ARE the same type. I.E. a User being related to another User...
+    //         else {
+    //             $db2->insert([$modelName, $relModelName.'2'])
+    //                 ->into($relTable)
+    //                 ->values([$modelId, $relModelId])
+    //                 ->exec();
+    //         }
+    //     }
+    // }
 
     protected function getModelSavedId($model)
     {

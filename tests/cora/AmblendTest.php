@@ -12,10 +12,10 @@ class AmblendTest extends \Cora\App\TestCase
     {
         //$this->app->dbBuilder->reset();
         $users = $this->app->tests->users;
-        $this->assertEquals($users->count(), 0);
+        $this->assertEquals(0, $users->count());
         $user = new \Models\Tests\User('Bob', 'Admin');
         $users->save($user);
-        $this->assertEquals($users->count(), 1);
+        $this->assertEquals(1, $users->count());
     }
 
     /**
@@ -27,10 +27,10 @@ class AmblendTest extends \Cora\App\TestCase
     {
         //$this->app->dbBuilder->reset();
         $userComments = $this->app->tests->userComments;
-        $this->assertEquals($userComments->count(), 0);
+        $this->assertEquals(0, $userComments->count());
         $comment = new \Models\Tests\Users\Comment(null, 'Test comment');
         $userComments->save($comment);
-        $this->assertEquals($userComments->count(), 1);
+        $this->assertEquals(1, $userComments->count());
     }
 
     /**
@@ -57,7 +57,7 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has no comments.
-        $this->assertEquals($user->comments->count(), 0);
+        $this->assertEquals(0, $user->comments->count());
 
         // Create comment using userComments repo.
         $comment = new \Models\Tests\Users\Comment($user->id, 'Test comment');
@@ -65,7 +65,7 @@ class AmblendTest extends \Cora\App\TestCase
 
         // Check that user now has comment. Need to fetch user fresh from DB to ensure new comment is fetched and 
         // cached empty set isn't used instead.
-        $this->assertEquals($users->find($user->id)->comments->count(), 1);
+        $this->assertEquals(1, $users->find($user->id)->comments->count());
     }
 
 
@@ -92,7 +92,7 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has no comments.
-        $this->assertEquals($user->comments->count(), 0);
+        $this->assertEquals(0, $user->comments->count());
 
         // Create new comment and add to User via normal repo call.
         $user->comments->add(new \Models\Tests\Users\Comment($user->id, 'Test comment 1'));
@@ -106,10 +106,10 @@ class AmblendTest extends \Cora\App\TestCase
         $user->save();
 
         // Check that user has now has 2 comments
-        $this->assertEquals($user->comments->count(), 2);
+        $this->assertEquals(2, $user->comments->count());
 
         // Pull user fresh from DB just to make sure comments were saved on DB.
-        $this->assertEquals($users->find($user->id)->comments->count(), 2);
+        $this->assertEquals(2, $users->find($user->id)->comments->count());
     }
 
 
@@ -131,7 +131,7 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has no stored dates
-        $this->assertEquals($user->dates->count(), 0);
+        $this->assertEquals(0, $user->dates->count());
 
         // Replace dates associated with User
         $user->dates = $this->app->container(false, [
@@ -142,10 +142,10 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has now has 3 dates
-        $this->assertEquals($user->dates->count(), 3);
+        $this->assertEquals(3, $user->dates->count());
 
         // Pull user fresh from DB just to make sure dates were saved on DB.
-        $this->assertEquals($users->find($user->id)->dates->count(), 3);
+        $this->assertEquals(3, $users->find($user->id)->dates->count());
     }
 
     /**
@@ -166,7 +166,7 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has no stored friends
-        $this->assertEquals($user->friends->count(), 0);
+        $this->assertEquals(0, $user->friends->count());
 
         // Create new list of friends for this User
         $user->friends = $this->app->container(false, [
@@ -177,10 +177,10 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has now has 3 dates
-        $this->assertEquals($user->friends->count(), 3);
+        $this->assertEquals(3, $user->friends->count());
 
         // Pull user fresh from DB just to make sure dates were saved on DB.
-        $this->assertEquals($users->find($user->id)->friends->count(), 3);
+        $this->assertEquals(3, $users->find($user->id)->friends->count());
     }
 
 
@@ -202,7 +202,7 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has no stored friends
-        $this->assertEquals($user->friends->count(), 0);
+        $this->assertEquals(0, $user->friends->count());
 
         // Create new list of friends for this User
         $user->friends = $this->app->container(false, [
@@ -212,20 +212,20 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has now has 2 dates
-        $this->assertEquals($user->friends->count(), 2);
+        $this->assertEquals(2, $user->friends->count());
 
         // Pull user fresh from DB just to make sure dates were saved on server.
-        $this->assertEquals($users->find($user->id)->friends->count(), 2);
+        $this->assertEquals(2, $users->find($user->id)->friends->count());
 
         // Add a new Friend
         $user->friends->add(new \Models\Tests\User('Randel'));
         $users->save($user);
 
          // Check that user has now has 3 dates
-        $this->assertEquals($user->friends->count(), 3);
+        $this->assertEquals(3, $user->friends->count());
 
         // Pull user fresh from DB just to make sure dates were saved on DB.
-        $this->assertEquals($users->find($user->id)->friends->count(), 3);
+        $this->assertEquals(3, $users->find($user->id)->friends->count());
     }
 
 
@@ -247,7 +247,7 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has no stored friends
-        $this->assertEquals($user->father, NULL);
+        $this->assertEquals(NULL, $user->father);
 
         // Set and create father 
         $dad = new \Models\Tests\User('George');
@@ -255,10 +255,10 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that dad was set to current User
-        $this->assertEquals(get_class($user->father), get_class($dad));
+        $this->assertEquals(get_class($dad), get_class($user->father));
         
         // Pull user fresh from DB just to make sure changes were saved on DB.
-        $this->assertEquals(get_class($users->find($user->id)->father), get_class($dad));
+        $this->assertEquals(get_class($dad), get_class($users->find($user->id)->father));
     }
 
 
@@ -288,10 +288,10 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that dad was set to current User
-        $this->assertEquals(get_class($user->mother), get_class($mother));
+        $this->assertEquals(get_class($mother), get_class($user->mother));
         
         // Pull user fresh from DB just to make sure changes were saved on DB.
-        $this->assertEquals(get_class($users->find($user->id)->mother), get_class($mother));
+        $this->assertEquals(get_class($mother), get_class($users->find($user->id)->mother));
     }
 
 
@@ -326,7 +326,7 @@ class AmblendTest extends \Cora\App\TestCase
         // In the previous step we set the "mother" field, the "mother2" field is set to read 
         // from the same table as "mother", so we should get the result if the "relTable" setting 
         // is working correctly.
-        $this->assertEquals(get_class($users->find($user->id)->mother2), get_class($mother));
+        $this->assertEquals(get_class($mother), get_class($users->find($user->id)->mother2));
     }
 
 
@@ -348,7 +348,7 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has no stored friends
-        $this->assertEquals($user->friends->count(), 0);
+        $this->assertEquals(0, $user->friends->count());
 
         // Create new list of friends for this User
         $user->friends = $this->app->container(false, [
@@ -358,22 +358,22 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has now has 2 relations
-        $this->assertEquals($user->friends->count(), 2);
+        $this->assertEquals(2, $user->friends->count());
 
         // Pull user fresh from DB just to make sure relations were saved on server.
-        $this->assertEquals($users->find($user->id)->friends->count(), 2);
+        $this->assertEquals(2, $users->find($user->id)->friends->count());
 
         // Add a new Friend using the "friends2" attribute.
         $user->friends2->add(new \Models\Tests\User('Randel'));
         $users->save($user);
 
          // Check that user has now has 3 relations
-        $this->assertEquals($user->friends2->count(), 3);
+        $this->assertEquals(3, $user->friends2->count());
 
         // Pull user fresh from DB just to make sure relations were saved on DB.
         // Check that both friends and friends2 return the same number of results.
-        $this->assertEquals($users->find($user->id)->friends->count(), 3);
-        $this->assertEquals($users->find($user->id)->friends2->count(), 3);
+        $this->assertEquals(3, $users->find($user->id)->friends->count());
+        $this->assertEquals(3, $users->find($user->id)->friends2->count());
     }
 
 
@@ -394,7 +394,7 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has no stored references
-        $this->assertEquals($user->blogposts->count(), 0);
+        $this->assertEquals(0, $user->blogposts->count());
 
         // Set collection of data
         $user->blogposts = $this->app->collection([
@@ -405,10 +405,10 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has now has correct # of objects
-        $this->assertEquals($user->blogposts->count(), 3);
+        $this->assertEquals(3, $user->blogposts->count());
 
         // Pull user fresh from DB just to make sure references were saved on DB.
-        $this->assertEquals($users->find($user->id)->blogposts->count(), 3);
+        $this->assertEquals(3, $users->find($user->id)->blogposts->count());
     }
 
 
@@ -429,7 +429,8 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
 
         // Check that user has no stored references
-        //$this->assertEquals($user->articles->count(), 0);
+        //echo count($user->articles);
+        $this->assertEquals(0, $user->articles->count());
 
         // Set collection of data
         $user->articles = $this->app->collection([
@@ -440,10 +441,13 @@ class AmblendTest extends \Cora\App\TestCase
         $users->save($user);
         
         // Check that user has now has correct # of objects
-        //$this->assertEquals($user->articles->count(), 3);
+        $this->assertEquals(3, $user->articles->count());
 
         // Pull user fresh from DB just to make sure references were saved on DB.
-        //$this->assertEquals($users->find($user->id)->articles->count(), 3);
+        $freshUser = $users->find($user->id);
+        $this->assertEquals(3, $freshUser->articles->count());
+
+        $this->assertEquals('My Favorite Books Vol 1', $freshUser->articles->get(0)->text);
     }
 
 }

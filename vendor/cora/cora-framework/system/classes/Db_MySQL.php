@@ -108,6 +108,7 @@ class Db_MySQL extends Database
             if ($this->config['mode'] == 'development') {
                 echo $this->getQuery();
             }
+            $this->reset();
             throw $e;
         }
         $this->reset();
@@ -138,6 +139,13 @@ class Db_MySQL extends Database
         ";
         
         $result = $this->db->query($sql);
+        $this->reset();
+        return $result;
+    }
+
+    public function tableExists($name)
+    {
+        $result = $this->db->query("SHOW TABLES LIKE '$name'")->rowCount() > 0;
         $this->reset();
         return $result;
     }
