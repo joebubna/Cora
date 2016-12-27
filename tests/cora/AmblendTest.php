@@ -450,4 +450,91 @@ class AmblendTest extends \Cora\App\TestCase
         $this->assertEquals('My Favorite Books Vol 1', $freshUser->articles->get(0)->text);
     }
 
+
+    /**
+     *  Make sure can properly save dates.
+     *
+     *  @test
+     */
+    public function datesProperlySavedWithoutManualConversion()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that attribute in question is null
+        $this->assertEquals(NULL, $user->birthday);
+
+        // Assign a value to the attribute that has a custom field set 
+        $user->birthday = new \DateTime("05/10/2016");
+        $users->save($user);
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        $freshUser = $users->find($user->id);
+        $this->assertEquals("05/10/2016", $freshUser->birthday->format("m/d/Y"));
+    }
+
+
+    /**
+     *  Make sure a simple attribute that has a custom DB field set 
+     *  properly can read from and save to the DB.
+     *
+     *  @test
+     */
+    public function simpleAttributeCanHaveCustomDdFieldname()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that attribute in question is null
+        $this->assertEquals(NULL, $user->lastModified);
+
+        // Assign a value to the attribute that has a custom field set 
+        $user->lastModified = new \DateTime("05/10/2016");
+        $users->save($user);
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        $freshUser = $users->find($user->id);
+        $this->assertEquals("05/10/2016", $freshUser->lastModified->format("m/d/Y"));
+    }
+
+
+    /**
+     *  Test if custom fieldname can be set for a singular model reference. 
+     *  (singular references are normally stored as a field on the table)
+     *
+     *  @test
+     */
+    public function canSetCustomFieldnameForSingleModelRef()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that field is null to start
+        $this->assertEquals(NULL, $user->grandpa);
+
+        // Set and create ref
+        $grandpa = new \Models\Tests\User('GrandPaPa');
+        $user->grandpa = $grandpa;
+        $users->save($user);
+
+        // Check that ref was set to current User
+        $this->assertEquals(get_class($grandpa), get_class($user->grandpa));
+        
+        // Pull user fresh from DB just to make sure changes were saved on DB.
+        $this->assertEquals(get_class($grandpa), get_class($users->find($user->id)->grandpa));
+        $this->assertEquals($grandpa->name, $users->find($user->id)->grandpa->name);
+    }
+
 }

@@ -223,6 +223,7 @@ class Gateway
         foreach ($model->model_attributes as $key => $prop) {
             $modelValue = $model->getAttributeValue($key);
             if (isset($modelValue)) {
+                $fieldName = $model->getFieldName($key);
 
                 /////////////////////////////////////////////////////////////////////////////////////////
                 // If the data is a single Cora model object, then we need to create a new repository to
@@ -269,7 +270,7 @@ class Gateway
                     else {
                         // The reference must be stored in the parent's table.
                         // So we just set the column to the new ID.
-                        $this->db->set($key, $id);
+                        $this->db->set($fieldName, $id);
                     }
                 }
 
@@ -315,7 +316,7 @@ class Gateway
                                     $repo->save($relatedObj);
                                 }
                                 else {
-                                    // IT doesn't have an ID, so save first to get it an ID, then add to list.
+                                    // It doesn't have an ID, so save first to get it an ID, then add to list.
                                     //$id = $repo->save($relatedObj);
                                     $id = $relatedObj->getRepository(true)->save($relatedObj);
                                     $this->addSavedModel($relatedObj);
@@ -376,7 +377,7 @@ class Gateway
                 /////////////////////////////////////////////////////////////////////////////////////////
                 else if (is_array($modelValue) || is_object($modelValue)) {
                     $str = serialize($modelValue);
-                    $this->db->set($key, $str);
+                    $this->db->set($fieldName, $str);
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////
@@ -388,7 +389,7 @@ class Gateway
                     // It might just be a placeholder value for a model reference.
                     // If it's a placeholder, we don't want to do anything here.
                     if (!$model->isPlaceholder($key)) {
-                        $this->db->set($key, $modelValue);
+                        $this->db->set($fieldName, $modelValue);
                     }
                 }
             }
@@ -421,6 +422,7 @@ class Gateway
         foreach ($model->model_attributes as $key => $prop) {
             $modelValue = $model->getAttributeValue($key);
             if (isset($modelValue)) {
+                $fieldName = $model->getFieldName($key);
 
                 /////////////////////////////////////////////////////////////////////////////////////////
                 // If the data is a single Cora model object, skip handling it this pass.
@@ -448,7 +450,7 @@ class Gateway
                 // If the data is an array, then we need to serialize it for storage.
                 else if (is_array($modelValue) || is_object($modelValue)) {
                     $str = serialize($modelValue);
-                    $columns[]  = $key;
+                    $columns[]  = $fieldName;
                     $values[]   = $str;
                 }
 
@@ -458,7 +460,7 @@ class Gateway
                     // Check that this is actually a value that needs to be saved.
                     // It might just be a placeholder value for a model reference.
                     if (!$model->isPlaceholder($key)) {
-                        $columns[]  = $key;
+                        $columns[]  = $fieldName;
                         $values[]   = $modelValue;
                     }
                 }
@@ -493,6 +495,7 @@ class Gateway
         foreach ($model->model_attributes as $key => $prop) {
             $modelValue = $model->getAttributeValue($key);
             if (isset($modelValue)) {
+                $fieldName = $model->getFieldName($key);
 
                 /////////////////////////////////////////////////////////////////////////////////////////
                 // If the data is a single Cora model object, then we need to create a new repository to
@@ -536,7 +539,7 @@ class Gateway
                     }
                     else {
                         $this->db   ->update($table)
-                                    ->set($key, $id)
+                                    ->set($fieldName, $id)
                                     ->where($model->getPrimaryKey(), $model->{$model->getPrimaryKey()});
                         $this->db->exec();
                     }

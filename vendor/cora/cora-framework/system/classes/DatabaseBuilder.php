@@ -95,6 +95,7 @@ class DatabaseBuilder extends Framework
                             //echo $key."\n";
                             $rmodel = isset($props['model']);
                             $rmodels = isset($props['models']);
+                            $fieldName = $object->getFieldName($key);
 
                             // Check if current attribute is a model reference.
                             if ($rmodel || $rmodels) {
@@ -144,7 +145,7 @@ class DatabaseBuilder extends Framework
                                 // here. The ownership column will be handled when the other object is processed.
                                 else {
                                     if (!isset($props['via'])) {
-                                        $db ->field($key, 'int');
+                                        $db ->field($fieldName, 'int');
                                     }    
                                 }
                             }
@@ -153,7 +154,7 @@ class DatabaseBuilder extends Framework
                             else {
                                 // Set primary key if applicable
                                 if (isset($props['primaryKey'])) {
-                                    $db ->primaryKey($key);
+                                    $db ->primaryKey($fieldName);
                                 }
 
                                 // Grab column type and then set it.
@@ -161,10 +162,10 @@ class DatabaseBuilder extends Framework
                                 $attr = $db->getAttributes($props);
                                 $type = $db->getType($props);
                                 $def = $type.' '.$attr;
-                                $db ->field($key, $def);
+                                $db ->field($fieldName, $def);
 
                                 // If the column is defined to have an index, create one.
-                                $db->setIndex($key, $props);
+                                $db->setIndex($fieldName, $props);
                             }
                         }
 

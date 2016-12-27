@@ -26,21 +26,22 @@ class Model
 
                 // If the data is present in the DB, assign to model.
                 // Otherwise ignore any data returned from the DB that isn't defined in the model.
-                if (isset($record[$key])) {
-                    if (\Cora\Gateway::is_serialized($record[$key])) {
-                        $value = unserialize($record[$key]);
+                if (isset($record[$this->getFieldName($key)])) {
+                    $fieldName = $this->getFieldName($key);
+                    if (\Cora\Gateway::is_serialized($record[$fieldName])) {
+                        $value = unserialize($record[$fieldName]);
                         $this->beforeSet($key, $value); // Lifecycle callback
                         $this->model_data[$key] = $value;
                         $this->afterSet($key, $value); // Lifecycle callback
                     }
                     else if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime')) {
-                        $value = new \DateTime($record[$key]);
+                        $value = new \DateTime($record[$fieldName]);
                         $this->beforeSet($key, $value); // Lifecycle callback
                         $this->model_data[$key] = $value;
                         $this->afterSet($key, $value); // Lifecycle callback
                     }
                     else {
-                        $value = $record[$key];
+                        $value = $record[$fieldName];
                         $this->beforeSet($key, $value); // Lifecycle callback
                         $this->model_data[$key] = $value;
                         $this->afterSet($key, $value); // Lifecycle callback
@@ -59,6 +60,17 @@ class Model
             $nonObjectData = array_diff_key($record, $this->model_attributes);
             if (count($nonObjectData) > 0) {
                 foreach ($nonObjectData as $key => $value) {
+
+                    // Note that if the model is using custom field names, this will result in a piece of data 
+                    // getting set to both the official attribute and as non-model data. 
+                    // I.E. If 'field' is set to 'last_modified' and the attribute name is 'lastModified', 
+                    // the returned value from the Gateway will get assigned to the attribute in the code above like so: 
+                    // $model->lastModified = $value 
+                    // However because it's not worth doing a backwards lookup of the form $this->getAttributeFromField($recordKey) 
+                    // (such a method would have to loop through all the attributes to find a match) 
+                    // The data will also end up getting assigned here like so: 
+                    // $model->last_modified = $value 
+                    // An extra loop per custom field didn't seem worth the savings of a small amount of model memory size/clutter.
                     $this->$key = $value;
                 }
             }
@@ -419,7 +431,7 @@ class Model
     protected function fetchData($name)
     {
         $gateway = new \Cora\Gateway($this->getDbAdaptor(), $this->getTableName(), $this->getPrimaryKey());
-        return $gateway->fetchData($name, $this);
+        return $gateway->fetchData($this->getFieldName($name), $this);
     }
 
 
@@ -579,6 +591,24 @@ class Model
         // If no primary key is defined (BAD DEVELOPER! BAD!)
         // Then try returning 'id' and hope that works.
         return 'id';
+    }
+
+
+    /**
+     *  By default, an attribute is stored in a DB field with matching name. 
+     *  So lastModified would be stored in a column named lastModified. 
+     *  However, there may be situations where a developer wants the attribute name 
+     *  in the model to be different than the DB. I.E. lastModified => last_modified. 
+     *
+     *  This method, when given an attribute on the model, should read the model definition 
+     *  and return the field name in the DB.
+     */
+    public function getFieldName($attributeName)
+    {
+        if (isset($this->model_attributes[$attributeName]['field'])) {
+            return $this->model_attributes[$attributeName]['field'];
+        }
+        return $attributeName;
     }
 
 
