@@ -30,6 +30,9 @@ class User extends \Cora\App\Model {
         'articles' => [ // Stored in 2nd database
             'models' => 'Tests\\Article'
         ],
+        'multiAuthorArticles' => [ // Stored in 2nd database
+            'models' => 'Tests\\MultiAuthorArticle'
+        ],
         'blogposts' => [ // Stored is 2nd database
             'models' => 'Tests\\BlogPost',
             'via' => 'owner'
@@ -57,7 +60,7 @@ class User extends \Cora\App\Model {
             'models' => 'Tests\\User',
             'relTable' => 'ref_tests_users__friends__tests_users'
         ],
-        'contacts' => [
+        'contacts' => [ // This is for testing custom relation table field names.
             'models' => 'Tests\\User',
             'relTable' => 'ref_users_contacts',
             'relThis' => 'user_id',

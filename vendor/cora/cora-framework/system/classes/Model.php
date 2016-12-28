@@ -48,7 +48,7 @@ class Model
                     }
                 }
                 else if (isset($def['models']) || (isset($def['model']) && isset($def['usesRefTable']))) {
-                    $this->model_data[$key] = 1;
+                    if (!isset($this->model_data[$key])) $this->model_data[$key] = 1;
                 }
             }
 
@@ -191,7 +191,8 @@ class Model
                 // If the unset attribute is defined as a collection, return an empty one.
                 if (isset($def['models'])) {
                     if ($returnValue == null) {
-                        return new \Cora\Container();
+                        $this->$name = new \Cora\Container();
+                        return $this->model_data[$name];
                     }
                     else {
                         return $this->__get($name);
@@ -541,6 +542,7 @@ class Model
             $table1 = $this->getTableName();
             $table2 = $relatedObj->getTableName();
             $alphabeticalComparison = strcmp($table1, $table2);
+            $attribute = strtolower(preg_replace('/\B([A-Z])/', '_$1', $attribute));
 
             if ($alphabeticalComparison > 0) {
                 $result = 'ref_'.$table1.'__'.$attribute.'__'.$table2;
@@ -549,7 +551,7 @@ class Model
                 $result = 'ref_'.$table2.'__'.$attribute.'__'.$table1;
             }
         }
-        return $result;
+        return substr($result, 0, 64);
     }
 
 

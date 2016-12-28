@@ -261,10 +261,10 @@ class Gateway
                         $relatedObjName = $relatedObj->getClassName();
 
                         // Delete the existing relation table entry if set 
-                        $this->refDelete($db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
+                        $this->refDelete($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Insert reference to this object in ref table
-                        $this->refInsert($db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
+                        $this->refInsert($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
 
                     }
                     else {
@@ -301,7 +301,7 @@ class Gateway
                         $relatedObjName = $relatedObjBlank->getClassName();
 
                         // Delete all existing relation table entries that match,
-                        $this->refDelete($db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
+                        $this->refDelete($key, $model, $relatedObjBlank, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
@@ -324,7 +324,7 @@ class Gateway
                             }
 
                             // Insert reference to this object in ref table.
-                            $this->refInsert($db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
+                            $this->refInsert($key, $model, $relatedObjBlank, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
                         }
                     }
 
@@ -532,10 +532,10 @@ class Gateway
                         $relatedObjName = $relatedObj->getClassName();
 
                         // Delete the existing relation table entry if set 
-                        $this->refDelete($db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
+                        $this->refDelete($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Insert reference to this object in ref table. 
-                        $this->refInsert($db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
+                        $this->refInsert($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
                     }
                     else {
                         $this->db   ->update($table)
@@ -573,7 +573,7 @@ class Gateway
                         $relatedObjName = $relatedObjBlank->getClassName();
 
                         // Delete all existing relation table entries that match 
-                        $this->refDelete($db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
+                        $this->refDelete($key, $model, $relatedObjBlank, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
 
                         // Save each object in the collection
                         foreach ($collection as $relatedObj) {
@@ -593,7 +593,7 @@ class Gateway
                             }
 
                             // Insert reference to this object in ref table. 
-                            $this->refInsert($db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
+                            $this->refInsert($key, $model, $relatedObjBlank, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
                         }
                     }
 
@@ -660,20 +660,44 @@ class Gateway
         }
     }
 
-    protected function refDelete($db, $db2, $relTable, $modelName, $modelId, $relModelName)
+    protected function refDelete($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relModelName)
     {
-        $dba = $db->tableExists($relTable) ? $db : $db2;
+        //$dba = $db->tableExists($relTable) ? $db : $db2;
+
+        // Set defaults
+        $customFields = false;
+        $primaryModel = $relatedObj;
+        $dba = $db;
+        $className = $relModelName;
+        $relClassName = $modelName;
+
+        // Check if passive side of relationship  
+        // Adjust primary model if necessary
+        if (isset($relatedObj->model_attributes[$key]['passive']) || isset($relatedObj->model_attributes[$key]) == false) {
+            $primaryModel = $model;
+            $dba = $db2;
+            $className = $modelName;
+            $relClassName = $relModelName;
+        }
+
+        // Check if custom field names set for relation table
+        if (isset($primaryModel->model_attributes[$key]['relThis']) && isset($primaryModel->model_attributes[$key]['relThat'])) {
+            $customFields = true;
+            $className = $primaryModel->model_attributes[$key]['relThis'];
+            $relClassName = $primaryModel->model_attributes[$key]['relThat'];
+        }
+
         // GENERAL CASE
         // Delete related objects.
         $dba->delete()
             ->from($relTable)
-            ->where($modelName, $modelId)
+            ->where($className, $modelId)
             ->exec();
 
         // EDGE CASE 
         // If the objects being related ARE the same type. I.E. a User being related to another User...
         // Then the reference might be in $modelName or $modelName.'2'...
-        if ($modelName == $relModelName) {
+        if ($modelName == $relModelName && $customFields == false) {
             $dba->delete()
                 ->from($relTable)
                 ->where($modelName.'2', $modelId)
@@ -681,13 +705,37 @@ class Gateway
         }
     }
 
-    protected function refInsert($db, $db2, $relTable, $modelName, $modelId, $relModelName, $relModelId)
+    protected function refInsert($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relModelName, $relModelId)
     {
-        $dba = $db->tableExists($relTable) ? $db : $db2;
+        //$dba = $db->tableExists($relTable) ? $db : $db2;
+
+        // Set defaults
+        $customFields = false;
+        $primaryModel = $relatedObj;
+        $dba = $db;
+        $className = $relModelName;
+        $relClassName = $modelName;
+
+        // Check if passive side of relationship  
+        // Adjust primary model if necessary
+        if (isset($relatedObj->model_attributes[$key]['passive']) || isset($relatedObj->model_attributes[$key]) == false) {
+            $primaryModel = $model;
+            $dba = $db2;
+            $className = $modelName;
+            $relClassName = $relModelName;
+        }
+
+        // Check if custom field names set for relation table
+        if (isset($primaryModel->model_attributes[$key]['relThis']) && isset($primaryModel->model_attributes[$key]['relThat'])) {
+            $customFields = true;
+            $className = $primaryModel->model_attributes[$key]['relThis'];
+            $relClassName = $primaryModel->model_attributes[$key]['relThat'];
+        }
+
         // SIMPLE CASE
         // If the objects that are related aren't the same type of object...
-        if ($modelName != $relModelName) {
-            $dba->insert([$modelName, $relModelName])
+        if ($modelName != $relModelName || $customFields == true) {
+            $dba->insert([$className, $relClassName])
                 ->into($relTable)
                 ->values([$modelId, $relModelId])
                 ->exec();

@@ -111,31 +111,39 @@ class DatabaseBuilder extends Framework
                                 // Check if uses a relation table.
                                 $rTable = $object->usesRelationTable($relatedObj, $key);
                                 if ($rTable) {
-                                    $this->output("Creating Relation Table: ".$rTable);
+                                    if (!isset($props['passive'])) {
+                                        $this->output("Creating Relation Table: ".$rTable);
 
-                                    // Checking dominance
-                                    $rdb = $object->getDbAdaptor(true);
-                                    if (isset($props['passive'])) {
-                                        $rdb = $relatedObj->getDbAdaptor(true);
+                                        // Checking dominance
+                                        $rdb = $object->getDbAdaptor(true);
+
+                                        // Determine relation table field names. 
+                                        // Set to default to start.
+                                        $className = $object->getClassName();
+                                        $relClassName = $relatedObj->getClassName();
+                                        
+                                        // Check if custom field names were set for relation.
+                                        if (isset($props['relThis']) && isset($props['relThat'])) {
+                                            $className = $props['relThis'];
+                                            $relClassName = $props['relThat'];
+                                        }
+
+                                        // EDGE CASE - if a relation is being created between the same model.
+                                        // If no custom names were set, check for this edge case.
+                                        else if ($className == $relClassName) {
+                                            $relClassName = $relClassName.'2';
+                                        }
+
+                                        // Build relation table.
+                                        $rdb->create($rTable)
+                                            ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+                                            ->field($className, 'int')
+                                            ->field($relClassName, 'int')
+                                            ->primaryKey('id');
+                                        $this->output($rdb->getQuery(), 2);
+                                        //$rdb->reset();
+                                        $rdb->exec();
                                     }
-
-                                    // Build relation table.
-                                    $className = $object->getClassName();
-                                    $relClassName = $relatedObj->getClassName();
-                                    
-                                    // EDGE CASE - if a relation is being created between the same model.
-                                    if ($className == $relClassName) {
-                                        $relClassName = $relClassName.'2';
-                                    }
-
-                                    $rdb->create($rTable)
-                                        ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
-                                        ->field($className, 'int')
-                                        ->field($relClassName, 'int')
-                                        ->primaryKey('id');
-                                    $this->output($rdb->getQuery(), 2);
-                                    //$rdb->reset();
-                                    $rdb->exec();
                                 }
 
                                 // Model either is a direct reference to a single object,
