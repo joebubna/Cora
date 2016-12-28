@@ -95,6 +95,7 @@ class DatabaseBuilder extends Framework
                             //echo $key."\n";
                             $rmodel = isset($props['model']);
                             $rmodels = isset($props['models']);
+                            $fieldName = $object->getFieldName($key);
 
                             // Check if current attribute is a model reference.
                             if ($rmodel || $rmodels) {
@@ -110,31 +111,39 @@ class DatabaseBuilder extends Framework
                                 // Check if uses a relation table.
                                 $rTable = $object->usesRelationTable($relatedObj, $key);
                                 if ($rTable) {
-                                    $this->output("Creating Relation Table: ".$rTable);
+                                    if (!isset($props['passive'])) {
+                                        $this->output("Creating Relation Table: ".$rTable);
 
-                                    // Checking dominance
-                                    $rdb = $object->getDbAdaptor(true);
-                                    if (isset($props['passive'])) {
-                                        $rdb = $relatedObj->getDbAdaptor(true);
+                                        // Checking dominance
+                                        $rdb = $object->getDbAdaptor(true);
+
+                                        // Determine relation table field names. 
+                                        // Set to default to start.
+                                        $className = $object->getClassName();
+                                        $relClassName = $relatedObj->getClassName();
+                                        
+                                        // Check if custom field names were set for relation.
+                                        if (isset($props['relThis']) && isset($props['relThat'])) {
+                                            $className = $props['relThis'];
+                                            $relClassName = $props['relThat'];
+                                        }
+
+                                        // EDGE CASE - if a relation is being created between the same model.
+                                        // If no custom names were set, check for this edge case.
+                                        else if ($className == $relClassName) {
+                                            $relClassName = $relClassName.'2';
+                                        }
+
+                                        // Build relation table.
+                                        $rdb->create($rTable)
+                                            ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+                                            ->field($className, 'int')
+                                            ->field($relClassName, 'int')
+                                            ->primaryKey('id');
+                                        $this->output($rdb->getQuery(), 2);
+                                        //$rdb->reset();
+                                        $rdb->exec();
                                     }
-
-                                    // Build relation table.
-                                    $className = $object->getClassName();
-                                    $relClassName = $relatedObj->getClassName();
-                                    
-                                    // EDGE CASE - if a relation is being created between the same model.
-                                    if ($className == $relClassName) {
-                                        $relClassName = $relClassName.'2';
-                                    }
-
-                                    $rdb->create($rTable)
-                                        ->field('id', 'int', 'NOT NULL AUTO_INCREMENT')
-                                        ->field($className, 'int')
-                                        ->field($relClassName, 'int')
-                                        ->primaryKey('id');
-                                    $this->output($rdb->getQuery(), 2);
-                                    //$rdb->reset();
-                                    $rdb->exec();
                                 }
 
                                 // Model either is a direct reference to a single object,
@@ -144,7 +153,7 @@ class DatabaseBuilder extends Framework
                                 // here. The ownership column will be handled when the other object is processed.
                                 else {
                                     if (!isset($props['via'])) {
-                                        $db ->field($key, 'int');
+                                        $db ->field($fieldName, 'int');
                                     }    
                                 }
                             }
@@ -153,7 +162,7 @@ class DatabaseBuilder extends Framework
                             else {
                                 // Set primary key if applicable
                                 if (isset($props['primaryKey'])) {
-                                    $db ->primaryKey($key);
+                                    $db ->primaryKey($fieldName);
                                 }
 
                                 // Grab column type and then set it.
@@ -161,10 +170,10 @@ class DatabaseBuilder extends Framework
                                 $attr = $db->getAttributes($props);
                                 $type = $db->getType($props);
                                 $def = $type.' '.$attr;
-                                $db ->field($key, $def);
+                                $db ->field($fieldName, $def);
 
                                 // If the column is defined to have an index, create one.
-                                $db->setIndex($key, $props);
+                                $db->setIndex($fieldName, $props);
                             }
                         }
 

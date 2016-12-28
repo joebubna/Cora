@@ -181,6 +181,57 @@ class AmblendTest extends \Cora\App\TestCase
 
         // Pull user fresh from DB just to make sure dates were saved on DB.
         $this->assertEquals(3, $users->find($user->id)->friends->count());
+
+        // Now let's replace the collection again and check everything still works.
+        $user->friends = $this->app->container(false, [
+            new \Models\Tests\User('Jeff'),
+            new \Models\Tests\User('Randel')
+        ]);
+        $users->save($user);
+        $this->assertEquals(2, $users->find($user->id)->friends->count());
+        $this->assertEquals('Jeff', $users->find($user->id)->friends->get(0)->name);
+    }
+
+
+    /**
+     *  If a User has a collection of related models, ensure one can be deleted.
+     *
+     *  @error
+     */
+    public function canDeleteRelatedModelByRef()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no stored friends
+        $this->assertEquals(0, $user->friends->count());
+
+        // Create new list of friends for this User
+        $user->friends = $this->app->container(false, [
+            new \Models\Tests\User('Suzzy'),
+            new \Models\Tests\User('Jeff'),
+            new \Models\Tests\User('Randel')
+        ]);
+        $users->save($user);
+
+        // Check that user has now has 3 friends
+        $this->assertEquals(3, $user->friends->count());
+
+        // Pull user fresh from DB just to make sure friends were saved on DB.
+        $freshUser = $users->find($user->id);
+        $this->assertEquals(3, $freshUser->friends->count());
+
+        // Check that the first friend is Suzzy
+        $this->assertEquals('Suzzy', $freshUser->friends->get(0)->name);
+
+        // Remove Suzzy from friends list and save. 
+        $freshUser->friends->remove(0);
+        $users->save($freshUser);
+        $this->assertEquals('Jeff', $freshUser->friends->get(0)->name);
     }
 
 
@@ -448,6 +499,137 @@ class AmblendTest extends \Cora\App\TestCase
         $this->assertEquals(3, $freshUser->articles->count());
 
         $this->assertEquals('My Favorite Books Vol 1', $freshUser->articles->get(0)->text);
+    }
+
+
+    /**
+     *  Make sure can properly save dates.
+     *
+     *  @test
+     */
+    public function datesProperlySavedWithoutManualConversion()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that attribute in question is null
+        $this->assertEquals(NULL, $user->birthday);
+
+        // Assign a value to the attribute that has a custom field set 
+        $user->birthday = new \DateTime("05/10/2016");
+        $users->save($user);
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        $freshUser = $users->find($user->id);
+        $this->assertEquals("05/10/2016", $freshUser->birthday->format("m/d/Y"));
+    }
+
+
+    /**
+     *  Make sure a simple attribute that has a custom DB field set 
+     *  properly can read from and save to the DB.
+     *
+     *  @test
+     */
+    public function simpleAttributeCanHaveCustomDdFieldname()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that attribute in question is null
+        $this->assertEquals(NULL, $user->lastModified);
+
+        // Assign a value to the attribute that has a custom field set 
+        $user->lastModified = new \DateTime("05/10/2016");
+        $users->save($user);
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        $freshUser = $users->find($user->id);
+        $this->assertEquals("05/10/2016", $freshUser->lastModified->format("m/d/Y"));
+    }
+
+
+    /**
+     *  Test if custom fieldname can be set for a singular model reference. 
+     *  (singular references are normally stored as a field on the table)
+     *
+     *  @test
+     */
+    public function canSetCustomFieldnameForSingleModelRef()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that field is null to start
+        $this->assertEquals(NULL, $user->grandpa);
+
+        // Set and create ref
+        $grandpa = new \Models\Tests\User('GrandPaPa');
+        $user->grandpa = $grandpa;
+        $users->save($user);
+
+        // Check that ref was set to current User
+        $this->assertEquals(get_class($grandpa), get_class($user->grandpa));
+        
+        // Pull user fresh from DB just to make sure changes were saved on DB.
+        $this->assertEquals(get_class($grandpa), get_class($users->find($user->id)->grandpa));
+        $this->assertEquals($grandpa->name, $users->find($user->id)->grandpa->name);
+    }
+
+
+    /**
+     *  If check if a many-to-many relationship can be used correctly.
+     *
+     *  @test
+     */
+    public function canUseManyToManyRelationOverMultipleDBs()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no stored references
+        $this->assertEquals(0, $user->multiAuthorArticles->count());
+
+        // Set collection of data
+        $user->multiAuthorArticles = $this->app->collection([
+            new \Models\Tests\MultiAuthorArticle('art1'),
+            new \Models\Tests\MultiAuthorArticle('art2'),
+            new \Models\Tests\MultiAuthorArticle('art3')
+        ]);
+        $users->save($user);
+        
+        // Check that user has now has correct # of objects
+        $this->assertEquals(3, $user->multiAuthorArticles->count());
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        $freshUser = $users->find($user->id);
+        $this->assertEquals(3, $freshUser->multiAuthorArticles->count());
+
+        // Create 2nd user 
+        $user2 = new \Models\Tests\User('Suzzy');
+        $user2->multiAuthorArticles->add($user->multiAuthorArticles->off0);
+        $users->save($user2);
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        $freshUser = $users->find($user2->id);
+        $this->assertEquals(1, $freshUser->multiAuthorArticles->count());
+        $this->assertEquals('art1', $freshUser->multiAuthorArticles->get(0)->text);
     }
 
 }

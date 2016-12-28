@@ -16,6 +16,13 @@ class User extends \Cora\App\Model {
         'type' => [
             'type' => 'varchar'
         ],
+        'birthday' => [
+            'type' => 'datetime'
+        ],
+        'lastModified' => [
+            'type' => 'datetime',
+            'field' => 'modified_time'
+        ],
         'comments' => [
             'models' => 'Tests\\Users\\Comment',
             'via' => 'madeBy'
@@ -23,9 +30,16 @@ class User extends \Cora\App\Model {
         'articles' => [ // Stored in 2nd database
             'models' => 'Tests\\Article'
         ],
+        'multiAuthorArticles' => [ // Stored in 2nd database
+            'models' => 'Tests\\MultiAuthorArticle'
+        ],
         'blogposts' => [ // Stored is 2nd database
             'models' => 'Tests\\BlogPost',
             'via' => 'owner'
+        ],
+        'grandpa' => [
+            'model' => 'Tests\\User',
+            'field' => 'grandfather'
         ],
         'father' => [
             'model' => 'Tests\\User'
@@ -45,6 +59,12 @@ class User extends \Cora\App\Model {
         'friends2' => [ // Should return the same results as the "friends" attribute.
             'models' => 'Tests\\User',
             'relTable' => 'ref_tests_users__friends__tests_users'
+        ],
+        'contacts' => [ // This is for testing custom relation table field names.
+            'models' => 'Tests\\User',
+            'relTable' => 'ref_users_contacts',
+            'relThis' => 'user_id',
+            'relThat' => 'rel_id'
         ],
         'dates' => [
             'models' => 'Tests\\Date',
