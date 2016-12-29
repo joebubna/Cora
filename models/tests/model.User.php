@@ -14,10 +14,12 @@ class User extends \Cora\App\Model {
             'type' => 'varchar'
         ],
         'type' => [
-            'type' => 'varchar'
+            'type' => 'varchar',
+            'defaultValue' => 'Standard'
         ],
         'birthday' => [
-            'type' => 'datetime'
+            'type' => 'datetime',
+            'defaultValue' => '1982-05-02'
         ],
         'lastModified' => [
             'type' => 'datetime',

@@ -25,7 +25,6 @@ class AmblendTest extends \Cora\App\TestCase
      */
     public function canCreateInheritedSubFolderModel()
     {
-        //$this->app->dbBuilder->reset();
         $userComments = $this->app->tests->userComments;
         $this->assertEquals(0, $userComments->count());
         $comment = new \Models\Tests\Users\Comment(null, 'Test comment');
@@ -46,8 +45,6 @@ class AmblendTest extends \Cora\App\TestCase
      */
     public function canReferenceSubFolderModelUsingVia_independent()
     {
-        //$this->app->dbBuilder->reset();
-
         // Setup
         $users = $this->app->tests->users;
         $userComments = $this->app->tests->userComments;
@@ -81,8 +78,6 @@ class AmblendTest extends \Cora\App\TestCase
      */
     public function canReferenceSubFolderModelUsingVia_connected()
     {
-        //$this->app->dbBuilder->reset();
-
         // Setup
         $users = $this->app->tests->users;
         $userComments = $this->app->tests->userComments;
@@ -196,7 +191,7 @@ class AmblendTest extends \Cora\App\TestCase
     /**
      *  If a User has a collection of related models, ensure one can be deleted.
      *
-     *  @error
+     *  @test
      */
     public function canDeleteRelatedModelByRef()
     {
@@ -630,6 +625,129 @@ class AmblendTest extends \Cora\App\TestCase
         $freshUser = $users->find($user2->id);
         $this->assertEquals(1, $freshUser->multiAuthorArticles->count());
         $this->assertEquals('art1', $freshUser->multiAuthorArticles->get(0)->text);
+    }
+
+
+    /**
+     *  Check that default values work correctly
+     *  
+     *  @test
+     */
+    public function canUseDefaultValues()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+        
+        // Grab user fresh from DB, so that default values get populated
+        $user = $users->find($user->id);
+        
+        // Check that user's default attributes got applied correctly
+        $this->assertEquals("05/02/1982", $user->birthday->format("m/d/Y"));
+        $this->assertEquals("Standard", $user->type);
+    }
+
+
+    /**
+     *  Check that fields set to NULL don't change DB.
+     *  
+     *  @test
+     */
+    public function nullAttributesDontUpdateDB()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user and assign some attributes
+        $user = new \Models\Tests\User('Bob');
+        $user->type = "Advanced";
+        $user->birthday = new \DateTime("10/10/1981");
+        $user->father = new \Models\Tests\User("Jesse");
+        $user->friends = $this->app->container(false, [
+            new \Models\Tests\User('Suzzy'),
+            new \Models\Tests\User('Jeff'),
+            new \Models\Tests\User('Randel')
+        ]);
+        $users->save($user);
+
+        // Grab fresh user from DB
+        $user = $users->find($user->id);
+
+        // Check that data was successfully saved to DB
+        $this->assertEquals("Advanced", $user->type);
+        $this->assertEquals("10/10/1981", $user->birthday->format("m/d/Y"));
+        $this->assertEquals("Jesse", $user->father->name);
+        $this->assertEquals(3, $user->friends->count());
+
+        // Set the attributes to null on the model, then save. 
+        $user->type = null;
+        $user->birthday = null;
+        $user->father = null;
+        $user->friends = null;
+        $users->save($user);
+
+        // Grab fresh user from DB
+        $user = $users->find($user->id);
+
+        // Check that data still exists in the DB and wasn't replaced by the last save with NULLs
+        $this->assertEquals("Advanced", $user->type);
+        $this->assertEquals("10/10/1981", $user->birthday->format("m/d/Y"));
+        $this->assertEquals("Jesse", $user->father->name);
+        $this->assertEquals(3, $user->friends->count());
+    }
+
+
+    /**
+     *  In order to clear an attribute in the DB, it needs to be set to FALSE on the model. 
+     *  For boolean values, use 0 instead of FALSE.
+     *  For collections you need to set to empty collection. 
+     *  
+     *  @test
+     */
+    public function falseAttributesSetToNullInDB()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user and assign some attributes
+        $user = new \Models\Tests\User('Bob');
+        $user->type = "Advanced";
+        $user->birthday = new \DateTime("10/10/1981");
+        $user->father = new \Models\Tests\User("Jesse");
+        $user->friends = $this->app->container(false, [
+            new \Models\Tests\User('Suzzy'),
+            new \Models\Tests\User('Jeff'),
+            new \Models\Tests\User('Randel')
+        ]);
+        $users->save($user);
+
+        // Grab fresh user from DB
+        $user = $users->find($user->id);
+
+        // Check that data was successfully saved to DB
+        $this->assertEquals("Advanced", $user->type);
+        $this->assertEquals("10/10/1981", $user->birthday->format("m/d/Y"));
+        $this->assertEquals("Jesse", $user->father->name);
+        $this->assertEquals(3, $user->friends->count());
+
+        // Set the attributes to false on the model, then save. 
+        $user->type = false;
+        $user->birthday = false;
+        $user->father = false;
+        $user->friends = $this->app->collection;
+        $users->save($user);
+
+        // Grab fresh user from DB
+        $user = $users->find($user->id);
+
+        // Check that data was deleted
+        $this->assertEquals(null, $user->type);
+        $this->assertEquals(null, $user->birthday);
+        $this->assertEquals(null, $user->father);
+        $this->assertEquals(0, $user->friends->count());
     }
 
 }
