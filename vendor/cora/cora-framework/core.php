@@ -13,3 +13,4 @@ require_once('system/classes/Input.php');
 // Models instantiate RepositoryFactories in order to perform DB operations.
 $GLOBALS['savedModelsList'] = array();
 $GLOBALS['coraSaveStarted'] = false;
+$GLOBALS['coraAdaptorsForCurrentSave'] = array();

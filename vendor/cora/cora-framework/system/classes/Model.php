@@ -436,22 +436,36 @@ class Model
     }
 
 
+    public function returnExistingConnectionIfExists($connectionName)
+    {
+        if (isset($GLOBALS['coraAdaptorsForCurrentSave'][$connectionName])) {
+            return $GLOBALS['coraAdaptorsForCurrentSave'][$connectionName];
+        }
+        return false;
+    }
+
+
     public function getDbAdaptor($freshAdaptor = false)
     {
-        // If a custom DB object was passed in, use that.
+        // This is for checking if any existing DB connection exists that the adaptor getting created can use. 
+        // In order to support transactions and optimistic locking When doing a bunch of ORM actions, 
+        // connections are temporarily stored globally until the transaction is over.
+        $existingConnection = false;
+        
+        // If a custom DB object was passed in, use that and return.
         if ($this->model_db) {
             return $this->model_db;
         }
 
-        // else if a specific DB Connection is defined for this model, use it.
+        // If a specific DB Connection is defined for this model, use it.
         else if (isset($this->model_connection)) {
-            //$dbAdaptor = '\\Cora\\Db_'.$this->model_connection;
-            //return new $dbAdaptor();
-            return \Cora\Database::getDb($this->model_connection);
+            $existingConnection = $this->returnExistingConnectionIfExists($this->model_connection);
+            return \Cora\Database::getDb($this->model_connection, $existingConnection);
         }
 
         // If no DB Connection is specified...
         else {
+            $existingConnection = $this->returnExistingConnectionIfExists(\Cora\Database::getDefaultConnectionName());
 
             // If specified that we need to return a new adaptor instance, do it.
             // This becomes necessary when saving an object that has related objects attached to it.
@@ -462,13 +476,13 @@ class Model
             // will end up altering the query getting built up for the parent. The solution is to set
             // this fresh option and get a new Database instance.
             if ($freshAdaptor) {
-                return \Cora\Database::getDefaultDb(true);
+                return \Cora\Database::getDefaultDb(true, $existingConnection);
             }
 
             // else use the default defined in the config.
             // This references a static object for efficiency.
             else {
-                return \Cora\Database::getDefaultDb();
+                return \Cora\Database::getDefaultDb(false, $existingConnection);
             }
         }
     }

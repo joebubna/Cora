@@ -8,7 +8,7 @@ class Repository
     protected $factory;
     protected $gateway;
     protected $saveStarted;
-    //protected $savedModelsList;
+    protected $savedAdaptors;
 
     public function __construct(Gateway $gateway, Factory $factory)
     {
@@ -16,6 +16,7 @@ class Repository
         $this->factory = $factory;
         
         $this->saveStarted = &$GLOBALS['coraSaveStarted'];
+        $this->savedAdaptors = &$GLOBALS['coraAdaptorsForCurrentSave'];
     }
     
     public function viewQuery($bool = true)
@@ -76,7 +77,7 @@ class Repository
     }
     
     /**
-     *  Counts the number of results from the last executed query.
+     *  Counts the number of affected rows / results from the last executed query.
      *  Removes any LIMITs.
      */
     public function countPrev()
@@ -108,10 +109,23 @@ class Repository
         if ($this->saveStarted == false) {
             $clearSaveLockAfterThisFinishes = true;
             $this->saveStarted = true;
+
+            $config = $this->gateway->getDb()->getConfig();
+
+            // Add default DB connection to connections saved list. 
+            $defaultConn = \Cora\Database::getDefaultDb();
+            $this->savedAdaptors[$defaultConn->getDefaultConnectionName()] = $defaultConn;
+
+            foreach ($config['database']['connections'] as $key => $connName) {
+                if (!isset($this->savedAdaptors[$key])) {
+                    $conn = \Cora\Database::getDb($key);
+                    $this->savedAdaptors[$key] = $conn;
+                } 
+                $this->savedAdaptors[$key]->startTransaction();
+            }
         }
         
         if ($this->checkIfModel($model)) {
-            //echo $model->getClassName()."\n";
             $return = $this->gateway->persist($model, $table, $id_name);
         }
         else if ($model instanceof \Cora\Container || $model instanceof \Cora\ResultSet) {
@@ -136,6 +150,11 @@ class Repository
         if ($clearSaveLockAfterThisFinishes) {
             $this->resetSavedModelsList();
             $this->saveStarted = false;
+            foreach ($this->savedAdaptors as $key => $conn) {
+                //$conn->rollBack();
+                $conn->commit();
+                unset($this->savedAdaptors[$key]);
+            }
         }  
         return $return;
     }

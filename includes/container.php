@@ -29,8 +29,11 @@ $container->cookie = function($c) {
     return new \Cora\Cookie();
 };
 
-$container->db = function($c) {
-    return new \Cora\Db_MySQL();
+$container->db = function($c, $connection = false, $existingConnection = false) {
+    if (!$connection) {
+        return \Cora\Database::getDefaultDb(true, $existingConnection);
+    }
+    return \Cora\Database::getDb($connection, $existingConnection);
 };
 
 $container->database = function($c) {

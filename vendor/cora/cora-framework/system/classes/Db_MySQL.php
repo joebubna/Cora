@@ -3,6 +3,7 @@ namespace Cora;
 
 class Db_MySQL extends Database
 {
+    public $connection;
     protected $db;
     protected $mysqli;
     protected $dbName;
@@ -10,8 +11,10 @@ class Db_MySQL extends Database
         'order' => true
     ];
     protected $config;
+    protected $usingExternalMysqli = false;
+    protected $usingExternalPdo = false;
     
-    public function __construct($connection = false)
+    public function __construct($connection = false, $existingConnection = false)
     {
         parent::__construct();
         
@@ -31,36 +34,101 @@ class Db_MySQL extends Database
         if (!$connection) {
             $connection = $dbConfig['defaultConnection'];
         }
+        $this->connection = $connection;
         
         // Set DB name
         $this->dbName = $dbConfig['connections'][$connection]['dbName'];
         
-        // Create mysqli connection. This is needed for it's escape function to cleanse variable inputs.
-        $this->mysqli = new \mysqli($dbConfig['connections'][$connection]['host'], 
-                                    $dbConfig['connections'][$connection]['dbUser'], 
-                                    $dbConfig['connections'][$connection]['dbPass'], 
-                                    $dbConfig['connections'][$connection]['dbName']);
-        
-        // Create PDO object for doing our queries.
-        $errorMode = null;
-        $this->config = $config;
-        if ($config['mode'] == 'development') {
-            $errorMode = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
+        ////////////////////////////////////////////
+        // Setup MySQLi connection
+        ////////////////////////////////////////////
+
+        // Check if an existing connection was passed in...
+        if (is_array($existingConnection) && isset($existingConnection['mysqli'])) {
+            $this->mysqli = $existingConnection['mysqli'];
+            $this->usingExternalMysqli = true;
         }
-        $this->db = new \PDO(
-            'mysql:host='.$dbConfig['connections'][$connection]['host'].';dbname='.$dbConfig['connections'][$connection]['dbName'], 
-            $dbConfig['connections'][$connection]['dbUser'], 
-            $dbConfig['connections'][$connection]['dbPass'], 
-            $errorMode
-        );
+
+        // If a database object that has the needed connection was passed in...
+        else if (is_subclass_of($existingConnection, '\\Cora\\Database') && $existingConnection->getConnection('mysqli')) {
+            $this->mysqli = $existingConnection->getConnection('mysqli');
+            $this->usingExternalMysqli = true;
+        }
+
+        // Otherwise create new connection.
+        else {
+            // Create mysqli connection. This is needed for it's escape function to cleanse variable inputs.
+            $this->mysqli = new \mysqli($dbConfig['connections'][$connection]['host'], 
+                                        $dbConfig['connections'][$connection]['dbUser'], 
+                                        $dbConfig['connections'][$connection]['dbPass'], 
+                                        $dbConfig['connections'][$connection]['dbName']);
+        }
+        
+        
+        ////////////////////////////////////////////
+        // Setup PDO connection
+        ////////////////////////////////////////////
+        
+        // Check if an existing connection was passed in...
+        if (is_array($existingConnection) && isset($existingConnection['pdo'])) {
+            $this->db = $existingConnection['pdo'];
+            $this->usingExternalPdo = true;
+        }
+
+        // If a database object that has the needed connection was passed in...
+        else if (is_subclass_of($existingConnection, '\\Cora\\Database') && $existingConnection->getConnection('pdo')) {
+            $this->db = $existingConnection->getConnection('pdo');
+            $this->usingExternalPdo = true;
+        }
+
+        // Otherwise create new connection.
+        else {
+            // Create PDO object for doing our queries.
+            $errorMode = null;
+            if ($config['mode'] == 'development') {
+                $errorMode = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
+            }
+            $this->db = new \PDO(
+                'mysql:host='.$dbConfig['connections'][$connection]['host'].';dbname='.$dbConfig['connections'][$connection]['dbName'], 
+                $dbConfig['connections'][$connection]['dbUser'], 
+                $dbConfig['connections'][$connection]['dbPass'], 
+                $errorMode
+            );
+        }
+
+        // Store config values
+        $config['database'] = $dbConfig;
+        $this->config = $config;
     }
     
     public function __destruct()
     {
-        $this->mysqli->close();
-        $this->db = null;
+        if (!$this->usingExternalMysqli) {
+            $this->mysqli->close();
+        }
+            
+        if (!$this->usingExternalPdo) {
+            $this->db = null;
+        }
     }
-    
+
+
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+
+    public function getConnection($name)
+    {
+        if ($name == 'mysqli') {
+            return $this->mysqli;
+        }
+        else if ($name == 'pdo') {
+            return $this->db;
+        }
+        return false;
+    }
     
     protected function sanitize($value, $dataMember)
     {
@@ -116,6 +184,24 @@ class Db_MySQL extends Database
         // Return Result
         $dbResult = new Db_MySQLResult($result, $this->db);
         return $dbResult;
+    }
+
+
+    public function startTransaction()
+    {
+        $this->db->beginTransaction();
+    }
+
+
+    public function commit()
+    {
+        $this->db->commit();
+    }
+
+
+    public function rollBack()
+    {
+        $this->db->rollBack();
     }
     
     
