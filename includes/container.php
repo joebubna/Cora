@@ -85,10 +85,6 @@ $container->repository = function($c, $class, $idField = false, $table = false, 
     return \Cora\RepositoryFactory::make($class, $idField, $table, $freshAdaptor, $db);  
 };
 
-$container->resultSet = function($c, $data = null) {
-    return new \Cora\ResultSet($data);
-};
-
 $container->session = function($c) {
     return new \Cora\Session();
 };
