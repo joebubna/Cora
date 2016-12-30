@@ -193,3 +193,7 @@ $container->tests->users = function($c) {
 $container->tests->userComments = function($c) {
     return $c->repository('Tests\Users\Comment');  
 };
+
+
+// Don't remove. Register container to be accessible globally.
+$GLOBALS['container'] = $container;

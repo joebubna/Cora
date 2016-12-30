@@ -17,6 +17,8 @@ class Repository
         
         $this->saveStarted = &$GLOBALS['coraSaveStarted'];
         $this->savedAdaptors = &$GLOBALS['coraAdaptorsForCurrentSave'];
+        $this->lockError = &$GLOBALS['coraLockError']; // If a lock exception gets thrown when trying to modify the db, set true.
+        $this->dbError = &$GLOBALS['coraDbError']; // If some random error occurs, set this to true so rollback gets triggered.
     }
     
     public function viewQuery($bool = true)
@@ -116,6 +118,8 @@ class Repository
             $defaultConn = \Cora\Database::getDefaultDb();
             $this->savedAdaptors[$defaultConn->getDefaultConnectionName()] = $defaultConn;
 
+            // For each connection defined in the config, create a global one that will share its
+            // connection details with any new adaptors created during this save transaction.
             foreach ($config['database']['connections'] as $key => $connName) {
                 if (!isset($this->savedAdaptors[$key])) {
                     $conn = \Cora\Database::getDb($key);
@@ -125,13 +129,29 @@ class Repository
             }
         }
         
+        // Grab event manager for this app.
+        $event = $GLOBALS['container']->event;
+
         if ($this->checkIfModel($model)) {
-            $return = $this->gateway->persist($model, $table, $id_name);
+            try {
+                $return = $this->gateway->persist($model, $table, $id_name);
+            } catch (\Cora\LockException $e) {
+                $this->lockError = true;
+            } catch (\Exception $e) {
+                $this->dbError = true;
+            }
         }
         else if ($model instanceof \Cora\Container || $model instanceof \Cora\ResultSet) {
             foreach ($model as $obj) {
                 if ($this->checkIfModel($obj)) {
-                    $this->gateway->persist($obj, $table, $id_name);  
+                    try {
+                        $this->gateway->persist($obj, $table, $id_name);
+                    } catch (\Cora\LockException $e) {
+                        $this->lockError = true;
+                        //$event->fire(new \Event\PasswordReset($user, $this->app->mailer(), $this->load));
+                    } catch (\Exception $e) {
+                        $this->dbError = true;
+                    }
                 }
                 else {
                     throw new \Exception("Cora's Repository class can only be used with models that extend the Cora Model class. ".get_class($obj)." does not.");
@@ -150,11 +170,21 @@ class Repository
         if ($clearSaveLockAfterThisFinishes) {
             $this->resetSavedModelsList();
             $this->saveStarted = false;
+
+            // Either commit or roll-back the changes made during this transaction.
             foreach ($this->savedAdaptors as $key => $conn) {
-                //$conn->rollBack();
-                $conn->commit();
+                if ($this->lockError || $this->dbError) {
+                    $conn->rollBack();
+                }
+                else {
+                    $conn->commit();
+                }
                 unset($this->savedAdaptors[$key]);
             }
+
+            // Clear any globally stored errors now that this transaction is complete.
+            $this->lockError = false;
+            $this->dbError = false;
         }  
         return $return;
     }
