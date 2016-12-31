@@ -23,18 +23,7 @@ class Home extends \Cora\App\Controller {
     }
     
     public function test() {
-        $db1 = $this->app->db;
-        $db2 = $this->app->db(false, $db1);
-
-        $db1->startTransaction();
-        //$db2->startTransaction();
-        echo 'HI';
-        $db2->insert('firstName')
-            ->into('users')
-            ->values(['transTest'])
-            ->exec();
-        //$db1->commit();
-        $db1->rollBack();
+        $event = new \Cora\Events\DbLockError();
     }
     
     public function eventSetup() 

@@ -1,12 +1,15 @@
 <?php
 namespace Cora\Events;
-
-class dbLockError extends \Cora\Event
+/**
+ *  When a lock error occurs when trying to save a model,
+ *  the model gets grabbed and this event fired.
+ */
+class DbLockError extends \Cora\Event
 {
-    public $user;
+    public $model;
     
-    public function __construct($user)
+    public function __construct($model)
     {
-        $this->user = $user;
+        $this->model = $model;
     }
 }

@@ -132,13 +132,17 @@ class Repository
         // Grab event manager for this app.
         $event = $GLOBALS['container']->event;
 
+        // Check if model trying to be saved inherits from Cora model or is a collection of models...
+        // Catch any exceptions thrown during the saving process.
         if ($this->checkIfModel($model)) {
             try {
                 $return = $this->gateway->persist($model, $table, $id_name);
             } catch (\Cora\LockException $e) {
                 $this->lockError = true;
+                $event->fire(new \Cora\Event\DbLockError($model));
             } catch (\Exception $e) {
                 $this->dbError = true;
+                $event->fire(new \Cora\Event\DbRandomError($model, $e));
             }
         }
         else if ($model instanceof \Cora\Container || $model instanceof \Cora\ResultSet) {
@@ -148,9 +152,10 @@ class Repository
                         $this->gateway->persist($obj, $table, $id_name);
                     } catch (\Cora\LockException $e) {
                         $this->lockError = true;
-                        //$event->fire(new \Event\PasswordReset($user, $this->app->mailer(), $this->load));
+                        $event->fire(new \Cora\Event\DbLockError($model));
                     } catch (\Exception $e) {
                         $this->dbError = true;
+                        $event->fire(new \Cora\Event\DbRandomError($model, $e));
                     }
                 }
                 else {
@@ -173,8 +178,13 @@ class Repository
 
             // Either commit or roll-back the changes made during this transaction.
             foreach ($this->savedAdaptors as $key => $conn) {
-                if ($this->lockError || $this->dbError) {
+                if ($this->lockError) {
                     $conn->rollBack();
+                    throw new \Cora\LockException('Tried to update a lock protected field in a database using old data (someone else updated it first and your data is potentially out-of-date)');
+                }
+                else if ($this->dbError) {
+                    $conn->rollBack();
+                    throw new \Exception('An unexpected error occurred while trying to save something. Listen for the DbRandomError event to find out specifics.');
                 }
                 else {
                     $conn->commit();
