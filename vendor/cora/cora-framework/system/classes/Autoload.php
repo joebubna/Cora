@@ -13,6 +13,7 @@ class Autoload extends Framework
         spl_autoload_register(array($this, 'controllerLoader'));
         spl_autoload_register(array($this, 'coraExtensionLoader'));
         spl_autoload_register(array($this, 'coraLoader'));
+        spl_autoload_register(array($this, 'coraLegacyLoader'));
         spl_autoload_register(array($this, 'libraryLoader'));
         spl_autoload_register(array($this, 'listenerLoader'));
         spl_autoload_register(array($this, 'eventLoader'));
@@ -79,8 +80,20 @@ class Autoload extends Framework
             include($fullPath);
         }
     }
-    
+
     protected function coraLoader($className)
+    {
+        $fullPath = dirname(__FILE__) . '/' .
+                    $this->getPathBackslash($className, true) .
+                    $this->getNameBackslash($className) .
+                    '.php';
+        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        if (file_exists($fullPath)) {
+            include($fullPath);
+        }
+    }
+    
+    protected function coraLegacyLoader($className)
     {
         $fullPath = dirname(__FILE__) . '/' .
                     //$this->getPathBackslash($className) .

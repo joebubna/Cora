@@ -511,8 +511,8 @@ class AmblendTest extends \Cora\App\TestCase
         $user = new \Models\Tests\User('Bob');
         $users->save($user);
 
-        // Check that attribute in question is null
-        $this->assertEquals(NULL, $user->birthday);
+        // Check that attribute in question is the default value
+        $this->assertEquals('05/02/1982', $user->birthday->format("m/d/Y"));
 
         // Assign a value to the attribute that has a custom field set 
         $user->birthday = new \DateTime("05/10/2016");
