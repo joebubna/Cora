@@ -139,10 +139,10 @@ class Repository
                 $return = $this->gateway->persist($model, $table, $id_name);
             } catch (\Cora\LockException $e) {
                 $this->lockError = true;
-                $event->fire(new \Cora\Event\DbLockError($model));
+                $event->fire(new \Cora\Events\DbLockError($model));
             } catch (\Exception $e) {
                 $this->dbError = true;
-                $event->fire(new \Cora\Event\DbRandomError($model, $e));
+                $event->fire(new \Cora\Events\DbRandomError($model, $e));
             }
         }
         else if ($model instanceof \Cora\Container || $model instanceof \Cora\ResultSet) {
@@ -151,11 +151,12 @@ class Repository
                     try {
                         $this->gateway->persist($obj, $table, $id_name);
                     } catch (\Cora\LockException $e) {
+                        echo "\nCatching model error at repo level";
                         $this->lockError = true;
-                        $event->fire(new \Cora\Event\DbLockError($model));
+                        $event->fire(new \Cora\Events\DbLockError($model));
                     } catch (\Exception $e) {
                         $this->dbError = true;
-                        $event->fire(new \Cora\Event\DbRandomError($model, $e));
+                        $event->fire(new \Cora\Events\DbRandomError($model, $e));
                     }
                 }
                 else {
@@ -180,11 +181,9 @@ class Repository
             foreach ($this->savedAdaptors as $key => $conn) {
                 if ($this->lockError) {
                     $conn->rollBack();
-                    throw new \Cora\LockException('Tried to update a lock protected field in a database using old data (someone else updated it first and your data is potentially out-of-date)');
                 }
                 else if ($this->dbError) {
                     $conn->rollBack();
-                    throw new \Exception('An unexpected error occurred while trying to save something. Listen for the DbRandomError event to find out specifics.');
                 }
                 else {
                     $conn->commit();
@@ -192,9 +191,35 @@ class Repository
                 unset($this->savedAdaptors[$key]);
             }
 
+            // Update any models with their new version numbers if save didn't have any errors
+            $versionUpdateArray = &$GLOBALS['coraVersionUpdateArray'];
+            if ($this->lockError == false && $this->dbError == false) {
+                foreach($versionUpdateArray as $update) {
+                    $model = $update[0];
+                    $key = $update[1];
+                    $newKeyValue = $update[2];
+                    $model->$key = $newKeyValue;
+                }
+            }
+            else {
+                $versionUpdateArray = array();
+            }
+
+            // Lock error cleanup. Throw any needed exceptions.
             // Clear any globally stored errors now that this transaction is complete.
+            // Errors need to be cleared BEFORE throwing exceptions to not mess up future saves...
+            $lockErrorStatus = $this->lockError;
+            $dbErrorStatus = $this->dbError;
             $this->lockError = false;
             $this->dbError = false;
+
+            if ($lockErrorStatus) {
+                throw new \Cora\LockException('Tried to update a lock protected field in a database using old data (someone else updated it first and your data is potentially out-of-date)');
+            }
+            
+            if ($dbErrorStatus) {
+                throw new \Exception('An unexpected error occurred while trying to save something. Listen for the DbRandomError event to find out specifics.');
+            }
         }  
         return $return;
     }

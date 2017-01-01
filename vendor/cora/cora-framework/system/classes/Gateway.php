@@ -220,10 +220,44 @@ class Gateway
             $this->addSavedModel($model);
         }
 
+        // Define that no lock has been set by default. 
+        $lockSet = false;
+        $versionUpdateArray = &$GLOBALS['coraVersionUpdateArray'];
+        
         foreach ($model->model_attributes as $key => $prop) {
             $modelValue = $model->getAttributeValue($key);
+            $fieldName = $model->getFieldName($key);
+
+            // Check if a lock is set on the currently iterated attribute. 
+            // If so, add a new where condition to the update. 
+            if (isset($prop['lock']) && $prop['lock'] == true) {
+                if (strtolower($prop['type']) == 'int' || strtolower($prop['type']) == 'integer') {
+                    // Add lock condition to update.
+                    $this->db->where($fieldName, $modelValue, '<=');
+                    $lockSet = true;
+
+                    // Increase the value of the version field.
+                    $modelValue += 1;
+                    
+                    // Update the existing object, so that if it's passed around and tries to get saved a 2nd time, 
+                    // that an exception doesn't get thrown. 
+                    $versionUpdateArray[] = [$model, $key, $modelValue];
+                }
+                else if (strtolower($prop['type']) == 'datetime') {
+                    // Add lock condition to update.
+                    $this->db->where($fieldName, $modelValue, '<=');
+                    $lockSet = true;
+
+                    // Increase the value of the Last Modified'ish timestamp to the current time.
+                    $modelValue = new \DateTime("Y-m-d");
+
+                    // Update the existing object, so that if it's passed around and tries to get saved a 2nd time, 
+                    // that an exception doesn't get thrown. 
+                    $versionUpdateArray[] = [$model, $key, $modelValue];
+                }
+            }
+
             if (isset($modelValue)) {
-                $fieldName = $model->getFieldName($key);
 
                 /////////////////////////////////////////////////////////////////////////////////////////
                 // If the data is a single Cora model object, then we need to create a new repository to
@@ -399,9 +433,18 @@ class Gateway
 
         if ($this->viewQuery) {
             echo $this->db->getQuery();
+            echo "\n";
         }
 
-        return $this->db->exec()->lastInsertId();
+        // execute statement.
+        $result = $this->db->exec();
+
+        // If affected rows was zero, then assume lock error. 
+        if ($result->rowCount() == 0 && $lockSet == true) {
+            throw new \Cora\LockException();
+        }
+
+        return $result->lastInsertId();
 	}
 
     protected function _create($model, $table, $id_name)
@@ -421,6 +464,21 @@ class Gateway
         /////////////////////////////////////////////////////////////////////////////////////////////////
         foreach ($model->model_attributes as $key => $prop) {
             $modelValue = $model->getAttributeValue($key);
+
+            // If the field in question is handling optimistic locking, make sure value isn't null.
+            if (isset($prop['lock']) && $prop['lock'] == true) {
+                if (strtolower($prop['type']) == 'int' || strtolower($prop['type']) == 'integer') {
+                    if ($modelValue == null) {
+                        $modelValue = 0;
+                    }
+                }
+                else if (strtolower($prop['type']) == 'datetime') {
+                    if ($modelValue == null) {
+                        $modelValue = new \DateTime('Y-m-d');
+                    }
+                }
+            }
+
             if (isset($modelValue)) {
                 $fieldName = $model->getFieldName($key);
 
@@ -460,6 +518,8 @@ class Gateway
                     // Check that this is actually a value that needs to be saved.
                     // It might just be a placeholder value for a model reference.
                     if (!$model->isPlaceholder($key)) {
+
+                        // Set data
                         $columns[]  = $fieldName;
                         $values[]   = $modelValue;
                     }

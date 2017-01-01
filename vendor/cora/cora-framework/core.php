@@ -19,3 +19,4 @@ $GLOBALS['coraSaveStarted'] = false;
 $GLOBALS['coraAdaptorsForCurrentSave'] = array();
 $GLOBALS['coraLockError'] = false;
 $GLOBALS['coraDbError'] = false;
+$GLOBALS['coraVersionUpdateArray'] = array();

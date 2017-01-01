@@ -48,12 +48,12 @@ $rolesList->User->permissions = $app->collection([
 ]);
 
 $rolesList->Admin->permissions = $app->collection([
-    $permsList->isAdmin
+    //$permsList->isAdmin
 ]);
 
 $rolesList->Developer->permissions = $app->collection([
-    $permsList->isAdmin,
-    $permsList->isDev
+    //$permsList->isAdmin,
+    //$permsList->isDev
 ]);
 
 // Save to DB.

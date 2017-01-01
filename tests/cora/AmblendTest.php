@@ -5,7 +5,7 @@ class AmblendTest extends \Cora\App\TestCase
 {   
     /**
      *  Check that it's possible to create a simple model located that doesn't inherit from another model.
-     *
+     *  
      *  @test
      */
     public function canCreateSimpleModel()
@@ -586,7 +586,7 @@ class AmblendTest extends \Cora\App\TestCase
 
     /**
      *  If check if a many-to-many relationship can be used correctly.
-     *
+     *  
      *  @test
      */
     public function canUseManyToManyRelationOverMultipleDBs()
@@ -748,6 +748,82 @@ class AmblendTest extends \Cora\App\TestCase
         $this->assertEquals(null, $user->birthday);
         $this->assertEquals(null, $user->father);
         $this->assertEquals(0, $user->friends->count());
+    }
+
+
+    /**
+     *  If an int or datetime field has lock=true attribute, 
+     *  ensure old data can't overwrite newer.
+     *  @group failing
+     *  @test
+     */
+    public function optimisticLockingWorks()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no stored references
+        $this->assertEquals(0, $user->multiAuthorArticles->count());
+
+        // Set collection of data
+        $user->multiAuthorArticles = $this->app->collection([
+            new \Models\Tests\MultiAuthorArticle('art1'),
+            new \Models\Tests\MultiAuthorArticle('art2'),
+            new \Models\Tests\MultiAuthorArticle('art3')
+        ]);
+        $user->multiAuthorArticles->off0->version = 1;
+        $users->save($user);
+
+        // Ensure version is set to 1
+        $this->assertEquals(1, $users->find($user->id)->multiAuthorArticles->off0->version);
+        $this->assertEquals(1, $user->multiAuthorArticles->off0->version);
+        $this->assertEquals(0, $user->multiAuthorArticles->off1->version);
+        $this->assertEquals(0, $user->multiAuthorArticles->off2->version);
+
+        // Assert that update is possible if version is equal or newer 
+        $user->multiAuthorArticles->off0->text = "NewArt1";
+        $user->multiAuthorArticles->off0->version = 1; // It should already have a value of 1, just explicitly showing here.
+        $users->save($user);
+
+        // Check that text was updated, and that version number was updated
+        $this->assertEquals('NewArt1', $users->find($user->id)->multiAuthorArticles->off0->text);
+        $this->assertEquals(2, $users->find($user->id)->multiAuthorArticles->off0->version);
+        $this->assertEquals(2, $user->multiAuthorArticles->off0->version);
+
+        // Try and change the name of article 1 when the version is older than DB 
+        $user->multiAuthorArticles->off0->text = "NewArt2";
+        $user->multiAuthorArticles->off0->version = 0;
+        $this->assertEquals(0, $user->multiAuthorArticles->off0->version);
+
+        // Do 3nd save
+        $lockWorked = false;
+        try {
+            $users->save($user);
+        } catch (\Cora\LockException $e) {
+            $lockWorked = true;
+        }
+
+        // Assert that update was rejected
+        $this->assertEquals(true, $lockWorked);
+        $this->assertEquals('NewArt1', $users->find($user->id)->multiAuthorArticles->off0->text);
+
+        // The 3rd save should NOT have increased the version numbers of the articles
+        $this->assertEquals(2, $users->find($user->id)->multiAuthorArticles->off0->version);
+        $this->assertEquals(1, $users->find($user->id)->multiAuthorArticles->off1->version);
+
+        // The 3rd lock rejected save should not have updated the existing models... 
+        $this->assertEquals(0, $user->multiAuthorArticles->off0->version);
+        $this->assertEquals('NewArt2', $user->multiAuthorArticles->off0->text);
+        $this->assertEquals(1, $user->multiAuthorArticles->off1->version);
+
+        // Assert that update is possible if version is equal or newer 
+        $user->multiAuthorArticles->off0->version = 3;
+        $users->save($user);
+        $this->assertEquals('NewArt2', $users->find($user->id)->multiAuthorArticles->off0->text);
     }
 
 }

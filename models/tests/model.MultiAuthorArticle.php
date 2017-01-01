@@ -18,6 +18,10 @@ class MultiAuthorArticle extends \Cora\App\Model {
             'models' => 'Tests\\User',
             //'relTable' => 'ref_tests_users__multi_author_articles__tests_multi_author_article',
             'passive' => true
+        ],
+        'version' => [
+            'type' => 'int',
+            'lock' => true
         ]
     ];
     

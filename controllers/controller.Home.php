@@ -23,7 +23,20 @@ class Home extends \Cora\App\Controller {
     }
     
     public function test() {
-        $event = new \Cora\Events\DbLockError();
+        // Setup
+        $users = $this->app->tests->users;
+        
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Set collection of data
+        $user->multiAuthorArticles = $this->app->collection([
+            new \Models\Tests\MultiAuthorArticle('art1'),
+            new \Models\Tests\MultiAuthorArticle('art2'),
+            new \Models\Tests\MultiAuthorArticle('art3')
+        ]);
+        $users->save($user);
     }
     
     public function eventSetup() 

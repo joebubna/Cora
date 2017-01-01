@@ -669,7 +669,12 @@ class Db_MySQL extends Database
             else {
                 // Return string of form 'COLUMN >= VALUE'
                 $column = $this->sanitize($item[0], $dataMember);
-                $result = $column.' '.$item[1]." '".$this->clean($item[2])."'";
+                if ($item[2] === 'NULL') {
+                    $result = $column.' '.$item[1]." ".$item[2]; 
+                }
+                else {
+                    $result = $column.' '.$item[1]." '".$this->clean($item[2])."'";
+                }
             }
             return $result;
         }
