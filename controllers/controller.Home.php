@@ -4,8 +4,6 @@ use Cora\Event;
 
 class Home extends \Cora\App\Controller {
     
-    protected $testArray = [];
-    
     public function index() {
         $this->data->title = 'A Simple Form';
         $this->data->user = $this->site->user;
@@ -17,57 +15,6 @@ class Home extends \Cora\App\Controller {
         $this->load->view('template', $this->data);
     }
     
-    public function tester() {
-        $stuff = new \stdClass();
-        $stuff->title = 'A Simple Form';
-        $stuff->content = 'Hello MATT';
-        
-        // Grab our homepage HTML
-        $this->data->content = $this->load->view('home/index', $stuff, true);
-        
-        // Load partial view and other data into our template.
-        $this->load->view('template', $stuff);
-    }
-    public function indexPOST() {
-        echo $_POST['data'];
-    }
-    
-    public function test1()
-    {
-        $user = $this->app->users->findOneBy('email', 'coraTestUser2@gmail.com');
-        var_dump($user->parent);
-        foreach ($user->parent->comments as $comment) {
-            echo $comment->text;
-        }
-    }
-    
-    public function test1_1()
-    {
-        $this->testArray = ['Color1', 'Color2'];
-        print_r($_POST['list']);
-    }
-    
-    public function test2()
-    {
-        $user = $this->app->users->findOneBy('email', 'coraTestUser1@gmail.com');
-        var_dump($user->comments);
-        foreach ($user->comments as $comment) {
-            echo "{$comment->text}<br>";
-        }
-
-        // foreach ($user->comments->where('status', 'Deleted', '<>') as $comment) {
-        //     echo "{$comment->text}<br>";
-        // }
-    }
-    
-    public function test3()
-    {
-        $this->auth->access([new \Auth\LoggedIn, new \Auth\CanAccessAdmin]);
-        
-        $repo = $this->app->repository('user');
-        echo $repo->find(1)->email;
-    }
-    
     public function view($p1, $p2, $p3) {
         echo 'Yay<br>';
         echo $p1 . '<br>';
@@ -76,16 +23,20 @@ class Home extends \Cora\App\Controller {
     }
     
     public function test() {
+        // Setup
+        $users = $this->app->tests->users;
         
-        $this->load->model('note');
-        $this->load->model('task/note');
-        
-        $note = new Note();
-        $taskNote = new Task\Note();
-        
-        echo $note->foo();
-        echo '<br>';
-        echo $taskNote->foo();
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Set collection of data
+        $user->multiAuthorArticles = $this->app->collection([
+            new \Models\Tests\MultiAuthorArticle('art1'),
+            new \Models\Tests\MultiAuthorArticle('art2'),
+            new \Models\Tests\MultiAuthorArticle('art3')
+        ]);
+        $users->save($user);
     }
     
     public function eventSetup() 
@@ -102,4 +53,6 @@ class Home extends \Cora\App\Controller {
         }, 1);
         $this->event->fire(new Event('customEvent', $user));
     }
+
+    
 }

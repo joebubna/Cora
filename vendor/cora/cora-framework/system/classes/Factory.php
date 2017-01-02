@@ -58,7 +58,7 @@ class Factory
             $group = new $class();
         }
         else {
-            $group = new ResultSet();
+            $group = new Container();
         }
 
 		foreach ($records as $record) {

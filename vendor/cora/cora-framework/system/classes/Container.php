@@ -3,11 +3,31 @@ namespace Cora;
 
 class Container implements \Serializable, \IteratorAggregate, \Countable
 {
+    // If this Container has a parent, hold a reference to it here.
     protected $parent;
+
+    // Closure resources. 
     protected $signature;
+
+    // Non-closure resources. The reason this is stored separate from Signatures is that you may have a resource 
+    // that you want to remain in closure form until needed, then store the created resource so subsequent calls 
+    // return the Singleton version.
     protected $singleton;
+
+    // Combined contents. This stores the combined resources of both $signature and $singleton objects. 
+    // When a resource is added or removed, this will get recalculated. 
+    protected $content;
+
+    // For tracking the next open offset of the form "off0", "off1"... "offN"       
     protected $nextOffset;
+
+    // Normally closures are resolved when the resource is asked for. If you want the actual Closure returned, 
+    // set this to true.
     protected $returnClosure;
+
+    // Sort direction and key
+    protected $sortDirection = false;
+    protected $sortKey = false;
     
     public function __construct($parent = false, $data = false, $dataKey = false, $returnClosure = false)
     {   
@@ -32,9 +52,15 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
         // If data was passed in, then store it.
         if ($data != false && (is_array($data) || is_object($data))) {
             foreach ($data as $item) {
-                $this->add($item, false, $dataKey);
-            } 
+                $this->add($item, false, $dataKey, true);
+            }
         }
+        $this->generateContent();
+    }
+
+    protected function generateContent()
+    {
+        $this->content = (object) array_merge_recursive((array) $this->signature, (array) $this->singleton);
     }
     
     public function serialize()
@@ -48,9 +74,29 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
     }
     
     public function getIterator() {
-        $resources = (object) array_merge_recursive((array) $this->signature, (array) $this->singleton);
-        return new \ArrayIterator($resources);
-        //return new \ArrayIterator($this->signature);
+        return new \ArrayIterator($this->content);
+    }
+
+    public function fetchOffset($num)
+    {
+        $it = $this->getIterator();
+        $i = 0;
+        while ($i < $num) {
+            $it->next();
+            $i++;
+        }
+        return $it->current();
+    }
+
+    public function fetchOffsetKey($num)
+    {
+        $it = $this->getIterator();
+        $i = 0;
+        while ($i < $num) {
+            $it->next();
+            $i++;
+        }
+        return $it->key();
     }
     
     public function count()
@@ -101,6 +147,9 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
     
     public function get($name)
     {
+        if (is_numeric($name)) {
+            return $this->fetchOffset($name);
+        }
         return $this->$name;
     }
     
@@ -117,6 +166,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
         else {
             $this->singleton->$name = $value;
         }
+        $this->generateContent();
     }
     
     
@@ -142,7 +192,21 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
     }
     
     
-    public function add($item, $key = false, $dataKey = false)
+    public function merge($data, $key = false, $dataKey = false)
+    {
+        if ($data != false && (is_array($data) || is_object($data))) {
+            foreach ($data as $item) {
+                $this->add($item, $key, $dataKey, true);
+            }
+            $this->generateContent();
+        }
+        else {
+            $this->add($data, $key, $dataKey);
+        }
+    }
+
+
+    public function add($item, $key = false, $dataKey = false, $skipGenerate = false)
     {
         if ($item instanceof \Closure) {
             if ($key) {
@@ -178,6 +242,10 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
                 $this->singleton->$offset = $item;
             }
         }
+
+        if (!$skipGenerate) {
+            $this->generateContent();
+        }
     }
     
     
@@ -186,7 +254,46 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
      */
     public function delete($name)
     {
-        $this->signature->$name = null;
+        // Figure out the key of the object we want to delete. 
+        // (if numeric value was passed in, turn that into actual key)
+        $resourceKey = false;
+        if (is_numeric($name)) {
+            $resourceKey = $this->fetchOffsetKey($name);
+        }
+        else {
+            $resourceKey = $name;
+        }
+
+        $this->processDelete($resourceKey);
+        $this->generateContent();
+    }
+    public function remove($name)
+    {
+        $this->delete($name);
+    }
+
+    public function processDelete($name, $container = false)
+    {
+        // Handle if recursive call or not.
+        if (!$container) {
+            $container = $this;
+        }
+
+        // If a single object is meant to be returned.
+        if (isset($container->singleton->$name)) {
+            unset($container->singleton->$name);
+        }
+        
+        // else look for a Closure.
+        elseif (isset($container->signature->$name)) {
+            unset($container->singleton->$name);
+        }
+        
+        // Else check any parents.
+        elseif ($container->parent) {
+            return $container->processDelete($name, $container->parent);
+        }
+        return null;
     }
      
     
@@ -198,12 +305,14 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
     public function singleton($name, $value)
     {
         $this->singleton->$name = $value($this);
+        $this->generateContent();
     }
     
     
     public function unsetSingleton($name)
     {
         $this->singleton->$name = null;
+        $this->generateContent();
     }
     
     
@@ -214,6 +323,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
     public function setInstance($name, $object)
     {
         $this->singleton->$name = $object;
+        $this->generateContent();
     }
     
     
@@ -278,5 +388,148 @@ class Container implements \Serializable, \IteratorAggregate, \Countable
             }
         }
         return null;
+    }
+
+    public function sumByKey($key)
+    {
+        $collection = $this->getIterator();
+        $sum = 0;
+        foreach ($collection as $result) {
+            if (isset($result->$key)) {
+                $sum += $result->$key;
+            }
+        }
+        return $sum;
+    }
+
+    public function sort($key, $dir = 'desc')
+    {
+        $collection = (array) $this->content;
+        $this->sortDirection = $dir;
+        $this->sortKey = $key;
+        $this->mergesort($collection, array($this, 'compare'));
+        $this->content = (object) $collection;
+        return $this;
+    }
+
+    protected function compare($a, $b)
+    {
+        $key = $this->sortKey;
+        $aValue = $this->getValue($a, $key);
+        $bValue = $this->getValue($b, $key);
+
+        if ($aValue == $bValue) {
+            return 0;
+        }
+        if (strtolower($this->sortDirection) == 'desc') {
+            return ($aValue < $bValue) ? -1 : 1;
+        }
+        else {
+            return ($aValue < $bValue) ? 1 : -1;
+        }
+    }
+
+    protected function getValue($data, $key = false)
+    {
+        $returnValue = $data;
+        if (is_object($data)) {
+            $returnValue = $data->$key;
+        }
+        else if (is_array($data)) {
+            $returnValue = $data[$key];
+        }
+        return $returnValue;
+    }
+
+
+    /**
+     *  A stable implementation of Mergesort (aka Stable-sort)
+     */
+    protected function mergesort(&$array, $cmp_function) {
+        
+        // Exit right away if only zero or one item.
+        if(count($array) < 2) {
+            return true;
+        }
+
+        // Cut results in half.
+        $halfway = count($array) / 2;
+        $leftArray = array_slice($array, 0, $halfway, true);
+        $rightArray = array_slice($array, $halfway, null, true);
+
+        // Recursively call sort on left and right pieces
+        $this->mergesort($leftArray, $cmp_function);
+        $this->mergesort($rightArray, $cmp_function);
+
+        // Check if the last element of the first array is less than the first element of 2nd. 
+        // If so, we are done. Just put the two arrays together for final result.
+        if(call_user_func($cmp_function, end($leftArray), reset($rightArray)) < 1) {
+            $array = $leftArray + $rightArray;
+            return true;
+        }
+
+        // Set result array to blank. Set pointers to beginning of pieces.
+        $array = array();
+        reset($leftArray);
+        reset($rightArray);
+
+        // While looking at the current element in each array...
+        while(current($leftArray) && current($rightArray)) {
+
+            // Add the lowest element between the current element in the left and right arrays to the result. 
+            // Then advance to the next item on that side.
+            if(call_user_func($cmp_function, current($leftArray), current($rightArray)) < 1) {
+                $array[key($leftArray)] = current($leftArray);
+                next($leftArray);
+            } else {
+                $array[key($rightArray)] = current($rightArray);
+                next($rightArray);
+            }
+        }
+
+        // After doing the left and right comparisons above, you may hit the end of the left array 
+        // before hitting the end of the right (or vice-versa). We need to make sure these left-over 
+        // elements get added to our results.
+        while(current($leftArray)) {
+            $array[key($leftArray)] = current($leftArray);
+            next($leftArray);
+        }
+        while(current($rightArray)) {
+            $array[key($rightArray)] = current($rightArray);
+            next($rightArray);
+        }
+        return true;
+    }
+
+    public function where($key, $desiredValue, $op = "==")
+    {
+        $collection = $this->getIterator();
+        $subset = [];
+
+        foreach($collection as $result) {
+            $realValue = $result->$key;
+            if($op == '==' && $realValue == $desiredValue) {
+                $subset[] = $result;
+            }
+            else if($op == '>=' && $realValue >= $desiredValue) {
+                $subset[] = $result;
+            }
+            else if($op == '<=' && $realValue <= $desiredValue) {
+                $subset[] = $result;
+            }
+            else if($op == '>' && $realValue > $desiredValue) {
+                $subset[] = $result;
+            }
+            else if($op == '<' && $realValue < $desiredValue) {
+                $subset[] = $result;
+            }
+            else if($op == '===' && $realValue === $desiredValue) {
+                $subset[] = $result;
+            }
+            else if($op == '!=' && $realValue != $desiredValue) {
+                $subset[] = $result;
+            }
+        }
+        return $subset;
     }
 }

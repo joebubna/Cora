@@ -21,12 +21,23 @@ $container->container = function($c, $parent = false, $data = false, $dataKey = 
     return new \Cora\Container($parent, $data, $dataKey);  
 };
 
+$container->collection = function($c, $data = false, $dataKey = false, $parent = false) {
+    return new \Cora\Container($parent, $data, $dataKey);  
+};
+
 $container->cookie = function($c) {
     return new \Cora\Cookie();
 };
 
-$container->db = function($c) {
-    return new \Cora\Db_MySQL();
+$container->db = function($c, $connection = false, $existingConnection = false) {
+    if (!$connection) {
+        return \Cora\Database::getDefaultDb(true, $existingConnection);
+    }
+    return \Cora\Database::getDb($connection, $existingConnection);
+};
+
+$container->database = function($c) {
+    return new \Cora\Database();
 };
 
 $container->dbBuilder = function($c) {
@@ -75,10 +86,6 @@ $container->redirect = function($c) {
 
 $container->repository = function($c, $class, $idField = false, $table = false, $freshAdaptor = false, $db = false) {
     return \Cora\RepositoryFactory::make($class, $idField, $table, $freshAdaptor, $db);  
-};
-
-$container->resultSet = function($c, $data = null) {
-    return new \Cora\ResultSet($data);
 };
 
 $container->session = function($c) {
@@ -186,3 +193,7 @@ $container->tests->users = function($c) {
 $container->tests->userComments = function($c) {
     return $c->repository('Tests\Users\Comment');  
 };
+
+
+// Don't remove. Register container to be accessible globally.
+$GLOBALS['container'] = $container;

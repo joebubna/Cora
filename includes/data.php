@@ -43,17 +43,17 @@ $rolesList = $app->container(false, [
 //-------------------------------
 // Assign Permissions to roles
 //-------------------------------
-$rolesList->User->permissions = $app->resultSet([
+$rolesList->User->permissions = $app->collection([
     $permsList->isUser
 ]);
 
-$rolesList->Admin->permissions = $app->resultSet([
-    $permsList->isAdmin
+$rolesList->Admin->permissions = $app->collection([
+    //$permsList->isAdmin
 ]);
 
-$rolesList->Developer->permissions = $app->resultSet([
-    $permsList->isAdmin,
-    $permsList->isDev
+$rolesList->Developer->permissions = $app->collection([
+    //$permsList->isAdmin,
+    //$permsList->isDev
 ]);
 
 // Save to DB.
@@ -82,7 +82,7 @@ $curDate = date("Y-m-d");
 
 // User1
 $user = $usersList->{'coraTestUser1@gmail.com'};
-$user->roles = $app->resultSet([$rolesList->User]);
+$user->roles = $app->collection([$rolesList->User]);
 $user->firstName = 'Bob';
 $user->lastName = 'Ross';
 $user->createdDate = $curDate;
@@ -94,7 +94,7 @@ $user->comments = $app->container(false, [
 
 // User2
 $user2 = $usersList->{'coraTestUser2@gmail.com'};
-$user2->roles = $app->resultSet([$rolesList->User]);
+$user2->roles = $app->collection([$rolesList->User]);
 $user2->firstName = 'Susan';
 $user2->lastName = 'Wachoski';
 $user2->createdDate = $curDate;
@@ -102,14 +102,14 @@ $user2->parent = $user;
 
 // Admin
 $admin = $usersList->{'coraTestAdmin1@gmail.com'};
-$admin->roles = $app->resultSet([$rolesList->Admin]);
+$admin->roles = $app->collection([$rolesList->Admin]);
 $admin->firstName = 'Captain';
 $admin->lastName = 'America';
 $admin->createdDate = $curDate;
 
 // Developer
 $developer = $usersList->{'coraTestDev1@gmail.com'};
-$developer->roles = $app->resultSet([$rolesList->Developer]);
+$developer->roles = $app->collection([$rolesList->Developer]);
 $developer->firstName = 'Josiah';
 $developer->lastName = 'Bubna';
 $developer->createdDate = $curDate;
@@ -145,4 +145,3 @@ $users->save($usersList);
 //
 //// Save to DB.
 //$comments->save($commentsList);
-

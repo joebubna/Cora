@@ -14,17 +14,63 @@ class User extends \Cora\App\Model {
             'type' => 'varchar'
         ],
         'type' => [
-            'type' => 'varchar'
+            'type' => 'varchar',
+            'defaultValue' => 'Standard'
+        ],
+        'birthday' => [
+            'type' => 'datetime',
+            'defaultValue' => '1982-05-02'
+        ],
+        'lastModified' => [
+            'type' => 'datetime',
+            'field' => 'modified_time'
         ],
         'comments' => [
-            'models' => 'Tests\Users\Comment',
+            'models' => 'Tests\\Users\\Comment',
             'via' => 'madeBy'
         ],
-        'parent' => [
-            'model' => 'User'
+        'articles' => [ // Stored in 2nd database
+            'models' => 'Tests\\Article'
+        ],
+        'multiAuthorArticles' => [ // Stored in 2nd database
+            'models' => 'Tests\\MultiAuthorArticle'
+        ],
+        'blogposts' => [ // Stored is 2nd database
+            'models' => 'Tests\\BlogPost',
+            'via' => 'owner'
+        ],
+        'grandpa' => [
+            'model' => 'Tests\\User',
+            'field' => 'grandfather'
+        ],
+        'father' => [
+            'model' => 'Tests\\User'
+        ],
+        'mother' => [
+            'model' => 'Tests\\User',
+            'usesRefTable' => true
+        ],
+        'mother2' => [ // Should return the same results as "mother" attribute.
+            'model' => 'Tests\\User',
+            'usesRefTable' => true,
+            'relTable' => 'ref_tests_users__mother__tests_users'
         ],
         'friends' => [
-            'models' => 'User'
+            'models' => 'Tests\\User'
+        ],
+        'friends2' => [ // Should return the same results as the "friends" attribute.
+            'models' => 'Tests\\User',
+            'relTable' => 'ref_tests_users__friends__tests_users'
+        ],
+        'contacts' => [ // This is for testing custom relation table field names.
+            'models' => 'Tests\\User',
+            'relTable' => 'ref_users_contacts',
+            'relThis' => 'user_id',
+            'relThat' => 'rel_id'
+        ],
+        'dates' => [
+            'models' => 'Tests\\Date',
+            'via' => 'owner'
         ]
         // 'roleName' => [
         //     'from' => 'roles',

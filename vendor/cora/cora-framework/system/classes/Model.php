@@ -26,28 +26,29 @@ class Model
 
                 // If the data is present in the DB, assign to model.
                 // Otherwise ignore any data returned from the DB that isn't defined in the model.
-                if (isset($record[$key])) {
-                    if (\Cora\Gateway::is_serialized($record[$key])) {
-                        $value = unserialize($record[$key]);
+                if (isset($record[$this->getFieldName($key)])) {
+                    $fieldName = $this->getFieldName($key);
+                    if (\Cora\Gateway::is_serialized($record[$fieldName])) {
+                        $value = unserialize($record[$fieldName]);
                         $this->beforeSet($key, $value); // Lifecycle callback
                         $this->model_data[$key] = $value;
                         $this->afterSet($key, $value); // Lifecycle callback
                     }
                     else if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime')) {
-                        $value = new \DateTime($record[$key]);
+                        $value = new \DateTime($record[$fieldName]);
                         $this->beforeSet($key, $value); // Lifecycle callback
                         $this->model_data[$key] = $value;
                         $this->afterSet($key, $value); // Lifecycle callback
                     }
                     else {
-                        $value = $record[$key];
+                        $value = $record[$fieldName];
                         $this->beforeSet($key, $value); // Lifecycle callback
                         $this->model_data[$key] = $value;
                         $this->afterSet($key, $value); // Lifecycle callback
                     }
                 }
                 else if (isset($def['models']) || (isset($def['model']) && isset($def['usesRefTable']))) {
-                    $this->model_data[$key] = 1;
+                    if (!isset($this->model_data[$key])) $this->model_data[$key] = 1;
                 }
             }
 
@@ -59,6 +60,17 @@ class Model
             $nonObjectData = array_diff_key($record, $this->model_attributes);
             if (count($nonObjectData) > 0) {
                 foreach ($nonObjectData as $key => $value) {
+
+                    // Note that if the model is using custom field names, this will result in a piece of data 
+                    // getting set to both the official attribute and as non-model data. 
+                    // I.E. If 'field' is set to 'last_modified' and the attribute name is 'lastModified', 
+                    // the returned value from the Gateway will get assigned to the attribute in the code above like so: 
+                    // $model->lastModified = $value 
+                    // However because it's not worth doing a backwards lookup of the form $this->getAttributeFromField($recordKey) 
+                    // (such a method would have to loop through all the attributes to find a match) 
+                    // The data will also end up getting assigned here like so: 
+                    // $model->last_modified = $value 
+                    // An extra loop per custom field didn't seem worth the savings of a small amount of model memory size/clutter.
                     $this->$key = $value;
                 }
             }
@@ -179,7 +191,8 @@ class Model
                 // If the unset attribute is defined as a collection, return an empty one.
                 if (isset($def['models'])) {
                     if ($returnValue == null) {
-                        return new \Cora\Container();
+                        $this->$name = new \Cora\Container();
+                        return $this->model_data[$name];
                     }
                     else {
                         return $this->__get($name);
@@ -322,7 +335,7 @@ class Model
         $relatedObj = $this->fetchRelatedObj($objName);
 
         // Grab relation table name and the name of this class.
-        $relTable = $this->getRelationTableName($relatedObj, $this->model_attributes[$attributeName]);
+        $relTable = $this->getRelationTableName($relatedObj, $attributeName, $this->model_attributes[$attributeName]);
         $className = strtolower((new \ReflectionClass($this))->getShortName());
         $classId = $this->getPrimaryKey();
         $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
@@ -330,12 +343,49 @@ class Model
         // Create repo that uses the relationtable, but returns models populated
         // with their IDs.
         $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, $relTable, false, $this->model_db);
-
+        
+        ///////////////////////////////////////
         // Define custom query for repository.
+        ///////////////////////////////////////
+
+        // Get DB adaptor to use. 
+        // In situations where multiple DBs are being used and there's a relation table 
+        // between data on different DBs, we can't be sure which DB holds the relation table. 
+        // First try the DB the related object is on. If that doesn't contain the relation table,
+        // then try the current object's DB.
         $db = $relatedObj->getDbAdaptor();
-        $db ->select($relatedClassName.' as '.$classId)
-            ->where($className, $this->$classId);
-        return $repo->findAll($db);
+        if (!$db->tableExists($relTable)) {
+            $db = $this->getDbAdaptor();
+        }
+
+        // DEFAULT CASE 
+        // The objects that are related aren't the same class of object...
+        if ($className != $relatedClassName) {
+            $db ->select($relatedClassName.' as '.$classId)
+                ->where($className, $this->$classId);
+
+            return $repo->findAll($db);
+        }
+        
+        // EDGE CASE 
+        // The objects that are related ARE the same class of object...
+        // If two Users are related to each other, can't have two "user" columns in the ref table. Instead 2nd column gets named "User2" 
+        // TABLE: ref_users__example__users
+        // COLUMNS:   User      |  User2 
+        //            Bob's ID     Bob's relative's ID
+        else {
+            // Fetch related objects where the subject is the left side reference.
+            $db ->select($relatedClassName.'2'.' as '.$classId)
+                ->where($className, $this->$classId);
+            $leftSet = $repo->findAll($db);
+
+            // Fetch related objects where the subject is the right side reference.
+            $db ->select($relatedClassName.' as '.$classId)
+                ->where($className.'2', $this->$classId);
+            $rightSet = $repo->findAll($db);
+            $leftSet->merge($rightSet);
+            return $leftSet;
+        }
     }
 
 
@@ -382,26 +432,40 @@ class Model
     protected function fetchData($name)
     {
         $gateway = new \Cora\Gateway($this->getDbAdaptor(), $this->getTableName(), $this->getPrimaryKey());
-        return $gateway->fetchData($name, $this);
+        return $gateway->fetchData($this->getFieldName($name), $this);
+    }
+
+
+    public function returnExistingConnectionIfExists($connectionName)
+    {
+        if (isset($GLOBALS['coraAdaptorsForCurrentSave'][$connectionName])) {
+            return $GLOBALS['coraAdaptorsForCurrentSave'][$connectionName];
+        }
+        return false;
     }
 
 
     public function getDbAdaptor($freshAdaptor = false)
     {
-        // If a custom DB object was passed in, use that.
+        // This is for checking if any existing DB connection exists that the adaptor getting created can use. 
+        // In order to support transactions and optimistic locking When doing a bunch of ORM actions, 
+        // connections are temporarily stored globally until the transaction is over.
+        $existingConnection = false;
+        
+        // If a custom DB object was passed in, use that and return.
         if ($this->model_db) {
             return $this->model_db;
         }
 
-        // else if a specific DB Connection is defined for this model, use it.
+        // If a specific DB Connection is defined for this model, use it.
         else if (isset($this->model_connection)) {
-            //$dbAdaptor = '\\Cora\\Db_'.$this->model_connection;
-            //return new $dbAdaptor();
-            return \Cora\Database::getDb($this->model_connection);
+            $existingConnection = $this->returnExistingConnectionIfExists($this->model_connection);
+            return \Cora\Database::getDb($this->model_connection, $existingConnection);
         }
 
         // If no DB Connection is specified...
         else {
+            $existingConnection = $this->returnExistingConnectionIfExists(\Cora\Database::getDefaultConnectionName());
 
             // If specified that we need to return a new adaptor instance, do it.
             // This becomes necessary when saving an object that has related objects attached to it.
@@ -412,21 +476,21 @@ class Model
             // will end up altering the query getting built up for the parent. The solution is to set
             // this fresh option and get a new Database instance.
             if ($freshAdaptor) {
-                return \Cora\Database::getDefaultDb(true);
+                return \Cora\Database::getDefaultDb(true, $existingConnection);
             }
 
             // else use the default defined in the config.
             // This references a static object for efficiency.
             else {
-                return \Cora\Database::getDefaultDb();
+                return \Cora\Database::getDefaultDb(false, $existingConnection);
             }
         }
     }
 
 
-    public function getRepository()
+    public function getRepository($fresh = false)
     {
-        return \Cora\RepositoryFactory::make('\\'.get_class($this));
+        return \Cora\RepositoryFactory::make('\\'.get_class($this), false, false, $fresh);
     }
 
 
@@ -478,7 +542,7 @@ class Model
     }
 
 
-    public function getRelationTableName($relatedObj, $attributeDef)
+    public function getRelationTableName($relatedObj, $attribute, $attributeDef)
     {
         $result = '';
 
@@ -492,15 +556,16 @@ class Model
             $table1 = $this->getTableName();
             $table2 = $relatedObj->getTableName();
             $alphabeticalComparison = strcmp($table1, $table2);
+            $attribute = strtolower(preg_replace('/\B([A-Z])/', '_$1', $attribute));
 
             if ($alphabeticalComparison > 0) {
-                $result = 'ref_'.$table1.'_'.$table2;
+                $result = 'ref_'.$table1.'__'.$attribute.'__'.$table2;
             }
             else {
-                $result = 'ref_'.$table2.'_'.$table1;
+                $result = 'ref_'.$table2.'__'.$attribute.'__'.$table1;
             }
         }
-        return $result;
+        return substr($result, 0, 64);
     }
 
 
@@ -508,10 +573,10 @@ class Model
     {
         $def = $this->model_attributes[$attribute];
         if (isset($def['models']) && !isset($def['via'])) {
-            return $this->getRelationTableName($relatedObj, $def);
+            return $this->getRelationTableName($relatedObj, $attribute, $def);
         }
         else if (isset($def['model']) && isset($def['usesRefTable'])) {
-            return $this->getRelationTableName($relatedObj, $def);
+            return $this->getRelationTableName($relatedObj, $attribute, $def);
         }
         return false;
     }
@@ -542,6 +607,24 @@ class Model
         // If no primary key is defined (BAD DEVELOPER! BAD!)
         // Then try returning 'id' and hope that works.
         return 'id';
+    }
+
+
+    /**
+     *  By default, an attribute is stored in a DB field with matching name. 
+     *  So lastModified would be stored in a column named lastModified. 
+     *  However, there may be situations where a developer wants the attribute name 
+     *  in the model to be different than the DB. I.E. lastModified => last_modified. 
+     *
+     *  This method, when given an attribute on the model, should read the model definition 
+     *  and return the field name in the DB.
+     */
+    public function getFieldName($attributeName)
+    {
+        if (isset($this->model_attributes[$attributeName]['field'])) {
+            return $this->model_attributes[$attributeName]['field'];
+        }
+        return $attributeName;
     }
 
 
