@@ -4,7 +4,7 @@
 
 body {
     /* Required for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
-    padding-top: 70px;
+    padding-top: 75px;
     font-size: 15px;
     font-family: "Helvetica Neue", "Segoe UI", 'Open Sans', Roboto, Arial, sans-serif
 }
@@ -37,6 +37,47 @@ form {
 
 
 //////////////////////////////////////////
+// HEADERS
+//////////////////////////////////////////
+h1, h2, h3, h4 {
+    font-weight: 300;
+}
+
+.page-header {
+    h1 {
+        margin: 0;
+        font-size: 2.1em;
+        //color: $color_blue4;
+    }
+
+    h2 {
+        margin: 0;
+        margin-top: 3px;
+        font-size: 1.4em;
+        //font-weight: 300;
+        letter-spacing: 2px;
+        //text-transform: uppercase;
+        color: #848484;
+    }
+
+    a {
+        text-decoration: none;
+    }
+}
+
+.subsection {
+    background: $color_silver;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    color: $color_silver_fg;
+    font-weight: 700;
+    border-top-right-radius: .5rem;
+    border-top-left-radius: .5rem;
+}
+
+
+
+//////////////////////////////////////////
 // FOOTER
 //////////////////////////////////////////
 footer {
@@ -53,6 +94,29 @@ footer {
     p {
         font-size: 1.2rem;
         color: #888;
+    }
+}
+
+
+//////////////////////////////////////////
+// NAVBARS
+//////////////////////////////////////////
+#topMenu {
+    //box-shadow: 0px 3px 1px rgba(0,0,0,.10);
+    padding-top: 5px;
+    font-size: 1.06em;
+    font-weight: 300;
+    height: 60px;
+}
+
+.navbar-brand img {
+    width: 55px;
+    margin-top: -25px;
+}
+
+.navbar-nav {
+    .glyphicon {
+        margin-right: 5px;
     }
 }
 
@@ -107,17 +171,6 @@ footer {
 .table td:last-child, .table th:last-child {
     text-align: center;
 }
-
-
-//////////////////////////////////////////
-// NAVBARS
-//////////////////////////////////////////
-.navbar-nav {
-    .glyphicon {
-        margin-right: 5px;
-    }
-}
-
 
 
 //////////////////////////////////////////
@@ -271,46 +324,6 @@ ul.filterList {
     }
 }
 
-
-
-//////////////////////////////////////////
-// HEADERS
-//////////////////////////////////////////
-h1, h2, h3, h4 {
-    font-weight: 300;
-}
-
-.page-header {
-    h1 {
-        margin: 0;
-        font-size: 2.1em;
-        //color: $color_blue4;
-    }
-
-    h2 {
-        margin: 0;
-        margin-top: 3px;
-        font-size: 1.4em;
-        //font-weight: 300;
-        letter-spacing: 2px;
-        //text-transform: uppercase;
-        color: #848484;
-    }
-
-    a {
-        text-decoration: none;
-    }
-}
-
-.subsection {
-    background: $color_silver;
-    padding: 6px 10px;
-    margin-bottom: 8px;
-    color: $color_silver_fg;
-    font-weight: 700;
-    border-top-right-radius: .5rem;
-    border-top-left-radius: .5rem;
-}
 
 //////////////////////////////////////////
 // BUTTONS
