@@ -13,6 +13,94 @@ $container->auth = function($c, $user = false, $secureLogin = false, $authField 
     );
 };
 
+
+
+/*******************************************************************
+ *
+ *  Repositories
+ *
+ *******************************************************************/
+
+$container->comments = function($c) {
+    return $c->repository('Comment');  
+};
+
+$container->permissions = function($c) {
+    return $c->repository('Permission');  
+};
+
+$container->roles = function($c) {
+    return $c->repository('Role');  
+};
+
+$container->users = function($c) {
+    return $c->repository('User');  
+};
+
+
+/*******************************************************************
+ *
+ *  EVENTS
+ *
+ *******************************************************************/
+
+$container->events = new \Cora\Container($container);
+
+// Tell the container to return the listeners as closures.
+$container->events->returnClosure(true);
+
+$container->events->passwordReset = function($c, $user) {
+    return new \Events\PasswordReset($user);
+};
+
+$container->events->userRegistered = function($c, $user) {
+    return new \Events\UserRegistered($user);
+};
+
+
+
+/*******************************************************************
+ *
+ *  LISTENERS
+ *
+ *******************************************************************/
+
+$container->listeners = new \Cora\Container($container);
+
+
+
+/*******************************************************************
+ *
+ *  LISTENERS THAT SEND EMAILS
+ *
+ *******************************************************************/
+
+$container->listeners->emails = new \Cora\Container($container->listeners);
+
+// Tell the container to return the listeners as closures.
+$container->listeners->emails->returnClosure(true);
+
+$container->listeners->emails->sendPasswordResetToken = function($c) {
+    return new \Listeners\Emails\SendPasswordResetToken($c->mailer, $c->load);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+/*******************************************************************
+ *
+ *  CORA RESOURCES 
+ *
+ *******************************************************************/
+
 $container->autoload = function($c) {
     return new \Cora\Autoload();
 };
@@ -97,82 +185,6 @@ $container->session = function($c) {
 //});
 
 $container->setInstance('sessionStub', new \Cora\SessionStub());
-
-
-
-/*******************************************************************
- *
- *  Repositories
- *
- *******************************************************************/
-
-$container->comments = function($c) {
-    return $c->repository('Comment');  
-};
-
-$container->permissions = function($c) {
-    return $c->repository('Permission');  
-};
-
-$container->roles = function($c) {
-    return $c->repository('Role');  
-};
-
-$container->users = function($c) {
-    return $c->repository('User');  
-};
-
-
-/*******************************************************************
- *
- *  EVENTS
- *
- *******************************************************************/
-
-$container->events = new \Cora\Container($container);
-
-// Tell the container to return the listeners as closures.
-$container->events->returnClosure(true);
-
-$container->events->passwordReset = function($c, $user) {
-    return new \Events\PasswordReset($user);
-};
-
-$container->events->providerCreated = function($c, $user) {
-    return new \Events\ProviderCreated($user);
-};
-
-
-
-/*******************************************************************
- *
- *  LISTENERS
- *
- *******************************************************************/
-
-$container->listeners = new \Cora\Container($container);
-
-
-
-/*******************************************************************
- *
- *  LISTENERS THAT SEND EMAILS
- *
- *******************************************************************/
-
-$container->listeners->emails = new \Cora\Container($container->listeners);
-
-// Tell the container to return the listeners as closures.
-$container->listeners->emails->returnClosure(true);
-
-$container->listeners->emails->sendPasswordResetToken = function($c) {
-    return new \Listeners\Emails\SendPasswordResetToken($c->mailer, $c->load);
-};
-
-$container->listeners->emails->sendInitialPasswordResetToken = function($c) {
-    return new \Listeners\Emails\SendInitialPasswordResetToken($c->mailer, $c->load);
-};
-
 
 
 

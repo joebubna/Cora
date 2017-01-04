@@ -18,18 +18,18 @@ class Controller extends \Cora
         $this->redirect = $this->app->redirect();
         
         $this->auth = $this->app->auth($this->session->user, $this->session->loginSecure, 'email');
-        $this->site->user = $this->auth->userGetCurrent();
+        $this->site->user = $this->data->cuser = $this->auth->userGetCurrent();
         $this->data->redirect = $this->redirect;
         
         // TEMPLATE SETUP
         if ($this->site->user->primaryRole->name == 'Admin' || $this->site->user->primaryRole->name == 'Dev') {
             $this->data->navbar = $this->load->view('_partials/template/adminNav', $this->data, true);
         } 
-        else if ($this->site->user->primaryRole->name == 'Provider') {
-            $this->data->navbar = $this->load->view('_partials/template/providerNav', $this->data, true);
+        else if ($this->site->user->primaryRole->name == 'User') {
+            $this->data->navbar = $this->load->view('_partials/template/userNav', $this->data, true);
         }
         else {
-            $this->data->navbar = $this->load->view('_partials/template/userNav', $this->data, true);
+            $this->data->navbar = $this->load->view('_partials/template/defaultNav', $this->data, true);
         }
     }
     

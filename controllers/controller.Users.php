@@ -33,7 +33,7 @@ class Users extends \Cora\App\Controller
         $this->load->library('Validate', $this, true);
 
         // Define custom check
-        $this->Validate->def('accountExists', 'Cora\\Auth','accountExists', 'An account with that username already exists.', false, 'email');
+        $this->Validate->def('accountExists', 'Libraries\\Cora\\Auth','accountExists', 'An account with that username already exists.', false, 'email');
 
         // Define validation rules.
         $this->Validate->rule('email', 'required|accountExists|trim');
@@ -49,9 +49,12 @@ class Users extends \Cora\App\Controller
 
             // Create auth object and call for creation of user
             $userId = $this->auth->userCreate($email, $password);
+            $user = $this->repo->find($userId);
 
             // Fire user created event
+            $this->event->fire(new \Events\UserRegistered($user));
 
+            //$this->redirect->url("/");
         }
         else {
             // Call the main method to redisplay the form.
@@ -151,7 +154,7 @@ class Users extends \Cora\App\Controller
                 $user->resetToken = $token;
 
                 // Fire Password Reset Event to handle other actions such as sending reset email.
-                $this->event->fire(new \Event\PasswordReset($user, $this->app->mailer(), $this->load));
+                $this->event->fire(new \Events\PasswordReset($user));
             }
             else {
                 $this->data->errors = ['No such account.'];
@@ -176,10 +179,9 @@ class Users extends \Cora\App\Controller
         // Grab User data.
         //$user = $this->repo->find($user_id);
 
-        // Check for token match. FUTURE IMPROVEMENT: Make token expire after 24 hours.
+        // Check for token match.
         if ($this->auth->userResetTokenVerify($user_id, $token)) {
             $this->session->resetId = $user_id;
-            //$this->resetPassword($user_id);
             $this->redirect->url('/users/resetPassword/');
         }
         else {
@@ -192,6 +194,8 @@ class Users extends \Cora\App\Controller
 
     public function resetPassword()
     {
+        // If resetId is not set in session, the user can't do a password reset 
+        // So redirect.
         if (!$this->session->resetId) {
             $this->redirect->url('/users/login/');
         }
@@ -218,7 +222,6 @@ class Users extends \Cora\App\Controller
             $password = $this->input->post('password');
 
             // Update password
-            //$test = $_SESSION['resetId'];
             $this->auth->passwordUpdate($this->session->resetId, $password);
             $this->session->delete('resetId');
 
@@ -239,32 +242,4 @@ class Users extends \Cora\App\Controller
         $this->redirect->url();
     }
 
-
-    /**
-     *  Display a user's profile.
-     */
-    // public function profile($id)
-    // {
-    //     $user = $this->repo->find($id);
-    //     // echo $user->job->title;
-    //     // echo $user->email;
-    //     // var_dump($user);
-    // }
-
-//  MOVED TO controller.PROFILE.php
-    // public function providerProfile($id)
-    // {
-    //     $this->data->user = $this->repo->find($id);
-    //     $this->data->title = $this->repo->find($id)->firstName . ' ' . $this->repo->find($id)->lastName;
-
-    //     //echo $user->job->title;
-    //     // var_dump($user);
-    //     // $this->data->title = user;
-
-    //     //Grab our viewProviders HTML
-    //     $this->data->content = $this->load->view('users/providerProfile', $this->data, true);
-
-    //     // Load partial view and other data into our template.
-    //     $this->load->view('', $this->data);
-    // }
 }

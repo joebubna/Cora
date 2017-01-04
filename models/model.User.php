@@ -23,6 +23,10 @@ class User extends \Cora\App\Model {
         'lastName' => [
             'type' => 'varchar'
         ],
+        'status' => [       // Active, Deactivated, Banned
+            'type' => 'varchar',
+            'defaultValue' => 'Active'
+        ],
         'token' => [
             'type' => 'varchar'
         ],
