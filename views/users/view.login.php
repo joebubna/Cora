@@ -27,5 +27,8 @@
         <div class="form-group">
             <button type="submit" class="btn btn-primary btn-block">Sign in</button>
         </div>
+        <div class="text-center">
+            <a href="/users/forgotPassword">Forgot Password?</a>
+        </div>
     </form>
 </div>

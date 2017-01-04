@@ -22,27 +22,10 @@ class Home extends \Cora\App\Controller {
         echo $p3 . '<br>';
     }
     
-    public function test() {
-        // Setup
-        $users = $this->app->tests->users;
-        
-        // Create user 
-        $user = new \Models\Tests\User('Bob');
-        $users->save($user);
-
-        // Set collection of data
-        $user->multiAuthorArticles = $this->app->collection([
-            new \Models\Tests\MultiAuthorArticle('art1'),
-            new \Models\Tests\MultiAuthorArticle('art2'),
-            new \Models\Tests\MultiAuthorArticle('art3')
-        ]);
-        $users->save($user);
-    }
-    
     public function eventSetup() 
     {        
         $user = new \User('Joe', 'SuperAdmin');
-        $this->event->fire(new \Event\RegisterUser($user));
+        $this->event->fire(new \Event\UserRegistered($user));
         
         
         $this->event->listenFor('customEvent', function($event) {
