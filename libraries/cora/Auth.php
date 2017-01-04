@@ -290,7 +290,7 @@ class Auth
     public function userGetCurrent()
     {
         if (!$this->session->user) {
-            return new \Models\User(null, null, new \Models\Role('User'));
+            return new \Models\User(null, null, new \Models\Role('AnonymousUser'));
         }
         else {
             return $this->users->find($this->session->user);

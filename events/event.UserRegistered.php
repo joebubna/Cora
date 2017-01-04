@@ -1,7 +1,7 @@
 <?php
 namespace Events;
 
-class ProviderCreated extends \Cora\Event
+class UserRegistered extends \Cora\Event
 {
     public $user;
     
