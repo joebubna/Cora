@@ -1,6 +1,6 @@
 body {
   /* Required for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
-  padding-top: 70px;
+  padding-top: 75px;
   font-size: 15px;
   font-family: "Helvetica Neue", "Segoe UI", "Open Sans", Roboto, Arial, sans-serif; }
 
@@ -57,6 +57,16 @@ footer p {
 
 .table td:last-child, .table th:last-child {
   text-align: center; }
+
+#topMenu {
+  padding-top: 5px;
+  font-size: 1.06em;
+  font-weight: 300;
+  height: 60px; }
+
+.navbar-brand img {
+  width: 55px;
+  margin-top: -25px; }
 
 .navbar-nav .glyphicon {
   margin-right: 5px; }
