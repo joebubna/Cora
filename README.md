@@ -33,15 +33,31 @@ Cora is a flexible MVC PHP framework for rapid app development. It's powered by 
   - During development, make changes to your models and rebuild your database structure to match in a few seconds.
   
 - **An events system**
+  - Register listeners for an event.
+  - When that event gets fired, any listeners attached get passed an instance of the event and run.
+  - The order in which listeners get executed can be customized.
+  - Great for things like logging or sending out emails.
+  
 - **A data validation system**
-- **A pagination system**
-- **A wrapper for PHPMailer to assist with sending emails through SMTP**
-- **A redirection system for directing user's browsers**
-- **An abstraction layer for user input**
+  - Make sure user submitted data matches expected formats.
+  - Can do things like check if a form field was filled out, check if a value is numeric, is an email, etc.
+ 
 - **A flexible Views system**
+  - Create one or more templates for your site as needed. 
+  - Split up data into dynamic sections as needed (header, sidebar, content, footer, etc).
+  - Views can cascade (views within views).
+  
+- **And More...**
+  - A pagination system.
+  - A wrapper for PHPMailer to assist with sending emails through SMTP.
+  - A redirection system for directing user's browsers.
+  - An abstraction layer for user input.
 
-## Docs
-Furthermore, it's the goal of Cora's documentation to 
+
+## Documentation
+The goal of Cora's documentation is to provide developers of all skill levels the knowledge they need to make amazing applications. 
+
+For most developers this will be done via ELI5 (explain it like I'm 5) type explanations and walk-through app building guides. For experienced developers, the reference documentation is meant to give a complete understanding of the tools in question and to hopefully strip away as much of the "magic" as possible. Most developers I talk to are happy to use Black Box style tools most of the time, but when you run into a stag
 
 For documentation (including setup) please see the GitHub pages website here:
 http://joebubna.github.io/Cora/
