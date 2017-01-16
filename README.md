@@ -13,7 +13,11 @@ Cora is a flexible MVC PHP framework for rapid app development. It's powered by 
   - Structure your app's resources into groups for clarity and group manipulation
   - Ability to have requests for resources in child containers cascade up through its parents
 - A database access object (DAO)
+  - Adds abstaction layer over databases that allows you to build queries dynamically.
 - A state-of-the-art ORM
+  - Uses a Data-Mapper implementation in the form of a Repository-Gateway-Factory pattern.
+  - Models are defined using a normal array. No special comment tags or weird methods.
+  - Models 
 - An events system 
 - A data validation system
 - A pagination system
