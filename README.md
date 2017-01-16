@@ -4,7 +4,7 @@
 
 Cora is a flexible MVC PHP framework for rapid app development. It's powered by the belief that designing software should be fun and the complicated (and mundane) stuff should be handled by the framework, allowing the developer to focus on building. Some of the features included in Cora are:
 
-- A simple routing engine
+- *A simple routing engine*
   - Allows you to integrate with pre-existing legacy apps.
   - Automatic routing that makes sense and follows class visibility.
 - A custom dependency injection container
