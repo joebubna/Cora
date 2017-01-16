@@ -6,12 +6,14 @@ Cora is a flexible MVC PHP framework for rapid app development. It's powered by 
 
 - **A simple routing engine**
   - Allows you to integrate with pre-existing legacy apps.
-  - Automatic routing that makes sense and follows class visibility.   
+  - Automatic routing that makes sense and follows class visibility.
+  
 - **A custom dependency injection container**
   - You can change the dependencies needed by parts of your app without needing to search/replace every "new" declaration.
   - Simplify your code.
   - Structure your app's resources into groups for clarity and group manipulation.
   - Ability to have requests for resources in child containers cascade up through its parents.
+  
 - **A database access object (DAO)**
   - Adds abstaction layer over databases that allows you to build queries dynamically.
 - **A state-of-the-art ORM called AmBlend**
