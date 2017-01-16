@@ -1,5 +1,13 @@
 # Cora
 
+## Documentation
+The goal of Cora's documentation is to provide developers of all skill levels the knowledge they need to make amazing applications. 
+
+For most developers this will be done via ELI5 (explain it like I'm 5) type explanations and walk-through app building guides. For experienced developers, the reference documentation is meant to give a complete understanding of the tools in question and to hopefully strip away as much of the "magic" as possible. Most developers I talk to are happy to use Black Box style tools most of the time, but when you run into a stag - not knowing how the underlying framework your app is built upon works can be frustrating. A knowledgable developer who understands what's going on is better able to determine the correct solution for their problem.
+
+For documentation (including setup) please see the GitHub pages website here:
+http://joebubna.github.io/Cora/
+
 ## About Cora
 
 Cora is a flexible MVC PHP framework for rapid app development. It's powered by the belief that designing software should be fun and the complicated (and mundane) stuff should be handled by the framework, allowing the developer to focus on building. Some of the features included in Cora are:
@@ -53,14 +61,21 @@ Cora is a flexible MVC PHP framework for rapid app development. It's powered by 
   - A redirection system for directing user's browsers.
   - An abstraction layer for user input.
 
+## Non-Opinionated
 
-## Documentation
-The goal of Cora's documentation is to provide developers of all skill levels the knowledge they need to make amazing applications. 
+One thing I'd like to stress (especially after seeing that long list of features above) is that almost every pattern, feature, and philosophy in Cora can be ignored and done in a way that makes sense to you.
 
-For most developers this will be done via ELI5 (explain it like I'm 5) type explanations and walk-through app building guides. For experienced developers, the reference documentation is meant to give a complete understanding of the tools in question and to hopefully strip away as much of the "magic" as possible. Most developers I talk to are happy to use Black Box style tools most of the time, but when you run into a stag
+- Want to utilize Cora's automatic routing, but not any of the other features available? Go for it.
+- Want to use the database access object, but not the ORM? Go for it.
+- Want to not use the Dependency Injection Container? Go for it.
+- Want to use some other View system to display content to users? Go for it.
+- Want to put all your logic in Listeners and barely use Controllers? Go for it.
+- Want add a new layer of logic between your Controllers and your Models/Database layer? Go for it.
+- Want to call the classes in your app Classes rather than models? Go for it.
+- Want to use the ORM but with an existing database or one you create by hand rather than use the Database Builder? Go for it.
+- Want to add methods to your models that interact directly with the persistence layer (ala Active-Record)? Go for it.
 
-For documentation (including setup) please see the GitHub pages website here:
-http://joebubna.github.io/Cora/
+Cora was originally built to be integrated into an existing legacy app, and generally tries to be as flexible as possible. Just because certain approaches may be suggested or presented in the documentation, don't feel like you have to do things the same way. Build your app in the way that makes sense for you.
 
 ## License
 
