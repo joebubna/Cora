@@ -60,6 +60,7 @@ Cora is a flexible MVC PHP framework for rapid app development. It's powered by 
   - A wrapper for PHPMailer to assist with sending emails through SMTP.
   - A redirection system for directing user's browsers.
   - An abstraction layer for user input.
+  - ...
 
 ## Non-Opinionated
 
