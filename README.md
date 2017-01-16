@@ -16,6 +16,8 @@ Cora is a flexible MVC PHP framework for rapid app development. It's powered by 
   
 - **A database access object (DAO)**
   - Adds abstaction layer over databases that allows you to build queries dynamically.
+  - In the future will allow you to access multiple database types using the same API as more adaptors are built. (I.E. querying a NoSQL database but using SQL looking code.
+  
 - **A state-of-the-art ORM called AmBlend**
   - Uses a Data-Mapper implementation in the form of a Repository-Gateway-Factory pattern.
   - Models are defined using a simple data member array. No special comment tags or weird methods.
@@ -25,9 +27,11 @@ Cora is a flexible MVC PHP framework for rapid app development. It's powered by 
   - Models get saved recursively and different types of repositories get created as needed. This, more than anything else is the "State-of-the-Art" aspect of the ORM. To understand how powerful this is, you have to see examples, but it allows you to work fluidly with data in your app in a way that feels natural, saves you time, and simplifies your code.
   - Models work seemlessly across multiple databases. I.E. A "User" model could have a plural relationship with a "Transaction" model that is stored in a completely different database and accessing those models works effortlessly.
   - Highly customizable. Models don't have to have the same name as the underlying table/collection that persists them. Model attributes don't have to have the same names as the underlying fields that represent them. Models can be stored on different databases. Relation table names can be customized, etc.
+  
 - **A database builder tool that will construct all your tables/collections for you based off your model definitions.**
   - This allows the developer to focus on how the app needs to work, and not worry about how to represent complicated relationships in a database.
   - During development, make changes to your models and rebuild your database structure to match in a few seconds.
+  
 - **An events system**
 - **A data validation system**
 - **A pagination system**
