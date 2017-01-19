@@ -585,6 +585,44 @@ class AmblendTest extends \Cora\App\TestCase
 
 
     /**
+     *  Test that a "relName" definition correctly causes attributes on two 
+     *  different models to read from the same relation table.
+     *
+     *  @test
+     *  @group failing
+     */
+    public function canSetRelationshipNameToLinkDataBetweenModels()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no stored references
+        $this->assertEquals(0, $user->articles->count());
+
+        // Set and create ref
+        $user->writings = $this->app->collection([
+            new \Models\Tests\Article('My Favorite Books Vol 1'),
+            new \Models\Tests\Article('My Favorite Books Vol 2'),
+            new \Models\Tests\Article('My Favorite Books Vol 3')
+        ]);
+        $users->save($user);
+
+        // Check that user has now has correct # of objects
+        $this->assertEquals(3, $user->writings->count());
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        $freshUser = $users->find($user->id);
+        $this->assertEquals(3, $freshUser->writings->count());
+
+        $this->assertEquals('My Favorite Books Vol 1', $freshUser->writings->get(0)->text);
+    }
+
+
+    /**
      *  If check if a many-to-many relationship can be used correctly.
      *  
      *  @test
@@ -754,7 +792,6 @@ class AmblendTest extends \Cora\App\TestCase
     /**
      *  If an int or datetime field has lock=true attribute, 
      *  ensure old data can't overwrite newer.
-     *  @group failing
      *  @test
      */
     public function optimisticLockingWorks()

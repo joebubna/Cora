@@ -542,6 +542,18 @@ class Model
     }
 
 
+    /**
+     *  Given a related object, a model attribute (on this model) and the attribute definition,
+     *  return the name of the relation table connecting this model and the given object. 
+     *
+     *  The relation table is named by:
+     *  Taking the table name for model 1, 
+     *  Concatenating the relationship name or key name connecting them,
+     *  Then concatenated the table name for model 2.
+     *  
+     *  If a User model in the root models directory is being related to another User and the relationship name is "motherChild",
+     *  the table will be user__motherchild__user
+     */
     public function getRelationTableName($relatedObj, $attribute, $attributeDef)
     {
         $result = '';
@@ -556,6 +568,11 @@ class Model
             $table1 = $this->getTableName();
             $table2 = $relatedObj->getTableName();
             $alphabeticalComparison = strcmp($table1, $table2);
+
+            // Check if a relationship name is set, otherwise just use the attribute as the relationship identifier
+            if (isset($attributeDef['relName'])) {
+                $attribute = $attributeDef['relName'];
+            }
             $attribute = strtolower(preg_replace('/\B([A-Z])/', '_$1', $attribute));
 
             if ($alphabeticalComparison > 0) {

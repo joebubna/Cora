@@ -71,6 +71,10 @@ class User extends \Cora\App\Model {
         'dates' => [
             'models' => 'Tests\\Date',
             'via' => 'owner'
+        ],
+        'writings' => [
+            'models' => 'Tests\\Article',
+            'relName' => 'authorPaper'
         ]
         // 'roleName' => [
         //     'from' => 'roles',
