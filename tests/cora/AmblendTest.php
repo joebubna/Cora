@@ -589,7 +589,6 @@ class AmblendTest extends \Cora\App\TestCase
      *  different models to read from the same relation table.
      *
      *  @test
-     *  @group failing
      */
     public function canSetRelationshipNameToLinkDataBetweenModels()
     {
@@ -619,6 +618,45 @@ class AmblendTest extends \Cora\App\TestCase
         $this->assertEquals(3, $freshUser->writings->count());
 
         $this->assertEquals('My Favorite Books Vol 1', $freshUser->writings->get(0)->text);
+    }
+
+
+    /**
+     *  Test that a "relThis" and "relThat" definition can be used to change the field names 
+     *  on a relation table. Identifying which column refers to the currently being read object,
+     *  and which refers to the other.
+     *
+     *  @test
+     *  @group failing
+     */
+    public function canSetRelationTableFieldNames()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob');
+        $users->save($user);
+
+        // Check that user has no stored references
+        $this->assertEquals(0, $user->contacts->count());
+
+        // Set and create ref
+        $user->contacts = $this->app->collection([
+            new \Models\Tests\User('Janice'),
+            new \Models\Tests\User('Oscar'),
+            new \Models\Tests\User('Jim')
+        ]);
+        $users->save($user);
+
+        // Check that user has now has correct # of objects
+        $this->assertEquals(3, $user->contacts->count());
+
+        // Pull user fresh from DB just to make sure references were saved on DB.
+        $freshUser = $users->find($user->id);
+        $this->assertEquals(3, $freshUser->contacts->count());
+
+        $this->assertEquals('Janice', $freshUser->contacts->get(0)->name);
     }
 
 

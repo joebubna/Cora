@@ -337,7 +337,7 @@ class Model
         // Grab relation table name and the name of this class.
         $relTable = $this->getRelationTableName($relatedObj, $attributeName, $this->model_attributes[$attributeName]);
         $className = strtolower((new \ReflectionClass($this))->getShortName());
-        $classId = $this->getPrimaryKey();
+        $objectId = $this->getPrimaryKey();
         $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
 
         // Create repo that uses the relationtable, but returns models populated
@@ -358,11 +358,16 @@ class Model
             $db = $this->getDbAdaptor();
         }
 
+        // Setup relation table field names 
+        $relThis = isset($this->model_attributes[$attributeName]['relThis']) ? $this->model_attributes[$attributeName]['relThis'] : $className;
+        $relThat = isset($this->model_attributes[$attributeName]['relThat']) ? $this->model_attributes[$attributeName]['relThat'] : $relatedClassName;
+
         // DEFAULT CASE 
         // The objects that are related aren't the same class of object...
-        if ($className != $relatedClassName) {
-            $db ->select($relatedClassName.' as '.$classId)
-                ->where($className, $this->$classId);
+        // (or they are, but relThis and relThat definitions were setup)
+        if ($relThis != $relThat) {
+            $db ->select($relThat.' as '.$objectId)
+                ->where($relThis, $this->$objectId);
 
             return $repo->findAll($db);
         }
@@ -375,13 +380,13 @@ class Model
         //            Bob's ID     Bob's relative's ID
         else {
             // Fetch related objects where the subject is the left side reference.
-            $db ->select($relatedClassName.'2'.' as '.$classId)
-                ->where($className, $this->$classId);
+            $db ->select($relThat.'2'.' as '.$objectId)
+                ->where($relThis, $this->$objectId);
             $leftSet = $repo->findAll($db);
 
             // Fetch related objects where the subject is the right side reference.
-            $db ->select($relatedClassName.' as '.$classId)
-                ->where($className.'2', $this->$classId);
+            $db ->select($relThat.' as '.$objectId)
+                ->where($relThis.'2', $this->$objectId);
             $rightSet = $repo->findAll($db);
             $leftSet->merge($rightSet);
             return $leftSet;

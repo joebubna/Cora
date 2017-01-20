@@ -66,7 +66,7 @@ class User extends \Cora\App\Model {
             'models' => 'Tests\\User',
             'relTable' => 'ref_users_contacts',
             'relThis' => 'user_id',
-            'relThat' => 'rel_id'
+            'relThat' => 'contact_id'
         ],
         'dates' => [
             'models' => 'Tests\\Date',
