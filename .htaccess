@@ -2,14 +2,17 @@
 RewriteEngine On
 RewriteBase /
 
-# if file or directory doesnt exist for state requests, send them to our main location handling file
-
-RewriteCond %{REQUEST_FILENAME} \.(gif|jpe?g|png|js|css|swf|php|ico|txt|pdf|xml)$ [OR]
-RewriteCond %{REQUEST_FILENAME} !-d [OR]
+# ----------------------------------------------------------------------------------
+# All cora URLs should look like a link to a directory...
+# E.g. MySite.com/users/forgotpassword/
+# Under this scenario, we want to redirect all such requests to our index.php file.
+# However, if the URL specifies a specific file (E.g. MySite.com/customUploader.php or MySite.com/css/app.css)
+# Then we don't want to redirect.
+# The following rule redirects only if the request isn't for a specific file.
+# NC = No Case (aka not case sensative), L = Last (don't do other rules if this one matches), 
+# QSA = Query String Append - aka keep "?var=something" when passed to index.php 
+# ----------------------------------------------------------------------------------
 RewriteCond %{REQUEST_FILENAME} !-f 
-RewriteRule ^(.*)/$ index.php [L]
-
-RewriteCond %{REQUEST_URI} !(/$|\.) 
-RewriteRule (.*) %{REQUEST_URI}/ [R=301,L] 
+RewriteRule ^(.*)$ index.php [NC,L,QSA]
 
 </IfModule>

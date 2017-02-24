@@ -17,7 +17,7 @@ class Route extends Framework
     protected $collectionID;        // INT      - The ID if a collection ID is specified.
     
     
-    public function __construct($container = false)
+    public function __construct($container = false, $uri = false)
     {
         parent::__construct(); // Call parent constructor too so we don't lose functionality.
         
@@ -26,7 +26,8 @@ class Route extends Framework
         $this->container = $container;
         
         // Set PATH info.
-        $this->setPath($_SERVER['REQUEST_URI']);
+        if (!$uri) $uri = $_SERVER['REQUEST_URI'];
+        $this->setPath($uri);
         
         // Debug
         $this->debug('Route: ' . $this->pathString);
