@@ -17,7 +17,7 @@ class Route extends Framework
     protected $collectionID;        // INT      - The ID if a collection ID is specified.
     
     
-    public function __construct($container = false, $uri = false)
+    public function __construct($container = false)
     {
         parent::__construct(); // Call parent constructor too so we don't lose functionality.
         
@@ -25,16 +25,113 @@ class Route extends Framework
         // are invoked in the routeExec() method.
         $this->container = $container;
         
-        // Set PATH info.
-        if (!$uri) $uri = $_SERVER['REQUEST_URI'];
-        $this->setPath($uri);
-        
         // Debug
         $this->debug('Route: ' . $this->pathString);
         
         // Namespacing Defaults
         $this->controllerNamespace = 'Controllers\\';
 
+    }
+
+
+    public function run($uri = false)
+    {
+        // Set PATH info.
+        if (!$uri) $uri = $_SERVER['REQUEST_URI'];
+        $this->setPath($uri);
+
+        if (!$this->customFind()) {
+            $this->routeFind();
+        }
+        $this->routeExec();
+    }
+
+
+    public function customFind()
+    {
+        // Maybe create a PATH class that holds data related to a path. Included permission checking functions. 
+        $url = $this->pathString;
+        $matchFound = false;
+        
+        ///////////////////////////////////////////////
+        // Path Template
+        ///////////////////////////////////////////////
+        /** 
+         *  This section defines the user-friendly format for specifying custom URL paths.
+         *  URL variables should be a name between brackets.
+         */
+        $templateRegex = "/\{\w+}/";
+        $urlTemplate = 'users/{action}-{subaction}/{id}';
+        $templateVariables = [];
+        preg_match_all($templateRegex, $urlTemplate, $templateVariables);
+
+        ///////////////////////////////////////////////
+        // Template variables definition
+        ///////////////////////////////////////////////
+        /** 
+         *  This is for specifying custom rules for the bracket variables defined in a custom path template. 
+         *  Rules should use regex syntax.
+         */
+        $templateVariableDefinitions = [];
+        $templateVariableDefinitions['{id}'] = '[0-9]+';
+
+        ///////////////////////////////////////////////
+        // Replacing templates variables with regex 
+        ///////////////////////////////////////////////
+        /** 
+         *  This is for replacing the bracket variables in the custom route with a regular expression string. 
+         *  If no custom definition for the variable was set in the variable definitions section, then the variable 
+         *  will default to alpha-numeric with underscore and dash.
+         *  INPUT   = users/action-subaction/23
+         *  OUTPUT  = users\/([a-zA-Z0-9-_]+)\-([a-zA-Z0-9-_]+)\/([0-9]+)
+         */
+        $urlRegex = preg_quote($urlTemplate, '/');
+        foreach ($templateVariables[0] as $key => $placeholder) {
+            if (isset($templateVariableDefinitions[$placeholder])) {
+                $urlRegex = str_replace(preg_quote($placeholder), '('.$templateVariableDefinitions[$placeholder].')', $urlRegex);
+            }
+            else {
+                $urlRegex = str_replace(preg_quote($placeholder), '([a-zA-Z0-9-_]+)', $urlRegex);
+            }
+        }
+
+        ///////////////////////////////////////////////
+        // Check for regex match against URL given
+        ///////////////////////////////////////////////
+        /** 
+         *  This takes the current URL and checks if it matches the custom route we are currently looking at. 
+         *  If there's a match, then it marks that we found a valid custom path and sets local variables 
+         *  both individually and in an array for use in the URL rewrite.
+         *
+         *  if URL              = articles/grab-all/23 
+         *  and custom route    = articles/{action}-{modifier}/{id}
+         *  The following local variables will be set: $action, $modifier, $id 
+         *  and so will an equivalent array with the same data $urlVariables['action'=>'grab', 'modifier'=>'all', 'id'=>23];
+         */
+        $urlVariables = [];
+        $urlData = [];
+        if (preg_match("/$urlRegex/", $url, $urlData)) {
+            $matchFound = true;
+            unset($urlData[0]);
+            for($i=1; $i<=count($urlData); $i++) {
+                $urlVariableName = substr($templateVariables[0][$i-1], 1, -1);
+                $urlVariables[$urlVariableName] = $urlData[$i];
+                $$urlVariableName = $urlData[$i];
+            }
+        }
+
+
+        // Testing output
+        if ($matchFound) {
+            echo 'MATCH<br>';
+        } else {
+            echo 'NO MATCH<br>';
+        }
+
+        echo $url.'<br>';
+        echo $urlRegex;
+        var_dump($urlVariables);
+        exit;
     }
     
     
