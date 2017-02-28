@@ -1,7 +1,7 @@
-<?php 
+<?php
 namespace Cora;
 /**
-* 
+*
 */
 class Repository
 {
@@ -14,19 +14,19 @@ class Repository
     {
         $this->gateway = $gateway;
         $this->factory = $factory;
-        
+
         $this->saveStarted = &$GLOBALS['coraSaveStarted'];
         $this->savedAdaptors = &$GLOBALS['coraAdaptorsForCurrentSave'];
         $this->lockError = &$GLOBALS['coraLockError']; // If a lock exception gets thrown when trying to modify the db, set true.
         $this->dbError = &$GLOBALS['coraDbError']; // If some random error occurs, set this to true so rollback gets triggered.
     }
-    
+
     public function viewQuery($bool = true)
     {
         $this->gateway->viewQuery($bool);
         return $this;
     }
-    
+
     public function getDb($fresh = false)
     {
         return $this->gateway->getDb();
@@ -37,7 +37,7 @@ class Repository
         $record = $this->gateway->fetch($id);
         return $this->factory->make($record);
     }
-    
+
     public function findOne($coraDbQuery)
     {
         $all = $this->gateway->fetchByQuery($coraDbQuery);
@@ -54,22 +54,22 @@ class Repository
         }
         return $this->factory->makeGroup($all);
     }
-    
+
     public function findBy($prop, $value, $options = array())
     {
         $all = $this->gateway->fetchBy($prop, $value, $options);
         return $this->factory->makeGroup($all);
     }
-    
+
     public function findOneBy($prop, $value, $options = array())
     {
         $all = $this->gateway->fetchBy($prop, $value, $options);
         return $this->factory->makeGroup($all)->get(0);
     }
-    
+
     /**
      *  Count the number of results, optionally with query limiters.
-     */ 
+     */
     public function count($coraDbQuery = false)
     {
         if (!$coraDbQuery) {
@@ -77,7 +77,7 @@ class Repository
         }
         return $this->gateway->count($coraDbQuery);
     }
-    
+
     /**
      *  Counts the number of affected rows / results from the last executed query.
      *  Removes any LIMITs.
@@ -95,7 +95,7 @@ class Repository
         // Delete any data associated with this model by calling it's own delete method
         // I.E. Notes, file uploads, etc.
         $model->delete();
-        
+
         // Delete the model from the DB.
         $this->gateway->delete($id);
     }
@@ -104,7 +104,7 @@ class Repository
     public function save($model, $table = null, $id_name = null)
     {
         $return = 0;
-        
+
         // Check whether or not a "save transaction" has been started.
         // If not, start one.
         $clearSaveLockAfterThisFinishes = false;
@@ -114,7 +114,7 @@ class Repository
 
             $config = $this->gateway->getDb()->getConfig();
 
-            // Add default DB connection to connections saved list. 
+            // Add default DB connection to connections saved list.
             $defaultConn = \Cora\Database::getDefaultDb();
             $this->savedAdaptors[$defaultConn->getDefaultConnectionName()] = $defaultConn;
 
@@ -124,13 +124,13 @@ class Repository
                 if (!isset($this->savedAdaptors[$key])) {
                     $conn = \Cora\Database::getDb($key);
                     $this->savedAdaptors[$key] = $conn;
-                } 
+                }
                 $this->savedAdaptors[$key]->startTransaction();
             }
         }
-        
+
         // Grab event manager for this app.
-        $event = $GLOBALS['container']->event;
+        $event = $GLOBALS['coraContainer']->event;
 
         // Check if model trying to be saved inherits from Cora model or is a collection of models...
         // Catch any exceptions thrown during the saving process.
@@ -167,7 +167,7 @@ class Repository
         else {
             throw new \Exception("Cora's Repository class can only be used with models that extend the Cora Model class. " .get_class($model)." does not.");
         }
-        
+
         // Check whether this call to Save should clear the lock.
         //
         // Basically, because when an object is saved, child objects are also recursively saved...
@@ -216,22 +216,22 @@ class Repository
             if ($lockErrorStatus) {
                 throw new \Cora\LockException('Tried to update a lock protected field in a database using old data (someone else updated it first and your data is potentially out-of-date)');
             }
-            
+
             if ($dbErrorStatus) {
                 throw new \Exception('An unexpected error occurred while trying to save something. Listen for the DbRandomError event to find out specifics.');
             }
-        }  
+        }
         return $return;
     }
-    
+
     protected function checkIfModel($model)
     {
         if ($model instanceof \Cora\Model) {
-            return true;   
+            return true;
         }
         return false;
     }
-    
+
     protected function resetSavedModelsList()
     {
         $GLOBALS['savedModelsList'] = [];

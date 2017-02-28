@@ -19,7 +19,4 @@ require('includes/container.php');
 $Route = new Cora\Route($container);
 
 // Find route.
-$Route->routeFind();
-
-// Execute route or display error.
-$Route->routeExec();
+$Route->run();

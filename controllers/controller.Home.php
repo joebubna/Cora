@@ -15,8 +15,7 @@ class Home extends \Cora\App\Controller {
         $this->load->view('template', $this->data);
     }
     
-    public function view($p1, $p2, $p3) {
-        echo 'Yay<br>';
+    public function view($p1, $p2, $p3 = 'bob') {
         echo $p1 . '<br>';
         echo $p2 . '<br>';
         echo $p3 . '<br>';
