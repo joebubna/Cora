@@ -16,7 +16,6 @@ class Home extends \Cora\App\Controller {
     }
     
     public function view($p1, $p2, $p3 = 'bob') {
-        echo 'Yay<br>';
         echo $p1 . '<br>';
         echo $p2 . '<br>';
         echo $p3 . '<br>';

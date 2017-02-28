@@ -15,6 +15,8 @@ class Route extends Framework
     protected $method;              // STRING
     protected $collectionIDgiven;   // BOOL     - If the URL is of form /articles/107 this is set to true.
     protected $collectionID;        // INT      - The ID if a collection ID is specified.
+
+    protected $paths;               // ARRAY    - Holds custom defined paths.
     
     
     public function __construct($container = false)
@@ -24,9 +26,13 @@ class Route extends Framework
         // For site specific data. This will be passed to Cora's controllers when they
         // are invoked in the routeExec() method.
         $this->container = $container;
-        
-        // Debug
-        $this->debug('Route: ' . $this->pathString);
+
+        // Assign custom paths
+        $paths = [];
+        if (file_exists($this->config['basedir'].'cora/app/Paths.php')) {
+            include($this->config['basedir'].'cora/app/Paths.php');
+        }
+        $this->paths = $paths;
         
         // Namespacing Defaults
         $this->controllerNamespace = 'Controllers\\';
@@ -43,95 +49,116 @@ class Route extends Framework
         if (!$this->customFind()) {
             $this->routeFind();
         }
+
+        // Debug
+        $this->debug('Route: ' . $this->pathString);
+
         $this->routeExec();
     }
 
 
     public function customFind()
     {
-        // Maybe create a PATH class that holds data related to a path. Included permission checking functions. 
+        // Setup 
         $url = $this->pathString;
         $matchFound = false;
-        
-        ///////////////////////////////////////////////
-        // Path Template
-        ///////////////////////////////////////////////
-        /** 
-         *  This section defines the user-friendly format for specifying custom URL paths.
-         *  URL variables should be a name between brackets.
-         */
         $templateRegex = "/\{\w+}/";
-        $urlTemplate = 'users/{action}-{subaction}/{id}';
-        $templateVariables = [];
-        preg_match_all($templateRegex, $urlTemplate, $templateVariables);
-
-        ///////////////////////////////////////////////
-        // Template variables definition
-        ///////////////////////////////////////////////
-        /** 
-         *  This is for specifying custom rules for the bracket variables defined in a custom path template. 
-         *  Rules should use regex syntax.
-         */
-        $templateVariableDefinitions = [];
-        $templateVariableDefinitions['{id}'] = '[0-9]+';
-
-        ///////////////////////////////////////////////
-        // Replacing templates variables with regex 
-        ///////////////////////////////////////////////
-        /** 
-         *  This is for replacing the bracket variables in the custom route with a regular expression string. 
-         *  If no custom definition for the variable was set in the variable definitions section, then the variable 
-         *  will default to alpha-numeric with underscore and dash.
-         *  INPUT   = users/action-subaction/23
-         *  OUTPUT  = users\/([a-zA-Z0-9-_]+)\-([a-zA-Z0-9-_]+)\/([0-9]+)
-         */
-        $urlRegex = preg_quote($urlTemplate, '/');
-        foreach ($templateVariables[0] as $key => $placeholder) {
-            if (isset($templateVariableDefinitions[$placeholder])) {
-                $urlRegex = str_replace(preg_quote($placeholder), '('.$templateVariableDefinitions[$placeholder].')', $urlRegex);
+        
+        foreach ($this->paths as $path) {
+            
+            ///////////////////////////////////////////////
+            // Grab path URL template variables
+            ///////////////////////////////////////////////
+            /**
+             *  Create an array of path variables from custom path URL definition. 
+             *  I.E. users/{someVariable}/{anotherVariable}
+             */
+            $templateVariables = [];
+            preg_match_all($templateRegex, $path->url, $templateVariables);
+            
+            ///////////////////////////////////////////////
+            // Replacing templates variables with regex 
+            ///////////////////////////////////////////////
+            /** 
+            *  This is for replacing the bracket variables in the custom route with a regular expression string. 
+            *  If no custom definition for the variable was set in the variable definitions section, then the variable 
+            *  will default to alpha-numeric with underscore and dash.
+            *  INPUT   = users/action-subaction/23
+            *  OUTPUT  = users\/([a-zA-Z0-9-_]+)\-([a-zA-Z0-9-_]+)\/([0-9]+)
+            */
+            $urlRegex = preg_quote($path->url, '/');
+            foreach ($templateVariables[0] as $key => $placeholder) {
+                if (isset($path->def[$placeholder])) {
+                    $urlRegex = str_replace(preg_quote($placeholder), '('.$path->def[$placeholder].')', $urlRegex);
+                }
+                else {
+                    $urlRegex = str_replace(preg_quote($placeholder), '([a-zA-Z0-9_]+)', $urlRegex);
+                }
             }
-            else {
-                $urlRegex = str_replace(preg_quote($placeholder), '([a-zA-Z0-9-_]+)', $urlRegex);
+
+            ///////////////////////////////////////////////
+            // Check for regex match against URL given
+            ///////////////////////////////////////////////
+            /** 
+            *   This takes the current URL and checks if it matches the custom route we are currently looking at. 
+            *   If there's a match, then it marks that we found a valid custom path. 
+            *   $urlData will get populated with the matching variable values from the URL. This works because 
+            *   all the regexes from the above section are within parenthesis.
+            *   With the following regex: "users/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)"
+            *   The match for the first set of parenthesis will get placed in $urlData[1], the 2nd set in $urlData[2], etc. 
+            *   
+            *   See below for an example:
+            *   if URL              = articles/grab-all/23 
+            *   and custom route    = articles/{action}-{modifier}/{id}
+            *   $urlData[1] will be 'grab', $urlData[2] will be 'all', and $urlData[3] will be 23.
+            */
+            $urlData = [];
+            $finalRoute = $path->route;
+            if (preg_match("/$urlRegex/", $url, $urlData)) {
+                $matchFound = true;
+
+                // A match was found, so at this point $urlData contains the matching pieces from the regex. 
+                // With the first variable match being in $urlData[1]. Offset 0 is useless, so let's unset it so it 
+                // does screw up our count.
+                unset($urlData[0]);
+                for($i=1; $i<=count($urlData); $i++) {
+                    // For each REAL variable value from our URL, let's replace any references to that variable in our 
+                    // route with the actual values. 
+                    // Example: 
+                    //                     Path URL = "users/{action}-{modifier}"
+                    //    Actual URL in web browser = "users/fetch-all" 
+                    //                   Path Route = "users/{action}/{modifier}" 
+                    //  Final Route after this loop = "users/fetch/all"
+                    $pathVar = $templateVariables[0][$i-1]; // E.g. {action}. $templateVariables starts at offset 0.
+                    $pathVarValue = $urlData[$i];
+                    $finalRoute = str_replace($pathVar, $pathVarValue, $finalRoute);
+                }
             }
+
+
+            ///////////////////////////////////////////////
+            // Handle Path match
+            ///////////////////////////////////////////////
+            /**
+             *  If this iteration of the loop found a match to a custom path, 
+             *  Then execute that Path's pre execution function and if that returns true, 
+             *  then set our new Route to be the one defined in the custom Path.
+             */
+            if ($matchFound) {
+                if (!$path->preExecCheck()) {
+                    $this->error('403');
+                    exit;
+                }
+
+                if ($path->route) {         
+                    $this->setPath($finalRoute);
+                }
+                
+                $this->routeFind();
+                return true;
+            } 
         }
-
-        ///////////////////////////////////////////////
-        // Check for regex match against URL given
-        ///////////////////////////////////////////////
-        /** 
-         *  This takes the current URL and checks if it matches the custom route we are currently looking at. 
-         *  If there's a match, then it marks that we found a valid custom path and sets local variables 
-         *  both individually and in an array for use in the URL rewrite.
-         *
-         *  if URL              = articles/grab-all/23 
-         *  and custom route    = articles/{action}-{modifier}/{id}
-         *  The following local variables will be set: $action, $modifier, $id 
-         *  and so will an equivalent array with the same data $urlVariables['action'=>'grab', 'modifier'=>'all', 'id'=>23];
-         */
-        $urlVariables = [];
-        $urlData = [];
-        if (preg_match("/$urlRegex/", $url, $urlData)) {
-            $matchFound = true;
-            unset($urlData[0]);
-            for($i=1; $i<=count($urlData); $i++) {
-                $urlVariableName = substr($templateVariables[0][$i-1], 1, -1);
-                $urlVariables[$urlVariableName] = $urlData[$i];
-                $$urlVariableName = $urlData[$i];
-            }
-        }
-
-
-        // Testing output
-        if ($matchFound) {
-            echo 'MATCH<br>';
-        } else {
-            echo 'NO MATCH<br>';
-        }
-
-        echo $url.'<br>';
-        echo $urlRegex;
-        var_dump($urlVariables);
-        exit;
+        return false;
     }
     
     
@@ -263,7 +290,7 @@ class Route extends Framework
         // If no controller was found by routeFind()...
         if (!isset($this->controllerPath)) {
             $this->debug('routeExec: No controllerPath set. Routing to 404.');
-            $this->error404();
+            $this->error('404');
             exit;
         }
 
@@ -441,9 +468,13 @@ class Route extends Framework
     {
         return array_slice($this->path, $offset, $length);
     }
-    
-    
-    protected function error404()
+
+    /**
+     *  Sample Types:
+     *  401 = Access Denied 
+     *  404 = Not Found
+     */    
+    protected function error($type)
     {
         $filepath = $this->config['basedir'].'cora/app/Error.php';
             
@@ -453,7 +484,7 @@ class Route extends Framework
         else {
             $error = new \Cora\Error($this->container);
         }
-        $error->handle('404');    
+        $error->handle($type);    
     }
     
 } // end Class
