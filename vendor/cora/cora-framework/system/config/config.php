@@ -162,5 +162,5 @@ $config['eventsPostfix'] = '';
 /**
  *  Listener file prefix / postfix.
  */
-$config['listenerPrefix'] = 'listen.';
-$config['listenerPostfix'] = '';
+$config['listenersPrefix'] = 'listen.';
+$config['listenersPostfix'] = '';

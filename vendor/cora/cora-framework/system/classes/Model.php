@@ -75,6 +75,9 @@ class Model
                 }
             }
         }
+
+        // Call onLoad method 
+        $this->onLoad();
     }
 
 
@@ -647,6 +650,12 @@ class Model
             return $this->model_attributes[$attributeName]['field'];
         }
         return $attributeName;
+    }
+
+
+    public function onLoad()
+    {
+        //echo __FUNCTION__;
     }
 
 
