@@ -13,6 +13,7 @@ class Route extends Framework
     protected $controllerNamespace; // STRING
     protected $controller;          // OBJECT
     protected $method;              // STRING
+    protected $httpMethod;          // STRING
     protected $collectionIDgiven;   // BOOL     - If the URL is of form /articles/107 this is set to true.
     protected $collectionID;        // INT      - The ID if a collection ID is specified.
 
@@ -40,8 +41,12 @@ class Route extends Framework
     }
 
 
-    public function run($uri = false)
+    public function run($uri = false, $method = false)
     {
+        // Set Request type. 
+        if (!$method) $method = $_SERVER['REQUEST_METHOD'];
+        $this->httpMethod = $method;
+        
         // Set PATH info.
         if (!$uri) $uri = $_SERVER['REQUEST_URI'];
         $this->setPath($uri);
@@ -145,17 +150,23 @@ class Route extends Framework
              *  then set our new Route to be the one defined in the custom Path.
              */
             if ($matchFound) {
-                if (!$path->preExecCheck()) {
-                    $this->error('403');
-                    exit;
-                }
+                // If the path accepts all http method types or the current request type is listed as being accepted.
+                if (
+                    stripos($path->actions, 'all') !== false || 
+                    stripos($path->actions, $this->httpMethod) !== false
+                ) {
+                    if (!$path->preExecCheck()) {
+                        $this->error('403');
+                        exit;
+                    }
 
-                if ($path->route) {         
-                    $this->setPath($finalRoute);
+                    if ($path->route) {         
+                        $this->setPath($finalRoute);
+                    }
+                    
+                    $this->routeFind();
+                    return true;
                 }
-                
-                $this->routeFind();
-                return true;
             } 
         }
         return false;
