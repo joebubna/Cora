@@ -77,6 +77,6 @@ class Path
     public function preExecCheck($c = false) 
     {
         $preExec = $this->preExec;
-        return $preExec();
+        return $preExec($c);
     }
 }

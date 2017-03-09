@@ -180,7 +180,7 @@ class Route extends Framework
                     stripos($path->actions, 'all') !== false ||
                     stripos($path->actions, $this->httpMethod) !== false
                 ) {
-                    if (!$path->preExecCheck()) {
+                    if (!$path->preExecCheck($this->container)) {
                         $this->error('403');
                         exit;
                     }
