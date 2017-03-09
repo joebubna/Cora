@@ -10,9 +10,17 @@ $path = new \Cora\Path();
     };
 $paths->add($path);
 
+// $path = new \Cora\Path();
+//     $path->url = 'home/view';
+//     $path->preExec = function() {
+//         return false;
+//     };
+// $paths->add($path);
+
 
 $path = new \Cora\Path();
     $path->url = 'users/test/{action}-{action2}';
     $path->route = '/home/view/{action2}/{action}';
     $path->actions = 'GET|POST';
+    $path->RESTful = false;
 $paths->add($path);

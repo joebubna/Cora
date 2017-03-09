@@ -18,8 +18,12 @@ class Route extends Framework
     protected $collectionID;        // INT      - The ID if a collection ID is specified.
 
     protected $paths;               // ARRAY    - Holds custom defined paths.
+    protected $pathRESTful = true;  // BOOL     - For enabling/disabling RESTful on individual custom routes.
 
 
+    /**
+     *  Sets up fixed resources.
+     */
     public function __construct($container = false)
     {
         parent::__construct(); // Call parent constructor too so we don't lose functionality.
@@ -40,7 +44,10 @@ class Route extends Framework
 
     }
 
-
+    /**
+     *  Processes a route (which in turn sets the PATH, checks custom and default routes), 
+     *  then executes the route or lack thereof.
+     */
     public function run($uri = false, $method = false)
     {
         // Setup and check for route.
@@ -54,6 +61,11 @@ class Route extends Framework
     }
 
 
+    /**
+     *  Checks if a custom or default route exists for a URL and HTTP method. 
+     *  By default will grab URL and HTTP method from server variables, 
+     *  but can be passed in as arguments.
+     */
     public function routeProcess($uri = false, $method = false)
     {
         // Set Request type.
@@ -65,11 +77,16 @@ class Route extends Framework
         $this->setPath($uri);
 
         if (!$this->customFind()) {
-            $this->routeFind();
+            if ($this->config['automatic_routing']) {
+                $this->routeFind();
+            }
         }
     }
 
 
+    /**
+     *  Checks if a custom path exists for the current URL.
+     */
     public function customFind()
     {
         // Setup
@@ -172,6 +189,7 @@ class Route extends Framework
                         $this->setPath($finalRoute);
                     }
 
+                    $this->pathRESTful = $path->RESTful;
                     $this->routeFind();
                     return true;
                 }
@@ -183,6 +201,7 @@ class Route extends Framework
 
     /**
      *  Given a URL, sets needed PATH information.
+     *  This must be executed before routeFind as it sets the needed pathString var.
      *
      *  NOTE: $_SERVER['QUERY_STRING'] is set by the server and may not be available
      *  depending on the server being used.
@@ -364,8 +383,6 @@ class Route extends Framework
      */
     public function exists()
     {
-
-
         if (!isset($this->controllerPath)) {
             return false;
         }
@@ -426,7 +443,7 @@ class Route extends Framework
 
         // RESTful routing:
         // Modify method routed to if request is not of type GET.
-        if ($this->config['enable_RESTful']) {
+        if ($this->config['enable_RESTful'] && $this->pathRESTful) {
 
             $httpMethod = $_SERVER['REQUEST_METHOD'];
 

@@ -79,6 +79,11 @@ $config['default_controller'] = 'Home';
  */
 $config['default_method'] = 'index';
 
+/**
+ *  Is Automatic routing enabled or disabled?
+ */
+$config['automatic_routing'] = true;
+
 // Default template to use.
 $config['template'] = 'template';
 

@@ -20,6 +20,11 @@ class Home extends \Cora\App\Controller {
         echo $p2 . '<br>';
         echo $p3 . '<br>';
     }
+
+    public  function viewPOST()
+    {
+        echo 'This is a POST';
+    }
     
     public function eventSetup() 
     {        
