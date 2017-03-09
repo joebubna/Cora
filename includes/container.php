@@ -22,19 +22,19 @@ $container->auth = function($c, $user = false, $secureLogin = false, $authField 
  *******************************************************************/
 
 $container->comments = function($c) {
-    return $c->repository('Comment');  
+    return $c->repository('Comment');
 };
 
 $container->permissions = function($c) {
-    return $c->repository('Permission');  
+    return $c->repository('Permission');
 };
 
 $container->roles = function($c) {
-    return $c->repository('Role');  
+    return $c->repository('Role');
 };
 
 $container->users = function($c) {
-    return $c->repository('User');  
+    return $c->repository('User');
 };
 
 
@@ -97,7 +97,7 @@ $container->listeners->emails->sendPasswordResetToken = function($c) {
 
 /*******************************************************************
  *
- *  CORA RESOURCES 
+ *  CORA RESOURCES
  *
  *******************************************************************/
 
@@ -106,11 +106,11 @@ $container->autoload = function($c) {
 };
 
 $container->container = function($c, $parent = false, $data = false, $dataKey = false) {
-    return new \Cora\Container($parent, $data, $dataKey);  
+    return new \Cora\Container($parent, $data, $dataKey);
 };
 
 $container->collection = function($c, $data = false, $dataKey = false, $parent = false) {
-    return new \Cora\Container($parent, $data, $dataKey);  
+    return new \Cora\Container($parent, $data, $dataKey);
 };
 
 $container->cookie = function($c) {
@@ -133,11 +133,11 @@ $container->dbBuilder = function($c) {
 };
 
 $container->error = function($c) {
-    return new \Cora\App\Error($c);  
+    return new \Cora\App\Error($c);
 };
 
 $container->event = function($c) {
-    return new \Cora\EventManager($c->eventMapping());  
+    return new \Cora\EventManager($c->eventMapping());
 };
 
 $container->eventMapping = function($c) {
@@ -173,7 +173,7 @@ $container->redirect = function($c) {
 };
 
 $container->repository = function($c, $class, $idField = false, $table = false, $freshAdaptor = false, $db = false) {
-    return \Cora\RepositoryFactory::make($class, $idField, $table, $freshAdaptor, $db);  
+    return \Cora\RepositoryFactory::make($class, $idField, $table, $freshAdaptor, $db);
 };
 
 $container->session = function($c) {
@@ -199,13 +199,13 @@ $container->setInstance('sessionStub', new \Cora\SessionStub());
 $container->tests = new \Cora\Container($container);
 
 $container->tests->users = function($c) {
-    return $c->repository('Tests\User');  
+    return $c->repository('Tests\User');
 };
 
 $container->tests->userComments = function($c) {
-    return $c->repository('Tests\Users\Comment');  
+    return $c->repository('Tests\Users\Comment');
 };
 
 
 // Don't remove. Register container to be accessible globally.
-$GLOBALS['container'] = $container;
+$GLOBALS['coraContainer'] = $container;

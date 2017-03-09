@@ -627,7 +627,6 @@ class AmblendTest extends \Cora\App\TestCase
      *  and which refers to the other.
      *
      *  @test
-     *  @group failing
      */
     public function canSetRelationTableFieldNames()
     {

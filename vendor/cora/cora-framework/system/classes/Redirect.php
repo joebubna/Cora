@@ -68,7 +68,7 @@ namespace Cora;
     {
         // If no URL is specified, then save the current URL.
         if ($url == false) {
-            $url = $this->config['base_url'].$_SERVER['REQUEST_URI'];
+            $url = '//'.$this->config['base_url'].$_SERVER['REQUEST_URI'];
         }
         
         // Set saved URL

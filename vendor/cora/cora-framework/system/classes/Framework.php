@@ -70,7 +70,6 @@ class Framework {
     protected function getName($pathname) {
         $arr = explode('/', $pathname);
         return $arr[count($arr)-1];
-
     }
 
     /**
@@ -79,7 +78,47 @@ class Framework {
     protected function getNameBackslash($pathname) {
         $arr = explode('\\', $pathname);
         return $arr[count($arr)-1];
+    }
 
+    /**
+     *  Get the 'models' out of 'models/folder/fileName.php
+     */
+    public static function getRoot($pathname) {
+        // Remove leading slash if necessary.
+        if($pathname[0] == '/') {
+            $pathname = substr($pathname, 1);
+        }
+
+        // Create array from path
+        $arr = explode('/', $pathname);
+        
+        // If a pathname was given (as opposed to just a filename like "myFile.php")
+        // Return the first part of it. Otherwise just return nothing for root.
+        if (count($arr) > 1) {
+            return $arr[0];
+        }
+        return '';
+    }
+
+    /**
+     *  Get the 'models' out of 'models\folder\fileName.php
+     */
+    public static function getRootBackslash($pathname) {
+        
+        // Remove leading slash if necessary.
+        if($pathname[0] == '\\') {
+            $pathname = substr($pathname, 1);
+        }
+
+        // Create array from path
+        $arr = explode('\\', $pathname);
+        
+        // If a pathname was given (as opposed to just a filename like "myFile.php")
+        // Return the first part of it. Otherwise just return nothing for root.
+        if (count($arr) > 1) {
+            return $arr[0];
+        }
+        return '';
     }
 
     /**
