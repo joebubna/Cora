@@ -93,108 +93,135 @@ class Route extends Framework
         $url = $this->pathString;
         $matchFound = false;
         $templateRegex = "/\{\w+}/";
-
-        foreach ($this->paths as $path) {
-
-            ///////////////////////////////////////////////
-            // Grab path URL template variables
-            ///////////////////////////////////////////////
-            /**
-             *  Create an array of path variables from custom path URL definition.
-             *  I.E. users/{someVariable}/{anotherVariable}
-             */
-            $templateVariables = [];
-            preg_match_all($templateRegex, $path->url, $templateVariables);
-
-            ///////////////////////////////////////////////
-            // Replacing templates variables with regex
-            ///////////////////////////////////////////////
-            /**
-            *  This is for replacing the bracket variables in the custom route with a regular expression string.
-            *  If no custom definition for the variable was set in the variable definitions section, then the variable
-            *  will default to alpha-numeric with underscore and dash.
-            *  INPUT   = users/action-subaction/23
-            *  OUTPUT  = users\/([a-zA-Z0-9-_]+)\-([a-zA-Z0-9-_]+)\/([0-9]+)
-            */
-            $urlRegex = preg_quote($path->url, '/');
-            foreach ($templateVariables[0] as $key => $placeholder) {
-                if (isset($path->def[$placeholder])) {
-                    $urlRegex = str_replace(preg_quote($placeholder), '('.$path->def[$placeholder].')', $urlRegex);
-                }
-                else {
-                    $urlRegex = str_replace(preg_quote($placeholder), '([a-zA-Z0-9_]+)', $urlRegex);
-                }
-            }
-
-            ///////////////////////////////////////////////
-            // Check for regex match against URL given
-            ///////////////////////////////////////////////
-            /**
-            *   This takes the current URL and checks if it matches the custom route we are currently looking at.
-            *   If there's a match, then it marks that we found a valid custom path.
-            *   $urlData will get populated with the matching variable values from the URL. This works because
-            *   all the regexes from the above section are within parenthesis.
-            *   With the following regex: "users/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)"
-            *   The match for the first set of parenthesis will get placed in $urlData[1], the 2nd set in $urlData[2], etc.
-            *
-            *   See below for an example:
-            *   if URL              = articles/grab-all/23
-            *   and custom route    = articles/{action}-{modifier}/{id}
-            *   $urlData[1] will be 'grab', $urlData[2] will be 'all', and $urlData[3] will be 23.
-            */
-            $urlData = [];
-            $finalRoute = $path->route;
-            if (preg_match("/$urlRegex/", $url, $urlData)) {
-                $matchFound = true;
-
-                // A match was found, so at this point $urlData contains the matching pieces from the regex.
-                // With the first variable match being in $urlData[1]. Offset 0 is useless, so let's unset it so it
-                // does screw up our count.
-                unset($urlData[0]);
-                for($i=1; $i<=count($urlData); $i++) {
-                    // For each REAL variable value from our URL, let's replace any references to that variable in our
-                    // route with the actual values.
-                    // Example:
-                    //                     Path URL = "users/{action}-{modifier}"
-                    //    Actual URL in web browser = "users/fetch-all"
-                    //                   Path Route = "users/{action}/{modifier}"
-                    //  Final Route after this loop = "users/fetch/all"
-                    $pathVar = $templateVariables[0][$i-1]; // E.g. {action}. $templateVariables starts at offset 0.
-                    $pathVarValue = $urlData[$i];
-                    $finalRoute = str_replace($pathVar, $pathVarValue, $finalRoute);
-                }
-            }
+        $pathsExecuted = [];
 
 
-            ///////////////////////////////////////////////
-            // Handle Path match
-            ///////////////////////////////////////////////
-            /**
-             *  If this iteration of the loop found a match to a custom path,
-             *  Then execute that Path's pre execution function and if that returns true,
-             *  then set our new Route to be the one defined in the custom Path.
-             */
-            if ($matchFound) {
-                // If the path accepts all http method types or the current request type is listed as being accepted.
-                if (
-                    stripos($path->actions, 'all') !== false ||
-                    stripos($path->actions, $this->httpMethod) !== false
-                ) {
-                    if (!$path->preExecCheck($this->container)) {
-                        $this->error('403');
-                        exit;
+        $numPaths = count($this->paths);
+        for($i=0; $i<$numPaths; $i++) {
+            $path = $this->paths->get($i);
+            
+            // Only process this custom route if it hasn't been executed before.
+            if (!in_array($path->url, $pathsExecuted)) {
+                ///////////////////////////////////////////////
+                // Grab path URL template variables
+                ///////////////////////////////////////////////
+                /**
+                *  Create an array of path variables from custom path URL definition.
+                *  I.E. users/{someVariable}/{anotherVariable}
+                */
+                $templateVariables = [];
+                preg_match_all($templateRegex, $path->url, $templateVariables);
+
+                ///////////////////////////////////////////////
+                // Replacing templates variables with regex
+                ///////////////////////////////////////////////
+                /**
+                *  This is for replacing the bracket variables in the custom route with a regular expression string.
+                *  If no custom definition for the variable was set in the variable definitions section, then the variable
+                *  will default to alpha-numeric with underscore and dash.
+                *  INPUT   = users/action-subaction/23
+                *  OUTPUT  = users\/([a-zA-Z0-9-_]+)\-([a-zA-Z0-9-_]+)\/([0-9]+)
+                */
+                $urlRegex = preg_quote($path->url, '/');
+                foreach ($templateVariables[0] as $key => $placeholder) {
+                    if (isset($path->def[$placeholder])) {
+                        $urlRegex = str_replace(preg_quote($placeholder), '('.$path->def[$placeholder].')', $urlRegex);
                     }
-
-                    if ($path->route) {
-                        $this->setPath($finalRoute);
+                    else if ($placeholder == '{anything}') {
+                        $urlRegex = str_replace(preg_quote($placeholder), '(.+)', $urlRegex);
                     }
-
-                    $this->pathRESTful = $path->RESTful;
-                    $this->routeFind();
-                    return true;
+                    else {
+                        $urlRegex = str_replace(preg_quote($placeholder), '([a-zA-Z0-9_]+)', $urlRegex);
+                    }
                 }
-            }
-        }
+
+                ///////////////////////////////////////////////
+                // Check for regex match against URL given
+                ///////////////////////////////////////////////
+                /**
+                *   This takes the current URL and checks if it matches the custom route we are currently looking at.
+                *   If there's a match, then it marks that we found a valid custom path.
+                *   $urlData will get populated with the matching variable values from the URL. This works because
+                *   all the regexes from the above section are within parenthesis.
+                *   With the following regex: "users/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)"
+                *   The match for the first set of parenthesis will get placed in $urlData[1], the 2nd set in $urlData[2], etc.
+                *
+                *   See below for an example:
+                *   if URL              = articles/grab-all/23
+                *   and custom route    = articles/{action}-{modifier}/{id}
+                *   $urlData[1] will be 'grab', $urlData[2] will be 'all', and $urlData[3] will be 23.
+                */
+                $urlData = [];
+                $finalRoute = $path->route;
+                if (preg_match("/$urlRegex/", $url, $urlData)) {
+                    $matchFound = true;
+                    
+                    // A match was found, so at this point $urlData contains the matching pieces from the regex.
+                    // With the first variable match being in $urlData[1]. Offset 0 is useless, so let's unset it so it
+                    // does screw up our count.
+                    unset($urlData[0]);
+                    for($i=1; $i<=count($urlData); $i++) {
+                        // For each REAL variable value from our URL, let's replace any references to that variable in our
+                        // route with the actual values.
+                        // Example:
+                        //                     Path URL = "users/{action}-{modifier}"
+                        //    Actual URL in web browser = "users/fetch-all"
+                        //                   Path Route = "users/{action}/{modifier}"
+                        //  Final Route after this loop = "users/fetch/all"
+                        $pathVar = $templateVariables[0][$i-1]; // E.g. {action}. $templateVariables starts at offset 0.
+                        $pathVarValue = $urlData[$i];
+                        $finalRoute = str_replace($pathVar, $pathVarValue, $finalRoute);
+                    }
+                }
+
+
+                ///////////////////////////////////////////////
+                // Handle Path match
+                ///////////////////////////////////////////////
+                /**
+                *  If this iteration of the loop found a match to a custom path,
+                *  Then execute that Path's pre execution function and if that returns true,
+                *  then set our new Route to be the one defined in the custom Path.
+                */
+                if ($matchFound) {
+                    // If the path accepts all http method types or the current request type is listed as being accepted.
+                    if (
+                        stripos($path->actions, 'all') !== false ||
+                        stripos($path->actions, $this->httpMethod) !== false
+                    ) {
+                        // Run preExec function for this path.
+                        if (!$path->preExecCheck($this->container)) {
+                            $this->error('403');
+                            exit;
+                        }
+                        
+                        // If an internal route was defined for this path, set that route.
+                        if ($path->route) {
+                            $this->setPath($finalRoute);
+                        }
+
+                        // If path is passive, set the path route to be the URL (if necessary) and if so, reset custom paths 
+                        // iteration.
+                        if ($path->passive == true) {
+                            if ($path->route) {
+                                $url = $finalRoute;
+                                $i = 0;
+                                
+                                // Add path to list of executed paths. 
+                                $pathsExecuted[] = $path->url;
+                            }
+                        }
+
+                        // If the path is isn't passive, try to find matching route.
+                        else {
+                            $this->pathRESTful = $path->RESTful;
+                            $this->routeFind();
+                            return true;
+                        }
+                    }
+                }
+            } // end if not in executed paths list
+        } // end for loop
         return false;
     }
 
