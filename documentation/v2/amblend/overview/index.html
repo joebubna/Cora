@@ -1074,7 +1074,7 @@ bit depending on how the data is stored, but all follows the same concept.
 Going back to the "User has a Job" example, the way we defined the Job attribute
 on our User model as a simple, single related object means that our Users table
 will have a "job" column that stores the ID of that user's job.</p>
-<p><img alt="Job_is_column" src="../../../img/documentation_amblend_overview_table2.png" /></p>
+<p><img alt="Job_is_column" src="../../../../img/documentation_amblend_overview_table2.png" /></p>
 <p>In the case of Bob as seen in the image of his Users table entry above, grabbing
 his whole user object and doing a var_dump as seen in this code:</p>
 <pre><code class="php">public function profile($id)
@@ -1132,7 +1132,7 @@ by a full Job object!</p>
 <p>This works similarly, but slightly different for related objects that use a
 relation table or an "owner" type column on the related object's table. If Bob's
 User table entry looked like this:</p>
-<p><img alt="Job_is_relation" src="../../../img/documentation_amblend_overview_table1.png" /></p>
+<p><img alt="Job_is_relation" src="../../../../img/documentation_amblend_overview_table1.png" /></p>
 <p><em>(Notice the lack of a "job" column)</em></p>
 <p>And Jobs were getting related to Users by utilizing a separate relation table,
 then the var_dump on User would look like this:</p>
