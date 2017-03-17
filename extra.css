@@ -2,6 +2,15 @@ div[role="main"] {
     font-size: 1.25em;
 }
 
+.text-red { color: #cc0000; }
+.text-blue { color: #2fa4e7; }
+.text-orange { color: #dd4814; }
+.text-green { color: #18bc9c; }
+.text-sml { font-size: 0.8em; }
+.text-lrg { font-size: 1.1em; }
+
+.float-right { float: right; }
+
 .bold { font-weight: 800; }
 table { border-collapse: collapse; }
 table, th, td { border: 1px solid #ddd; }
@@ -28,6 +37,9 @@ table.tg tr td.alert-success { background-color: #dff0d8; text-align: center; }
 table.tg tr td.alert-warning { background-color: #fcf8e3; text-align: center; }
 table.tg tr td.alert-danger { background-color: #f2dede; text-align: center; }
 table.tg tr th.center { text-align: center; }
+
+.table-striped tbody tr:first-child { background: #dd4814; }
+.table-striped tbody tr:first-child th { background: transparent; color: #FFF; }
 
 /* NAV Bar */
 .bs-sidenav li  {

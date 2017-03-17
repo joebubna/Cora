@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../../../img/favicon.ico">
+
+	<title>Implementation - Cora Framework Documentation</title>
+
+        <link href="../../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../../css/highlight.css">
+        <link href="../../../../css/base.css" rel="stylesheet">
+        <link href="../../../../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../../..">Cora Framework Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../../..">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../setup/install/">Installation</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/configuration/">Configuration</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/advanced/">Advanced Configuration</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">MVC Pattern</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
+
+        
+            
+<li >
+    <a href="../overview/">AmBlend ORM</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/overview/">Database Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Routing</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../routing/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../routing/custom_routes/">Custom Routes</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../overview/">Overview</a>
+</li>
+
+        
+            
+<li class="active">
+    <a href="./">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../database_gen/">Automated DB Creation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../opt_locking/">Optimistic Locking</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../validationclass/overview/">Validate Class</a>
+</li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Legacy Versions</a>
+    <ul class="dropdown-menu">
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Cora Version 1</a>
+    <ul class="dropdown-menu">
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/mvc/overview/">MVC Pattern</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/routing/overview/">Routing</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/overview/">AmBlend ORM</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/overview/">Database Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+<li >
+    <a href="../../../v1/routing/overview/">Routing</a>
+</li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/implementation/">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/database_gen/">Automated DB Creation</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+<li >
+    <a href="../../../v1/validationclass/overview/">Validate Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+    </ul>
+  </li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">CS Topics <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../computerscience/computability/">Computability</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../overview/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../repository/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#implementation-details">Implementation Details</a></li>
+        
+    
+        <li class="main "><a href="#orm-basics">ORM Basics</a></li>
+        
+    
+        <li class="main "><a href="#activerecord-pattern">ActiveRecord Pattern</a></li>
+        
+    
+        <li class="main "><a href="#data-mapper-pattern">Data-Mapper Pattern</a></li>
+        
+    
+        <li class="main "><a href="#understanding-amblends-implementation">Understanding AmBlend's Implementation</a></li>
+        
+            <li><a href="#fetching-from-a-repository">Fetching from a Repository</a></li>
+        
+            <li><a href="#dynamically-fetching-a-related-object">Dynamically Fetching a Related Object:</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="implementation-details">Implementation Details</h1>
+<p>Obviously a developer can dig through the code to see exactly how things work, but as that's a more extreme measure most people probably
+don't bother with (and honestly AmBlend is kinda complicated),
+here's the general understanding of how AmBlend is implemented. We'll start by talking about the ActiveRecord and Data-Mapper
+patterns as those are an important segway into understanding the implementation of AmBlend.</p>
+<h1 id="orm-basics">ORM Basics</h1>
+<p>Alright, so first off, Object Relational Mapping only makes sense to use when you are doing object oriented programming. If you aren't familiar with OO programming,
+I'd recommend you look into it, as it makes keeping your app well organized way easier. Assuming however that you have a basic understanding of what objects are,
+let's discuss what an ORM does.</p>
+<p>Say you have a simple User object that looks like this:</p>
+<pre><code class="php">class User
+{
+    public $name;
+    public $email;
+
+    public function __construct($name, $email)
+    {
+        $this-&gt;name = $name;
+        $this-&gt;email = $email;
+    }
+}
+</code></pre>
+
+<p>Because HTTP is a stateless protocol, each time someone makes a new request to your webapp, the application has to be reinitialized from scratch. This means any
+data that's needed for your app to run must be fetched from various sources when setting up, and must be saved back to a permanent storage space after use (or
+else the data will simply be thrown out and lost). Aside from data you only need to keep temporarily (Google 'php sessions tutorial'), anything you want
+to store permanently you'll probably be saving to a database. If you've worked with objects in the past outside of a framework, your solution to saving an object
+might have been to add a "save" method that executes some SQL (structured query language):</p>
+<pre><code class="php">class User
+{
+    public $id;
+    public $name;
+    public $email;
+
+    public function __construct($container, $name = null, $email = null)
+    {
+        $this-&gt;db = $container['db'];
+        $this-&gt;name = $name;
+        $this-&gt;email = $email;
+    }
+
+    public function save()
+    {
+        // If this user already exists in the DB, then just update it.
+        if (isset($this-&gt;id)) {
+            $this-&gt;db-&gt;query(&quot;UPDATE users SET name = :name, email = :email WHERE id = :user_id&quot;);
+            $this-&gt;db-&gt;bind(':name', $this-&gt;name);
+            $this-&gt;db-&gt;bind(':email', $this-&gt;email);
+            $this-&gt;db-&gt;bind(':id', $this-&gt;id);
+            $this-&gt;db-&gt;execute()
+        }
+        // Otherwise create a new user record.
+        else {
+            $db-&gt;query(&quot;INSERT INTO users VALUES (NULL, :name, :email)&quot;);
+            $this-&gt;db-&gt;bind(':name', $this-&gt;name);
+            $this-&gt;db-&gt;bind(':email', $this-&gt;email);
+            if ($this-&gt;db-&gt;execute()) {
+                $this-&gt;id = $db-&gt;lastInsertId();
+            }   
+        }
+    }
+}
+</code></pre>
+
+<p>Here we've changed the code to allow us to pass in a container with a database adaptor, and we either insert or update
+a user in the database when the save() method is called. Already you can see that this is quickly adding a lot of lines of code
+to our user model, and this is for a simple example which only contains a name and email. What's more, we haven't even added any code
+yet for fetching users from the database! We only added code to save a user.</p>
+<p>The goal of an ORM like AmBlend is to free you from having to implement methods to save and grab the model data from the database.
+This not only allows you to get rid of a lot of code clutter from your classes, it also saves you time by freeing you from having
+to implement error-prone, busy-work like writing all those SQL queries. Using AmBlend, your model and the controller code to create
+a new user would look something like this:</p>
+<pre><code class="php">class User extends \Cora\Model {
+
+    public $model_attributes = [
+        'id' =&gt; [],
+        'name' =&gt; [],
+        'email' =&gt; []
+    ];
+
+    public function __construct($name = null, $type = null)
+    {
+        $this-&gt;name = $name;
+        $this-&gt;type = $type;
+    }
+}
+
+
+///////////////////////////////////////////
+// Controller code to create a new user
+///////////////////////////////////////////
+class Users extends \MyApp {
+    public function register()
+    {
+        $repo = \Cora\RepositoryFactory::make('User');
+        $user = new User('testUser', 'testUser31@gmail.com');
+        $repo-&gt;save($user);
+    }
+}
+</code></pre>
+
+<p>Let's quickly discuss ActiveRecord vs. Data-Mapper implementations
+which will then segway into how AmBlend is implemented in the next section.</p>
+<h1 id="activerecord-pattern">ActiveRecord Pattern</h1>
+<p>In terms of functionality, ActiveRecord basically works just like the example from the above section where I showed what your code might look like if you implemented
+handling database persistance on your own. The difference being that your model will extend from a base class that handles the database related logic for you.
+So you won't have to write (typically) the SQL queries to save your objects, but the logic will still be a part of your model. ActiveRecord generally looks like this:</p>
+<pre><code class="php">class User extends ActiveRecordModel
+{
+    public $name;
+    public $email;
+
+    public function __construct($name, $email)
+    {
+        $this-&gt;name = $name;
+        $this-&gt;email = $email;
+    }
+}
+
+class ActiveRecordModel
+{
+    // Save record to database.
+    public function save()
+    {
+        // SAVING TO DB LOGIC
+    }
+
+    // Fetch record from database.
+    public function fetch($parameters)
+    {
+        // FETCHING FROM DB LOGIC
+    }
+}
+</code></pre>
+
+<p>There's a few different main complaints people have about the ActiveRecord pattern, and they're all kinda interrelated. Let's start
+by mentioning its lack of SRP adherance. SRP stands for Single Responsibility Principle, and basically means each class should only
+handle a single part of a software's functionality. In doing so, you help your app stay logically sensible and readable, and make
+testing easier. If software doesn't adhere to the SRP, then it runs the risk of becoming a confusing mess of spaghetti code that's hard
+to test, hard to understand, hard to upgrade and maintain, etc.</p>
+<p>This of course leads into and overlaps the other two main complaints about AR, those being that it can be hard to test (depends on just how much "magic"
+happens under the surface) and that there's generally a lack of separation between the domain (aka 'the app logic') and the storage medium (database).
+The testing issues usually are the result of "magic" in the form of data being passively fetched from a database, which if you're trying to test
+your app independent of the storage medium, can obviously be frustrating. Similarly, the lack of domain/database separation also stems from how closely tied
+to the database the ActiveRecord pattern is coupled by nature of how it works.</p>
+<p>Why is important to keep the domain (app) logic decoupled from the database? Several reasons, the most important probably being:</p>
+<ul>
+<li>
+<p>Storage mediums can and do change! You may be using the MySQL database today, but tomorrow you might need to use MongoDb, or save your data to
+ XML files, or whatever. If you need to swap out the storage system your app uses, it shouldn't break all your code and force you to rewrite the app.</p>
+</li>
+<li>
+<p>You want to be able to test and know that your code, your logic, works like you intend it to. Although most databases used nowadays aren't going
+ to have a lot of obvious bugs, the fact of the matter remains that the storage layer is still powered by software, and as such, could have bugs
+ in its implementation. That's why you need to be able to test YOUR code and know it's working, independent of any bugs related to the storage &amp; retrieval of data.</p>
+</li>
+</ul>
+<p>On the flip side, ActiveRecord's strengths are that it's super easy to use and requires little to no setup (which are awesome positives!). For these reasons, it's an extremely popular ORM
+pattern used by many frameworks.</p>
+<h1 id="data-mapper-pattern">Data-Mapper Pattern</h1>
+<p>The <a href="https://en.wikipedia.org/wiki/Data_mapper_pattern">Data-Mapper pattern</a> utilizes a completely different approach from anything we've talked about so far.
+When using a data mapper, your models are COMPLETELY SEPARATED from the storage layer. They don't know how to save themselves, or fetch records, or anything else, because
+handling persistence to a storage medium is outside their responsibility! Using this pattern, it's the Data Mapper's job to know how to save and fetch objects.
+It 'maps' different kinds of data used in your app to some sort of storage point. This
+is obviously a complete 180 from the ActiveRecord pattern where objects have to know how to fetch and save from the storage layer themselves.</p>
+<p>An ultra simplistic representation of the Data Mapper pattern might look like the below. Notice the User class doesn't extend anything, and a User object must
+be passed in to the Data Mapper for it to save the user.</p>
+<pre><code class="php">class User
+{
+    public $name;
+    public $email;
+
+    public function __construct($name, $email)
+    {
+        $this-&gt;name = $name;
+        $this-&gt;email = $email;
+    }
+}
+
+class DataMapper
+{
+    // Save record to database.
+    public function save($objectToBeSaved)
+    {
+        // SAVING TO DB LOGIC
+    }
+
+    // Fetch record from database. Some options are passed in to determine what to fetch.
+    public function fetch($filterParameters)
+    {
+        // FETCHING FROM DB LOGIC
+    }
+}
+</code></pre>
+
+<p>As SRP purists will delight to tell you, the data mapper pattern adheres to the Single Responsibility Principle quite well. Furthermore, because an object
+is simply an object and has nothing magical or special about it, this makes testing way more straightforword. Need to save an object to a different storage medium?
+You have the option of just passing the object to a different data mapper! Need to map parts of your object to one storage medium, and another part of the same
+object to a different storage location? Using Data Mapper you can write the functionality to handle this without adding all sorts of unrelated logical clutter to your models!
+In these and other ways, the Data Mapper pattern is much more flexible than ActiveRecord.</p>
+<p>The downsides to this Data Mapper pattern are that it can be a little hard to understand and use, and it can require more setup time and thought because it doesn't necessarily have the 1-to-1 type of relationship with a database many AR implementations possess.</p>
+<h1 id="understanding-amblends-implementation">Understanding AmBlend's Implementation</h1>
+<div class="alert alert-warning">
+    WARNING: The following two paragraphs are chock-full of
+    fancy terminology you may not understand. Don't freak out! Just keep reading
+    and all will be explained by the end of this section.
+</div>
+
+<p>Alright, with the understandings from the previous section in place, we're now
+ready to talk about how AmBlend implements object relational mapping. In short,
+AmBlend uses a generalized Repository-Gateway-Factory design pattern where the
+Gateway (which acts as the mapper between the domain and the persistence layer) asks
+the model for various pieces of information about itself and the data it has ownership over.
+The Gateway does this via the utility methods the Cora Model class provides. This
+separation of concerns with the Gateway acting as the mapper between the persistence
+layer and the domain, is in-line with using a Data Mapper and provides
+you with all the benefits of that pattern.</p>
+<p>However, AmBlend, as discussed previously, is not just a pure Data-Mapper implementation,
+but instead a blend of both ActiveRecord and Data-Mapper. The goal of AmBlend is
+to provide the ease of use ActiveRecord is famous for, but
+also the separation of concerns and flexibility that Data Mapper excels at.
+The way AmBlend accomplishes this is by using the repository-gateway-factory pattern
+AND by having its models inherit methods from Cora's
+Model class. This inheritance is obviously similar to ActiveRecord, however,
+unlike AR, those methods do not directly interact with the persistence
+layer. Instead, they help other classes (particularly the Gateway) understand and
+use the attributes defined in the model. They also provide the model with
+knowledge of the repository's existence, so the model can ask the repository to
+fetch data dynamically (<a href="../../../../documentation/amblend/overview/#dynamic-loading">Click Here</a>
+to read about how that works).</p>
+<p>PHEWWW! Was that a mouthful or what? Hold on a sec, I think I need to cram a few
+more buzzwords in those two paragraphs... Seriously though, now that's I've given
+the highly compact description of how AmBlend works, let's slow down a bit and kinda
+walk through it bit-by-bit.</p>
+<p>So there's really two different logic flows that are important for understanding exactly
+what's going on, the regular logic flow of fetching objects from a repository,
+and the logic flow of fetching related objects dynamically. First let's look at
+what happens when we want to fetch from a repository.</p>
+<hr />
+<h2 id="fetching-from-a-repository">Fetching from a Repository</h2>
+<p><div class="subTitleH2">(typical Data-Mapper type implementation):</div></p>
+<div class="blank">&nbsp;</div>
+
+<p><strong>The Code (an example of a User repository in use within a Controller):</strong>   </p>
+<pre><code class="php">// Repository Setup (if not using RepositoryFactory)
+$db = \Cora\Database::getDb('name_of_db_connection');
+$factory = new Factory('User');
+$gateway = new Gateway($db);
+$repo    = new Repository($gateway, $factory);
+
+// Grab a user from repository. This triggers the logic flow seen in the diagram below.
+$user = $repo-&gt;findBy('email', 'Bob@fakeEmail.com');
+</code></pre>
+
+<div class="blank">&nbsp;</div>
+
+<p><strong>The Logic Flow Chart - Diagram A:</strong> <br />
+<div class="blank">&nbsp;</div></p>
+<p><img alt="repository_pattern" src="../../../img/repository_gateway_factory_pattern.png" /></p>
+<div class="blank">&nbsp;</div>
+
+<p>As can be seen, there's nothing too fancy here. This is a normal looking Repository
+pattern, where the Gateway is acting as our Data Mapper.
+If you aren't familiar with it, here's a description of what the objects
+responsibilities are:</p>
+<ul>
+<li><strong>The Repository:</strong> The Repository is the access point that parts of your application
+interact with when they need to get objects out of, or save objects to, the persistence layer (usually a database).
+If you create a "User" repository, it handles grabbing and saving Users, if you create an "Orders"
+repository, it handles grabbing and saving Orders, and so forth.</li>
+<li><strong>The Gateway:</strong> The Gateway is the class who's responsibility it is to interact directly
+with the persistence layer and grab data from whatever database, or text file, or API,
+it needs to interact with in order to get you the raw data you need. It also interacts
+with the storage mediums to save objects when an object needs to be persisted.</li>
+<li><strong>The Factory:</strong> The Factory is a class that makes objects. If you have a "User" factory,
+then it's going to create User objects for you. In AmBlend, the Factory is given
+the raw data (an array) from the Gateway and returns back objects.</li>
+</ul>
+<hr />
+<p>Next let's look at the logic flow of fetching related objects dynamically. On the
+surface this might seem like a small change (judging from the diagram), but really
+it's much different as in this scenario a model itself is the one creating and
+using a Repository (via the methods built into its Cora Model class parent).</p>
+<hr />
+<h2 id="dynamically-fetching-a-related-object">Dynamically Fetching a Related Object:</h2>
+<p><div class="subTitleH2">(still Data-Mapping, but incorporates ActiveRecord type use of Cora Model class)</div></p>
+<div class="blank">&nbsp;</div>
+
+<p><strong>The Code (accessing a related object to a User):</strong>   </p>
+<pre><code class="php">// Repository Setup (this time we're using RepositoryFactory)
+$repo = \Cora\RepositoryFactory::make(User::class);
+
+// Grab a user from repository. This triggers the logic flow seen in the diagram A.
+$user = $repo-&gt;findBy('email', 'Bob@fakeEmail.com');
+
+// Access a related object (Job is a class). This triggers the logic in diagram B below.
+echo $user-&gt;job-&gt;title;
+</code></pre>
+
+<div class="blank">&nbsp;</div>
+
+<p><strong>The Logic Flow Chart - Diagram B:</strong> <br />
+<div class="blank">&nbsp;</div></p>
+<p><img alt="dynamic_pattern" src="../../../img/dynamic_repository_gateway_factory_pattern.png" /></p>
+<div class="blank">&nbsp;</div>
+
+<p>The only difference between diagram A and diagram B above is how the repository
+gets invoked (steps 0 through 1). However, this is actually a pretty major change
+in the logic flow! When normally fetching from a repository, there's no interaction
+with a model, a controller asks a repository for one or more objects and the
+repository returns them. When a controller already has a Cora model and needs
+to grab a related object, that's when the logic built into the Cora model class
+kicks in to facilitate. The model looks at its own definition and any data passed
+in when it was created, and from those determines how to create a Repository to
+grab the needed related object. This is how AmBlend implements ActiveRecord like
+simplicity in fetching objects, while still maintaining separation of concerns.
+The model doesn't directly interact with the persistence layer (knowing that's not
+its responsibility), but rather the Cora Model class gives it the necessary knowledge
+on how to use the Repository system. And then, just to make sure testing doesn't get
+difficult, options are included to disable Dynamic Fetching, or to pass in a
+different database adaptor to override any defaults (I.E. force dynamic fetching to
+use a test database). See <a href="http://127.0.0.1:8000/documentation/amblend/overview/#testing">Here</a>
+for more information on testing.</p>
+<hr />
+<p>Ok, that's it! Hopefully you have a high level understanding of how AmBlend blends
+together the best of Data-Mapper and ActiveRecord into a new best-of-both worlds system.</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../../js/highlight.pack.js"></script>
+        <script>var base_url = '../../../..';</script>
+        <script data-main="../../../../mkdocs/js/search.js" src="../../../../mkdocs/js/require.js"></script>
+        <script src="../../../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

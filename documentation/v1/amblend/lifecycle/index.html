@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../../../img/favicon.ico">
+
+	<title>Lifecycle Callbacks - Cora Framework Documentation</title>
+
+        <link href="../../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../../css/highlight.css">
+        <link href="../../../../css/base.css" rel="stylesheet">
+        <link href="../../../../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../../..">Cora Framework Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../../..">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../setup/install/">Installation</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/configuration/">Configuration</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/advanced/">Advanced Configuration</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/mvc/overview/">MVC Pattern</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/routing/overview/">Routing</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/overview/">AmBlend ORM</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/overview/">Database Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Routing</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/routing/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/routing/custom_routes/">Custom Routes</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/implementation/">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/database_gen/">Automated DB Creation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/opt_locking/">Optimistic Locking</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../../v2/validationclass/overview/">Validate Class</a>
+</li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Legacy Versions</a>
+    <ul class="dropdown-menu">
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Cora Version 1</a>
+    <ul class="dropdown-menu">
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">MVC Pattern</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
+
+        
+            
+<li >
+    <a href="../overview/">AmBlend ORM</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/overview/">Database Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../implementation/">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../factory/">Factory</a>
+</li>
+
+        
+            
+<li class="active">
+    <a href="./">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../database_gen/">Automated DB Creation</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+<li >
+    <a href="../../validationclass/overview/">Validate Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+    </ul>
+  </li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">CS Topics <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../computerscience/computability/">Computability</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../factory/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../database_gen/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#lifecycle-callbacks">Lifecycle Callbacks</a></li>
+        
+    
+        <li class="main "><a href="#list-of-callbacks">List of Callbacks</a></li>
+        
+    
+        <li class="main "><a href="#usage-examples">Usage Examples</a></li>
+        
+            <li><a href="#setting-a-computed-default-value">Setting a Computed Default Value</a></li>
+        
+            <li><a href="#doing-cleanup-before-deleting">Doing Cleanup Before Deleting</a></li>
+        
+            <li><a href="#convert-a-date-string-from-mm-dd-yyyy-to-yyyy-mm-dd-when-saving">Convert a Date String from mm-dd-yyyy to yyyy-mm-dd when Saving</a></li>
+        
+            <li><a href="#grab-date-in-particular-format">Grab Date in Particular Format</a></li>
+        
+            <li><a href="#enforcing-restrictions-on-a-data-member">Enforcing Restrictions on a Data Member</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="lifecycle-callbacks">Lifecycle Callbacks</h1>
+<p>Lifecycle callbacks are methods on a model that get called automatically when
+certain actions are performed on that model. For instance, if you create a new
+User and ask a Repository to save it, the model's "beforeCreate()" method will get called
+before the User gets saved to the database, and the "afterCreate()" method will
+get called after a record for that User gets inserted.</p>
+<p>There are various uses where these Lifecycle Callbacks could come in handy, and
+I'll try to give an example or two.</p>
+<h1 id="list-of-callbacks">List of Callbacks</h1>
+<table>
+    <tr>
+        <th>Callback</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>delete()</td>
+        <td>
+            Called before deletion happens when a Repository is asked to delete
+            an object.
+        </td>
+    </tr>
+    <tr>
+        <td>beforeCreate()</td>
+        <td>
+            Called before insertion happens when a Repository is asked to save
+            a NEW object.
+        </td>
+    </tr>
+    <tr>
+        <td>afterCreate()</td>
+        <td>
+            Called after insertion happens when a Repository is asked to save
+            a NEW object.
+        </td>
+    </tr>
+    <tr>
+        <td>beforeSave()</td>
+        <td>
+            Called before an update happens when a Repository is asked to save
+            an EXISTING object. Also called before an insertion happens when a repo
+            is asked to save a NEW object (called right AFTER afterCreate).
+        </td>
+    </tr>
+    <tr>
+        <td>afterSave()</td>
+        <td>
+            Called after an update happens when a Repository is asked to save
+            an EXISTING object. Also called after an insertion happens when a repo
+            is asked to save a NEW object (called right AFTER beforeCreate).
+        </td>
+    </tr>
+    <tr>
+        <td class="unbreak">beforeSet($property, $value)</td>
+        <td>
+            Called before a model property gets set. I.E. If you set a name on
+            a User object like so: $user->name = 'Bob', the beforeSet method
+            will get called with "name" as the property and 'Bob' as the value
+            before the setting takes place.
+        </td>
+    </tr>
+    <tr>
+        <td class="unbreak">afterSet($property, $value)</td>
+        <td>
+            Called after a model property gets set.
+        </td>
+    </tr>
+    <tr>
+        <td class="unbreak">beforeGet($property)</td>
+        <td>
+            Called before a model property gets grabbed.
+        </td>
+    </tr>
+    <tr>
+        <td class="unbreak">afterGet($property, $value)</td>
+        <td>
+            Called after a model property gets grabbed.
+        </td>
+    </tr>
+</table>
+
+<h1 id="usage-examples">Usage Examples</h1>
+<p>If you haven't used callbacks before, it may not be immediately clear how or
+why you might want to use them. The following are a few examples of common use
+cases where callbacks can make your life easier.</p>
+<h2 id="setting-a-computed-default-value">Setting a Computed Default Value</h2>
+<p>Alright, say you have a User model and you want to have a "joinedDate" property
+that represents when that user first joined your site/app. The easiest way to
+do this would be to use the beforeCreate() callback. This means adding a
+beforeCreate() method to your User model that maybe looks something like this:</p>
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar',
+            'index' =&gt; true
+        ],
+        'joinedDate' =&gt; [
+            'type' =&gt; 'date'
+        ]
+    ];
+
+    public function beforeCreate()
+    {
+        $this-&gt;joinedDate = date('Y-m-d');
+    }
+}
+</code></pre>
+
+<p>Since beforeCreate() gets called BEFORE the saving of the object to the database
+takes place, that means the 'joinedDate' property will have the current date and
+get saved to the database as such.</p>
+<h2 id="doing-cleanup-before-deleting">Doing Cleanup Before Deleting</h2>
+<p>Another common use case might be doing some sort of database cleanup before deleting
+an object. Say you have some sort of "Comment" object representing comments users
+can leave on content on your site. Let's also say for this example that Users can
+upload files as an attachment to a comment and those files are stored in a separate
+table/collection with a reference back to the parent. When you tell AmBlend to delete
+the parent comment like so:</p>
+<pre><code class="php">$repo = \Cora\RepositoryFactory::make('Comment');
+$comment = $repo-&gt;find($id);
+$comment-&gt;delete();
+</code></pre>
+
+<p>Any related children WILL NOT get automatically deleted along with it (because
+AmBlend can't safely assume that deleting all related objects is desired behavior)!
+In order to avoid leaving unwanted orphans in the database, you can
+utilize the delete() callback to manually delete or reassign any related data.</p>
+<pre><code class="php">class Comment extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'user' =&gt; [
+            'model' =&gt; 'User'
+        ],
+        'text' =&gt; [
+            'type' =&gt; 'text'
+        ],
+        'files' =&gt; [
+            'models' =&gt; 'FileAttachment'
+        ]
+    ];
+
+    public function delete()
+    {
+        // Code to handle files related to this comment...
+    }
+}
+</code></pre>
+
+<h2 id="convert-a-date-string-from-mm-dd-yyyy-to-yyyy-mm-dd-when-saving">Convert a Date String from mm-dd-yyyy to yyyy-mm-dd when Saving</h2>
+<p>Another area where callbacks could be useful is if you have a date in your model
+that is stored as a string in the "mm-dd-yyyy" format and you need to convert it
+to a "yyyy-mm-dd" string for insertion into a database.</p>
+<p>And before I give this example, let me just point out that AmBlend is meant to work
+well with php DateTime objects. If you grab a model using a Repository that
+has a "date" or "datetime" database field, that field will automatically get
+converted into a DateTime object for you when it's populated into your model.
+Similarly, when you go to save your model, the DateTime will be grabbed as a
+"yyyy-mm-dd" string for use with the database
+automatically - no work needs to be done on your part as a developer.</p>
+<p>However, if for whatever reason your model has a date that is being stored as a plain
+string, and you don't want to convert it into a DateTime object (see next example),
+then the following example could be useful to you:</p>
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar',
+            'index' =&gt; true
+        ],
+        'joinedDate' =&gt; [
+            'type' =&gt; 'varchar'
+        ]
+    ];
+
+    public function beforeSave()
+    {
+        // Save the real value of joinedDate to a temp variable
+        $this-&gt;joinedDateTemp = $this-&gt;joinedDate;
+
+        // Swap joinedDate from mm-dd-yyyy to yyyy-mm-dd
+        $timestamp = strtotime($this-&gt;joinedDate);
+        $this-&gt;joinedDate = date('Y-m-d', $timestamp);
+    }
+
+    public function afterSave()
+    {
+        // Swap joinedDate back to its mm-dd-yyyy value.
+        $this-&gt;joinedDate = $this-&gt;joinedDateTemp;
+
+        // You can optionally clear the temp variable we used.
+        $this-&gt;joinedDateTemp = null;
+    }
+}
+</code></pre>
+
+<p>The above code makes "joinedDate" a string of yyyy-mm-dd format right before the
+User object is saved, and then swaps it back to its original mm-dd-yyyy format
+after the save is finished.</p>
+<h2 id="grab-date-in-particular-format">Grab Date in Particular Format</h2>
+<p>When AmBlend fetches date fields from a database, it converts them into php
+DateTime objects. If you've used DateTime object before, then you probably know
+you can get their value formatting in a certain way by doing:</p>
+<pre><code class="php">echo $someDate-&gt;format('m-d-Y');
+</code></pre>
+
+<p>However, if for some reason you didn't want to have to specify the format
+anytime you display a date, you could utilize the beforeGet() method to always
+have it return in a particular way:</p>
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar',
+            'index' =&gt; true
+        ],
+        'joinedDate' =&gt; [
+            'type' =&gt; 'date'
+        ]
+    ];
+
+    public function beforeGet($prop)
+    {
+        if ($prop == 'joinedDate') {
+            // Save the real value of joinedDate to a temp variable
+            $this-&gt;joinedDateTemp = $this-&gt;joinedDate;
+
+            // Change the value of joinedDate to a formatted string
+            $this-&gt;joinedDate = $this-&gt;joinedDate-&gt;format('m-d-Y');
+        }
+    }
+
+    public function afterGet($prop, $value)
+    {
+        if ($prop == 'joinedDate') {
+            // Restore joined date.
+            $this-&gt;joinedDate = $this-&gt;joinedDateTemp;
+        }
+    }
+}
+</code></pre>
+
+<h2 id="enforcing-restrictions-on-a-data-member">Enforcing Restrictions on a Data Member</h2>
+<p>Another possible use for callbacks could be enforcing some set of restrictions
+on a particular data member within a model. For instance, let's say you have an
+"age" property on your User model and you want to ensure that only numbers get
+assigned to it. You can do this by utilizing the beforeSet() callback:</p>
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'email' =&gt; [
+            'type' =&gt; 'varchar',
+            'index' =&gt; true
+        ],
+        'age' =&gt; [
+            'type' =&gt; 'int'
+        ]
+    ];
+
+    public function beforeSet($prop, $value)
+    {
+        if ($prop == 'age') {
+            if (is_numeric($value) == false) {
+                // Throw some exception or something...
+            }
+        }
+    }
+}
+</code></pre></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../../js/highlight.pack.js"></script>
+        <script>var base_url = '../../../..';</script>
+        <script data-main="../../../../mkdocs/js/search.js" src="../../../../mkdocs/js/require.js"></script>
+        <script src="../../../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../../../img/favicon.ico">
+
+	<title>Custom Routes - Cora Framework Documentation</title>
+
+        <link href="../../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../../css/highlight.css">
+        <link href="../../../../css/base.css" rel="stylesheet">
+        <link href="../../../../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../../..">Cora Framework Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../../..">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../setup/install/">Installation</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/configuration/">Configuration</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/advanced/">Advanced Configuration</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">MVC Pattern</a>
+</li>
+
+        
+            
+<li >
+    <a href="../overview/">Routing</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/overview/">AmBlend ORM</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/overview/">Database Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Routing</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../overview/">Overview</a>
+</li>
+
+        
+            
+<li class="active">
+    <a href="./">Custom Routes</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/implementation/">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/database_gen/">Automated DB Creation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/opt_locking/">Optimistic Locking</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../validationclass/overview/">Validate Class</a>
+</li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Legacy Versions</a>
+    <ul class="dropdown-menu">
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Cora Version 1</a>
+    <ul class="dropdown-menu">
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/mvc/overview/">MVC Pattern</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/routing/overview/">Routing</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/overview/">AmBlend ORM</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/overview/">Database Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+<li >
+    <a href="../../../v1/routing/overview/">Routing</a>
+</li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/implementation/">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/amblend/database_gen/">Automated DB Creation</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v1/events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v1/events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+<li >
+    <a href="../../../v1/validationclass/overview/">Validate Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+    </ul>
+  </li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">CS Topics <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../computerscience/computability/">Computability</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../overview/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../../amblend/overview/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#custom-routes">Custom Routes</a></li>
+        
+            <li><a href="#understanding-coras-implementation">Understanding Cora's Implementation</a></li>
+        
+            <li><a href="#simple-internal-redirect">Simple Internal Redirect</a></li>
+        
+            <li><a href="#url-variables">URL Variables</a></li>
+        
+            <li><a href="#defining-variables">Defining Variables</a></li>
+        
+            <li><a href="#anything-variable">{Anything} Variable</a></li>
+        
+            <li><a href="#http-methods">HTTP Methods</a></li>
+        
+            <li><a href="#route-authentication">Route Authentication</a></li>
+        
+            <li><a href="#passive-routes">Passive Routes</a></li>
+        
+            <li><a href="#path-priority">Path Priority</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="custom-routes">Custom Routes</h1>
+<p>Defining custom routes can serve several purposes. The primary purpose is to allow a URL to be mapped to a different internal address. Another primary purpose is to perform authorization checking on sections of a site.
+In Cora, custom routes are implemented by defining "paths" from a URL to some internal address.</p>
+<h2 id="understanding-coras-implementation">Understanding Cora's Implementation</h2>
+<p>The code in Cora's Route class that pertains to hooking up custom defined routes looks like the below. It creates an empty array of paths called "$paths", loads "Cora\App\Paths.php" if it exists in the project, then finalizes "$paths" as the custom path array.</p>
+<pre><code class="php">$paths = [];
+if (file_exists($this-&gt;config['basedir'].'cora/app/Paths.php')) {
+    include($this-&gt;config['basedir'].'cora/app/Paths.php');
+}
+$this-&gt;paths = $paths;
+</code></pre>
+
+<p>So in order to define custom routes for our app, all we need to do is create that file in our Cora\App directory and define $paths to be something that isn't an empty array.</p>
+<p><strong>Example Cora/App/Paths.php file:</strong></p>
+<pre><code class="php">&lt;?php
+// Create paths container
+$paths = new \Cora\Container();
+
+// Path 1
+$path = new \Cora\Path();
+    $path-&gt;url = '/users/login';
+    $path-&gt;route = '/users/newLogin';
+$paths-&gt;add($path);
+
+// Path 2
+$path = new \Cora\Path();
+    $path-&gt;url = '/users/forgotPassword';
+    $path-&gt;route = '/users/newForgotPassword';
+$paths-&gt;add($path);
+
+</code></pre>
+
+<h2 id="simple-internal-redirect">Simple Internal Redirect</h2>
+<p>The simplest example of using a custom route is just going to be re-routing some URL to a different internal address. This takes defining a path with two attributes, the URL you want to match in the user's browser and the internal route you actually want executed.</p>
+<pre><code class="php">$path = new \Cora\Path();
+    $path-&gt;url = '/users/login';
+    $path-&gt;route = '/users/newLogin';
+$paths-&gt;add($path);
+</code></pre>
+
+<h2 id="url-variables">URL Variables</h2>
+<p>A more advanced feature of custom routes is the ability to use variables in the URL and internal Route. By default variables will capture letters, numbers, and underscores, but you can define them however you need.</p>
+<p>In the below example, if a user were to go to:</p>
+<pre><code class="html">MySite.com/blogs/politics-bjohnson
+</code></pre>
+
+<p>this would get redirected to an internal address of: </p>
+<pre><code class="html">MySite.com/articles/personal/view/bjohnson/politics
+</code></pre>
+
+<p>Example:</p>
+<pre><code class="php">$path = new \Cora\Path();
+    $path-&gt;url = '/blogs/{category}-{person}';
+    $path-&gt;route = '/articles/personal/view/{person}/{category}';
+$paths-&gt;add($path);
+</code></pre>
+
+<p>Variables in the URL must have a separator of some sort between them. In the example above, the separator is a hyphen, but it could have just as easily been a forward slash like in the "route" attribute. Also notice that we reversed the order of {category} and {person} in the route. Once you've defined part of the input URL as a variable, you can reuse that variable however you like in the internal route.</p>
+<h2 id="defining-variables">Defining Variables</h2>
+<p>You can define variables in your URL using regular expressions if you need them to match a particular format. The most common use-case for this would likely be defining that a variable must be a number.</p>
+<pre><code class="php">$path = new \Cora\Path();
+    $path-&gt;url = '/blogs/{id}';
+    $path-&gt;route = '/articles/personal/{id}';
+    $path-&gt;def['{id}'] = '[0-9]+';
+$paths-&gt;add($path);
+
+</code></pre>
+
+<p>In the above example we use a regular expression to define {id} as being a number.</p>
+<h2 id="anything-variable">{Anything} Variable</h2>
+<p>There's one special variable name which is predefined for you to match any character. That special variable is {anything}. {Anything} is useful when you don't care what the end of the URL is, but you do need to use it.</p>
+<p>Say you have the following valid URLs as part of your app:</p>
+<pre><code class="html">MySite.com/pets/dogs/retrievers
+MySite.com/pets/dogs/terriers
+MySite.com/pets/cats/persians/view/56
+</code></pre>
+
+<p>But you are re-organizing your site and decided to rename your Pets controller to Animals. The only problem is, you don't want to break links that people have bookmarked using the old version. A solution in this case would be to use the {anything} variable as a wildcard like so:</p>
+<pre><code class="php">$path = new \Cora\Path();
+    $path-&gt;url = '/pets/{anything}';
+    $path-&gt;route = '/animals/{anything}';
+    $path-&gt;passive = true;
+$paths-&gt;add($path);
+</code></pre>
+
+<p>This would capture and redirect all the requests that start with Pets to instead use Animals, without having to worry about defining a specific route for each possible path that was available under Pets.</p>
+<p>The "passive" attribute is likely something that would want to be used here, so it's included. You can read about it further down in this documentation.</p>
+<h2 id="http-methods">HTTP Methods</h2>
+<p>By default, paths will be matched for all HTTP methods. Then once a path is matched and a route is executed, Cora's normal handling of HTTP methods will apply (a POST request being routed to methodPOST for example). However, both these behaviors can be changed on a path by path basis.</p>
+<p>To make your path only match HTTP requests of a certain type, define an "actions" attribute on the path with the methods you want listed like so:</p>
+<pre><code class="php">$path = new \Cora\Path();
+    $path-&gt;url = '/users/test/{action}-{action2}';
+    $path-&gt;route = '/home/view/{action2}/{action}';
+    $path-&gt;actions = 'GET|POST';
+$paths-&gt;add($path);
+</code></pre>
+
+<p>To disable Cora's RESTful routing behavior for a path, define an attribute "RESTful" as false:</p>
+<pre><code class="php">$path = new \Cora\Path();
+    $path-&gt;url = '/articles/api';
+    $path-&gt;route = '/articles/api/create';
+    $path-&gt;actions = 'POST';
+    $path-&gt;RESTful = false;
+$paths-&gt;add($path);
+</code></pre>
+
+<p>In the above example, a POST request to:</p>
+<pre><code class="html">MySite.com/articles/api
+</code></pre>
+
+<p>Would get routed to the "Articles/Api" controller and "create" method (Not createPOST).</p>
+<h2 id="route-authentication">Route Authentication</h2>
+<p>So another popular use case for custom routes is going to be protecting certain features or sections of a site from un-authorized users. The way you can do that with custom routes is using the "preExec" attribute to define a function. If this preExec function returns false, execution of the path will be prevented.</p>
+<p>In the example below "$app" is Cora's container. From it we are calling Cora's Auth library to check if a user is logged in. You can read-up on Cora's Auth library or use your own permission system if you like. Just remember that if this function returns false execution of the path will be prevented.</p>
+<p>Example:</p>
+<pre><code class="php">$path = new \Cora\Path();
+    $path-&gt;url = '/home/private';
+    $path-&gt;route = '/home/view/protected/area';
+    $path-&gt;preExec = function($app) {
+        if (!$app-&gt;auth-&gt;access(new \Models\Auth\LoggedIn)) { return false; }
+        return true;
+    };
+$paths-&gt;add($path);
+</code></pre>
+
+<p>Closely tied to route authentication is the use of Passive routes. So make sure to check out that section.</p>
+<h2 id="passive-routes">Passive Routes</h2>
+<p>Normally, the search for custom routes that match the URL ends after the first match found. However, when performing authentication for a route, you may not want this behavior. Say for instance that you have a "Private" controller and you want anything in that controller or in the Private subdirectory to be protected from unauthorized access. In this scenario you may want to check that a user has access, then have the search for custom routes continue afterwards. This is where "Passive" routes come into play.</p>
+<p>First let's look at an example without a passive path that DOESN'T work, and explain why:</p>
+<pre><code class="php">$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard/{anything}';
+    $path-&gt;route = '/v2/dashboard/{anything}';
+$paths-&gt;add($path);
+
+
+$path = new \Cora\Path();
+    $path-&gt;url = '/v2/dashboard/admin/{anything}';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsAdmin)) { return true; }
+        return false;
+    };
+$paths-&gt;add($path);
+</code></pre>
+
+<p>In the above example, there's two things going on. First, we are redirecting any requests for the Dashboard to instead use version 2 of the dashboard. Second, we are checking any requests for access to the Admin area of the dashboard are checked for the proper permissions. However, this code will not work as desired. The problem is that in order to not waste processing power, Cora will stop at the first non-passive custom route it finds that matches the current URL. So because the "dashboard/{anything}" path is defined first, that will get matched for any request to the dashboard area and executed. It WILL properly redirect the request internally to V2, but then it will check for a valid Controller+Method combo without looking at the 2nd custom path that specifies the authentication check for the admin area.</p>
+<p>The solution to this problem, is to add the "passive" attribute to the first path so that Cora will restart the search for matching custom paths after the internal route gets changed to v2. In the same example below with the passive attribute, cora will run the first path and change the route to v2, then restart the search through the custom paths array and match the 2nd path with our authentication check, causing the code to work as desired:</p>
+<pre><code class="php">$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard/{anything}';
+    $path-&gt;route = '/v2/dashboard/{anything}';
+    $path-&gt;passive = true;
+$paths-&gt;add($path);
+
+
+$path = new \Cora\Path();
+    $path-&gt;url = '/v2/dashboard/admin/{anything}';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsAdmin)) { return true; }
+        return false;
+    };
+$paths-&gt;add($path);
+</code></pre>
+
+<h3 id="preventing-infinite-loops">Preventing Infinite Loops</h3>
+<p><em>(You don't need to do anything for this preventive measure, but I wanted to explain how it works.)</em></p>
+<p>Once a path has been run, it is added to a list so that subsequent searches through the paths array for the current request will not trigger it again. This prevents possible infinite loops. This wouldn't affect our example above because we change the route to "v2" in the first path, but imagine if we didn't change the route at all, and instead just checked that a user trying to access the dashboard is logged in:</p>
+<pre><code class="php">// Check that only logged in users can access dashboard.
+$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsLoggedIn)) { return true; }
+        return false;
+    };
+    $path-&gt;passive = true;
+$paths-&gt;add($path);
+
+
+// Check that only Admins can access dashboard admin area.
+$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard/admin';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsAdmin)) { return true; }
+        return false;
+    };
+$paths-&gt;add($path);
+</code></pre>
+
+<p>In this example, we didn't change the internal route being looked at, so it remains whatever the public URL was. So if a user tries to access the dashboard, it will match the first path which will execute the check that the user is logged in, then because the path is passive, it restarts the search for custom paths. The 2nd time through, the route still hasn't changed so it matches the first path AGAIN. If we allowed the first path to run, it would put us in an infinite loop. However, because a list of executed paths is kept, the Router will check the list and know to bypass the first path the 2nd time through. </p>
+<h2 id="path-priority">Path Priority</h2>
+<p>By default, custom routes are matched in the order they are defined from top to bottom. Once a match has been found for the current URL, that path is executed and the search for additional matching paths is cancelled. For this reason, in practical use-case situations you either have to use the "passive" attribute on paths or make sure you define the most specific paths at the top.</p>
+<p><strong>Example that doesn't work:</strong></p>
+<pre><code class="php">// Check that only logged in users can access dashboard.
+$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsLoggedIn)) { return true; }
+        return false;
+    };
+$paths-&gt;add($path);
+
+// Check that only Admins can access dashboard admin area.
+$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard/admin';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsAdmin)) { return true; }
+        return false;
+    };
+$paths-&gt;add($path);
+</code></pre>
+
+<p>The first path defined would get matched to any request to the dashboard area of the site, which would check that a user is logged in, and if that passes would immediately check for a matching Controller+Method pair and execute the route. This would allow ANY user who is logged in to access the Dashboard/Admin area because the 2nd path never gets checked.</p>
+<p><strong>Fix Option #1:</strong></p>
+<pre><code class="php">// Check that only Admins can access dashboard admin area.
+$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard/admin';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsAdmin)) { return true; }
+        return false;
+    };
+$paths-&gt;add($path);
+
+// Check that only logged in users can access dashboard.
+$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsLoggedIn)) { return true; }
+        return false;
+    };
+$paths-&gt;add($path);
+</code></pre>
+
+<p>What we've done above to fix the situation is move the MORE SPECIFIC path to the top so it gets run if there's a match instead of the less specific path. In this case, any request to the Dashboard/Admin area will match the first path and execute that, and any request to an area of the dashboard that isn't the admin area would fall through to the 2nd path.</p>
+<p><strong>Fix Option #2:</strong></p>
+<pre><code class="php">// Check that only logged in users can access dashboard.
+$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsLoggedIn)) { return true; }
+        return false;
+    };
+    $path-&gt;passive = true;
+$paths-&gt;add($path);
+
+// Check that only Admins can access dashboard admin area.
+$path = new \Cora\Path();
+    $path-&gt;url = '/dashboard/admin';
+    $path-&gt;preExec = function($app) {
+        if ($app-&gt;auth-&gt;access(new \Models\Auth\IsAdmin)) { return true; }
+        return false;
+    };
+$paths-&gt;add($path);
+</code></pre>
+
+<p>Here, instead of moving the more specific path to the top of the page, we've added the "passive" attribute to the first path. This causes the search for custom paths to restart after processing the first path, which would make a request to the Admin area get caught by the 2nd path. This allows us to have less specific paths at the top, which fall through to more specific paths below.</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../../js/highlight.pack.js"></script>
+        <script>var base_url = '../../../..';</script>
+        <script data-main="../../../../mkdocs/js/search.js" src="../../../../mkdocs/js/require.js"></script>
+        <script src="../../../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

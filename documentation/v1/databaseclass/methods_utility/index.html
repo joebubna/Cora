@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../../../img/favicon.ico">
+
+	<title>Utility Methods - Cora Framework Documentation</title>
+
+        <link href="../../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../../css/highlight.css">
+        <link href="../../../../css/base.css" rel="stylesheet">
+        <link href="../../../../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../../..">Cora Framework Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../../..">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../setup/install/">Installation</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/configuration/">Configuration</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/advanced/">Advanced Configuration</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/mvc/overview/">MVC Pattern</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/routing/overview/">Routing</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/overview/">AmBlend ORM</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/overview/">Database Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Routing</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/routing/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/routing/custom_routes/">Custom Routes</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/implementation/">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/database_gen/">Automated DB Creation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/amblend/opt_locking/">Optimistic Locking</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../../v2/events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../../v2/events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../../v2/validationclass/overview/">Validate Class</a>
+</li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Legacy Versions</a>
+    <ul class="dropdown-menu">
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Cora Version 1</a>
+    <ul class="dropdown-menu">
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Core Concepts</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">MVC Pattern</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/overview/">AmBlend ORM</a>
+</li>
+
+        
+            
+<li >
+    <a href="../overview/">Database Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+<li >
+    <a href="../../routing/overview/">Routing</a>
+</li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/implementation/">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/database_gen/">Automated DB Creation</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../overview/">Overview</a>
+</li>
+
+        
+            
+<li class="active">
+    <a href="./">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+            
+<li >
+    <a href="../../validationclass/overview/">Validate Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+        
+    </ul>
+  </li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">CS Topics <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../computerscience/computability/">Computability</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../overview/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../methods_select/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#utility-database-class-methods">Utility Database Class Methods</a></li>
+        
+            <li><a href="#table-method">table() method</a></li>
+        
+            <li><a href="#getquery-method">getQuery() method</a></li>
+        
+            <li><a href="#exec-method">exec() method</a></li>
+        
+            <li><a href="#reset-method">reset() method</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="utility-database-class-methods">Utility Database Class Methods</h1>
+<h2 id="table-method">table() method</h2>
+<p>The method for selecting a table you want to perform an operation on (whether selecting, updating, inserting, or deleting)
+is to use table(). However, in order to let developers construct queries in the same format they are used to when writing
+raw SQL, there are several aliases to this method.</p>
+<p><strong>Purpose:</strong> <br />
+The table() method is for selecting the table(s) you want to perform an action on.</p>
+<p><strong>Format:</strong>  </p>
+<pre><code class="php">table(table_name | array(table_name1, table_name2, ...))
+</code></pre>
+
+<p><strong>Usage and Aliases:</strong> <br />
+Anywhere you would use a from(), into(), or update() method you can use this method instead.</p>
+<p><strong>Examples:</strong>   </p>
+<pre><code class="php">// A SELECT query
+$db -&gt;table('users')
+    -&gt;select('*')
+    -&gt;join('members', [['users.user_id', '=', 'members.user_id']])
+    -&gt;orderBy('users.user_id', 'ASC')
+    -&gt;exec();
+
+// An UPDATE query
+$db -&gt;table('users')
+    -&gt;set('name', 'John')
+    -&gt;where('name', 'Randy', '&gt;')
+    -&gt;getQuery();        
+
+// An INSERT query
+$db -&gt;table('users')
+    -&gt;insert('name, email, type')
+    -&gt;values([['bob', 'bob@gmail.com', 'admin'], ['john', 'john@gmail.com', 'admin']])
+    -&gt;values(['bob', 'bob@gmail.com', 'admin'])
+    -&gt;exec();
+</code></pre>
+
+<h2 id="getquery-method">getQuery() method</h2>
+<p><strong>Purpose:</strong> <br />
+The getQuery() method returns the query that will be executed on the database. This is useful when trying
+to troubleshoot if you want to see what Cora's Database class is actually executing.
+<strong>Format:</strong>  </p>
+<pre><code class="php">getQuery()
+</code></pre>
+
+<p><strong>Examples:</strong>  </p>
+<pre><code class="php">// Constuct a CREATE table query, then echo it out (does not execute it)
+echo $db-&gt;create('locations')
+        -&gt;field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+        -&gt;field('name', 'varchar(255)')
+        -&gt;field('address', 'varchar(255)')
+        -&gt;field('user_id', 'int')
+        -&gt;primaryKey('id')
+        -&gt;foreignKey('user_id', 'users', 'id')
+        -&gt;getQuery();
+</code></pre>
+
+<h2 id="exec-method">exec() method</h2>
+<p><strong>Purpose:</strong> <br />
+The exec() method executes a query, resets the database class by calling reset(), and returns any data if there's
+data to return.</p>
+<p><strong>Format:</strong>  </p>
+<pre><code class="php">exec()
+</code></pre>
+
+<p><strong>Examples:</strong>  </p>
+<pre><code class="php">// Constuct a CREATE table query, then execute it.
+$db -&gt;create('locations')
+    -&gt;field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+    -&gt;field('name', 'varchar(255)')
+    -&gt;field('address', 'varchar(255)')
+    -&gt;field('user_id', 'int')
+    -&gt;primaryKey('id')
+    -&gt;foreignKey('user_id', 'users', 'id')
+    -&gt;exec();
+</code></pre>
+
+<h2 id="reset-method">reset() method</h2>
+<p><strong>Purpose:</strong> <br />
+The reset() method clears out the stored data in the database class so that a new query can then be constructed.
+<strong>Format:</strong>  </p>
+<pre><code class="php">reset()
+</code></pre>
+
+<p><strong>Examples:</strong>  </p>
+<pre><code class="php">// Constuct a CREATE table query, then echo it out (does not execute it)
+echo $db-&gt;create('locations')
+        -&gt;field('id', 'int', 'NOT NULL AUTO_INCREMENT')
+        -&gt;field('name', 'varchar(255)')
+        -&gt;field('address', 'varchar(255)')
+        -&gt;field('user_id', 'int')
+        -&gt;primaryKey('id')
+        -&gt;foreignKey('user_id', 'users', 'id')
+        -&gt;getQuery();
+
+/* 
+    Before we can start working on a 2nd query, we either need to execute the one we just constructed
+    (which clears out the stored data), OR we need to manually clear out the data if we don't plan
+    on executing the query.
+*/
+// Clear out the stored data from the first query we constructed.
+$db-&gt;reset()
+
+// Start constructing a 2nd query...
+echo $db-&gt;select('*')
+        -&gt;from('users')
+        -&gt;join('members', [['users.user_id', '=', 'members.user_id']])
+        -&gt;orderBy('users.user_id', 'ASC')
+        -&gt;getQuery();
+</code></pre></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../../js/highlight.pack.js"></script>
+        <script>var base_url = '../../../..';</script>
+        <script data-main="../../../../mkdocs/js/search.js" src="../../../../mkdocs/js/require.js"></script>
+        <script src="../../../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
