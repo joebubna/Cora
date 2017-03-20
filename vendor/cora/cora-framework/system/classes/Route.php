@@ -90,7 +90,7 @@ class Route extends Framework
     public function customFind()
     {
         // Setup
-        $url = $this->pathString;
+        $url = '//'.$this->pathString;
         $matchFound = false;
         $templateRegex = "/\{\w+}/";
         $pathsExecuted = [];

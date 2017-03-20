@@ -188,7 +188,7 @@ class Database
     {
         $val = $columns;
         if (!is_array($val)) {
-            $val = explode(',', $val);
+            $val = array_map('trim', explode(',', $val));
         }
         $this->storeValue('inserts', $val);
         return $this;

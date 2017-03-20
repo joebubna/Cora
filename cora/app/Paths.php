@@ -1,7 +1,6 @@
 <?php
 $paths = new \Cora\Container();
 
-
 /** 
  *  Shows use of a passive route...
  *  This route will get executed, but not end the search for other custom routes.
