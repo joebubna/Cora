@@ -66,6 +66,17 @@ class Path
     */
     public $preExec;
 
+    ///////////////////////////////////////////////
+    // Passive
+    ///////////////////////////////////////////////
+    /** 
+    *   If you want the search for custom paths to continue even after matching this path,
+    *   then define this path as passive. This could be useful if you wanted to perform authentication 
+    *   on an entire section of a site. 
+    *   I.E. "$path->url = 'users/{anything}'
+    */
+    public $passive = false;
+
     public function __construct() 
     {
         // Setting default preExec function.
