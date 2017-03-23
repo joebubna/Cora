@@ -12,19 +12,19 @@ class Input
     protected $getData;
     protected $filesData;
 
-    
+
     public function __construct($data = false)
     {
         if ($data) {
             $this->params = $this->_cleanInput($data);
         }
-        
+
         $this->postData = $this->_cleanInput($_POST);
         $this->getData  = $this->_cleanInput($_GET);
         $this->filesData = $this->_cleanFiles($_FILES);
     }
 
-    
+
     public function __get($name)
     {
         if (isset($this->$name)) {
@@ -35,28 +35,28 @@ class Input
         }
         return false;
     }
-    
-    
+
+
     public function post($name = null)
     {
         if (!$name) {
-            return $this->postData;
+            return $this->_cleanInput($_POST);
         }
-        if (isset($this->postData[$name])) {
-            return $this->postData[$name];
+        if (isset($_POST[$name])) {
+            return $this->_purify($_POST[$name]);
         }
         return false;
-        
+
     }
-    
-    
+
+
     public function get($name = null, $defaultValue = null)
     {
         if (!$name) {
-            return $this->getData;
+            return $this->_cleanInput($_GET);
         }
-        if (isset($this->getData[$name])) {
-            return $this->getData[$name];
+        if (isset($_GET[$name])) {
+            return $this->_purify($_GET[$name]);
         }
         return $defaultValue;
     }
@@ -71,14 +71,14 @@ class Input
         }
         return false;
     }
-    
-    
+
+
     public function getData()
     {
         return $this->params;
     }
 
-    
+
     protected function _cleanInput($data)
     {
         return array_map([$this, '_purify'], $data);
@@ -142,28 +142,29 @@ class Input
         }
         return $file_array;
     }
-    
-    protected function _purify($string)
+
+    protected function _purify($input, $encoding = 'UTF-8')
     {
-        if (is_array($string)) {
-            return $this->_cleanInput($string);
+        if (is_array($input)) {
+            return $this->_cleanInput($input);
         }
-        $pattern = '/((<[\s\/]*script\b[^>]*>)([^>]*)(<\/script>))/i';
-        if (preg_match($pattern, $string)) {
-            return false;
-        }
-        $pattern = '/(<[\s\/]*script\b[^>]*>)/i';
-        if (preg_match($pattern, $string)) {
-            return false;
-        }
-        $pattern = '/<\/script>/i';
-        if (preg_match($pattern, $string)) {
-            return false;
-        }
-        $pattern = '/data-bind/i';
-        if (preg_match($pattern, $string)) {
-            return false;
-        }
-        return $string;
+        return htmlspecialchars($input, ENT_QUOTES | ENT_HTML401, $encoding);
+        // $pattern = '/((<[\s\/]*script\b[^>]*>)([^>]*)(<\/script>))/i';
+        // if (preg_match($pattern, $string)) {
+        //     return false;
+        // }
+        // $pattern = '/(<[\s\/]*script\b[^>]*>)/i';
+        // if (preg_match($pattern, $string)) {
+        //     return false;
+        // }
+        // $pattern = '/<\/script>/i';
+        // if (preg_match($pattern, $string)) {
+        //     return false;
+        // }
+        // $pattern = '/data-bind/i';
+        // if (preg_match($pattern, $string)) {
+        //     return false;
+        // }
+        // return $string;
     }
 }
