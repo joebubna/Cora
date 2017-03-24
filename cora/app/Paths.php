@@ -1,6 +1,22 @@
 <?php
 $paths = new \Cora\Container();
 
+
+$path = new \Cora\Path();
+    $path->url = '/api/member/{id}/{anything}';
+    $path->route = '/home/view/1/2/{anything}';
+    // $path->preMatch = function($vars, $app) {
+    //     return false;
+    // };
+    $path->preExec = function($vars, $app) {
+        return true;
+    };
+    $path->args = function($vars, $app) {
+        return ['Hello', $vars['id'], $_GET['token']];
+    };
+$paths->add($path);
+
+
 /**
  *  Shows use of a passive route...
  *  This route will get executed, but not end the search for other custom routes.

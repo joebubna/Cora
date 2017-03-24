@@ -57,6 +57,16 @@ class Path
     public $RESTful = true;
 
     ///////////////////////////////////////////////
+    // Pre-match function
+    ///////////////////////////////////////////////
+    /** 
+    *   If you want to check additional things before matching a url to a path.
+    *   If this returns FALSE, then a path is rejected as a match even if the URL would 
+    *   otherwise have been a match.
+    */
+    public $preMatch;
+
+    ///////////////////////////////////////////////
     // Pre-execution function
     ///////////////////////////////////////////////
     /** 
@@ -65,6 +75,17 @@ class Path
     *   then returns access denied.
     */
     public $preExec;
+
+    ///////////////////////////////////////////////
+    // Method Arguments
+    ///////////////////////////////////////////////
+    /** 
+    *   This should be a function that returns an array of arguments to 
+    *   be passed to the method this path resolves to.
+    *  
+    *   Example: $path->args = function($vars, $app) { return [$vars['id']]; }
+    */
+    public $args;
 
     ///////////////////////////////////////////////
     // Passive
@@ -79,15 +100,32 @@ class Path
 
     public function __construct() 
     {
+        // Setting default preMatch function.
+        $this->preMatch = function() {
+            return true;
+        };
+        
         // Setting default preExec function.
         $this->preExec = function() {
             return true;
         };
     }
 
-    public function preExecCheck($c = false) 
+    public function preMatchCheck($vars = [], $c = false) 
     {
-        $preExec = $this->preExec;
-        return $preExec($c);
+        $preMatchClosure = $this->preMatch;
+        return $preMatchClosure($vars, $c);
+    }
+
+    public function preExecCheck($vars = [], $c = false) 
+    {
+        $preExecClosure = $this->preExec;
+        return $preExecClosure($vars, $c);
+    }
+
+    public function getArgs($vars = [], $c = false)
+    {
+        $argsClosure = $this->args;
+        return $argsClosure($vars, $c);
     }
 }

@@ -13,6 +13,7 @@ class Route extends Framework
     protected $controllerNamespace; // STRING
     protected $controller;          // OBJECT
     protected $method;              // STRING
+    protected $methodArgs;          // ARRAY    - If set, this will override any arguments passed in through URL.
     protected $httpMethod;          // STRING
     protected $collectionIDgiven;   // BOOL     - If the URL is of form /articles/107 this is set to true.
     protected $collectionID;        // INT      - The ID if a collection ID is specified.
@@ -151,6 +152,7 @@ class Route extends Framework
                 *   and custom route    = articles/{action}-{modifier}/{id}
                 *   $urlData[1] will be 'grab', $urlData[2] will be 'all', and $urlData[3] will be 23.
                 */
+                $urlVars = []; // Associative array
                 $urlData = [];
                 $finalRoute = $path->route;
                 if (preg_match("/$urlRegex/", $url, $urlData)) {
@@ -171,9 +173,17 @@ class Route extends Framework
                         $pathVar = $templateVariables[0][$i-1]; // E.g. {action}. $templateVariables starts at offset 0.
                         $pathVarValue = $urlData[$i];
                         $finalRoute = str_replace($pathVar, $pathVarValue, $finalRoute);
+
+                        // Add variable to associative array for variables from URL
+                        $urlVariableName = substr($templateVariables[0][$i-1], 1, -1);
+                        $urlVars[$urlVariableName] = $urlData[$i];
                     }
                 }
 
+                // Run preMatch function for this path.
+                if ($matchFound && !$path->preMatchCheck($urlVars, $this->container)) {
+                    $matchFound = false;
+                }
 
                 ///////////////////////////////////////////////
                 // Handle Path match
@@ -190,7 +200,7 @@ class Route extends Framework
                         stripos($path->actions, $this->httpMethod) !== false
                     ) {
                         // Run preExec function for this path.
-                        if (!$path->preExecCheck($this->container)) {
+                        if (!$path->preExecCheck($urlVars, $this->container)) {
                             $this->error('403');
                             exit;
                         }
@@ -198,6 +208,11 @@ class Route extends Framework
                         // If an internal route was defined for this path, set that route.
                         if ($path->route) {
                             $this->setPath($finalRoute);
+                        }
+
+                        // If an internal route was defined for this path, set that route.
+                        if (isset($path->args)) {
+                            $this->methodArgs = $path->getArgs($urlVars, $this->container);
                         }
 
                         // If path is passive, set the path route to be the URL (if necessary) and if so, reset custom paths 
@@ -360,27 +375,32 @@ class Route extends Framework
         }
 
         // Grab method arguments from the URL.
-        if ($this->collectionIDGiven) {
-            $methodArgs = $this->partialPathArray($this->controllerOffset+1, 1);
+        if (isset($this->methodArgs)) {
+            $methodArgs = $this->methodArgs;
         }
         else {
-            $methodArgs = $this->partialPathArray($this->controllerOffset+2);
-        }
+            if ($this->collectionIDGiven) {
+                $methodArgs = $this->partialPathArray($this->controllerOffset+1, 1);
+            }
+            else {
+                $methodArgs = $this->partialPathArray($this->controllerOffset+2);
+            }
 
-        // Remove the last item from arguments if empty.
-        $lastItem = count($methodArgs)-1;
-        if (isset($methodArgs[$lastItem]) && $methodArgs[$lastItem] == '') {
-            array_pop($methodArgs);
-        }
+            // Remove the last item from arguments if empty.
+            $lastItem = count($methodArgs)-1;
+            if (isset($methodArgs[$lastItem]) && $methodArgs[$lastItem] == '') {
+                array_pop($methodArgs);
+            }
 
-        // If no arguments are set then make empty array.
-        if (empty($methodArgs) || $methodArgs[0] == '') {
-            $methodArgs = array();
-        }
-        else {
-            // Sanitize arguments.
-            $input = new Input($methodArgs);
-            $methodArgs = $input->getData();
+            // If no arguments are set then make empty array.
+            if (empty($methodArgs) || $methodArgs[0] == '') {
+                $methodArgs = array();
+            }
+            else {
+                // Sanitize arguments.
+                $input = new Input($methodArgs);
+                $methodArgs = $input->getData();
+            }
         }
 
         /** Maps an array of arguments derived from the URL into a method with a comma
