@@ -494,6 +494,13 @@ class Database
         throw new Exception('rollback() needs to be implemented by a specific database adaptor!');
     }
 
+    // Clean user provided input to make it safe for use in a database query.
+    public function clean($value)
+    {
+         // Implemented by Adaptor.
+        throw new Exception('clean() needs to be implemented by a specific database adaptor!');
+    }
+
 
     public function getConnection($name)
     {

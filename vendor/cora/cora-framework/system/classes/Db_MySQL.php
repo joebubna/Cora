@@ -140,7 +140,7 @@ class Db_MySQL extends Database
     }
     
     // Clean user provided input to make it safe for use in a database query.
-    protected function clean($value)
+    public function clean($value)
     {
         return $this->mysqli->real_escape_string($value);
     }
