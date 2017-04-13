@@ -14,6 +14,16 @@ class Home extends \Cora\App\Controller {
         // Load partial view and other data into our template.
         $this->load->view('template', $this->data);
     }
+
+    public function test()
+    {
+        $users = $this->app->users->findAll();
+        echo $users->off0->name."<br>";
+        echo $users[0]->name."<br>";
+        // foreach ($users as $user) {
+        //     echo $user->name."<br>";
+        // }
+    }
     
     public function view($p1, $p2, $p3 = 'bob') {
         echo $p1 . '<br>';

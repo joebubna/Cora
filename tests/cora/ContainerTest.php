@@ -4,11 +4,11 @@ namespace Tests\Cora;
 class ContainerTest extends \Cora\App\TestCase
 {   
     /**
-     *  Check that it's possible to add and retrieve a primitive.
+     *  Check that it's possible to add and retrieve a primitive using object syntax
      *
      *  @test
      */
-    public function canStorePrimitives()
+    public function canStorePrimitivesUsingObjectSyntax()
     {
         $collection = $this->app->collection;
         $this->assertEquals(0, $collection->count());
@@ -17,21 +17,61 @@ class ContainerTest extends \Cora\App\TestCase
 
         // Check that the value can be retrieved directly via index or indirectly via offset
         $this->assertEquals('Hello World', $collection->get("off0"));   // Direct. Fast.
-        $this->assertEquals('Hello World', $collection->get(0));        // Indirect, loops.
 
         // Check adding a number. 
         $collection->add(2);
         $this->assertEquals(2, $collection->get("off1"));
+    }
+
+
+    /**
+     *  Check that it's possible to add and retrieve a primitive using methods.
+     *
+     *  @test
+     */
+    public function canStorePrimitivesUsingMethod()
+    {
+        $collection = $this->app->collection;
+        $this->assertEquals(0, $collection->count());
+        $collection->add('Hello World');
+        $this->assertEquals(1, $collection->count());
+
+        // Check that the value can be retrieved directly via index or indirectly via offset
+        $this->assertEquals('Hello World', $collection->get(0));        // Indirect, loops.
+
+        // Check adding a number. 
+        $collection->add(2);
         $this->assertEquals(2, $collection->get(1));
     }
 
 
     /**
-     *  Check that it's possible to remove a primitive.
+     *  Check that it's possible to add and retrieve a primitive using array syntax
      *
      *  @test
      */
-    public function canRemovePrimitives()
+    public function canStorePrimitivesUsingArraySyntax()
+    {
+        $collection = $this->app->collection;
+        $this->assertEquals(0, $collection->count());
+        $collection->add('Hello World');
+        $this->assertEquals(1, $collection->count());
+
+        // Check that the value can be retrieved directly via index or indirectly via offset
+        $this->assertEquals('Hello World', $collection[0]);
+
+        // Check adding a number. 
+        $collection->add(2);
+        $this->assertEquals(2, $collection[1]);
+    }
+
+
+    /**
+     *  Check that it's possible to remove a primitive using Object syntax.
+     *
+     *  @test
+     */
+    public function canRemovePrimitiveUsingObjectSyntax()
     {
         $collection = $this->app->collection;
         $this->assertEquals(0, $collection->count());
@@ -40,17 +80,41 @@ class ContainerTest extends \Cora\App\TestCase
 
         // Check that the value can be retrieved directly via index or indirectly via offset
         $this->assertEquals('Hello World', $collection->get("off0"));   // Direct. Fast.
-        $this->assertEquals('Hello World', $collection->get(0));        // Indirect, loops.
 
         // Check adding a number. 
         $collection->add(2);
         $this->assertEquals(2, $collection->get("off1"));
+
+        // Remove the first element, then check that new first element is correct. 
+        $collection->delete('off0');
+        $this->assertEquals(1, $collection->count());
+        $this->assertEquals(2, $collection->get(0)); 
+    }
+
+
+    /**
+     *  Check that it's possible to remove a primitive using Object syntax.
+     *
+     *  @test
+     */
+    public function canRemovePrimitiveUsingMethod()
+    {
+        $collection = $this->app->collection;
+        $this->assertEquals(0, $collection->count());
+        $collection->add('Hello World');
+        $this->assertEquals(1, $collection->count());
+
+        // Check that the value can be retrieved directly via index or indirectly via offset
+        $this->assertEquals('Hello World', $collection->get(0));        // Indirect, loops.
+
+        // Check adding a number. 
+        $collection->add(2);
         $this->assertEquals(2, $collection->get(1));
 
         // Remove the first element, then check that new first element is correct. 
         $collection->delete(0);
         $this->assertEquals(1, $collection->count());
-        $this->assertEquals(2, $collection->get(0)); 
+        $this->assertEquals(2, $collection->get('off0')); 
     }
 
 
