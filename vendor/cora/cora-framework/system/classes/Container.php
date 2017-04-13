@@ -134,12 +134,6 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         }
     }
 
-
-    public function get($name)
-    {
-        return $this->$name;
-    }
-
     /**
      *  Finds a resource. In the case of singletons or explicitly passed in objects,
      *  this returns that single instance of the object.
@@ -481,6 +475,29 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     }
 
     ////////////////////////////////////////////////////////////////////////
+    //  REQUIRED BY PSR-11.
+    //  https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md
+    //
+    //  Note that I'm not fully implementing the spec as I don't want to throw their exceptions.
+    ////////////////////////////////////////////////////////////////////////
+    
+    /**
+     *  Alias of magic method __get()
+     */
+    public function get($name)
+    {
+        return $this->$name;
+    }
+
+    /**
+     *  Alias of magic method __isset()
+     */
+    public function has($name)
+    {
+        return isset($this->$name);
+    }
+
+    ////////////////////////////////////////////////////////////////////////
     //  REQUIRED BY IteratorAggregate INTERFACE
     ////////////////////////////////////////////////////////////////////////
     
@@ -516,7 +533,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
 
     public function offsetGet($offset) 
     {
-        return $this->get($offset);
+        return $this->$offset;
     }
 
     public function offsetSet ($offset, $value)
@@ -531,7 +548,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
 
 
     ////////////////////////////////////////////////////////////////////////
-    //  REQUIRED BY PHPUNIT (cause it tries to serialize containers)
+    //  REQUIRED BY PHPUNIT (because it tries to serialize containers)
     ////////////////////////////////////////////////////////////////////////
     public function serialize()
     {
