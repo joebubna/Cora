@@ -9,6 +9,12 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     // Closure resources.
     protected $signature;
 
+    // If there's a resource that is defined as a closure but after that closure is executed, 
+    // you want the result stored as a singleton and returned for any subsequence calls... 
+    // then the named property needs to be set to boolean in this object so the Container knows to 
+    // save the result as a singleton.
+    protected $signaturesToSingletons;
+
     // Non-closure resources. The reason this is stored separate from Signatures is that you may have a resource
     // that you want to remain in closure form until needed, then store the created resource so subsequent calls
     // return the Singleton version.
@@ -39,12 +45,9 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     public function __construct($parent = false, $data = false, $dataKey = false, $returnClosure = false)
     {
         $this->parent = $parent;
-
-        // Stores closures for creating a resource object.
         $this->signature = new \stdClass();
-
-        // Stores actual resource objects or primitives. Anything that isn't a Closure will be stored in here.
         $this->singleton = new \stdClass();
+        $this->signaturesToSingletons = new \stdClass();
 
         // When items are added to this collection without any valid key,
         // they will be added so that they can be accessed like $collection->0, $collection->2, etc.
@@ -113,24 +116,33 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
      */
     public function __get($name)
     {
-        // Grab the resource which can be either a Closure or existing Object.
-        $closureOrObject = $this->find($name);
+        // Grab the resource.
+        $resource = $this->find($name);
 
         // Is Closure
-        if ($closureOrObject instanceof \Closure) {
+        if ($resource instanceof \Closure) {
             if ($this->returnClosure == false) {
-                // Execute the closure and create an object.
-                return $closureOrObject($this);
+                // Create a resource from the closure.
+                $item = $resource($this);
+               
+                // If the closure is marked as needing to be saved as a singleton, store result. 
+                if (isset($this->signaturesToSingletons->$name) and $this->signaturesToSingletons->$name) {
+                    $this->$name = $item;
+                    $this->signaturesToSingletons = false;
+                }
+               
+                // Return the resource
+                return $item;
             }
             else {
                 // Return closure
-                return $closureOrObject;
+                return $resource;
             }
         }
 
-        // Is Object
+        // If Object/Array/primitive
         else {
-            return $closureOrObject;
+            return $resource;
         }
     }
 
@@ -164,7 +176,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         elseif ($container->parent) {
             return $container->find($name, $container->parent);
         }
-        return false;
+        return null;
     }
 
 
@@ -178,6 +190,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         if (!$this->__isset($name)) {
             $this->size += 1;
         }
+
         if ($value instanceof \Closure) {
             $this->signature->$name = $value;
         }
@@ -200,13 +213,14 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         $callback = call_user_func_array(array($this, 'find'), array($name));
 
         if ($callback != false) {
+            //var_dump($callback);
             // Add container reference as first argument.
             array_unshift($arguments, $this);
 
             // Call the callback with the provided arguments.
             return call_user_func_array($callback, $arguments);
         }
-        return false;
+        return null;
     }
 
 
@@ -314,54 +328,24 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
 
 
     /**
-     *  Rather than store the closure for creating an object,
-     *  Create the object and store an instance of it.
-     *  All calls for that resource will return the created object.
+     *  Stores a single version of a resource created by a closure so that subsequent requests 
+     *  are given the already created resource instead of invoking the closure again. 
+     *  This method can be given resources which are not closures, but doesn't do anything useful 
+     *  unless given a closure.
+     *
+     *  @param $name A string which starts with a non-numeric character. 
+     *  @param $value A closure which returns an object, array, or primitive when invoked.
+     *  @return void
      */
     public function singleton($name, $value)
     {
-        $this->singleton->$name = $value($this);
-        $this->contentModified = true;
-    }
-
-
-    public function unsetSingleton($name)
-    {
-        $this->singleton->$name = false;
-        $this->contentModified = true;
-    }
-
-
-    /**
-     *  Similar to Singletons, but instead of giving a closure for creating an object,
-     *  you just give an object itself.
-     */
-    public function setInstance($name, $object)
-    {
-        $this->singleton->$name = $object;
-        $this->contentModified = true;
-    }
-
-
-    /**
-     *  Used when a Container is returned from a container.
-     *  I.E. If $container->events is itself another container,
-     *  You want methods defined in the events container to have access
-     *  to the declarations in the parent.
-     */
-    public function getSignatures()
-    {
-        return $this->signature;
-    }
-
-    public function getSingletons()
-    {
-        return $this->singleton;
-    }
-
-    public function returnClosure($bool)
-    {
-        $this->returnClosure = $bool;
+        // If value is a closure, store a reference that tells us we need to store the resulting 
+        // value as a singleton after it's first executed.
+        if ($value instanceOf \Closure) {
+            $this->signaturesToSingletons->$name = true;
+        }
+        // Use the __set magic method to handle setting the resource.
+        $this->$name = $value;      
     }
 
 
@@ -390,41 +374,14 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         return $this;
     }
 
-    protected function compare($a, $b)
-    {
-        $key = $this->sortKey;
-        $aValue = $this->getValue($a, $key);
-        $bValue = $this->getValue($b, $key);
 
-        if ($aValue == $bValue) {
-            return 0;
-        }
-        if (strtolower($this->sortDirection) == 'desc') {
-            return ($aValue < $bValue) ? -1 : 1;
-        }
-        else {
-            return ($aValue < $bValue) ? 1 : -1;
-        }
-    }
-
-    protected function getValue($data, $key = false)
-    {
-        $returnValue = $data;
-        if (is_object($data)) {
-            $returnValue = $data->$key;
-        }
-        else if (is_array($data)) {
-            $returnValue = $data[$key];
-        }
-        return $returnValue;
-    }
-
-
-    
+    ////////////////////////////////////////////////////////////////////////
+    //  DATA FILTERING AND MANIPULATION
+    ////////////////////////////////////////////////////////////////////////
 
     /**
      *  Returns the FIRST result with a matching key=>value.
-     *  If no match is found, then returns false.
+     *  If no match is found, then returns null.
      */
     public function getByValue($key, $value)
     {
@@ -435,7 +392,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
                 return $result;
             }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -474,6 +431,65 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         return $subset;
     }
 
+
+    ////////////////////////////////////////////////////////////////////////
+    //  SIMPLE ACCESSORS AND MODIFIERS
+    ////////////////////////////////////////////////////////////////////////
+
+    /**
+     *  Simple Accessor for $signature data member
+     *  Example of usage is to access the resources of a parent container from a child.
+     *
+     *  @return Object
+     */
+    public function getSignatures()
+    {
+        return $this->signature;
+    }
+
+    /**
+     *  Simple Accessor for $singleton data member
+     *
+     *  @return Object
+     */
+    public function getSingletons()
+    {
+        return $this->singleton;
+    }
+
+    /**
+     *  Simple setter for $returnClosure data member
+     *
+     *  @return Void
+     */
+    public function returnClosure($bool)
+    {
+        $this->returnClosure = $bool;
+    }
+
+    /**
+     *  Unsets a resource stored in the singleton data member.
+     *
+     *  @return Void
+     */
+    public function unsetSingleton($name)
+    {
+        $this->singleton->$name = false;
+        $this->contentModified = true;
+    }
+
+    /**
+     *  Unsets a Closure stored in the signature data member.
+     *
+     *  @return Void
+     */
+    public function unsetSignature($name)
+    {
+        $this->signature->$name = false;
+        $this->contentModified = true;
+    }
+
+
     ////////////////////////////////////////////////////////////////////////
     //  REQUIRED BY PSR-11.
     //  https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md
@@ -483,6 +499,9 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     
     /**
      *  Alias of magic method __get()
+     * 
+     *  @param $name Int | String
+     *  @return Mixed
      */
     public function get($name)
     {
@@ -491,20 +510,24 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
 
     /**
      *  Alias of magic method __isset()
+     *
+     *  @param $name Int | String
+     *  @return Boolean
      */
     public function has($name)
     {
         return isset($this->$name);
     }
 
+
     ////////////////////////////////////////////////////////////////////////
     //  REQUIRED BY IteratorAggregate INTERFACE
     ////////////////////////////////////////////////////////////////////////
     
     /**
-     *  Merges the $signature and $singleton resources together into a single result stored in $content.
+     *  Returns an ArrayIterator for traversing the contents of the Container.
      *
-     *  @return null
+     *  @return ArrayIterator
      */
     public function getIterator() {
         if (!$this->content || $this->contentModified) {
@@ -521,6 +544,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     /**
      *  Checks if an offset is set. An offset can be a numeric number or key name (string).
      *
+     *  @param $offset Int | String
      *  @return bool
      */
     public function offsetExists($offset)
@@ -531,16 +555,35 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         return false;
     }
 
+    /**
+     *  Returns an offset. If offset is not set, then returns null.
+     *
+     *  @param $offset Int | String
+     *  @return mixed
+     */
     public function offsetGet($offset) 
     {
         return $this->$offset;
     }
 
-    public function offsetSet ($offset, $value)
+    /**
+     *  Assigns the value provided to the offset.
+     *
+     *  @param $offset Int | String
+     *  @param $value Mixed
+     *  @return Void
+     */
+    public function offsetSet($offset, $value)
     {
         $this->$offset = $value;
     }
 
+    /**
+     *  Unsets the given offset
+     *
+     *  @param $offset Int | String
+     *  @return Void
+     */
     public function offsetUnset($offset)
     {
         $this->delete($offset);
@@ -548,17 +591,19 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
 
 
     ////////////////////////////////////////////////////////////////////////
-    //  REQUIRED BY PHPUNIT (because it tries to serialize containers)
+    //  REQUIRED BY PHPUNIT (because it tries to serialize containers and Closures can't be serialized)
     ////////////////////////////////////////////////////////////////////////
+
     public function serialize()
     {
-        return null;
+        return serialize($this->singleton);
     }
 
     public function unserialize($data)
     {
         unserialize($data);
     }
+
 
 
     ////////////////////////////////////////////////////////////////////////
@@ -576,11 +621,62 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         $this->contentModified = false;
     }
 
+    /**
+     *  A simple compare function which is used by the Sort method.
+     *
+     *  @param $a Mixed
+     *  @param $b Mixed
+     *  @return boolean
+     */
+    protected function compare($a, $b)
+    {
+        $key = $this->sortKey;
+        $aValue = $this->getValue($a, $key);
+        $bValue = $this->getValue($b, $key);
+
+        if ($aValue == $bValue) {
+            return 0;
+        }
+        if (strtolower($this->sortDirection) == 'desc') {
+            return ($aValue < $bValue) ? -1 : 1;
+        }
+        else {
+            return ($aValue < $bValue) ? 1 : -1;
+        }
+    }
 
     /**
-     *  A stable implementation of Mergesort (aka Stable-sort)
+     *  Returns the value when given a piece of data. 
+     *  If the data item is a primitive or if no key was given, then the item
+     *  is simply returned. However, if the data item is an object or array 
+     *  and a key was given, then returns the offset given by the key as a value.
+     *
+     *  @param $data Mixed
+     *  @param $key Int | String
+     *  @return mixed
      */
-    protected function mergesort(&$array, $cmp_function) {
+    protected function getValue($data, $key = false)
+    {
+        $returnValue = $data;
+        if (is_object($data)) {
+            $returnValue = $data->$key;
+        }
+        else if (is_array($data)) {
+            $returnValue = $data[$key];
+        }
+        return $returnValue;
+    }
+
+
+    /**
+     *  A stable implementation of Mergesort (aka Stable-sort). 
+     *  The end result is the array passed in being sorted according to the strategy provided 
+     *  by the comparison function passed in.
+     *
+     *  @param $array Array
+     *  @param $comparisionFunction A Callable.
+     */
+    protected function mergesort(&$array, $comparisonFunction) {
 
         // Exit right away if only zero or one item.
         if(count($array) < 2) {
@@ -593,12 +689,12 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         $rightArray = array_slice($array, $halfway, null, true);
 
         // Recursively call sort on left and right pieces
-        $this->mergesort($leftArray, $cmp_function);
-        $this->mergesort($rightArray, $cmp_function);
+        $this->mergesort($leftArray, $comparisonFunction);
+        $this->mergesort($rightArray, $comparisonFunction);
 
         // Check if the last element of the first array is less than the first element of 2nd.
         // If so, we are done. Just put the two arrays together for final result.
-        if(call_user_func($cmp_function, end($leftArray), reset($rightArray)) < 1) {
+        if(call_user_func($comparisonFunction, end($leftArray), reset($rightArray)) < 1) {
             $array = $leftArray + $rightArray;
             return true;
         }
@@ -613,7 +709,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
 
             // Add the lowest element between the current element in the left and right arrays to the result.
             // Then advance to the next item on that side.
-            if(call_user_func($cmp_function, current($leftArray), current($rightArray)) < 1) {
+            if(call_user_func($comparisonFunction, current($leftArray), current($rightArray)) < 1) {
                 $array[key($leftArray)] = current($leftArray);
                 next($leftArray);
             } else {

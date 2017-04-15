@@ -17,12 +17,21 @@ class Home extends \Cora\App\Controller {
 
     public function test()
     {
-        $users = $this->app->users->findAll();
-        echo $users->off0->name."<br>";
-        echo $users[0]->name."<br>";
-        // foreach ($users as $user) {
-        //     echo $user->name."<br>";
-        // }
+        $c = $this->app->collection;
+        for ($i=0; $i<100000; $i++) {
+            $c->add($i);
+        }
+
+        $time_start = microtime(true);
+        $j = 0;
+        while ($c->fetchOffset($j) != 999) {
+            $j += 1;
+        }
+        echo $c->fetchOffset($j);
+        $time_end = microtime(true);
+        $time = $time_end - $time_start;
+        echo "Runtime of $time seconds\n";
+
     }
     
     public function view($p1, $p2, $p3 = 'bob') {

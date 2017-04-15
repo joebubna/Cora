@@ -180,13 +180,11 @@ $container->session = function($c) {
     return new \Cora\Session();
 };
 
-//$container->setInstance('sessionStub', function($c, $data = false) {
-//    return new \Cora\SessionStub($data);
-//});
+$container->sessionStub = new \Cora\SessionStub();
 
-$container->setInstance('sessionStub', new \Cora\SessionStub());
-
-
+$container->singleton('testSingleton', function($c) {
+    return ['key1'=>'value1'];
+});
 
 
 /*******************************************************************
