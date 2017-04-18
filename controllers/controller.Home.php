@@ -17,21 +17,43 @@ class Home extends \Cora\App\Controller {
 
     public function test()
     {
-        $c = $this->app->collection;
-        for ($i=0; $i<100000; $i++) {
-            $c->add($i);
-        }
+        $collection = $this->app->collection([
+            new \Models\Tests\Date('Debit', '10/10/1980'),
+            new \Models\Tests\Date('Debit', '10/10/2001'),
+            new \Models\Tests\Date('Deposit', '02/14/2008'),
+            new \Models\Tests\Date('Debit', '10/10/1990'),
+            new \Models\Tests\Date('Debit', '10/10/2003'),
+            new \Models\Tests\Date('Deposit', '02/14/2004'),
+            new \Models\Tests\Date('Debit', '02/14/1985'),
+            new \Models\Tests\Date('Debit', '02/14/1994'),
+            new \Models\Tests\Date('Deposit', '02/14/1974')
+        ]);
 
-        $time_start = microtime(true);
-        $j = 0;
-        while ($c->fetchOffset($j) != 999) {
-            $j += 1;
-        }
-        echo $c->fetchOffset($j);
-        $time_end = microtime(true);
-        $time = $time_end - $time_start;
-        echo "Runtime of $time seconds\n";
+        $collection->sort('timestamp');
+        echo $collection->get(0)->timestamp->format("m/d/Y");
 
+        echo "<br><br>";
+        foreach ($collection as $c) {
+            echo $c->timestamp->format("m/d/Y")."<br>";
+        }
+        
+        // $c = $this->app->collection;
+        // $a = [];
+        // for ($i=0; $i<100000; $i++) {
+        //     $c->add($i);
+        //     $a[] = $i;
+        // }
+
+        // $time_start = microtime(true);
+        // $j = 0;
+        // while ($c->fetchOffset($j) != 999) {
+        //     $j += 1;
+        // }
+        // echo $c->fetchOffset($j);
+        // $time_end = microtime(true);
+        // $time = $time_end - $time_start;
+        // echo "Runtime of $time seconds\n";
+        // echo "<br>";
     }
     
     public function view($p1, $p2, $p3 = 'bob') {

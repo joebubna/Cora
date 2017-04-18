@@ -4,13 +4,13 @@ namespace Tests\Cora;
 class ContainerTest extends \Cora\App\TestCase
 {   
     /**
-     *  Check that it's possible to add and retrieve a primitive using object syntax
+     *  Check that it's possible to add and retrieve a primitive using Property Name
      *
      *  @test
      */
-    public function canStorePrimitivesUsingObjectSyntax()
+    public function canStorePrimitivesUsingPropertyName()
     {
-        $collection = $this->app->collection;
+        $collection = new \Cora\Collection();
         $this->assertEquals(0, $collection->count());
         $collection->add('Hello World');
         $this->assertEquals(1, $collection->count());
@@ -29,9 +29,9 @@ class ContainerTest extends \Cora\App\TestCase
      *
      *  @test
      */
-    public function canStorePrimitivesUsingMethod()
+    public function canStorePrimitivesUsingOffsetMethod()
     {
-        $collection = $this->app->collection;
+        $collection = new \Cora\Collection();
         $this->assertEquals(0, $collection->count());
         $collection->add('Hello World');
         $this->assertEquals(1, $collection->count());
@@ -50,9 +50,9 @@ class ContainerTest extends \Cora\App\TestCase
      *
      *  @test
      */
-    public function canStorePrimitivesUsingArraySyntax()
+    public function canStorePrimitivesUsingArrayOffset()
     {
-        $collection = $this->app->collection;
+        $collection = new \Cora\Collection();
         $this->assertEquals(0, $collection->count());
         $collection->add('Hello World');
         $this->assertEquals(1, $collection->count());
@@ -67,13 +67,13 @@ class ContainerTest extends \Cora\App\TestCase
 
 
     /**
-     *  Check that it's possible to remove a primitive using Object syntax.
+     *  Check that it's possible to remove a primitive using Property Name
      *
      *  @test
      */
-    public function canRemovePrimitiveUsingObjectSyntax()
+    public function canRemovePrimitiveUsingPropertyName()
     {
-        $collection = $this->app->collection;
+        $collection = new \Cora\Collection();
         $this->assertEquals(0, $collection->count());
         $collection->add('Hello World');
         $this->assertEquals(1, $collection->count());
@@ -93,13 +93,13 @@ class ContainerTest extends \Cora\App\TestCase
 
 
     /**
-     *  Check that it's possible to remove a primitive using Object syntax.
+     *  Check that it's possible to remove a primitive using offset number.
      *
      *  @test
      */
-    public function canRemovePrimitiveUsingMethod()
+    public function canRemovePrimitiveUsingOffset()
     {
-        $collection = $this->app->collection;
+        $collection = new \Cora\Collection();
         $this->assertEquals(0, $collection->count());
         $collection->add('Hello World');
         $this->assertEquals(1, $collection->count());
@@ -125,7 +125,7 @@ class ContainerTest extends \Cora\App\TestCase
      */
     public function canReturnObjectCollectionSubset()
     {
-        $collection = $this->app->collection([
+        $collection = new \Cora\Collection([
             new \Models\Tests\Date('Debit', '10/10/1980'),
             new \Models\Tests\Date('Debit', '10/10/2001'),
             new \Models\Tests\Date('Deposit', '02/14/2008'),
@@ -141,13 +141,59 @@ class ContainerTest extends \Cora\App\TestCase
 
 
     /**
+     *  Check that it's possible to set the key/property you want to be accessor
+     *
+     *  @test
+     */
+    public function canSetAccessKeyForObject()
+    {
+        $collection = new \Cora\Collection([
+            new \Models\Tests\User('User1', 'Type1'),
+            new \Models\Tests\User('User2', 'Type1'),
+            new \Models\Tests\User('User3', 'Type2'),
+            new \Models\Tests\User('User4', 'Type2'),
+            new \Models\Tests\User('User5', 'Type1'),
+            new \Models\Tests\User('User6', 'Type3')
+        ], 'name');
+        $this->assertEquals(6, $collection->count());
+
+        $subset = $collection->where('type', 'Type2');
+        $this->assertEquals(2, count($subset));
+        $this->assertEquals('User3', $subset->User3->name);
+    }
+
+
+    /**
+     *  Check that it's possible to set the key/property you want to be accessor
+     *
+     *  @test
+     */
+    public function canSetAccessKeyForArray()
+    {
+        $collection = new \Cora\Collection([
+            ['name'=>'User1', 'type'=>'Type1'],
+            ['name'=>'User2', 'type'=>'Type1'],
+            ['name'=>'User3', 'type'=>'Type2'],
+            ['name'=>'User4', 'type'=>'Type2'],
+            ['name'=>'User5', 'type'=>'Type1'],
+            ['name'=>'User6', 'type'=>'Type3']
+        ], 'name');
+        $this->assertEquals(6, $collection->count());
+
+        $subset = $collection->where('type', 'Type2');
+        $this->assertEquals(2, count($subset));
+        $this->assertEquals('User3', $subset->User3['name']);
+    }
+
+
+    /**
      *  Check that collection can be sorted.
      *
      *  @test
      */
     public function canSortCollection()
     {
-        $collection = $this->app->collection([
+        $collection = new \Cora\Collection([
             new \Models\Tests\Date('Debit', '10/10/1980'),
             new \Models\Tests\Date('Debit', '10/10/2001'),
             new \Models\Tests\Date('Deposit', '02/14/2008'),
@@ -165,14 +211,6 @@ class ContainerTest extends \Cora\App\TestCase
         $collection->sort('timestamp', 'asc');
         $this->assertEquals('02/14/1974', $collection->get(8)->timestamp->format("m/d/Y"));
         $this->assertEquals('02/14/2008', $collection->get(0)->timestamp->format("m/d/Y"));
-        
-        // foreach($collection->sort('name') as $item) {
-        //     echo "\n    ".$item->name." - ".$item->timestamp->format('Y-m-d');
-        // }
-        // echo "\n";
-        // foreach($collection->sort('name', 'asc')->where('name', 'Debit') as $item) {
-        //     echo "\n    ".$item->name." - ".$item->timestamp->format('Y-m-d');
-        // }
     }
 
 }

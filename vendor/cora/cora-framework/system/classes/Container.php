@@ -3,6 +3,10 @@ namespace Cora;
 
 class Container implements \Serializable, \IteratorAggregate, \Countable, \ArrayAccess
 {
+    ////////////////////////////////////////////////////////////////////////
+    //  DATA MEMBERS
+    ////////////////////////////////////////////////////////////////////////
+    
     // If this Container has a parent, hold a reference to it here.
     protected $parent;
 
@@ -23,14 +27,12 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     // Combined contents. This stores the combined resources of both $signature and $singleton objects.
     // When a resource is added or removed, this will get recalculated.
     protected $content;
+    protected $contentKeys;
+    protected $size = 0;
 
     // If the contents of this container get modified, set to true so that any subsequent calls to iterate over
     // or sort the contents recalculate what's in the $content data member.
     protected $contentModified = false;
-
-    // For tracking the next open offset of the form "off0", "off1"... "offN"
-    protected $nextOffset;
-    protected $size;
 
     // Normally closures are resolved when the resource is asked for. If you want the actual Closure returned,
     // set this to true.
@@ -42,17 +44,24 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
 
 
 
+    ////////////////////////////////////////////////////////////////////////
+    //  MAGIC METHODS
+    ////////////////////////////////////////////////////////////////////////
+
+    /**
+     *  Constructor 
+     *  
+     *  @param parent If this container/collection has a parent container. 
+     *  @param data Data to be loaded into this collection in the form of an object or array. 
+     *  @param dataKey A key or property on the data being passed in. Will be access $name.
+     *  @param returnClosure Whether Closures stored should be returned as Closures or executed and result returned.
+     */
     public function __construct($parent = false, $data = false, $dataKey = false, $returnClosure = false)
     {
         $this->parent = $parent;
         $this->signature = new \stdClass();
         $this->singleton = new \stdClass();
-        $this->signaturesToSingletons = new \stdClass();
-
-        // When items are added to this collection without any valid key,
-        // they will be added so that they can be accessed like $collection->0, $collection->2, etc.
-        // This helps us keep track of current offset.
-        $this->nextOffset = 0;
+        $this->signaturesToSingletons = new \stdClass();;
 
         // If returnClosure is set to true, then fetching resources through __get will not resolve
         // the closure automatically.
@@ -64,43 +73,18 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
                 $this->add($item, false, $dataKey, true);
             }
         }
-        $this->contentModified = true;
+        $this->generateContent();
     }
 
-    public function fetchOffset($num)
-    {
-        $it = $this->getIterator();
-        $i = 0;
-        while ($i < $num) {
-            $it->next();
-            $i++;
-        }
-        return $it->current();
-    }
-
-    public function fetchOffsetKey($num)
-    {
-        $it = $this->getIterator();
-        $i = 0;
-        while ($i < $num) {
-            $it->next();
-            $i++;
-        }
-        return $it->key();
-    }
-
-    public function count($recursivelyIncludeParents = false, $recount = false)
-    {
-        if ($recount) {
-            return $this->getIterator()->count();
-        }
-        return $this->size;
-    }
-
-
+    /**
+     *  Determines if a resource exists. 
+     *
+     *  @param name The name of the resource sought. 
+     *  @return Boolean
+     */
     public function __isset($name)
     {
-        if ($this->find($name) !== false) {
+        if ($this->find($name) !== null) {
             return true;
         }
         return false;
@@ -110,9 +94,11 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     /**
      *  Returns a resource. If the resource is an object (from Singleton array)
      *  then just returns that object. If resource is defined in a Closure,
-     *  then executes the Closure and returns the resource within.
+     *  then normally executes the Closure and returns the resource within unless 
+     *  returnClosure is true. 
      *
-     *  $Container->name() creates the object via __call() below.
+     *  @param name A name in the form of a string or numeric offset.
+     *  @return Mixed A resource or null.
      */
     public function __get($name)
     {
@@ -146,43 +132,13 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         }
     }
 
-    /**
-     *  Finds a resource. In the case of singletons or explicitly passed in objects,
-     *  this returns that single instance of the object.
-     *  In the default case it will return a closure for creating an object.
-     */
-    public function find($name, $container = false)
-    {
-        // Handle if recursive call or not.
-        if (!$container) {
-            $container = $this;
-        }
-
-        if (is_numeric($name)) {
-            return $this->fetchOffset($name);
-        }
-
-        // If a single object is meant to be returned.
-        if (isset($container->singleton->$name)) {
-            return $container->singleton->$name;
-        }
-
-        // else look for a Closure.
-        elseif (isset($container->signature->$name)) {
-            return $container->signature->$name;
-        }
-
-        // Else check any parents.
-        elseif ($container->parent) {
-            return $container->find($name, $container->parent);
-        }
-        return null;
-    }
-
 
     /**
-     *  $Container->name = function();
-     *  Allows assigning a closure to create a resource.
+     *  Allows assigning a value to a resource identifier.
+     *
+     *  @param name A resource identifier (string). 
+     *  @param value The resource value. 
+     *  @return Void
      */
     public function __set($name, $value)
     {
@@ -206,6 +162,18 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
      *  $Container->name(arg1, arg2)
      *  $name is passed to make() method to get callback for resource.
      *  The arguments are then passed onwards to the callback.
+     *
+     *  A good example is when using this class to do dependency injection:
+     *  $container->comments = function($c) {
+     *      return $c->repository('Comment');
+     *  };
+     *
+     *  When calling $c->repository(args) the resource denoted by the name "repository" 
+     *  needs to be grabbed and then the arguments passed to that resource.
+     *
+     *  @param name The name of a resource within the Container. Should be callable. 
+     *  @param arguments The arguments that will be passed to that Resource.
+     *  @return The result of the executed resource or null.
      */
     public function __call($name, $arguments)
     {
@@ -213,7 +181,6 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         $callback = call_user_func_array(array($this, 'find'), array($name));
 
         if ($callback != false) {
-            //var_dump($callback);
             // Add container reference as first argument.
             array_unshift($arguments, $this);
 
@@ -224,68 +191,130 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     }
 
 
-    public function merge($data, $key = false, $dataKey = false)
+
+    ////////////////////////////////////////////////////////////////////////
+    //  IMPORANT UTILITY FUNCTIONS
+    ////////////////////////////////////////////////////////////////////////
+
+    /**
+     *  Finds a resource. 
+     *  If given a numeric value, will grab that offset from the master resource 
+     *  variable $this->content. If given a string as a name, will look for matching singletons 
+     *  first, then matching closures second. If given a string, and no match is found, it will 
+     *  also look in any parent container. 
+     *
+     *  @param name An int or string that denotes a resource. 
+     *  @param container A parent container. 
+     *  @return A resource or NULL.
+     */
+    public function find($name, $container = false)
     {
-        if ($data != false && (is_array($data) || is_object($data))) {
-            foreach ($data as $item) {
-                $this->add($item, $key, $dataKey, true);
-            }
+        // Handle if recursive call or not.
+        if (!$container) {
+            $container = $this;
         }
-        else {
-            $this->add($data, $key, $dataKey);
+
+        // Do any conversions on the resource name passed in, then check if numeric. 
+        // I.E. "off2" will get returned as simply numeric 2.
+        $name = $this->getName($name);
+        if (is_numeric($name)) {
+            return $this->fetchOffset($name);
         }
-        $this->contentModified = true;
+
+        // If a single object is meant to be returned.
+        if (isset($container->singleton->$name)) {
+            return $container->singleton->$name;
+        }
+
+        // else look for a Closure.
+        elseif (isset($container->signature->$name)) {
+            return $container->signature->$name;
+        }
+
+        // Else check any parents.
+        elseif ($container->parent) {
+            return $container->find($name, $container->parent);
+        }
+        return null;
     }
 
 
+    /**
+     *  Adds a resource to this Container. 
+     *
+     *  @param item The item to be added. Can be a primitive, array, object, or Closure. 
+     *  @param key The key (identifier) to store this item as. 
+     *  @param dataKey If given, uses the value stored in that key within the Object or Array as the collection key. 
+     *  @return self
+     */
     public function add($item, $key = false, $dataKey = false)
-    {
-        // If this resource was not already set, increase size variable.
-        if (!$key || !$this->__isset($key)) {
-            $this->size += 1;
-        }
-        
+    {        
         if (is_object($item)) {
             if ($key) {
+                if (!isset($this->key)) { $this->size += 1; }
                 $this->singleton->$key = $item;
             }
             else if ($dataKey && isset($item->$dataKey)) {
                 $key = $item->$dataKey;
+                if (!isset($this->key)) { 
+                    $this->size += 1; 
+                }
                 $this->singleton->$key = $item;
             }
             else {
-                $offset = 'off'.$this->nextOffset;
-                $this->nextOffset += 1;
-                $this->singleton->$offset = $item;
+                $offset = '_item'.$this->size;
+                $this->size += 1;
+                $this->singleton->{"$offset"} = $item;
+            }
+        }
+        else if (is_array($item)) {
+            if ($key) {
+                if (!isset($this->key)) { $this->size += 1; }
+                $this->singleton->$key = $item;
+            }
+            else if ($dataKey && isset($item[$dataKey])) {
+                $key = $item[$dataKey];
+                if (!isset($this->key)) { $this->size += 1; }
+                $this->singleton->$key = $item;
+            }
+            else {
+                $offset = '_item'.$this->size;
+                $this->size += 1;
+                $this->singleton->{"$offset"} = $item;
             }
         }
         else {
             if ($key) {
+                if (!$this->__isset($key)) { $this->size += 1; }
                 $this->singleton->$key = $item;
             }
             else {
-                $offset = 'off'.$this->nextOffset;
-                $this->nextOffset += 1;
-                $this->singleton->$offset = $item;
+                $offset = '_item'.$this->size;
+                $this->size += 1;
+                $this->singleton->{"$offset"} = $item;
             }
         }
         $this->contentModified = true;
+        return $this;
     }
 
 
     /**
      *  Remove a resource.
+     *
+     *  @param name The identifier (key) for this resource within the Container.
+     *  @return Void.
      */
     public function delete($name)
     {
+        // Get actual name. If "off0" translates to just 0. 
+        $name = $this->getName($name);
+
         // Figure out the key of the object we want to delete.
         // (if numeric value was passed in, turn that into actual key)
-        $resourceKey = false;
+        $resourceKey = $name;
         if (is_numeric($name)) {
             $resourceKey = $this->fetchOffsetKey($name);
-        }
-        else {
-            $resourceKey = $name;
         }
 
         // Only mark the content as modified and change count if the delete call found 
@@ -295,11 +324,23 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
             $this->size -= 1;
         }
     }
+
+
+    /** 
+     *  Alias for Delete(). 
+     */
     public function remove($name)
     {
         $this->delete($name);
     }
 
+
+    /** 
+     *  Handles deleting a resource. 
+     *
+     *  @param name The name of the resource to be deleted. 
+     *  @param container A parent container which will also be searched for item to remove. 
+     */
     public function processDelete($name, $container = false)
     {
         // Handle if recursive call or not.
@@ -314,8 +355,8 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         }
 
         // else look for a Closure.
-        elseif (isset($container->signature->$name)) {
-            unset($container->singleton->$name);
+        if (isset($container->signature->$name)) {
+            unset($container->signature->$name);
             return true;
         }
 
@@ -349,87 +390,219 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     }
 
 
-    public function sumByKey($key)
+    /**
+     *  Returns a resource by numerical offset. 
+     *  
+     *  @param num A number.
+     */
+    public function fetchOffset($num)
     {
-        $collection = $this->getIterator();
-        $sum = 0;
-        foreach ($collection as $result) {
-            if (isset($result->$key)) {
-                $sum += $result->$key;
-            }
-        }
-        return $sum;
-    }
-
-    public function sort($key, $dir = 'desc')
-    {
-        if (!$this->content || $this->contentModified) {
+        // If the content has been modified, regenerate $this->content.
+        // and $this->contentKeys.
+        if ($this->contentModified) {
             $this->generateContent();
         }
-        $collection = (array) $this->content;
-        $this->sortDirection = $dir;
-        $this->sortKey = $key;
-        $this->mergesort($collection, array($this, 'compare'));
-        $this->content = (object) $collection;
-        return $this;
+        
+        // If the offset exists, return the data.
+        $key = $this->fetchOffsetKey($num);
+        if ($key != null) {
+            return $this->content[$key];
+        }
+        return null;
     }
+
+
+    /**
+     *  Returns the offset name (string) of a resource for a given numerical offset.
+     *
+     *  @param num A numerical offset.
+     */
+    public function fetchOffsetKey($num)
+    {
+        // Keys for resources are always strings. If given a numerical offset, 
+        // that offset needs to be interpreted to determine the actual property's name
+        // at that offset.
+        return isset($this->contentKeys[$num]) ? $this->contentKeys[$num] : null;
+    }
+
 
 
     ////////////////////////////////////////////////////////////////////////
-    //  DATA FILTERING AND MANIPULATION
+    //  UTILITY SUMMATION AND SINGLE RETURN METHODS
     ////////////////////////////////////////////////////////////////////////
 
     /**
-     *  Returns the FIRST result with a matching key=>value.
-     *  If no match is found, then returns null.
+     *  Returns the number of resources stored in this container/collection. 
+     *
+     *  @param includeParents Include parent resources in the total count?
+     *  @param recount If true, then recounts the items rather than returning the stored count.
+     *  @return The number of resources stored in this Container.
+     */
+    public function count($includeParents = false, $recount = false)
+    {
+        if ($recount) {
+            return $this->getIterator()->count();
+        }
+        return $this->size;
+    }
+    
+    
+    /**
+     *  Returns the FIRST result with a matching key=>value, else NULL.
+     *  Example: if objects representing Users are stored and you want the result with 
+     *  an Email value of 'Bob@gmail.com'
+     *
+     *  @param key A string representing a key or property. 
+     *  @param value A value for which you are searching.
      */
     public function getByValue($key, $value)
     {
         $collection = $this->getIterator();
 
         foreach($collection as $result) {
-            if($result->$key == $value) {
+            if ($result->$key == $value) {
                 return $result;
             }
         }
         return null;
     }
 
+
     /**
-     *  Returns a SUBSET of the results in the form of an array.
-     *  If no matching subset exists, returns an empty array.
+     *  Returns the sum of the contents of the Container. 
+     *  If given a key, will sum that $key->value. 
+     *  Obviously it's important to have some consistency in the types of resources you 
+     *  are storing or else the results might not make much sense or could crash. 
+     *
+     *  @param key A key on which to sum the when looking at the contents of this Container. 
+     *  @return A number.
      */
-    public function where($key, $desiredValue, $op = "==")
+    public function sumByKey($key = false)
     {
         $collection = $this->getIterator();
-        $subset = [];
+        $sum = 0;
+        foreach ($collection as $result) {
+            if ($key && isset($result->$key)) {
+                $sum += $result->$key;
+            }
+            else if ($key && isset($result[$key])) {
+                $sum += $result[$key];
+            }
+            else {
+                $sum += $result;
+            }
+        }
+        return $sum;
+    }
 
-        foreach($collection as $result) {
-            $realValue = $result->$key;
-            if($op == '==' && $realValue == $desiredValue) {
-                $subset[] = $result;
+
+
+    ////////////////////////////////////////////////////////////////////////
+    //  DATA FILTERING AND MANIPULATION (Returns instance of Container)
+    ////////////////////////////////////////////////////////////////////////
+
+    /**
+     *  Returns a SUBSET of the results.
+     *  If no matching subset exists, returns an empty Container.
+     *
+     *  Example would be if bunch of User objects were stored in this Container and you 
+     *  wanted to return a subset of Users who's "Type" is equal to "Admin". 
+     *  Container->where('Type', 'Admin');
+     *
+     *  @param key A key to look at when comparing the operator and the desired value. 
+     *  @param desiredValue The value to compare against. 
+     *  @param op The operator used in comparision. 
+     *  @return A Container with the matching resources.
+     */
+    public function where($key = false, $desiredValue, $op = "==")
+    {
+        $collection = $this->getIterator();
+        $subset = new Container();
+
+        foreach($collection as $prop => $result) {
+            // Grab resource value
+            $realValue = $result;
+            if (is_object($result)) {
+                $realValue = $result->$key;
             }
-            else if($op == '>=' && $realValue >= $desiredValue) {
-                $subset[] = $result;
+            else if (is_array($result)) {
+                $realValue = $result[$key];
             }
-            else if($op == '<=' && $realValue <= $desiredValue) {
-                $subset[] = $result;
+
+            // Check value against operator given
+            $add = false;
+            if ($op == '==' && $realValue == $desiredValue) {
+                $add = true;
             }
-            else if($op == '>' && $realValue > $desiredValue) {
-                $subset[] = $result;
+            else if ($op == '>=' && $realValue >= $desiredValue) {
+                $add = true;
             }
-            else if($op == '<' && $realValue < $desiredValue) {
-                $subset[] = $result;
+            else if ($op == '<=' && $realValue <= $desiredValue) {
+                $add = true;
             }
-            else if($op == '===' && $realValue === $desiredValue) {
-                $subset[] = $result;
+            else if ($op == '>' && $realValue > $desiredValue) {
+                $add = true;
             }
-            else if($op == '!=' && $realValue != $desiredValue) {
-                $subset[] = $result;
+            else if ($op == '<' && $realValue < $desiredValue) {
+                $add = true;
+            }
+            else if ($op == '===' && $realValue === $desiredValue) {
+                $add = true;
+            }
+            else if ($op == '!=' && $realValue != $desiredValue) {
+                $add = true;
+            }
+
+            // Add the resource to the subset if valid
+            if ($add) {
+                $subset->add($result, $prop);
             }
         }
         return $subset;
     }
+
+
+    /**
+     *  Merges the data given into this Container. 
+     *
+     *  @param data The data to merge in. 
+     *  @param key The key name to sore the data in (should only be used when passing a single resource in)
+     *  @param dataKey The value on the object/array to use as a key. 
+     *  @return self
+     */
+    public function merge($data, $key = false, $dataKey = false)
+    {
+        if ($data != false && (is_array($data) || is_object($data))) {
+            foreach ($data as $item) {
+                $this->add($item, $key, $dataKey, true);
+            }
+        }
+        else {
+            $this->add($data, $key, $dataKey);
+        }
+        return $this;
+    }    
+
+
+    /** 
+     *  Sorts the contents of this Container. 
+     *
+     *  @param key The key on which to sort. 
+     *  @param dir The sort direction. 
+     *  @return A reference to this Container. 
+     */
+    public function sort($key = false, $dir = 'desc')
+    {
+        if ($this->contentModified) {
+            $this->generateContent();
+        }
+        $this->sortDirection = $dir;
+        $this->sortKey = $key;
+        $this->mergesort($this->content, array($this, 'compare'));
+        $this->contentKeys = array_keys($this->content);
+        return $this;
+    }
+
 
 
     ////////////////////////////////////////////////////////////////////////
@@ -447,6 +620,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         return $this->signature;
     }
 
+
     /**
      *  Simple Accessor for $singleton data member
      *
@@ -457,6 +631,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         return $this->singleton;
     }
 
+
     /**
      *  Simple setter for $returnClosure data member
      *
@@ -466,6 +641,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     {
         $this->returnClosure = $bool;
     }
+
 
     /**
      *  Unsets a resource stored in the singleton data member.
@@ -478,6 +654,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         $this->contentModified = true;
     }
 
+
     /**
      *  Unsets a Closure stored in the signature data member.
      *
@@ -488,6 +665,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         $this->signature->$name = false;
         $this->contentModified = true;
     }
+
 
 
     ////////////////////////////////////////////////////////////////////////
@@ -508,6 +686,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         return $this->$name;
     }
 
+
     /**
      *  Alias of magic method __isset()
      *
@@ -518,6 +697,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     {
         return isset($this->$name);
     }
+
 
 
     ////////////////////////////////////////////////////////////////////////
@@ -535,6 +715,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         }
         return new \ArrayIterator($this->content);
     }
+
 
 
     ////////////////////////////////////////////////////////////////////////
@@ -555,6 +736,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         return false;
     }
 
+
     /**
      *  Returns an offset. If offset is not set, then returns null.
      *
@@ -565,6 +747,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     {
         return $this->$offset;
     }
+
 
     /**
      *  Assigns the value provided to the offset.
@@ -578,6 +761,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         $this->$offset = $value;
     }
 
+
     /**
      *  Unsets the given offset
      *
@@ -590,6 +774,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     }
 
 
+
     ////////////////////////////////////////////////////////////////////////
     //  REQUIRED BY PHPUNIT (because it tries to serialize containers and Closures can't be serialized)
     ////////////////////////////////////////////////////////////////////////
@@ -599,9 +784,10 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         return serialize($this->singleton);
     }
 
+
     public function unserialize($data)
     {
-        unserialize($data);
+        return unserialize($data);
     }
 
 
@@ -617,9 +803,30 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
      */
     protected function generateContent()
     {
-        $this->content = (object) array_merge_recursive((array) $this->signature, (array) $this->singleton);
+        $this->content = array_merge_recursive((array) $this->signature, (array) $this->singleton);
+        $this->contentKeys = array_keys($this->content);
         $this->contentModified = false;
     }
+
+
+    /**
+     *  Find the name/offset of a resource. 
+     *  If trying access resource "off0" this should grab the first 
+     *  resource stored. Which means removing the "off" part and making 
+     *  the name of the resource sought simply the number 0. 
+     *
+     *  @param $name The designed resource. A name or offset.
+     *  @return Mixed
+     */
+    protected function getName($name)
+    {
+        preg_match("/off([0-9]+)/", $name, $nameMatch);
+        if (isset($nameMatch[1])) {
+            $name = (int) $nameMatch[1];
+        }
+        return $name;
+    }
+
 
     /**
      *  A simple compare function which is used by the Sort method.
@@ -645,6 +852,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         }
     }
 
+
     /**
      *  Returns the value when given a piece of data. 
      *  If the data item is a primitive or if no key was given, then the item
@@ -658,10 +866,10 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     protected function getValue($data, $key = false)
     {
         $returnValue = $data;
-        if (is_object($data)) {
+        if ($key && is_object($data)) {
             $returnValue = $data->$key;
         }
-        else if (is_array($data)) {
+        else if ($key && is_array($data)) {
             $returnValue = $data[$key];
         }
         return $returnValue;
@@ -679,13 +887,13 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     protected function mergesort(&$array, $comparisonFunction) {
 
         // Exit right away if only zero or one item.
-        if(count($array) < 2) {
+        if (count($array) < 2) {
             return true;
         }
 
         // Cut results in half.
-        $halfway = count($array) / 2;
-        $leftArray = array_slice($array, 0, $halfway, true);
+        $halfway    = count($array) / 2;
+        $leftArray  = array_slice($array, 0, $halfway, true);
         $rightArray = array_slice($array, $halfway, null, true);
 
         // Recursively call sort on left and right pieces
@@ -694,7 +902,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
 
         // Check if the last element of the first array is less than the first element of 2nd.
         // If so, we are done. Just put the two arrays together for final result.
-        if(call_user_func($comparisonFunction, end($leftArray), reset($rightArray)) < 1) {
+        if (call_user_func($comparisonFunction, end($leftArray), reset($rightArray)) < 1) {
             $array = $leftArray + $rightArray;
             return true;
         }
@@ -705,11 +913,11 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         reset($rightArray);
 
         // While looking at the current element in each array...
-        while(current($leftArray) && current($rightArray)) {
+        while (current($leftArray) && current($rightArray)) {
 
             // Add the lowest element between the current element in the left and right arrays to the result.
             // Then advance to the next item on that side.
-            if(call_user_func($comparisonFunction, current($leftArray), current($rightArray)) < 1) {
+            if (call_user_func($comparisonFunction, current($leftArray), current($rightArray)) < 1) {
                 $array[key($leftArray)] = current($leftArray);
                 next($leftArray);
             } else {
@@ -721,14 +929,14 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         // After doing the left and right comparisons above, you may hit the end of the left array
         // before hitting the end of the right (or vice-versa). We need to make sure these left-over
         // elements get added to our results.
-        while(current($leftArray)) {
+        while (current($leftArray)) {
             $array[key($leftArray)] = current($leftArray);
             next($leftArray);
         }
-        while(current($rightArray)) {
+        while (current($rightArray)) {
             $array[key($rightArray)] = current($rightArray);
             next($rightArray);
         }
         return true;
     }
-}
+} // END Container
