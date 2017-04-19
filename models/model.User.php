@@ -67,6 +67,7 @@ class User extends \Cora\App\Model {
 
     public function __construct($email = null, $password = null, $type = null)
     {
+        parent::__construct();
         $this->email = $email;
         $this->password = $password;
         $this->primaryRole = $type;
@@ -80,6 +81,11 @@ class User extends \Cora\App\Model {
 
     public function beforeCreate() {
         $this->createdDate = new \DateTime();
+    }
+
+    public function onLoad() 
+    {
+        $this->data->calcName = $this->firstName.'-'.$this->lastName;
     }
 
 //    public function afterGet($prop, $value)

@@ -7,8 +7,14 @@ namespace Cora;
 class Model
 {
     protected $model_data;
+    public $data;
     public $model_db = false;
     public $model_dynamicOff;
+
+    public function __construct()
+    {
+        $this->data = new \stdClass();
+    }
 
     public function _populate($record = null, $db = false)
     {
@@ -220,6 +226,17 @@ class Model
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // If there is a defined DATA property (non-DB related), return the data.
+        ///////////////////////////////////////////////////////////////////////
+        if (isset($this->data->{$name})) {
+            $this->beforeGet($name); // Lifecycle callback
+            $returnValue = $this->data->{$name};
+            $this->afterGet($name, $returnValue); // Lifecycle callback
+            return $returnValue;
+        }
+
+
+        ///////////////////////////////////////////////////////////////////////
         // If there is a defined property (non-DB related), return the data.
         ///////////////////////////////////////////////////////////////////////
         $class = get_class($this);
@@ -300,10 +317,6 @@ class Model
         // Otherwise if a plain model attribute is defined.
         else {
             $this->{$name} = $value;
-//            $class = get_class($this);
-//            if (property_exists($class, $name)) {
-//                $this->{$name} = $value;
-//            }
         }
 
         // Lifecycle callback
@@ -669,6 +682,31 @@ class Model
     public function delete()
     {
         return true;
+    }
+
+    public function __toString()
+    {
+        echo $this->toJson();
+    }
+
+    public function toJson()
+    {
+        $object = new \stdClass;
+        foreach ($this->model_data as $key => $data) {
+            if ($data instanceof \Cora\Model) {
+                $object->$key = $data->json();
+            } else {
+                $object->$key = $data;
+            }
+        }
+        foreach ($this->data as $key => $data) {
+            if ($data instanceof \Cora\Model) {
+                $object->$key = $data->json();
+            } else {
+                $object->$key = $data;
+            }
+        }
+        return json_encode($object);
     }
 
 

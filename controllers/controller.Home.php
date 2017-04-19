@@ -15,6 +15,17 @@ class Home extends \Cora\App\Controller {
         $this->load->view('template', $this->data);
     }
 
+    public function test2()
+    {
+        $user = $this->app->users->find(1);
+        echo "
+            <script>
+                var user = ".$user->toJson().";
+                console.log(user.calcName);
+            </script>
+        ";
+    }
+
     public function test()
     {
         $collection = $this->app->collection([
