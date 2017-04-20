@@ -689,19 +689,39 @@ class Model
         echo $this->toJson();
     }
 
-    public function toJson()
+    public function toArray()
     {
         $object = new \stdClass;
         foreach ($this->model_data as $key => $data) {
             if ($data instanceof \Cora\Model) {
-                $object->$key = $data->json();
+                $object->$key = $data->toArray();
             } else {
                 $object->$key = $data;
             }
         }
         foreach ($this->data as $key => $data) {
             if ($data instanceof \Cora\Model) {
-                $object->$key = $data->json();
+                $object->$key = $data->toArray();
+            } else {
+                $object->$key = $data;
+            }
+        }
+        return (array) $object;
+    }
+
+    public function toJson()
+    {
+        $object = new \stdClass;
+        foreach ($this->model_data as $key => $data) {
+            if ($data instanceof \Cora\Model) {
+                $object->$key = $data->toArray();
+            } else {
+                $object->$key = $data;
+            }
+        }
+        foreach ($this->data as $key => $data) {
+            if ($data instanceof \Cora\Model) {
+                $object->$key = $data->toArray();
             } else {
                 $object->$key = $data;
             }
