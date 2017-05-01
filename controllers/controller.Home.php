@@ -25,8 +25,9 @@ class Home extends \Cora\App\Controller {
             ['name'=>'User5', 'balance'=>900],
             ['name'=>'User6', 'balance'=>200]
         ], 'name');
-        $max = $collection->min('balance');
-        var_dump($max);
+        var_dump($collection->map(function($item) {
+            return $item['balance'] * 2;
+        }));
     }
 
     public function test()

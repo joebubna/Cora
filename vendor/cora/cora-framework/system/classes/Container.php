@@ -652,6 +652,45 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     }
 
 
+    /**
+     *  Map callback to data.
+     *
+     *  @param callback A callable function.
+     *  @return A collection
+     */
+    public function map($callback)
+    {
+        $collection = $this->getIterator();
+        $mutatedCollection = new Container();
+
+        foreach($collection as $prop => $result) {
+            $aValue = $callback($result, $prop);
+            $mutatedCollection->add($aValue);
+        }
+        return $mutatedCollection;
+    }  
+
+
+    /**
+     *  Filter data to that which passes the provided callback.
+     *
+     *  @param callback A callable function.
+     *  @return A collection
+     */
+    public function filter($callback)
+    {
+        $collection = $this->getIterator();
+        $mutatedCollection = new Container();
+
+        foreach($collection as $prop => $result) {
+            if ($callback($result, $prop)) {
+                $mutatedCollection->add($result);
+            }
+        }
+        return $mutatedCollection;
+    }
+
+
 
     ////////////////////////////////////////////////////////////////////////
     //  SIMPLE ACCESSORS AND MODIFIERS

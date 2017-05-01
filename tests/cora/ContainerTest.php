@@ -253,4 +253,55 @@ class ContainerTest extends \Cora\App\TestCase
         $this->assertEquals('User2', $min['name']);
     }
 
+
+    /**
+     *  Check that it's possible to map the collection.
+     *
+     *  @test
+     */
+    public function canMap()
+    {
+        $collection = new \Cora\Collection([
+            ['name'=>'User1', 'balance'=>200],
+            ['name'=>'User2', 'balance'=>100],
+            ['name'=>'User3', 'balance'=>500],
+            ['name'=>'User4', 'balance'=>400],
+            ['name'=>'User5', 'balance'=>900],
+            ['name'=>'User6', 'balance'=>200]
+        ], 'name');
+        $mc = $collection->map(function($item) {
+            $item['balance'] = $item['balance'] * 2;
+            return $item;
+        });
+        $this->assertEquals(200, $mc->off1['balance']);
+        $this->assertEquals('User2', $mc->off1['name']);
+
+        $this->assertEquals(1800, $mc->off4['balance']);
+        $this->assertEquals('User5', $mc->off4['name']);
+    }
+
+
+    /**
+     *  Check that it's possible to map the collection.
+     *
+     *  @test
+     */
+    public function canFilter()
+    {
+        $collection = new \Cora\Collection([
+            ['name'=>'User1', 'balance'=>200],
+            ['name'=>'User2', 'balance'=>100],
+            ['name'=>'User3', 'balance'=>500],
+            ['name'=>'User4', 'balance'=>400],
+            ['name'=>'User5', 'balance'=>900],
+            ['name'=>'User6', 'balance'=>200]
+        ], 'name');
+        $mc = $collection->filter(function($item) {
+            return $item['balance'] > 200;
+        });
+        $this->assertEquals(3, $mc->count());
+        $this->assertEquals(500, $mc->off0['balance']);
+        $this->assertEquals('User3', $mc->off0['name']);
+    }
+
 }
