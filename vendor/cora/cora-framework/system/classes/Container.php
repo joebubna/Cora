@@ -496,6 +496,54 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     }
 
 
+    /**
+     *  Returns the largest value.
+     *
+     *  @param key A key on which to sum the when looking at the contents of this Container. 
+     *  @return mixed Value
+     */
+    public function max($key = false)
+    {
+        $collection = $this->getIterator();
+        $max = 0;
+        $valueToReturn = 0;
+        foreach ($collection as $result) {
+            if ($key && isset($result->$key)) {
+                if ($result->$key > $max) {
+                    $max = $result->$key;
+                    $valueToReturn = $result;
+                }
+            }
+            else if ($key && isset($result[$key])) {
+                if ($result[$key] > $max) {
+                    $max = $result[$key];    
+                    $valueToReturn = $result;
+                }
+            }
+            else {
+                if ($result > $max) {
+                    $max = $result;
+                    $valueToReturn = $result;
+                }
+            }
+        }
+        return $valueToReturn;
+    }
+
+
+    /**
+     *  Returns the smallest value.
+     *
+     *  @param key A key on which to sum the when looking at the contents of this Container. 
+     *  @return mixed Value
+     */
+    public function min($key = false)
+    {
+        $sortedCollection = $this->sort($key, 'desc');
+        return $sortedCollection->get(0);
+    }
+
+
 
     ////////////////////////////////////////////////////////////////////////
     //  DATA FILTERING AND MANIPULATION (Returns instance of Container)

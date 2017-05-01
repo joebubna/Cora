@@ -17,13 +17,16 @@ class Home extends \Cora\App\Controller {
 
     public function test2()
     {
-        $user = $this->app->users->find(1);
-        echo "
-            <script>
-                var user = ".$user->toJson().";
-                console.log(user.calcName);
-            </script>
-        ";
+        $collection = new \Cora\Collection([
+            ['name'=>'User1', 'balance'=>200],
+            ['name'=>'User2', 'balance'=>100],
+            ['name'=>'User3', 'balance'=>500],
+            ['name'=>'User4', 'balance'=>400],
+            ['name'=>'User5', 'balance'=>900],
+            ['name'=>'User6', 'balance'=>200]
+        ], 'name');
+        $max = $collection->min('balance');
+        var_dump($max);
     }
 
     public function test()

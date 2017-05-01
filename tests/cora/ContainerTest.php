@@ -213,4 +213,44 @@ class ContainerTest extends \Cora\App\TestCase
         $this->assertEquals('02/14/2008', $collection->get(0)->timestamp->format("m/d/Y"));
     }
 
+
+    /**
+     *  Check that it's possible to get the max value from collection.
+     *
+     *  @test
+     */
+    public function canGetMaxValue()
+    {
+        $collection = new \Cora\Collection([
+            ['name'=>'User1', 'balance'=>200],
+            ['name'=>'User2', 'balance'=>100],
+            ['name'=>'User3', 'balance'=>500],
+            ['name'=>'User4', 'balance'=>400],
+            ['name'=>'User5', 'balance'=>900],
+            ['name'=>'User6', 'balance'=>200]
+        ], 'name');
+        $max = $collection->max('balance');
+        $this->assertEquals('User5', $max['name']);
+    }
+
+
+    /**
+     *  Check that it's possible to get the min value from collection.
+     *
+     *  @test
+     */
+    public function canGetMinValue()
+    {
+        $collection = new \Cora\Collection([
+            ['name'=>'User1', 'balance'=>200],
+            ['name'=>'User2', 'balance'=>100],
+            ['name'=>'User3', 'balance'=>500],
+            ['name'=>'User4', 'balance'=>400],
+            ['name'=>'User5', 'balance'=>900],
+            ['name'=>'User6', 'balance'=>200]
+        ], 'name');
+        $min = $collection->min('balance');
+        $this->assertEquals('User2', $min['name']);
+    }
+
 }
