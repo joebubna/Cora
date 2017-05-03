@@ -425,7 +425,7 @@ class Model
 
         $db = $relatedObj->getDbAdaptor();
         $db->where($relationColumnName, $this->{$this->getPrimaryKey()});
-        $db->select($idField);
+        //$db->select($idField);
         return $repo->findAll($db);
     }
 
@@ -689,44 +689,63 @@ class Model
         echo $this->toJson();
     }
 
-    public function toArray()
+    public function toArray($inputData = false)
     {
-        $object = new \stdClass;
-        foreach ($this->model_data as $key => $data) {
-            if ($data instanceof \Cora\Model) {
-                $object->$key = $data->toArray();
-            } else {
-                $object->$key = $data;
-            }
+        // If nothing was passed in, default to this object. 
+        if ($inputData === false) {
+            $inputData = $this;
         }
-        foreach ($this->data as $key => $data) {
-            if ($data instanceof \Cora\Model) {
-                $object->$key = $data->toArray();
-            } else {
-                $object->$key = $data;
+        
+        // If input is a Cora model
+        if ($inputData instanceof \Cora\Model) {
+            $object = new \stdClass;
+            foreach ($this->model_data as $key => $data) {
+                if ($data instanceof \Cora\Model) {
+                    $object->$key = $data->toArray();
+                } else {
+                    $object->$key = $this->toArray($data);
+                }
             }
+            foreach ($this->data as $key => $data) {
+                if ($data instanceof \Cora\Model) {
+                    $object->$key = $data->toArray();
+                } else {
+                    $object->$key = $this->toArray($data);
+                }
+            }
+            return (array) $object;
         }
-        return (array) $object;
+
+        // If input is iterable
+        else if (is_array($inputData) || $inputData instanceof \Traversable) {
+            $object = new \stdClass;
+            foreach ($inputData as $key => $data) {
+                if ($data instanceof \Cora\Model) {
+                    $object->$key = $data->toArray();
+                } else {
+                    $object->$key = $this->toArray($data);
+                }
+            }
+            return (array) $object;
+        }
+
+        // If input is present
+        else if ($inputData) {
+            return $inputData;
+        }
+
+        // If nothing was passed in
+        return null;
     }
 
-    public function toJson()
+    public function toJson($inputData = false)
     {
-        $object = new \stdClass;
-        foreach ($this->model_data as $key => $data) {
-            if ($data instanceof \Cora\Model) {
-                $object->$key = $data->toArray();
-            } else {
-                $object->$key = $data;
-            }
+        // If nothing was passed in, default to this object. 
+        if ($inputData === false) {
+            $inputData = $this;
         }
-        foreach ($this->data as $key => $data) {
-            if ($data instanceof \Cora\Model) {
-                $object->$key = $data->toArray();
-            } else {
-                $object->$key = $data;
-            }
-        }
-        return json_encode($object);
+        
+        return json_encode($this->toArray($inputData));
     }
 
 
