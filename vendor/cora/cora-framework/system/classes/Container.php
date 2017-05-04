@@ -68,7 +68,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
         $this->returnClosure = $returnClosure;
 
         // If data was passed in, then store it.
-        if ($data != false && (is_array($data) || is_object($data))) {
+        if ($data != false && (is_array($data) || $data instanceof \Traversable)) {
             foreach ($data as $item) {
                 $this->add($item, false, $dataKey, true);
             }
