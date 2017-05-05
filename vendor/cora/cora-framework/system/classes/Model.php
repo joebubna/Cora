@@ -101,7 +101,7 @@ class Model
 
     public function __isset($name)
     {
-        if ($this->$name != null) {
+        if ($this->getAttributeValue($name) != null) {
             return true;
         }
         return false;
@@ -334,6 +334,9 @@ class Model
                 $result = $result->format('Y-m-d H:i:s');
             }
             return $result;
+        }
+        if (isset($this->data->{$name})) {
+            return $this->data->{$name};
         }
         return null;
     }

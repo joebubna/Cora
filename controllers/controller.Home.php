@@ -15,6 +15,30 @@ class Home extends \Cora\App\Controller {
         $this->load->view('template', $this->data);
     }
 
+    public function indexTest()
+    {
+        $query = $this->app->users->getDb()->limit(5);
+        $this->data->models = $this->app->users->findAll($query);
+        $this->data->modelFields = ['id', 'name', 'birthday'];
+        $this->data->content = $this->load->view('models/index', $this->data, true);
+        $this->load->view('template', $this->data);
+    }
+
+    public function viewTest($id)
+    {
+        $this->data->model = $this->app->users->find($id);
+        $this->data->content = $this->load->view('models/view', $this->data, true);
+        $this->load->view('template', $this->data);
+    }
+
+    public function viewTestPOST($id)
+    {
+        $user = $this->app->users->find($id);
+        $user->_populate($this->input->post());
+        $user->save();
+        $this->test($id);
+    }
+
     public function test2()
     {
         $collection = new \Cora\Collection([
@@ -30,7 +54,7 @@ class Home extends \Cora\App\Controller {
         }));
     }
 
-    public function test()
+    public function performanceTest()
     {
         $collection = $this->app->collection([
             new \Models\Tests\Date('Debit', '10/10/1980'),
