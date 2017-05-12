@@ -249,6 +249,17 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
      */
     public function add($item, $key = false, $dataKey = false)
     {        
+        // If the data should be sorted by a property/key on it, but you want to add a prefix to 
+        // the result. Example: If $item->month is a numeric value between 1 and 12, but there may be 
+        // missing months in the data. Trying to access $collection->{'1'} will fetch OFFSET 1 which if 
+        // January data is missing, could be another month. No Bueno. By passing in a prefix you can use 
+        // $collection->month1 which will either be set or not and won't resort to returning first offset as result.
+        $keyPrefix = '';
+        if (is_array($dataKey)) {
+            $keyPrefix = $dataKey[1];
+            $dataKey = $dataKey[0];
+        }
+
         if (is_object($item)) {
             if ($key) {
                 if (!isset($this->key)) { $this->size += 1; }
@@ -259,7 +270,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
                 if (!isset($this->key)) { 
                     $this->size += 1; 
                 }
-                $this->singleton->$key = $item;
+                $this->singleton->{$keyPrefix.$key} = $item;
             }
             else {
                 $offset = '_item'.$this->size;
@@ -275,7 +286,7 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
             else if ($dataKey && isset($item[$dataKey])) {
                 $key = $item[$dataKey];
                 if (!isset($this->key)) { $this->size += 1; }
-                $this->singleton->$key = $item;
+                $this->singleton->{$keyPrefix.$key} = $item;
             }
             else {
                 $offset = '_item'.$this->size;
