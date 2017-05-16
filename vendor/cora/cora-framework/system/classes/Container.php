@@ -437,6 +437,38 @@ class Container implements \Serializable, \IteratorAggregate, \Countable, \Array
     }
 
 
+    /**
+     *  Attempts to return the collection as a simple array.
+     *
+     *  @return array
+     */
+    public function toArray()
+    {
+        $collection = $this->getIterator();
+        $plainArray = [];
+
+        foreach($collection as $prop => $result) {
+            if (is_object($result) && method_exists($result, 'toArray')) {
+                $plainArray[] = $result->toArray();
+            } else {
+                $plainArray[] = $result;
+            }
+        }
+        return $plainArray;
+    }
+
+
+    /**
+     *  Attempts to return the collection as a JSON encoded string.
+     *
+     *  @return string
+     */
+    public function toJson()
+    {
+        return json_encode($this->toArray());
+    }
+
+
 
     ////////////////////////////////////////////////////////////////////////
     //  UTILITY SUMMATION AND SINGLE RETURN METHODS

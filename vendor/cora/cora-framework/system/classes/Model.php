@@ -673,6 +673,17 @@ class Model
     }
 
 
+    /**
+     *  "Touches" any related models to force them to be grabbed from the persistance layer.
+     */
+    public function loadAll()
+    {
+        foreach ($this->model_attributes as $key => $value) {
+            $temp = $this->$key;
+        }
+    }
+
+
     public function onLoad()
     {
         //echo __FUNCTION__;
