@@ -17,6 +17,7 @@ abstract class Comment extends \Cora\App\Model {
     
     public function __construct($text = null)
     {
+        parent::__construct();
         $this->text = $text;
     }
 }

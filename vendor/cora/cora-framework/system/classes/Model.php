@@ -14,6 +14,10 @@ class Model
     public function __construct()
     {
         $this->data = new \stdClass();
+        
+        if ($this->model_attributes_add && is_array($this->model_attributes_add)) {
+            $this->model_attributes = array_merge($this->model_attributes, $this->model_attributes_add);
+        }
     }
 
     public function _populate($record = null, $db = false)
