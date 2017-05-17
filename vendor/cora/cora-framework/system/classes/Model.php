@@ -155,8 +155,12 @@ class Model
                         $relatedObj = $this->fetchRelatedObj($def['model']);
 
                         // Populate the new obj with data we have about it (should only be primaryKey/ID)
-                        $relatedObj->_populate([$relatedObj->getPrimaryKey() => $this->model_data[$name]]);
-                        $this->$name = $relatedObj;
+                        //$relatedObj->_populate([$relatedObj->getPrimaryKey() => $this->model_data[$name]]);
+                        // $this->$name = $relatedObj;
+
+                        // Fetch related object in whole 
+                        $relObjRepo = $relatedObj->getRepository(true);
+                        $this->$name = $relObjRepo->find($this->model_data[$name]);
                     }
                 }
 
