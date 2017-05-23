@@ -682,6 +682,7 @@ class Model
      */
     public function loadAll()
     {
+        $this->data->id = $this->id;
         foreach ($this->model_attributes as $key => $value) {
             $temp = $this->$key;
         }
