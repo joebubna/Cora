@@ -448,6 +448,20 @@ class Model
     }
 
 
+    /**
+     *  Not intended to replace get_class! This assumes your model namespace starts with "models"
+     *  and you want the classname minus the Models part. 
+     *  If get_class returns "Models\Tests\User", this would return "Tests\User".
+     */
+    function getFullClassName($class = false)
+    {
+        if ($class == false) { $class = $this; }
+        $className = get_class($class);
+        if ($pos = strpos($className, '\\')) return substr($className, $pos + 1);
+        return $className;
+    }
+
+
     public function fetchRelatedObj($objFullName)
     {
         // Load and set cora config.
