@@ -32,6 +32,11 @@ class Repository
         return $this->gateway->getDb();
     }
 
+    public function getTable()
+    {
+        return $this->gateway->getTable();
+    }
+
     public function find($id)
     {
         $record = $this->gateway->fetch($id);

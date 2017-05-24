@@ -61,6 +61,12 @@ class Gateway
     }
 
 
+    public function getTable()
+    {
+        return $this->tableName;
+    }
+
+
 	public function persist($model, $table = null, $id_name = null)
 	{
         if (!$table) {
