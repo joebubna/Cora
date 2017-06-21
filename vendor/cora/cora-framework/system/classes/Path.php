@@ -98,7 +98,7 @@ class Path
     */
     public $passive = false;
 
-    public function __construct() 
+    public function __construct($setup = false) 
     {
         // Setting default preMatch function.
         $this->preMatch = function() {
@@ -109,6 +109,13 @@ class Path
         $this->preExec = function() {
             return true;
         };
+
+        // Load definition if passed in as an array.
+        if (is_array($setup)) {
+            foreach($setup as $key => $value) {
+                $this->$key = $value;
+            }
+        }
     }
 
     public function preMatchCheck($vars = [], $c = false) 

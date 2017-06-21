@@ -24,7 +24,7 @@ $paths->add($path);
  */
 $path = new \Cora\Path();
     $path->url = '/coolbeans/{anything}';
-    $path->route = 'tests/{anything}';
+    $path->route = '/tests/{anything}';
     $path->passive = true;
 $paths->add($path);
 
@@ -32,10 +32,15 @@ $paths->add($path);
 /**
  *  Shows use of the special {anything} variable.
  */
-$path = new \Cora\Path();
-    $path->url = '/tests/{anything}';
-    $path->route = '/home/view/{anything}';
-$paths->add($path);
+// $path = new \Cora\Path();
+//     $path->url = '/tests/{anything}';
+//     $path->route = '/home/view/{anything}';
+// $paths->add($path);
+// OR
+$paths->add(new \Cora\Path([
+    'url'   => '/tests/{anything}',
+    'route' => '/home/view/{anything}'
+]));
 
 
 /**
@@ -67,7 +72,7 @@ $paths->add($path);
 $path = new \Cora\Path();
     $path->url = '/home/private';
     $path->route = '/home/view/protected/area';
-    $path->preExec = function($app) {
+    $path->preExec = function($vars, $app) {
         if (!$app->auth->access(new \Models\Auth\LoggedIn)) { return false; }
         return true;
     };

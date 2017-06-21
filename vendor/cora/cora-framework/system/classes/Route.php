@@ -124,6 +124,7 @@ class Route extends Framework
                 *  OUTPUT  = users\/([a-zA-Z0-9-_]+)\-([a-zA-Z0-9-_]+)\/([0-9]+)
                 */
                 $urlRegex = preg_quote($path->url, '/');
+                
                 foreach ($templateVariables[0] as $key => $placeholder) {
                     if (isset($path->def[$placeholder])) {
                         $urlRegex = str_replace(preg_quote($placeholder), '('.$path->def[$placeholder].')', $urlRegex);
@@ -135,7 +136,7 @@ class Route extends Framework
                         $urlRegex = str_replace(preg_quote($placeholder), '([a-zA-Z0-9_]+)', $urlRegex);
                     }
                 }
-
+                
                 ///////////////////////////////////////////////
                 // Check for regex match against URL given
                 ///////////////////////////////////////////////
@@ -157,7 +158,7 @@ class Route extends Framework
                 $finalRoute = $path->route;
                 if (preg_match("/$urlRegex/", $url, $urlData)) {
                     $matchFound = true;
-                    
+                    $this->debug('Matching Custom Route! Real URL "' . $url . '" matches route "' . $path->url . '" which routes to "' . $path->route . '"');
                     // A match was found, so at this point $urlData contains the matching pieces from the regex.
                     // With the first variable match being in $urlData[1]. Offset 0 is useless, so let's unset it so it
                     // does screw up our count.
@@ -201,6 +202,7 @@ class Route extends Framework
                     ) {
                         // Run preExec function for this path.
                         if (!$path->preExecCheck($urlVars, $this->container)) {
+                            echo "HERERERERERE";
                             $this->error('403');
                             exit;
                         }
