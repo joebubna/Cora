@@ -202,7 +202,6 @@ class Route extends Framework
                     ) {
                         // Run preExec function for this path.
                         if (!$path->preExecCheck($urlVars, $this->container)) {
-                            echo "HERERERERERE";
                             $this->error('403');
                             exit;
                         }
