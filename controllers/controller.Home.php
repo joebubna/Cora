@@ -15,11 +15,6 @@ class Home extends \Cora\App\Controller {
         $this->load->view('template', $this->data);
     }
 
-    public function test() 
-    {
-        echo 'HERE';
-    }
-
     public function indexTest()
     {
         $query = $this->app->users->getDb()->limit(5);
