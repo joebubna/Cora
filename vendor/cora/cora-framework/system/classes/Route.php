@@ -67,16 +67,19 @@ class Route extends Framework
      *  By default will grab URL and HTTP method from server variables, 
      *  but can be passed in as arguments.
      */
-    public function routeProcess($uri = false, $method = false)
+    public function routeProcess($uri = false, $httpMethod = false)
     {
         // Set Request type.
-        if (!$method) $method = $_SERVER['REQUEST_METHOD'];
-        $this->httpMethod = $method;
+        if (!$httpMethod) $httpMethod = $_SERVER['REQUEST_METHOD'];
+        $this->httpMethod = $httpMethod;
 
         // Set PATH info.
         if (!$uri) $uri = $_SERVER['REQUEST_URI'];
         $this->setPath($uri);
 
+        // routeFind() must be called to populate needed Controller and Method variables. 
+        // customFind() calls it automatically if matching custom route is set. 
+        // If custom route is not set, only call it if desiring to look for automatic route.
         if (!$this->customFind()) {
             if ($this->config['automatic_routing']) {
                 $this->routeFind();
@@ -86,18 +89,22 @@ class Route extends Framework
 
 
     /**
-     *  Checks if routeFind found a path to a controller. Can optionally check this
-     *  before calling routeExec.
+     *  Checks if a given URI and HTTP Method can be mapped to Controller.  
+     *
+     *  If no URI and HTTP Method are passed in, then it will make the assumption that 
+     *  routeProcess has already been called and simply see if a controller was found. 
+     *  As such, either make sure you either explicitely state what resource you want to check 
+     *  or manually call routeProcess() before calling this method.
      *
      *  Note: This helps with integrating Cora into legacy applications.
      *  You can check if a matching controller was found in the directory you're putting
      *  Cora controllers in, and if not, then run legacy routing instead.
      */
-    public function exists($uri = false, $method = false)
+    public function exists($uri = false, $httpMethod = false)
     {
         // If wanting to check if a passed in uri and method have a path mapping
-        if ($uri && $method) {
-            $this->routeProcess($uri, $method);
+        if ($uri && $httpMethod) {
+            $this->routeProcess($uri, $httpMethod);
         }
         
         // After a URI is processed, it should result in a controller path being set if a 
@@ -171,6 +178,8 @@ class Route extends Framework
 
     /**
      *  Checks if a custom path exists for the current URL.
+     *
+     *  
      */
     protected function customFind()
     {
