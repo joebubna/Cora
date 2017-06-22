@@ -77,14 +77,27 @@ class Route extends Framework
         if (!$uri) $uri = $_SERVER['REQUEST_URI'];
         $this->setPath($uri);
 
-        // routeFind() must be called to populate needed Controller and Method variables. 
-        // customFind() calls it automatically if matching custom route is set. 
-        // If custom route is not set, only call it if desiring to look for automatic route.
-        if (!$this->customFind()) {
-            if ($this->config['automatic_routing']) {
-                $this->routeFind();
-            }
+        // BIG IDEA: routeFind() must be called to populate needed Controller and Method variables. 
+        //
+        // If a custom route is found, routeFind() still needs to be called to populate 
+        // data member variables and complete the mapping from URI to a Controller file.
+        //
+        // If custom route is not set, but automatic routing is enabled, also call routeFind
+        // to see if an automatic route exists.
+        $customPathSearch = $this->customFind();
+        if ($customPathSearch || (!$customPathSearch && $this->config['automatic_routing'])) {
+            $this->routeFind();
+        } 
+
+        // If a route was found, but access was denied via the preExec callback...
+        else if ($customPathSearch == -1) {
+            $this->error('403');
         }
+
+        // ELSE
+        // Do nothing if there's no match. When and if routeExec is called user will be 
+        // directed to 404. But until then, developers can use the exists() method to 
+        // check different routes and possibly redirect the user somewhere else.
     }
 
 
@@ -179,7 +192,15 @@ class Route extends Framework
     /**
      *  Checks if a custom path exists for the current URL.
      *
-     *  
+     *  This only checks if the URL stored in the Route class matches any custom defined 
+     *  paths for the application. It does NOT guarantee that there's any Controller that 
+     *  matches that path. In order to finish the mapping from URL to physical Controller, routeFind() 
+     *  will need to be called after this method.
+     *
+     *  @preConditions paths, pathString, and httpMethod data member variables must be set.
+     *  @return 1 if matching custom route
+     *          0 if no matching custom route
+     *         -1 if matching route, but access denied by preExec callback.
      */
     protected function customFind()
     {
@@ -295,8 +316,7 @@ class Route extends Framework
                     ) {
                         // Run preExec function for this path.
                         if (!$path->preExecCheck($urlVars, $this->container)) {
-                            $this->error('403');
-                            exit;
+                            return -1;
                         }
                         
                         // If an internal route was defined for this path, set that route.
@@ -324,14 +344,13 @@ class Route extends Framework
                         // If the path is isn't passive, try to find matching route.
                         else {
                             $this->pathRESTful = $path->RESTful;
-                            $this->routeFind();
-                            return true;
+                            return 1;
                         }
                     }
                 }
             } // end if not in executed paths list
         } // end for loop
-        return false;
+        return 0;
     }
 
 
