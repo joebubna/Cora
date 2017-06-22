@@ -279,7 +279,7 @@ class Route extends Framework
      *
      *  NOTE: This is a recursive function.
      */
-     public function routeFind($basePath = '', $offset = 0)
+    protected function routeFind($basePath = '', $offset = 0)
     {
         $this->debug('');
 
@@ -492,11 +492,8 @@ class Route extends Framework
         // RESTful routing:
         // Modify method routed to if request is not of type GET.
         if ($this->config['enable_RESTful'] && $this->pathRESTful) {
-
-            $httpMethod = $_SERVER['REQUEST_METHOD'];
-
             if ($this->collectionIDGiven) {
-                switch ($httpMethod) {
+                switch ($this->httpMethod) {
                     case 'GET':
                         $method = 'itemGET';
                         break;
@@ -512,7 +509,7 @@ class Route extends Framework
                 }
             }
             else {
-                switch ($httpMethod) {
+                switch ($this->httpMethod) {
                     case 'PUT':
                         $method = $method.'PUT';
                         break;
