@@ -293,6 +293,10 @@ class Route extends Framework
                         $urlVariableName = substr($templateVariables[0][$i-1], 1, -1);
                         $urlVars[$urlVariableName] = $urlData[$i];
                     }
+                } else {
+                    if ($path->debug) {
+                        $this->debug('FAILED Matching Route! Real URL "' . $url . '" does not match route "' . $path->url . '" which routes to "' . $path->route . '"');
+                    }
                 }
 
                 // Run preMatch function for this path.

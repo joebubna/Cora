@@ -37,6 +37,10 @@ $container->users = function($c) {
     return $c->repository('User');
 };
 
+$container->{\Models\User::class} = function($c) {
+    return $c->repository('User');
+};
+
 
 /*******************************************************************
  *

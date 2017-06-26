@@ -5,6 +5,9 @@ namespace Cora;
 */
 class Path
 {
+    // If set to true, will output debugging info on failed match. 
+    public $debug = false;
+    
     ///////////////////////////////////////////////
     // Path Template
     ///////////////////////////////////////////////

@@ -3,7 +3,7 @@ $paths = new \Cora\Container();
 
 
 $path = new \Cora\Path();
-    $path->url = '/api/member/{id}/{anything}';
+    $path->url = '/api/v1.0/member/{id}/{anything}';
     $path->route = '/home/view/1/2/{anything}';
     // $path->preMatch = function($vars, $app) {
     //     return false;
@@ -14,6 +14,15 @@ $path = new \Cora\Path();
     $path->args = function($vars, $app) {
         return ['Hello', $vars['id'], $_GET['token']];
     };
+$paths->add($path);
+
+
+/**
+ *  Just an example of a simple redirect with a lot of variables.
+ */
+$path = new \Cora\Path();
+    $path->url = '/articles/{category}/{year}/{month}/{author}/{articleId}';
+    $path->route = '/articles/view/{category}/{year}/{month}/{author}/{articleId}';
 $paths->add($path);
 
 

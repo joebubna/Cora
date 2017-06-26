@@ -15,6 +15,16 @@ class Home extends \Cora\App\Controller {
         $this->load->view('template', $this->data);
     }
 
+    public function test()
+    {
+        echo \Models\User::class;
+        $query = $this->app->{\Models\User::class}->getDb()->limit(5);
+        $this->data->models = $this->app->users->findAll($query);
+        $this->data->modelFields = ['id', 'name', 'birthday'];
+        $this->data->content = $this->load->view('models/index', $this->data, true);
+        $this->load->view('template', $this->data);
+    }
+
     public function indexTest()
     {
         $query = $this->app->users->getDb()->limit(5);
