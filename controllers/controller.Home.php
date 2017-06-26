@@ -17,12 +17,21 @@ class Home extends \Cora\App\Controller {
 
     public function test()
     {
-        echo \Models\User::class;
-        $query = $this->app->{\Models\User::class}->getDb()->limit(5);
-        $this->data->models = $this->app->users->findAll($query);
-        $this->data->modelFields = ['id', 'name', 'birthday'];
-        $this->data->content = $this->load->view('models/index', $this->data, true);
-        $this->load->view('template', $this->data);
+        //echo \Models\User::class;
+        // $query = $this->app->{\Cora\Repository::class.\Models\User::class}->getDb()->limit(5);
+        // $this->data->models = $this->app->users->findAll($query);
+        // $this->data->modelFields = ['id', 'name', 'birthday'];
+        // $this->data->content = $this->load->view('models/index', $this->data, true);
+        // $this->load->view('template', $this->data);
+
+        $users = $this->app->collection;
+        $userFactory = $this->app->getFactory(\Models\User::class);
+        for ($i=0; $i < 5; $i++) {
+            $users->add($userFactory->make("Bob$i", "pass$i"));
+        }
+        foreach($users as $user) {
+            echo $user->email."<br>";
+        }
     }
 
     public function indexTest()

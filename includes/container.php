@@ -37,8 +37,19 @@ $container->users = function($c) {
     return $c->repository('User');
 };
 
-$container->{\Models\User::class} = function($c) {
+$container->{\Cora\Repository::class.\Models\User::class} = function($c) {
     return $c->repository('User');
+};
+
+
+/*******************************************************************
+ *
+ *  Models
+ *
+ *******************************************************************/
+
+$container->{\Models\User::class} = function($c, $name) {
+    return new \Models\User($name);
 };
 
 
