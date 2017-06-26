@@ -58,7 +58,7 @@ class Factory
             $group = new $class();
         }
         else {
-            $group = new Container();
+            $group = new Collection();
         }
 
 		foreach ($records as $record) {

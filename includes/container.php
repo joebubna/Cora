@@ -1,5 +1,5 @@
 <?php
-$container = new \Cora\Container();
+$container = new \Cora\ServiceLocator();
 
 /*******************************************************************
  *
@@ -48,7 +48,7 @@ $container->{\Models\User::class} = function($c) {
  *
  *******************************************************************/
 
-$container->events = new \Cora\Container($container);
+$container->events = new \Cora\ServiceLocator($container);
 
 // Tell the container to return the listeners as closures.
 $container->events->returnClosure(true);
@@ -69,7 +69,7 @@ $container->events->userRegistered = function($c, $user) {
  *
  *******************************************************************/
 
-$container->listeners = new \Cora\Container($container);
+$container->listeners = new \Cora\ServiceLocator($container);
 
 
 
@@ -79,7 +79,7 @@ $container->listeners = new \Cora\Container($container);
  *
  *******************************************************************/
 
-$container->listeners->emails = new \Cora\Container($container->listeners);
+$container->listeners->emails = new \Cora\ServiceLocator($container->listeners);
 
 // Tell the container to return the listeners as closures.
 $container->listeners->emails->returnClosure(true);
@@ -110,11 +110,11 @@ $container->autoload = function($c) {
 };
 
 $container->container = function($c, $parent = false, $data = false, $dataKey = false) {
-    return new \Cora\Container($parent, $data, $dataKey);
+    return new \Cora\Collection($data, $dataKey, $parent);
 };
 
 $container->collection = function($c, $data = false, $dataKey = false, $parent = false) {
-    return new \Cora\Container($parent, $data, $dataKey);
+    return new \Cora\Collection($data, $dataKey, $parent);
 };
 
 $container->cookie = function($c) {
@@ -198,7 +198,7 @@ $container->singleton('testSingleton', function($c) {
  *
  *******************************************************************/
 
-$container->tests = new \Cora\Container($container);
+$container->tests = new \Cora\ServiceLocator($container);
 
 $container->tests->users = function($c) {
     return $c->repository('Tests\User');

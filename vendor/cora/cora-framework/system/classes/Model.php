@@ -208,7 +208,7 @@ class Model
                 // If the unset attribute is defined as a collection, return an empty one.
                 if (isset($def['models'])) {
                     if ($returnValue == null) {
-                        $this->$name = new \Cora\Container();
+                        $this->$name = new \Cora\Collection();
                         return $this->model_data[$name];
                     }
                     else {

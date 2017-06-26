@@ -150,7 +150,7 @@ class Repository
                 $event->fire(new \Cora\Events\DbRandomError($model, $e));
             }
         }
-        else if ($model instanceof \Cora\Container || $model instanceof \Cora\ResultSet) {
+        else if ($model instanceof \Cora\Collection) {
             foreach ($model as $obj) {
                 if ($this->checkIfModel($obj)) {
                     try {
@@ -161,6 +161,7 @@ class Repository
                         $event->fire(new \Cora\Events\DbLockError($model));
                     } catch (\Exception $e) {
                         $this->dbError = true;
+                        echo $e->getMessage();
                         $event->fire(new \Cora\Events\DbRandomError($model, $e));
                     }
                 }

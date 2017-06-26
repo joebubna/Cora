@@ -608,7 +608,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
     public function where($key = false, $desiredValue, $op = "==")
     {
         $collection = $this->getIterator();
-        $subset = new Container();
+        $subset = new Collection();
 
         foreach($collection as $prop => $result) {
             // Grab resource value
@@ -704,7 +704,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
     public function map($callback)
     {
         $collection = $this->getIterator();
-        $mutatedCollection = new Container();
+        $mutatedCollection = new Collection();
 
         foreach($collection as $prop => $result) {
             $aValue = $callback($result, $prop);
@@ -723,7 +723,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
     public function filter($callback)
     {
         $collection = $this->getIterator();
-        $mutatedCollection = new Container();
+        $mutatedCollection = new Collection();
 
         foreach($collection as $prop => $result) {
             if ($callback($result, $prop)) {

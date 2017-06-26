@@ -319,7 +319,7 @@ class Gateway
                 /////////////////////////////////////////////////////////////////////////////////////////
                 else if (
                             is_object($modelValue) &&
-                            ($modelValue instanceof \Cora\Container || $modelValue instanceof \Cora\ResultSet) &&
+                            ($modelValue instanceof \Cora\Collection) &&
                             isset($prop['models'])
                         )
                 {
@@ -504,7 +504,7 @@ class Gateway
                 /////////////////////////////////////////////////////////////////////////////////////////
                 else if (
                             is_object($modelValue) &&
-                            ($modelValue instanceof \Cora\Container || $modelValue instanceof \Cora\ResultSet) &&
+                            ($modelValue instanceof \Cora\Collection) &&
                             isset($prop['models'])
                         )
                 {
@@ -618,7 +618,7 @@ class Gateway
                 /////////////////////////////////////////////////////////////////////////////////////////
                 else if (
                             is_object($modelValue) &&
-                            ($modelValue instanceof \Cora\Container || $modelValue instanceof \Cora\ResultSet) &&
+                            ($modelValue instanceof \Cora\Collection) &&
                             isset($prop['models'])
                         )
                 {

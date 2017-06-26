@@ -1,5 +1,5 @@
 <?php
-$paths = new \Cora\Container();
+$paths = new \Cora\Collection();
 
 
 $path = new \Cora\Path();
