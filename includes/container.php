@@ -1,5 +1,5 @@
 <?php
-$container = new \Cora\ServiceLocator();
+$container = new \Cora\Container();
 
 /*******************************************************************
  *
@@ -12,6 +12,12 @@ $container->auth = function($c, $user = false, $secureLogin = false, $authField 
         $user, $secureLogin, $authField, $c->repository('user'), $c->repository('role'), $c->event, $c->session, $c->cookie, $c->redirect, $c
     );
 };
+
+$container->singleton('singleUser', function($c, $name) {
+    return new \Models\User($name);
+});
+
+//$container->singleUser = new \Models\User('BobbyJones@gmail.com');
 
 
 
@@ -59,7 +65,7 @@ $container->{\Models\User::class} = function($c, $name) {
  *
  *******************************************************************/
 
-$container->events = new \Cora\ServiceLocator($container);
+$container->events = new \Cora\Container($container);
 
 // Tell the container to return the listeners as closures.
 $container->events->returnClosure(true);
@@ -80,7 +86,7 @@ $container->events->userRegistered = function($c, $user) {
  *
  *******************************************************************/
 
-$container->listeners = new \Cora\ServiceLocator($container);
+$container->listeners = new \Cora\Container($container);
 
 
 
@@ -90,7 +96,7 @@ $container->listeners = new \Cora\ServiceLocator($container);
  *
  *******************************************************************/
 
-$container->listeners->emails = new \Cora\ServiceLocator($container->listeners);
+$container->listeners->emails = new \Cora\Container($container->listeners);
 
 // Tell the container to return the listeners as closures.
 $container->listeners->emails->returnClosure(true);
@@ -209,7 +215,7 @@ $container->singleton('testSingleton', function($c) {
  *
  *******************************************************************/
 
-$container->tests = new \Cora\ServiceLocator($container);
+$container->tests = new \Cora\Container($container);
 
 $container->tests->users = function($c) {
     return $c->repository('Tests\User');

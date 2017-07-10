@@ -24,11 +24,28 @@ class Home extends \Cora\App\Controller {
         // $this->data->content = $this->load->view('models/index', $this->data, true);
         // $this->load->view('template', $this->data);
 
-        $users = $this->app->collection;
+        $repo = $this->app;
+
+        $obj1 = $repo->singleUser('Johnny@gmail.com');
+        $obj2 = $repo->singleUser('Bobby@gmail.com');
+        $obj3 = $repo->singleUser;
+        echo $obj1->email."<br>";   // Outputs "Johnny@gmail.com"
+        echo $obj2->email."<br>";   // Outputs "Johnny@gmail.com"
+        echo $obj3->email."<br>";   // Outputs "Johnny@gmail.com"
+    }
+
+    public function factoryTest()
+    {
+        // Create a new collection
+        $users = $this->app->collection();
+
+        // Get a user model factory
         $userFactory = $this->app->getFactory(\Models\User::class);
         for ($i=0; $i < 5; $i++) {
-            $users->add($userFactory->make("Bob$i", "pass$i"));
+            $users->add($userFactory->make("Bob$i"));
         }
+
+        // This will output 5 users ranging from Bob0 to Bob4
         foreach($users as $user) {
             echo $user->email."<br>";
         }

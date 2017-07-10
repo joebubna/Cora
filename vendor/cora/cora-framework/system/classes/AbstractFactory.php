@@ -3,22 +3,22 @@ namespace Cora;
 /**
 *   Has one public method "make" which takes a variable number of arguments and returns an object.
 */
-class ServiceFactory
+class AbstractFactory
 {
 	protected $method;
-    protected $serviceLocator;
+    protected $container;
 
-    public function __construct($serviceLocator, \Closure $method)
+    public function __construct($container, \Closure $method)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->container = $container;
         $this->method = $method;
     }
 
     public function __call($name, $arguments)
     {
         if ($name == 'make') {
-            // Add a ServiceLocator reference as first argument.
-            array_unshift($arguments, $this->serviceLocator);
+            // Add a Container reference as first argument.
+            array_unshift($arguments, $this->container);
 
             // Call the callback with the provided arguments.
             return $this->assemble($arguments);

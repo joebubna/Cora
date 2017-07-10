@@ -104,18 +104,15 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
     {
         // Grab the resource.
         $resource = $this->find($name);
-
+        
         // Is Closure
         if ($resource instanceof \Closure) {
             if ($this->returnClosure == false) {
                 // Create a resource from the closure.
                 $item = $resource($this);
-               
+                
                 // If the closure is marked as needing to be saved as a singleton, store result. 
-                if (isset($this->signaturesToSingletons->$name) and $this->signaturesToSingletons->$name) {
-                    $this->$name = $item;
-                    $this->signaturesToSingletons = false;
-                }
+                $this->checkIfSingleton($name, $item);
                
                 // Return the resource
                 return $item;
@@ -176,16 +173,27 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @return The result of the executed resource or null.
      */
     public function __call($name, $arguments)
-    {
+    {   
         // Grab the callback for the specified name.
-        $callback = call_user_func_array(array($this, 'find'), array($name));
+        $resource = call_user_func_array(array($this, 'find'), array($name));
 
-        if ($callback != false) {
+        // If received a callback
+        if ($resource != false && $resource instanceof \Closure) {
             // Add container reference as first argument.
             array_unshift($arguments, $this);
 
             // Call the callback with the provided arguments.
-            return call_user_func_array($callback, $arguments);
+            $item = call_user_func_array($resource, $arguments);
+
+            // If the closure is marked as needing to be saved as a singleton, store result. 
+            $this->checkIfSingleton($name, $item);
+
+            return $item;
+        }
+
+        // If received some other type of resource back...
+        else if ($resource) {
+            return $resource;
         }
         return null;
     }
@@ -398,6 +406,23 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
         }
         // Use the __set magic method to handle setting the resource.
         $this->$name = $value;      
+    }
+
+
+    /**
+     *  Checks if a resource should be saved as a singleton. Save item if yes.
+     *
+     *  @param string $name The name of the resource. 
+     *  @param mixed $item An instance of the resource.
+     *  @return void
+     */
+    public function checkIfSingleton($name, $item) 
+    {
+        // If the closure is marked as needing to be saved as a singleton, store result. 
+        if (isset($this->signaturesToSingletons->$name) and $this->signaturesToSingletons->$name) {
+            $this->$name = $item;
+            $this->signaturesToSingletons = false;
+        }
     }
 
 
