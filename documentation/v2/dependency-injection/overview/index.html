@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../../../img/favicon.ico">
+
+	<title>Dependency Injection - Cora Framework Documentation</title>
+
+        <link href="../../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../../css/highlight.css">
+        <link href="../../../../css/base.css" rel="stylesheet">
+        <link href="../../../../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../../..">Cora Framework Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../../..">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../setup/install/">Installation</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/configuration/">Configuration</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/advanced/">Advanced Configuration</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">AmBlend ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../amblend/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/implementation/">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/database_gen/">Automated DB Creation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../amblend/opt_locking/">Optimistic Locking</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../collections/">Collection Class</a>
+</li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li class="active">
+    <a href="./">Dependency Injection</a>
+</li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Routing</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../routing/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../routing/custom_routes/">Custom Routes</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../validationclass/overview/">Validate Class</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">CS Topics <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../computerscience/computability/">Computability</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../../databaseclass/databaseresult/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../../events/overview/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#dependency-injection">Dependency Injection</a></li>
+        
+            <li><a href="#an-introduction-to-dependency-injection">An Introduction to Dependency Injection</a></li>
+        
+            <li><a href="#the-dependency-inversion-principle">The Dependency Inversion Principle</a></li>
+        
+            <li><a href="#injection-without-tools-and-the-challenges-therein">Injection Without Tools and the Challenges Therein</a></li>
+        
+            <li><a href="#an-introduction-to-dependency-injection-containers">An Introduction to Dependency Injection Containers</a></li>
+        
+            <li><a href="#injection-using-a-container">Injection Using a Container</a></li>
+        
+            <li><a href="#service-locator-antipattern">Service Locator (anti)Pattern</a></li>
+        
+            <li><a href="#avoiding-the-antipattern">Avoiding the (anti)Pattern</a></li>
+        
+            <li><a href="#creating-abstract-factories">Creating Abstract Factories</a></li>
+        
+            <li><a href="#creating-static-services">Creating Static Services</a></li>
+        
+            <li><a href="#using-runtime-inputs">Using Runtime Inputs</a></li>
+        
+            <li><a href="#sub-containers">Sub-Containers</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="dependency-injection">Dependency Injection</h1>
+<p><span class="text-green">
+Dependency Injection is a method of decoupling code. The end result is code that's easier to test, easier to modify in the future, and easier to reason about without having to look at the inner workings to understand what's going on.
+</span></p>
+<p>In this article we'll cover what exactly dependency injection is, how it works using Cora's provided classes, and best practices including potential pitfalls.</p>
+<h2 id="an-introduction-to-dependency-injection">An Introduction to Dependency Injection</h2>
+<p><span class="subTitle-h2">General purpose info - not Cora specific</span></p>
+<p>When writing applications, it's common to write code that utilizes other code. For instance, if you are writing a section of your app that sends out emails, you may decide to utilize a 3rd party library such as Amazon's SES (Simple Email Service) to handle the delivery of the emails for you. Or, you may write a class that manages your Users' permissions and reuse that User class across many areas of your app. Code packaging and reuse is an extremely fundamental part of all programming paradigms.</p>
+<p>Dependency Injection is the process of passing in (aka "injecting") from an external source the dependencies a piece of code relies on. This is important because it decouples to some extent the pieces of code. Let's look at an example of code that DOES NOT use dependency injection:</p>
+<pre><code class="php">class Example
+{
+    // Dependencies
+    protected $mailer;
+
+    public function __construct()
+    {
+        $this-&gt;mailer = new Mailer();
+    }
+}
+</code></pre>
+
+<p>Notice the "new" declaration which is creating the dependent object. The fact that the dependency is getting created by the class which needs it means it isn't coming from an external source. So why is this generally considered bad? To answer that question imagine you are going to run some automated tests on your code and at some point you call "$mailer-&gt;send()" to send out an email. During testing you don't want emails getting sent out to people, so you want to stub out the Mailer class using a fake version that won't fire off the email. The problem is, with the setup shown above, you can't easily stub out (aka create a double of) the Mailer class because it's getting created in the constructor.</p>
+<p>Let's look at the same code, but have it use injection so the dependency is getting passed in:</p>
+<pre><code class="php">class Example
+{
+    // Dependencies
+    protected $mailer;
+
+    public function __construct($mailer)
+    {
+        $this-&gt;mailer = $mailer;
+    }
+}
+</code></pre>
+
+<p>Now with this code, if we need to pass a fake or modified version of any of the Mailer class in, we can! Below we'll pretend we're in our test function and pass our Example class a fake Mailer dependency.</p>
+<pre><code class="php">public function myTest() 
+{
+    $example = new Example(new FakeMailer());
+}
+</code></pre>
+
+<p>As long as FakeMailer adheres to the same Interface as Mailer, the Example class will be able to use it just fine without issue, but FakeMailer's send() method will presumably not send out real emails. This concept is referred to as dependency inversion due to the fact that Example is no longer directly dependent on the Mailer class, instead it's dependent on the Mailer Interface.</p>
+<div class="alert alert-info">
+NOTE: An "Interface" refers to the publicly available methods within a class. If two classes have the same Interface, that means they both agree to expose a set of matching public methods to consumers of the class. That doesn't mean both classes need to have ALL the same methods, just that they both agree to at least have the methods defined as part of the Interface.
+</div>
+
+<p>Ok, let's pretend you don't care about testing (I see that smirk...). Is dependency injection still worth doing for other reasons? Yes. The same concept we just showed that can help with testing also can apply to modifying your code in the future. Let's pretend your Example class logs whenever it does something:</p>
+<pre><code class="php">class Example
+{
+    // Dependencies
+    protected $mailer;
+    protected $logger;
+
+    public function __construct($mailer)
+    {
+        $this-&gt;mailer = $mailer;
+        $this-&gt;logger = new DatabaseLogger(); // Logs to a database.
+    }
+
+    public function doWork()
+    {
+        $this-&gt;mailer-&gt;send('Super Awesome Email');
+        $this-&gt;logger-&gt;log('A super awesome email was sent out.');
+    }
+}
+</code></pre>
+
+<p>However, let's say that under certain conditions you don't want to log to a database, but instead want to log to a file. What now? You hardcoded "DatabaseLogger" in, so replacing it with say a "FileLogger" isn't possible unless you implement a setLogger() method (which is another form of dependency injection). Let's again change it so we inject a logger in through the constructor. With the setup seen below, you could easily pass in a Database or File based logger as necessary depending on your needs:</p>
+<pre><code class="php">class Example
+{
+    // Dependencies
+    protected $mailer;
+    protected $logger;
+
+    public function __construct($mailer, $logger)
+    {
+        $this-&gt;mailer = $mailer;
+        $this-&gt;logger = $logger;
+    }
+
+    public function doWork()
+    {
+        $this-&gt;mailer-&gt;send('Super Awesome Email');
+        $this-&gt;logger-&gt;log('A super awesome email was sent out.');
+    }
+}
+</code></pre>
+
+<h2 id="the-dependency-inversion-principle">The Dependency Inversion Principle</h2>
+<p><span class="subTitle-h2">General purpose info - not Cora specific</span></p>
+<p><span class="text-green">
+What we did in the previous section with the injection of the Logging classes, even though we didn't explicitely define the interface, was an example of the Dependency Inversion Principle.</span> </p>
+<p>In order to fully understand the principle, it's important to first understand the concepts of Black Box programming and Interfaces:</p>
+<h4 id="concept-1-black-box-programming">Concept #1: Black Box programming</h4>
+<p>The concept of "black box" programming is probably more widely understood in the world of compiled languages than it is in interpreted language communities, but it's an important general programming concept no matter what. Basically, Black Box programming says you shouldn't need to worry about HOW a code library accomplishes a task internally, you should be able to just look at the interface contract and use it. By "contract" we're talking a function/library says give me "X" input and I'll give you "Y" output. How does it take "X" input and generate "Y" output from it? WE DON'T CARE. The internals are a black box. There could be magical unicorns in there and giant hampster wheels, we just don't care. What matters is the contract between us and that black box of code which governs its usage.</p>
+<p>In some compiled languages, you're forced to utilize this concept as you literally can't see the source code, and are only given the public interface.</p>
+<p>In interpreted languages like PHP, you can open up the library and inspect how it works internally... however, you really SHOULDN'T NEED TO. As we'll soon discuss, other developers should be able to look at your interface and use the code just from that.</p>
+<h4 id="concept-2-interfaces">Concept #2: Interfaces</h4>
+<p>Interfaces are a set of public methods that form the contract between you and the library/class/module/function of code you're using. Interfaces state that if you call method "X" and provide it with parameters "Y", it will do/return "Z" as a result. The most important take away is that Interfaces are independent of the implementation. Going back to the logging example from earlier, if we define a LoggingInterface as such:</p>
+<pre><code class="php">interface LoggingInterface
+{
+    /**
+     *  Logs the given message to a persistance layer.
+     *
+     *  @param string $message The message to log.
+     *  @return void
+     */
+    public function log($message);
+}
+</code></pre>
+
+<p>Then the two possible logging classes for database and file logging would implement that Interface:</p>
+<pre><code class="php">class DatabaseLogger implements LoggingInterface
+{
+    public function log($message)
+    {
+        // Code to log to a database...
+    }
+}
+
+class FileLogger implements LoggingInterface
+{
+    public function log($message)
+    {
+        // Code to log to a file...
+    }
+}
+</code></pre>
+
+<p>So just to reiterate, Interfaces are independent of any implementation. Rather they represent a contract between you and that piece of software which you can use. As long as you have a clear contract, the internal implmentation details shouldn't matter.</p>
+<h4 id="dependency-inversion">Dependency Inversion</h4>
+<p>Ok, now that we have that common understanding in place, let's unravel how the Dependency Inversion Principle actually works:</p>
+<p>This principle states that:
+<ol>
+    <li>High-level modules should not depend on low-level modules. Both should depend on abstractions.</li>
+    <li>Abstractions should not depend on details. Details should depend on abstractions.</li>
+    <span class="text-xsml text-i">
+        - Martin, Robert C. (2003). Agile Software Development, Principles, Patterns, and Practices. Prentice Hall. pp. 127–131. ISBN 978-0135974445.
+    </span>
+</ol></p>
+<p>What this principle encourages is thinking about your software system in terms of not just a set of Objects, but rather as a set of Objects AND Interactions between them. Furthermore, thinking about the interactions without regard for the actual implementation. If following the principle 100%, no object would ever be directly tied to another object, but instead the dependency for both would be tied to a set of interactions (an Interface).</p>
+<h5 id="the-following-diagram-shows-this-change-in-dependencies-in-a-visual-way">The following diagram shows this change in dependencies in a visual way:</h5>
+<p><img alt="dependency_inversion" src="../../../../img/dependency_inversion.png" /></p>
+<p>In the first diagram, class B is directly dependent on the presence of class A. In the second diagram, class B has been changed to have a dependency on an Interface X, an interface which class A implements. In this way, if class A is passed to class B, class B's dependency is satisfied. Of course, with the change to a dependency on an Interface, any other class that implements Interface X would also satisfy class B.</p>
+<p>Hopefully those explanations and the Logging example help with understanding how you can improve the adaptability of your application by decoupling direct dependencies between classes. That said, I WOULDN'T necessarily recommend you run out and start making an Interface for everything. The Dependency Inversion principle is a concept that I would argue is important to understand and think about, but also one which you should feel free to break.</p>
+<p>In terms of PHP, implementing generic interfaces everywhere in your application can actually make it harder to understand and maintain. Before bothering with an explicit Interface you should examine whether you think you'll ever have another class that uses that same interface, whether you'll need to mock that object, and whether your testing tools even require it for mocking. Just implementing an interface over a class for the sake of having an interface does not by itself reduce coupling in a meaningful way. You really have to be purposeful in thinking about the potential abstraction of interactions and when implementing an Interface will help you achieve a less coupled design.</p>
+<h2 id="injection-without-tools-and-the-challenges-therein">Injection Without Tools and the Challenges Therein</h2>
+<p><span class="subTitle-h2">General purpose info - not Cora specific</span></p>
+<p>By now we've hopefully established the merits of dependency injection, and we've also given a simple example or two. But let's dive just a little deeper into how to accomplish it WITHOUT any 3rd party assistance from Cora or other tools. This should hopefully not only be educational but also highlight why having tools like Cora's Container class around to help are nice.</p>
+<p>Let's reuse our Example class from earlier that takes both a Mailer and a Logger object as dependencies, but with a couple modifications.</p>
+<pre><code class="php">class Example
+{
+    // Dependencies
+    protected $mailer;
+    protected $logger;
+
+    public function __construct($mailer, $logger)
+    {
+        $this-&gt;mailer = $mailer;
+        $this-&gt;logger = $logger;
+    }
+
+    public function createUser($name)
+    {
+        $user = new User($name);
+        $this-&gt;mailer-&gt;send('Welcome', $user);
+        $this-&gt;logger-&gt;log('A new user was created');
+    }
+}
+</code></pre>
+
+<p>Notice that we're creating a new User object with a name that we won't know until runtime. Needing to dynamically create objects within classes at runtime is a common issue, but the fact that we use the "new" operator should raise a red flag. The way it's written above, the Example class has a dependency on the User class, but it's not clear that this dependency exists because we're not passing the User class in through the constructor! No bueno! Ok, so maybe we need to pass the User object in through the constructor... which feels a little weird... but continuing that thought... what if we needed to create multiple User objects in a loop? Whoa, well then passing in a single User object through the constructor definitely wouldn't make sense. In this scenario of having to create objects dynamically at runtime the solution is to use a Factory. Let's add one more dependency in the form of a UserFactory and make that change:</p>
+<pre><code class="php">class Example
+{
+    // Dependencies
+    protected $mailer;
+    protected $logger;
+    protected $userFactory;
+
+    public function __construct($mailer, $logger, $userFactory)
+    {
+        $this-&gt;mailer = $mailer;
+        $this-&gt;logger = $logger;
+        $this-&gt;userFactory = $userFactory;
+    }
+
+    public function createUser($name)
+    {
+        $user = $userFactory-&gt;make($name);
+        $this-&gt;mailer-&gt;send('Welcome', $user);
+        $this-&gt;logger-&gt;log('A new user was created');
+    }
+}
+</code></pre>
+
+<p>Much Better. Now it's clear we have a dependency on the UserFactory class and we're able to create as many User objects at runtime as we want.</p>
+<p>Now let's talk about creating an instance of our Example class. To perform the injection and create a new Example object in the simplest sense, we would just do something like follows:</p>
+<pre><code class="php">public function someMethod() 
+{
+    $example = new Example(new Mailer(), new FileLogger(), new UserFactory());
+}
+</code></pre>
+
+<p>Ok, fair enough. However, this is starting to feel kinda verbose don't you agree? I mean, if we only have to create an Example object once or twice in our app... sure. But what if Example is something that gets used in a bunch of places and we want to make this simpler on ourselves? Well the next logical step would be to create an Example factory and use it like so:</p>
+<pre><code class="php">class ExampleFactory
+{
+    public static function make() 
+    {
+        return new Example(new Mailer(), new FileLogger(), new UserFactory());
+    }
+}
+
+class SomeController
+{
+    public function someMethod() 
+    {
+        $example = ExampleFactory::make();
+    }
+}
+</code></pre>
+
+<p>Now those pesky dependencies are being handled by our Factory and we just have to ask it to make us a new object. Easy. Time to go home and drink a beer.</p>
+<p>But what if our Example class' dependencies also had dependencies?</p>
+<pre><code class="php">class ExampleFactory
+{
+    public static function make() 
+    {
+        return new Example(new Mailer(new Dependency1, new Dependency2, new Dependency3), new FileLogger(new Dependency1, new Dependency2, new Dependency3), new UserFactory());
+    }
+}
+</code></pre>
+
+<p>Holy moly Batman! We just got crazy up in here. Let's just get this out of the way, the above is not a good idea. Not only is it hard to read, but if the dependencies of any of those classes ever change, then all the factories that use that class would then also have to be edited. The solution here would be to create some more factories:</p>
+<pre><code class="php">class ExampleFactory
+{
+    public static function make() 
+    {
+        return new Example(MailerFactory::make(), new FileLoggerFactory::make(), new UserFactory());
+    }
+}
+</code></pre>
+
+<p>Ok, that looks much better. The downside now is we just had to add a bunch of factory classes to our file system that don't do anything except make us an object. For a small project this is no biggie... however, for larger projects, these factories can end up being (IMO) quite a bit of file system clutter. We'll call this handling injection via Concrete (as opposed to Abstract) Factories.</p>
+<h4 id="pros-and-cons-of-injection-with-concrete-factories">Pros and Cons of Injection with Concrete Factories</h4>
+<h5 id="pros">Pros:</h5>
+<ul>
+<li>This form of handling injection works well with IntelliSense. This means you should be able to quickly open files to see what's going on.</li>
+<li>Dependencies are known before runtime. The PHP Engine will throw an error at you if a needed dependency is missing. Likewise, if you were using a compiled language, you'd get a compile time error.</li>
+</ul>
+<h5 id="cons">Cons:</h5>
+<ul>
+<li>Can cause a lot of extra files to be added to your app's file directory.</li>
+<li>The additional bloat can potentially make it harder to navigate and understand the app.</li>
+<li>Logic for handling dependencies is spread out over many files.</li>
+</ul>
+<h2 id="an-introduction-to-dependency-injection-containers">An Introduction to Dependency Injection Containers</h2>
+<p><span class="subTitle-h2">Both General purpose info and Cora specific implementation</span></p>
+<p>A Dependency Injection Container ("Container" for short) is a tool that lets you define how to create objects (including any dependencies they need), and then it will handle the work of creating instances of those objects for you. If this sounds oddly similar to a Factory, that's because it is. The difference is that while a factory specializes in creating a specific type of resource, a Container is a general purpose tool that could potentially give you back many different types of objects.</p>
+<p>Cora provides a Container class which can be used to assist with dependency injection and avoid the need for a bunch of factory files. To create a Container, define a resource, and get an instance of that resource works like this:</p>
+<pre><code class="php">// Create a Container
+$container = new \Cora\Container();
+
+// Register a Service
+$container-&gt;database = function($c) {
+    return new \Cora\Database();
+};
+
+// Grab an object from it
+$db = $container-&gt;database;
+</code></pre>
+
+<p>Now this example is very simple in that we're only defining a single resource and there's no dependencies. Let's dig a little deeper into how we can solve the issues with needing a bunch of extra factories that we ran into earlier when doing injection without any tools.</p>
+<h2 id="injection-using-a-container">Injection Using a Container</h2>
+<p><span class="subTitle-h2">Both General purpose info and Cora specific implementation</span></p>
+<p>So once again we're going back to our Example class which is already setup for dependency injection and looks like so:</p>
+<pre><code class="php">class Example
+{
+    // Dependencies
+    protected $mailer;
+    protected $logger;
+    protected $userFactory;
+
+    public function __construct($mailer, $logger, $userFactory)
+    {
+        $this-&gt;mailer = $mailer;
+        $this-&gt;logger = $logger;
+        $this-&gt;userFactory = $userFactory;
+    }
+
+    public function createUser($name)
+    {
+        $user = $userFactory-&gt;make($name);
+        $this-&gt;mailer-&gt;send('Welcome', $user);
+        $this-&gt;logger-&gt;log('A new user was created');
+    }
+}
+</code></pre>
+
+<p>The task before us is to create an instance of the Example class, and in the process handle the injection of its dependencies. 
+The manual way of doing it, which we want to rework, looks like this: </p>
+<pre><code class="php">class SomeController
+{
+    public function someMethod() 
+    {
+        $example = new Example(
+            new Mailer(new Dependency1, new Dependency2, new Dependency3), 
+            new FileLogger(new Dependency1, new Dependency2, new Dependency3), 
+            new UserFactory()
+        );
+    }
+}
+</code></pre>
+
+<p>To start out, we need to create a Container and register any resources our app will use:</p>
+<pre><code class="php">// Create a Container
+$container = new \Cora\Container();
+
+// Register Resources
+$container-&gt;dependency1 = function($c) {
+    return new Dependency1();
+}
+
+$container-&gt;dependency2 = function($c) {
+    return new Dependency2();
+}
+
+$container-&gt;dependency3 = function($c) {
+    return new Dependency3();
+}
+
+$container-&gt;{Example::class} = function($c) {
+    return new Example($c-&gt;{Mailer::class}, $c-&gt;{FileLogger::class}, $c-&gt;{UserFactory::class});
+};
+
+$container-&gt;{FileLogger::class} = function($c) {
+    return new FileLogger($c-&gt;dependency1, $c-&gt;dependency2, $c-&gt;dependency3);
+}
+
+$container-&gt;{Mailer::class} = function($c) {
+    return new Mailer($c-&gt;dependency1, $c-&gt;dependency2, $c-&gt;dependency3);
+}
+
+$container-&gt;{UserFactory::class} = function($c) {
+    return new UserFactory();
+}
+</code></pre>
+
+<p>Here we defined all the classes we've used in our example. This is probably the worst part of using a Dependency Injection Container, as you have to register any classes you plan on using and tell it how to create instances of them. In the above example I choose to organize the resources alphabetically, but I'd encourage you to do whatever makes sense to you. You could add comment blocks that break your definitions into different sections or utililze a sub-container (see section further down in this document), whatever works.</p>
+<p>Before we move on, a few quick things to point out about Cora's implementation. The function that defines each resource is known as a Closure. The "$c" parameter that gets passed in to those closures (as you've probably realized) is a self reference to the Container. Each resource is identified by a name, which can be provided as a hard coded string (see Dependency1, Dependency2, Dependency3) or as a generated string by using curly brackets and getting the name of the class it will return such as "Example::class". The "::class" constant was introduced to PHP in version 5.5, so check if you can use it. Identifying the resource using the ::class constant works well with Intellisense in code editors, which makes inspecting a file to look at the interface a breeze.</p>
+<p>I'd recommend registering all resources in one place, as this makes reasoning about what resources are available the easiest. Once you have your resources registered, you need to pass your Container to whatever code controls execution flow. In the case of Cora (and many other MVC frameworks) this would be your Controller, and it's usually passed in through the constructor. Modifying our class to use the Container it would now look like:</p>
+<pre><code class="php">class SomeController
+{
+    protected $app; // Our Container.
+
+    public function __construct($container) 
+    {
+        // Container gets passed in.
+        $this-&gt;app = $container;
+    }
+
+    public function someMethod() 
+    {
+        // Get a new Example object
+        $example = $this-&gt;app-&gt;example();
+    }
+}
+</code></pre>
+
+<p>And just like that, our code to grab a new Example object becomes super clean, with all the dependency injections handled for us. I'd say it cost us some pre-setup work to accomplish that, except our other option was to make multiple factory files with the definitions in them, so really this beautiful result cost us nothing extra. Also we get to avoid adding a bunch of factory files to the project. Yay!</p>
+<p>There's still usage questions to be answered, so let's continue on...</p>
+<h2 id="service-locator-antipattern">Service Locator (anti)Pattern</h2>
+<p><span class="subTitle-h2">General purpose info - not Cora specific</span></p>
+<p>So some people choose to solve the problem of dependency injection by using a Service Locator (which is a type of Container, but either globally available or passed around between objects) in a way known as the Service Locator Pattern. While a Service Locator / Container can be a useful tool (as just previously described), the Service Locator Pattern is something which should be avoided. Let's dive into that pattern (which many call an "anti" pattern because it causes more problems than it solves) and how it works.</p>
+<p>The idea behind this pattern is simple and follows this thought process:</p>
+<p><span class="text-green">
+Why bother doing individual injection of each dependency into your classes? Why not just inject the Service Locator and grab what's needed out of that?"
+</span></p>
+<p>There's more than one variation on how this pattern can be used, but let's change our Example class to use one of the worst:</p>
+<pre><code class="php">class Example
+{
+    // Dependencies
+    protected $app;
+
+    public function __construct($container)
+    {
+        $this-&gt;app = $container;
+    }
+
+    public function createUser($name)
+    {
+        $user = $this-&gt;app-&gt;userFactory-&gt;make($name);
+        $this-&gt;app-&gt;mailer-&gt;send('Welcome', $user);
+        $this-&gt;app-&gt;logger-&gt;log('A new user was created');
+    }
+}
+</code></pre>
+
+<p>Alright, you might be looking at that and thinking it looks fairly clean. Not only that, but the logic behind this pattern might seem to make sense. If the Container is the tool we're using to create objects like a factory, why not just pass it in? Seems like extra work for the same result to define specific dependencies to get injected! However, this way of thinking is a trap.</p>
+<p>The biggest problem with the above pattern of passing in a Service Locator and then grabbing what you need out of it, when you need it, is that it's not clear what the dependencies of our class are!!! Now, sure, in a tiny example like we're using here... you can just look and see. But for a real usage scenario, all you'd be able to easily see is the container getting passed in. In order to figure out what the actual dependencies are, you'd have to read through all the methods and look at what's getting grabbed out! This is SUPER bad for having your code be understandable, and will make it much more likely you'll introduce breaking changes without realizing it.</p>
+<p>We can refactor to a better version of the pattern like so:</p>
+<pre><code class="php">class Example
+{
+    // Dependencies
+    protected $mailer;
+    protected $logger;
+    protected $userFactory;
+
+    public function __construct($container)
+    {
+        $this-&gt;mailer = $container-&gt;mailer;
+        $this-&gt;logger = $container-&gt;logger;
+        $this-&gt;userFactory = $container-&gt;userFactory;
+    }
+
+    public function createUser($name)
+    {
+        $user = $userFactory-&gt;make($name);
+        $this-&gt;mailer-&gt;send('Welcome', $user);
+        $this-&gt;logger-&gt;log('A new user was created');
+    }
+}
+</code></pre>
+
+<p>In this version, at least we're pulling out the services we need in the constructor, so in an interpreted language like PHP that let's us see the source code, we can more easily figure out the dependencies (that's ASSUMING nobody grabs additional stuff out outside the constructor... which is worrying door to have open). However, it still doesn't solve all the issues. First off, let's take a step back from the actual implementation and focus JUST on the interface for our example class. If you were shown the constructor signature for this class without the implementation, would you be able to reason anything about what it does or what it's dependencies are?</p>
+<pre><code class="php">public function __construct($container)
+</code></pre>
+
+<p>^ That signature tells you nothing. Nothing! Regardless of the fact that it "works" because it's simple to look at the implemenation in PHP, doesn't make it a good idea. Furthermore, continuing with our line of thinking about the contracts between different software components and black boxes, by passing in a Service Locator you are giving that class access to EVERYTHING. It's like handing over the master key. Handing over that kind of power, but then expecting the class to only use the tiny bit it needs is BAD PRACTICE. Can you get away with it? Probably. Especially in a personal project where you're the only developer. But is a good idea? No.</p>
+<div class="text-snippet text-center text-snippet-right">
+"Passing in the dependencies explicitly forces you as the developer to think about the interfaces between your software components..."
+</div>
+
+<p>Not only will you have to worry about that junior developer who ends up working on your app later down the road grabbing things out in the wrong places, it will also make reasoning about the app harder for you too! Passing in the dependencies explicitly forces you as the developer to think about the interfaces between your software components, who's job it is to do what, and what they need to do that job. Just arbitrarily passing around the power to do anything in your application runs the risk of creating spaghetti code.</p>
+<p>And the last couple reasons I'll mention on why this is an anti-pattern are that:</p>
+<ul>
+<li>It creates a dependency on the container (a minor concern)</li>
+<li>It ruins the benefit of being able to substitute a dependency that we had by doing normal injection (more important)</li>
+</ul>
+<p>On the first point, if you are just using the Container to handle injection for you from within your Controllers, then theoretically you could remove the Container and switch back to a plain factory implementation without having to change your class files at all. However, once you start grabbing things out of the Service Locator / Container from within your classes, now you've made your application much more dependent on it. </p>
+<p>To the second point, a major benefit of dependency injection is the ability to swap dependencies out with other versions, something you lose if you use the Service Locator Pattern. If you wanted to substitute a dependency before running a test, you'd have to redefine the service's definition before running the test, which could be more of a hassle.</p>
+<h2 id="avoiding-the-antipattern">Avoiding the (anti)Pattern</h2>
+<p><span class="subTitle-h2">General purpose info that's not Cora specific</span></p>
+<p>So if you have a sharp eye for details, you might have noticed something that looks like a contradiction. In the previous section about basic injection using a Container, we injected our Container into our Controller, and then used it to create a new object within a method like so:</p>
+<pre><code class="php">// GOOD EXAMPLE
+class SomeController
+{
+    protected $app; // Our Container
+
+    public function __construct($container) 
+    {
+        // Container gets passed in.
+        $this-&gt;app = $container;
+    }
+
+    public function someMethod() 
+    {
+        // Get a new Example object
+        $example = $this-&gt;app-&gt;example();
+    }
+}
+</code></pre>
+
+<p>However, in the next section right after that when talking about the Service Locator Anti-Pattern, it's stated that injecting the container and grabbing resources out within methods is a terrible practice! This was the code shown as bad practice:</p>
+<pre><code class="php">// BAD EXAMPLE
+class Example
+{
+    // Dependencies
+    protected $app;
+
+    public function __construct($container)
+    {
+        $this-&gt;app = $container;
+    }
+
+    public function createUser($name)
+    {
+        $user = $this-&gt;app-&gt;userFactory-&gt;make($name);
+        $this-&gt;app-&gt;mailer-&gt;send('Welcome', $user);
+        $this-&gt;app-&gt;logger-&gt;log('A new user was created');
+    }
+}
+</code></pre>
+
+<div class="text-snippet text-center">So which is it? Is it bad practice to inject the container and grab stuff out of it or not?</div>
+
+<p>The answer is it depends on the roles and responsibilities of the code in question. </p>
+<p>First off, notice that the "BAD" example above is injection of the container into a class file belonging to our application, while the "GOOD" example is using the container in the context of a Controller. If you think about it, at SOME POINT, SOMEWHERE, actual objects have to get created before you can do dependency injection using them. Whether it's using a factory's make() method or grabbing a resource out of a Container, at some point somebody has to make those creation calls without having the objects handed to them.</p>
+<p>Hypothetically, let's say we wanted to avoid grabbing things out of the Container from within a Controller method, and instead wanted to do dependency injection for our Controllers (SideNote: <a href="../../../../documentation/v2/routing/custom_routes/#explained-args-callback">Cora actually has this capability</a>). Normally, the Router in Cora maps a URL to a Controller method directly, such that the first line in the Controller method is the real "start" point in the application (obviously not counting the framework setup code). But let's say we create a new "Pre-Controller" logic layer, and have our router map to it rather than our Controller method directly. </p>
+<div class="text-snippet text-center text-snippet-right">
+"it's the Controller's role and responsibility to make the necessary creation calls..."
+</div>
+
+<p>This Pre-Controller now will handle making the calls to create the objects and then inject those dependencies into our Controller! Now our Controller is not tied down with those pesky dependencies! Haha, we're geniuses! Except wait, now our Pre-Controller isn't benefitting from injection! No worries, we'll just create a Pre-Pre-Controller and have it inject into the Pre-Controller and... Ok, you get the point. At some point the buck stops and someone has to make the creation calls without benefitting from injection.</p>
+<p>Although there are different flavors of the MVC pattern, in the context of the Cora framework, a Controller's job is to take any user input, coordinate any calls to backend classes, and then return a response back to the user. A Controller should be kept "thin" such that it doesn't implement any of the logic that powers your app, it just coordinates between the user and the domain logic. In this sense, it's the Controller's role and responsibility to make the necessary creation calls and coordinate the high level logic flow into the app by handing off execution control. Which is why, combined with the fact that it handles user input and wouldn't typically be unit tested anyway, that it's perfectly legitimate for it to be using the Container.</p>
+<p>On the other hand, the Example class would be a lower level of logic that should use dependency injection for the reasons already discussed.</p>
+<h2 id="creating-abstract-factories">Creating Abstract Factories</h2>
+<p>So we've established that it's best practice to only grab resources out of a Container from within a Controller. Any lower level classes should receive the dependencies they need through injection. But that leaves the question of how do you deal with classes that need to make objects? For example:</p>
+<pre><code class="php">class A
+{
+    public function foo()
+    {
+        $results = [];
+        while ($condition) {
+            $results[] = new Item();
+        }
+    }
+}
+</code></pre>
+
+<p>Obviously we can't pass in "Item" as a dependency through the constructor, we need to create a variable number of Item objects. Passing in the Container itself is also a no-go, as we've discussed how that's a bad practice. The easy and proper solution is to again utilize a Factory like so:</p>
+<pre><code class="php">class A
+{
+    protected $itemFactory;
+
+    public function __construct($itemFactory)
+    {
+        $this-&gt;itemFactory = $itemFactory;
+    }
+
+    public function foo()
+    {
+        $results = [];
+        while ($condition) {
+            $results[] = $itemFactory-&gt;make();
+        }
+    }
+}
+</code></pre>
+
+<p>Now the class has a dependency on an ItemFactory who's job it is to create Item objects (all good and proper). However, creating an ItemFactory class adds another file to our filesystem, and also potentially creates code duplication if we end up defining how to create an Item object in both our Container and our ItemFactory. The question we should be asking now is, if we are already defining how to instantiate an object in our Container, can we just reuse that same logic in a Factory? The answer is "yes", and the solution is Cora's AbstractFactory class.</p>
+<div class="text-snippet text-center text-snippet-right">
+Sidenote: Repositories also utilize a Factory. See clarification further down.
+</div>
+
+<p>An Abstract Factory works just like any other Factory, the difference being the type of object it makes can be dynamically defined. In our case, we want to create an instance of an AbstractFactory that uses our "Item" definition from the Container to define the type of objects it returns. Cora's Container class provides a "getFactory" method for this exact purpose. By calling getFactory and passing it the name of a resource, you'll be given back an AbstractFactory configured to return that type of object.</p>
+<p>We can use our Dependency Injection Container to define "class A" so that it receives a factory for Item like so:</p>
+<pre><code class="php">// Create a Container
+$container = new \Cora\Container();
+
+// Define &quot;Item&quot;
+$container-&gt;{Item::class} = function($c) {
+    return new Item();
+};
+
+// Define &quot;class A&quot;
+$container-&gt;{A::class} = function($c) {
+    return new A($c-&gt;getFactory(Item::class));
+};
+</code></pre>
+
+<p>And of course using it, we know the Container handles the injection of the factory for us:</p>
+<pre><code class="php">class SomeController
+{
+    protected $app; // Our Container
+
+    public function __construct($container) 
+    {
+        // Container gets passed in.
+        $this-&gt;app = $container;
+    }
+
+    public function someMethod() 
+    {
+        // Get a new A object
+        $objectA = $this-&gt;app-&gt;{A::class};
+    }
+}
+</code></pre>
+
+<h3 id="recap">Recap</h3>
+<p>So just to recap the issue of dynamically creating objects from within a class:</p>
+<pre><code class="php">class A
+{
+    public function foo()
+    {
+        $results = [];
+        while ($condition) {
+            $results[] = new B(new C());            // Option 1 - BAD, using &quot;new&quot; keyword in class.
+            $results[] = $this-&gt;app-&gt;B();           // Option 2 - BAD, using Service Locator pattern.
+            $results[] = $BFactory-&gt;make();         // Option 3 - GOOD. Factory making object from scratch.
+        }
+    }
+}
+</code></pre>
+
+<h3 id="utilizing-repositories-instead">Utilizing Repositories Instead</h3>
+<p>So one important clarification I think is needed to avoid confusion when utilizing Cora's ORM. Above we list out 3 options for making an object dynamically, with a Factory being the correct method of doing so. However, there is a 4th option which is also valid, which has to do with fetching an object through a Repository.</p>
+<p>Just like a Factory's role is to create new objects, a Repository's role is to retrieve objects based off data fetched from a persistance layer (usually a database). Under the hood, a Repository will utilize a Factory to create objects out of the data that gets fetched. Why is this important? Because I don't want anyone getting confused about the roles of a Repository vs a Factory. Both return objects, a repository is just a little higher level of logic and is only concerned with creating objects from existing data, not new objects from scratch.</p>
+<p>Grabbing objects from a Repository at runtime is perfectly acceptable. Although before using one in a loop, it is important to keep in mind each Repository call will be running a persistance layer (i.e. database) query/search - so keep performance in mind. But we could modify our "class A" dependency to utilize a Repository instead of a plain Factory by doing something like so:</p>
+<pre><code class="php">class A
+{
+    protected $itemRepo;
+
+    public function __construct($itemRepo)
+    {
+        $this-&gt;itemRepo = $itemRepo;
+    }
+
+    public function foo()
+    {
+        $results = $itemRepo-&gt;findAll($condition);  // Option 4 - GOOD.
+    }
+}
+</code></pre>
+
+<h2 id="creating-static-services">Creating Static Services</h2>
+<p>Cora by default creates a new object anytime a resource is requested from it. This is the opposite methodology as some other Containers such as <a href="https://pimple.sensiolabs.org/">Pimple</a>. If you want a resource to always return the same object, you'll need to either assign a value explicitly or define the resource as a Singleton.</p>
+<h3 id="define-as-singleton">Define as Singleton</h3>
+<p>In Container Setup:</p>
+<pre><code class="php">&lt;?php
+$container = new \Cora\Container();
+$container-&gt;singleton('singleUser', function($c, $email) {
+    return new \Models\User($email);
+});
+</code></pre>
+
+<p>Result in Usage:</p>
+<pre><code class="php">$obj1 = $repo-&gt;singleUser('Johnny@gmail.com');
+$obj2 = $repo-&gt;singleUser('Bobby@gmail.com');
+$obj3 = $repo-&gt;singleUser;
+echo $obj1-&gt;email.&quot;&lt;br&gt;&quot;;   // Outputs &quot;Johnny@gmail.com&quot;
+echo $obj2-&gt;email.&quot;&lt;br&gt;&quot;;   // Outputs &quot;Johnny@gmail.com&quot;
+echo $obj3-&gt;email.&quot;&lt;br&gt;&quot;;   // Outputs &quot;Johnny@gmail.com&quot;
+</code></pre>
+
+<p>Resources can be fetched out of Cora's Container either as a resource offset or as a method call. In the above example we use both. Because the closure requires an email for the User object, the first two times we fetch an object we pass along an email address. The last time we forgo passing any runtime input, which if this weren't defined as a Singleton would cause an exception, but in this case doesn't matter.</p>
+<p>Let's explain what's going on here. When defining resources in the Container using a closure, no resources are created until you ask for them. So when the first call:</p>
+<pre><code class="php">$obj1 = $repo-&gt;singleUser('Johnny@gmail.com');
+</code></pre>
+
+<p>happens, there's no object in the container for that resource. It creates the resource as requested, and before handing it back checks if the resource was defined as a Singleton. If yes, then it stores the object created for return on any future requests for that resource. This is why the result of the above code is three pointers to the same object with an email of "Johnny@gmail.com".</p>
+<p>As a sidenote, I'd recommend avoiding using Singletons for objects that require runtime input like the above example. The fact that you can ask for a User object and pass in an email only to have that email disregarded as happened with "Bobby@gmail.com" above could be a point of confusion for developers. I may make that throw an exception in the future... so you've been warned.</p>
+<h3 id="assign-explicit-value">Assign Explicit Value</h3>
+<p>In Container Setup:</p>
+<pre><code class="php">&lt;?php
+$container = new \Cora\Container();
+$container-&gt;singleUser = new \Models\User('BobbyJones@gmail.com');
+</code></pre>
+
+<p>Result in Usage:</p>
+<pre><code class="php">$obj1 = $repo-&gt;singleUser('Johnny@gmail.com');
+$obj2 = $repo-&gt;singleUser;
+echo $obj1-&gt;email.&quot;&lt;br&gt;&quot;;   // Outputs &quot;BobbyJones@gmail.com&quot;
+echo $obj2-&gt;email.&quot;&lt;br&gt;&quot;;   // Outputs &quot;BobbyJones@gmail.com&quot;
+</code></pre>
+
+<p>In this case, we assign an object to the "singleUser" offset of the Container directly with no closures involved. When asked for that resource later on, the Container will return the object already created.</p>
+<h2 id="using-runtime-inputs">Using Runtime Inputs</h2>
+<h2 id="sub-containers">Sub-Containers</h2></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../../js/highlight.pack.js"></script>
+        <script>var base_url = '../../../..';</script>
+        <script data-main="../../../../mkdocs/js/search.js" src="../../../../mkdocs/js/require.js"></script>
+        <script src="../../../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
