@@ -24,14 +24,8 @@ class Home extends \Cora\App\Controller {
         // $this->data->content = $this->load->view('models/index', $this->data, true);
         // $this->load->view('template', $this->data);
 
-        $repo = $this->app;
-
-        $obj1 = $repo->singleUser('Johnny@gmail.com');
-        $obj2 = $repo->singleUser('Bobby@gmail.com');
-        $obj3 = $repo->singleUser;
-        echo $obj1->email."<br>";   // Outputs "Johnny@gmail.com"
-        echo $obj2->email."<br>";   // Outputs "Johnny@gmail.com"
-        echo $obj3->email."<br>";   // Outputs "Johnny@gmail.com"
+        $user = $this->app->{\Models\User::class}('Bob2');
+        echo $user->email;
     }
 
     public function factoryTest()
