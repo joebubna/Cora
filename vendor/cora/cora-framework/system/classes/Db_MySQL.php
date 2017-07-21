@@ -660,11 +660,22 @@ class Db_MySQL extends Database
                 // Check if searchArea is array...
                 if (is_array($searchArea)) {
                     // Convert the array into a comma delimited string.
-                    $searchArea = implode(', ', $searchArea);
+                    $str = "'";
+                    $size = count($searchArea);
+                    for($i=0; $i < $size; $i++) {
+                        $str_item = $this->clean($searchArea[$i]);
+                        $str = $str.$str_item;
+                        if ($i < $size-1) {
+                            $str = $str."', '";
+                        }
+                    }
+                    $searchArea = $str."'";
+                } else {
+                    $searchArea = $this->clean($searchArea);
                 }
                 
                 // Return string of form 'COLUMN IN (value1, value2, ...)'
-                $result = $item[0].' '.$item[1]." (".$this->clean($searchArea).")";
+                $result = $item[0].' '.$item[1]." (".$searchArea.")";
             }
             else {
                 // Return string of form 'COLUMN >= VALUE'
