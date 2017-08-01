@@ -62,7 +62,15 @@ class Factory
         }
 
 		foreach ($records as $record) {
-			$group->add($this->make($record));
+			// Check if this model has a dataKey to use for its offset within the collection
+            $model = $this->make($record);
+            if (isset($model->model_collection_offset)) {
+                $dataKey = $model->model_collection_offset;
+                $model->$dataKey;
+            } else {
+                $dataKey = false;
+            }
+			$group->add($model, false, $dataKey);
 		}
 		return $group;
 	}
