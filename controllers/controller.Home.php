@@ -24,8 +24,10 @@ class Home extends \Cora\App\Controller {
         // $this->data->content = $this->load->view('models/index', $this->data, true);
         // $this->load->view('template', $this->data);
 
-        $user = $this->app->{\Models\User::class}('Bob2');
-        echo $user->email;
+        // $user = $this->app->{\Models\User::class}('Bob2');
+        // echo $user->email;
+        $hi = new \Cora\Database\DbString('Hello World');
+        echo $hi;
     }
 
     public function factoryTest()

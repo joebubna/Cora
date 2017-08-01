@@ -388,12 +388,12 @@ class Model
         // Setup relation table field names 
         $relThis = isset($this->model_attributes[$attributeName]['relThis']) ? $this->model_attributes[$attributeName]['relThis'] : $className;
         $relThat = isset($this->model_attributes[$attributeName]['relThat']) ? $this->model_attributes[$attributeName]['relThat'] : $relatedClassName;
-
+        
         // DEFAULT CASE 
         // The objects that are related aren't the same class of object...
         // (or they are, but relThis and relThat definitions were setup)
         if ($relThis != $relThat) {
-            $db ->select($relThat.' as '.$objectId)
+            $db ->select($relThat.' as '.$relatedObj->getPrimaryKey())
                 ->where($relThis, $this->$objectId);
 
             return $repo->findAll($db);
@@ -407,12 +407,12 @@ class Model
         //            Bob's ID     Bob's relative's ID
         else {
             // Fetch related objects where the subject is the left side reference.
-            $db ->select($relThat.'2'.' as '.$objectId)
+            $db ->select($relThat.'2'.' as '.$relatedObj->getPrimaryKey())
                 ->where($relThis, $this->$objectId);
             $leftSet = $repo->findAll($db);
 
             // Fetch related objects where the subject is the right side reference.
-            $db ->select($relThat.' as '.$objectId)
+            $db ->select($relThat.' as '.$relatedObj->getPrimaryKey())
                 ->where($relThis.'2', $this->$objectId);
             $rightSet = $repo->findAll($db);
             $leftSet->merge($rightSet);
