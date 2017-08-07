@@ -23,6 +23,11 @@ class RepositoryFactory
             $className = $class;
         }
 
+        // If the class starts with 'Models\something' but lacks leading slash.
+        else if ('\\'.substr($class,0,6).'\\' == CORA_MODEL_NAMESPACE) {
+            $className = '\\'.$class;
+        }
+
         // If the class is specified like 'User', then prepend the model namespace to it.
         else {
             $className = CORA_MODEL_NAMESPACE.ucfirst($class);
