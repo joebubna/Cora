@@ -534,8 +534,11 @@ class Model
     }
 
 
-    public function getRepository($fresh = false)
+    public function getRepository($fresh = false, $modelFullName = false)
     {
+        if ($modelFullName) {
+            return \Cora\RepositoryFactory::make($modelFullName, false, false, $fresh);
+        }
         return \Cora\RepositoryFactory::make('\\'.get_class($this), false, false, $fresh);
     }
 

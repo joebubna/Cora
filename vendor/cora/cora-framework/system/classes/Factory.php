@@ -52,17 +52,9 @@ class Factory
             $type = $this->type;
         }
 
-        // Check if a 'CLASSGroup' file exists. If not, then use a regular ResultSet.
-		$class = $type.'Group';
-        if (class_exists($class)) {
-            $group = new $class();
-        }
-        else {
-            $group = new Collection();
-        }
-
+        $group = new Collection();
 		foreach ($records as $record) {
-			// Check if this model has a dataKey to use for its offset within the collection
+            // Check if this model has a dataKey to use for its offset within the collection
             $model = $this->make($record);
             if (isset($model->model_collection_offset)) {
                 $dataKey = $model->model_collection_offset;
