@@ -396,12 +396,265 @@
     
         <li class="main active"><a href="#collections">Collections</a></li>
         
+            <li><a href="#introduction">Introduction</a></li>
+        
+            <li><a href="#create-from-simple-array">Create From Simple Array</a></li>
+        
+            <li><a href="#create-from-associative-array">Create From Associative Array</a></li>
+        
+            <li><a href="#performance-optimizations">Performance Optimizations</a></li>
+        
+            <li><a href="#using-data-keys">Using Data Keys</a></li>
+        
+            <li><a href="#why-object-syntax">Why Object Syntax?</a></li>
+        
+            <li><a href="#warning-about-mixing-closures-with-other-types">Warning About Mixing Closures With Other Types</a></li>
+        
     
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="collections">Collections</h1></div>
+<h1 id="collections">Collections</h1>
+<p>Cora's Collection class is meant to be a substitute for arrays and gives you much more control over 
+your data. You can either store items of the same type (recommended) or items of mixed type (have to 
+be careful). Under the hood it makes efforts to optimize the fetching and counting of data.</p>
+<h2 id="introduction">Introduction</h2>
+<ul>
+<li>Fast</li>
+<li>Flexible</li>
+<li>Easy</li>
+</ul>
+<p>cool examples</p>
+<p>direct offset assignment</p>
+<p>reference speed tests</p>
+<p>used for closures too</p>
+<h2 id="create-from-simple-array">Create From Simple Array</h2>
+<p><span class="subTitle-h2">How to turn a basic array of items into a Collection object</span></p>
+<pre><code class="php">$c = new \Cora\Collection([1,2,3,4,5]);
+echo $c[4];             // Returns &quot;5&quot;. Standard array access format.
+echo $c-&gt;off4;          // Returns &quot;5&quot;. Object access syntax.
+echo $c-&gt;get(4);        // Returns &quot;5&quot;. Required by PSR-11.
+echo $c-&gt;offsetGet(4);  // Returns &quot;5&quot;. Required by ArrayAccess interface.
+echo $c[5];             // Returns null. No such offset.
+</code></pre>
+
+<div class="text-green">Observation #1:</div>
+
+<p>Notice that trying to access an offset that doesn't exist returns "null" rather than throw an Exception.
+This was a design choice with the Collection class that has tradeoffs and could potentially trip developers up. 
+Make sure to check for a potentially null return as necessary when using this class.</p>
+<div class="text-green">Observation #2:</div>
+
+<p>You probably noticed that there's a bunch of different ways to access the same data via offsets. This is because 
+different interfaces this class tries to be compatible with use different terminology. This first example was just 
+for completeness; in the rest of this document we'll only use the array style and object property access styles.</p>
+<h2 id="create-from-associative-array">Create From Associative Array</h2>
+<p><span class="subTitle-h2">How to turn a basic array of items into a Collection object</span></p>
+<pre><code class="php">$c = new \Cora\Collection([&quot;one&quot; =&gt; 1, &quot;two&quot; =&gt; 2, &quot;three&quot; =&gt; 3, &quot;four&quot; =&gt; 4, &quot;five&quot; =&gt; 5]);
+echo $c[4];             // Returns &quot;5&quot;. Standard array access format.
+echo $c[&quot;five&quot;];        // Returns &quot;5&quot;. Associative array access format.
+echo $c-&gt;off4;          // Returns &quot;5&quot;. Object access format.
+echo $c-&gt;five;          // Returns &quot;5&quot;. Direct Object access format.
+</code></pre>
+
+<div class="text-green">Observation #1:</div>
+
+<p>Notice you can use either the numerical offset or the associative array key to get the value.</p>
+<div class="text-green">Observation #2:</div>
+
+<p>The two different Object style access options both work well, but a discussion into the difference 
+(internally) will be covered in the section on performance optimizations.</p>
+<h2 id="performance-optimizations">Performance Optimizations</h2>
+<p><span class="subTitle-h2">The tricks used to make Cora Collections fast</span></p>
+<p>Earlier we had an example (shown again below) in which there was two different ways to access 
+some data in a Collection using an object style syntax.</p>
+<pre><code class="php">$collection = new \Cora\Collection([&quot;one&quot; =&gt; 1, &quot;two&quot; =&gt; 2, &quot;three&quot; =&gt; 3, &quot;four&quot; =&gt; 4, &quot;five&quot; =&gt; 5]);
+echo $collection-&gt;off4;          // Returns &quot;5&quot;. Object access format.
+echo $collection-&gt;five;          // Returns &quot;5&quot;. Direct Object access format.
+</code></pre>
+
+<p>This provides a great opportunity to discuss the internal performance optimizations used in the 
+Collection class, why both these options work, and the internal difference between them. In the examples 
+below we'll use this collection as our starting point.</p>
+<h3 id="optimization-1-fast-item-retrieval">Optimization #1: Fast Item Retrieval</h3>
+<p>First off, let's do a var_dump on this collection. Don't let this overwhelm you, we'll walk through it below.</p>
+<pre><code class="php">object(Cora\Collection)[121]
+  protected 'parent' =&gt; boolean false
+  protected 'signature' =&gt; 
+    object(stdClass)[122]
+  protected 'signaturesToSingletons' =&gt; 
+    object(stdClass)[124]
+  protected 'singleton' =&gt; 
+    object(stdClass)[123]
+      public 'one' =&gt; int 1
+      public 'two' =&gt; int 2
+      public 'three' =&gt; int 3
+      public 'four' =&gt; int 4
+      public 'five' =&gt; int 5
+  protected 'content' =&gt; 
+    array (size=5)
+      'one' =&gt; int 1
+      'two' =&gt; int 2
+      'three' =&gt; int 3
+      'four' =&gt; int 4
+      'five' =&gt; int 5
+  protected 'contentKeys' =&gt; 
+    array (size=5)
+      0 =&gt; string 'one' (length=3)
+      1 =&gt; string 'two' (length=3)
+      2 =&gt; string 'three' (length=5)
+      3 =&gt; string 'four' (length=4)
+      4 =&gt; string 'five' (length=4)
+  protected 'size' =&gt; int 5
+  protected 'contentModified' =&gt; boolean false
+  protected 'returnClosure' =&gt; boolean false
+  protected 'sortDirection' =&gt; boolean false
+  protected 'sortKey' =&gt; boolean false
+</code></pre>
+
+<p>Alright, so this Collection's class stores resources in one of two data members... those being 
+<span class="text-green">Singleton</span> or <span class="text-green">Signature</span>. 
+Both those variables are instantiated to be PHP stdClass objects (generic objects you can 
+store stuff within). The Singleton object stores any resources which are not 
+Closures, so that includes numbers, strings, arrays, objects (excluding Closures), etc. In other words, most 
+stuff you would throw in a Collection would end up there. The Signature object 
+is exclusively for storing Closures (the name coming from the idea that it holds the "signatures" for 
+how to create objects if you're using this class as a dependency injection container).</p>
+<p>We can see from our example collection that we didn't define any Closures, so the Signature object is 
+empty, but we did add some numbers to our collection, which are being stored in the Singleton object.</p>
+<pre><code class="php">  protected 'signature' =&gt; 
+    object(stdClass)[122]
+  protected 'singleton' =&gt; 
+    object(stdClass)[123]
+      public 'one' =&gt; int 1
+      public 'two' =&gt; int 2
+      public 'three' =&gt; int 3
+      public 'four' =&gt; int 4
+      public 'five' =&gt; int 5
+</code></pre>
+
+<p>When we access item 5 via its offset name:</p>
+<pre><code class="php">echo $collection-&gt;five;
+</code></pre>
+
+<p>the Collection class just ends up passing the 
+request directly to the stdClass object. Access to object properties in PHP is done using a hash table and access 
+times are in O(1) for efficiency. If you aren't familiar with Big-O notation, this just means the access time is 
+constant no matter how many items you throw in your collection. It doesn't matter if you have a million items in 
+the collection or five, the access time is the same.</p>
+<p>However, the following work slightly differently:</p>
+<pre><code class="php">echo $collection-&gt;off4;
+echo $collection[4];
+echo $collection-&gt;get(4);
+</code></pre>
+
+<p>When dealing with a numerical offset, it's our desire to have the same level of efficiency as using the offset name.
+If we had a very large collection, what we don't want to happen is having to traverse through a million records to 
+access offset 1,000,000. To accomplish this, the class will (only when necessary) calculate the offset keys. You 
+might have noticed this in the original var_dump:</p>
+<pre><code class="php">protected 'contentKeys' =&gt; 
+    array (size=5)
+      0 =&gt; string 'one' (length=3)
+      1 =&gt; string 'two' (length=3)
+      2 =&gt; string 'three' (length=5)
+      3 =&gt; string 'four' (length=4)
+      4 =&gt; string 'five' (length=4)
+</code></pre>
+
+<p>So what happens when we make a request for an item out of the collection using a numerical offset is it grabs the 
+offset name using a hash lookup on this contentKeys array. The code looks like this:</p>
+<pre><code class="php">return isset($this-&gt;contentKeys[$num]) ? $this-&gt;contentKeys[$num] : null;
+</code></pre>
+
+<p>So in the case of grabbing item five out of the collection using numerical offset 4, it grabs the key from contentKeys,
+then uses that to do the direct access for the actual item. This means it has to do two hash lookups to grab the result,
+but the efficiency stays in O(1). This is how access times are kept low and comparable to standard arrays.</p>
+<p>Of course, this means we have to compute some data any time the content of our Collection changes. Which brings us to the next optimization...</p>
+<h3 id="optimization-2-data-computed-only-when-needed">Optimization #2: Data Computed Only When Needed</h3>
+<p>So without going into all the details, it's been established so far that there's computed data stored within a 
+Collection instance. One of the pieces of computed data is the contentKeys lookup that enables efficient lookup 
+of collection items no matter if you use a key or an offset number. What's important is that this table gets computed
+only when necessary. Let's execute the following code:</p>
+<pre><code class="php">// Add a new item to our collection
+$collection-&gt;six = 6;
+var_dump($collection);
+
+// Retrieve the new item
+echo $collection-&gt;six;
+var_dump($collection);
+</code></pre>
+
+<p>If you look at the var_dump output of both of the above, you'll see that neither action changed the contentKeys array! This
+is despite the fact that we added a new item to our collection:</p>
+<pre><code class="php">protected 'singleton' =&gt; 
+    object(stdClass)[119]
+      public 'one' =&gt; int 1
+      public 'two' =&gt; int 2
+      public 'three' =&gt; int 3
+      public 'four' =&gt; int 4
+      public 'five' =&gt; int 5
+      public 'six' =&gt; int 6
+  protected 'contentKeys' =&gt; 
+    array (size=5)
+      0 =&gt; string 'one' (length=3)
+      1 =&gt; string 'two' (length=3)
+      2 =&gt; string 'three' (length=5)
+      3 =&gt; string 'four' (length=4)
+      4 =&gt; string 'five' (length=4)
+</code></pre>
+
+<p>The reason for this is that the keys are NOT recomputed automatically when you add a new item to the collection. Same goes for 
+grabbing the item by its name. Neither of those actions required use of the key lookup array, and so the work to recompute it 
+wasn't bothered with. When a collection is modified, is simply sets a flag internally, and when an action is taken that requires 
+data be recomputed, THEN it will do it.</p>
+<p>Let's try grabbing the new item 6 by numerical offset. That should cause the keys to get recomputed.</p>
+<pre><code class="php">echo $collection[5];
+</code></pre>
+
+<p>Now looking at a fresh var_dump of our collection it looks like this:</p>
+<pre><code class="php">protected 'singleton' =&gt; 
+    object(stdClass)[119]
+      public 'one' =&gt; int 1
+      public 'two' =&gt; int 2
+      public 'three' =&gt; int 3
+      public 'four' =&gt; int 4
+      public 'five' =&gt; int 5
+      public 'six' =&gt; int 6
+  protected 'contentKeys' =&gt; 
+    array (size=6)
+      0 =&gt; string 'one' (length=3)
+      1 =&gt; string 'two' (length=3)
+      2 =&gt; string 'three' (length=5)
+      3 =&gt; string 'four' (length=4)
+      4 =&gt; string 'five' (length=4)
+      5 =&gt; string 'six' (length=3)
+</code></pre>
+
+<p>And sure enough, there's our new item in the keys array.</p>
+<p>So to summarize, computed data should only get re-computed when necessary and will get avoided for efficiency's sake 
+whenever possible.</p>
+<h2 id="using-data-keys">Using Data Keys</h2>
+<pre><code class="php">$c = new \Cora\Collection([
+    [&quot;name&quot; =&gt; &quot;Jake&quot;, &quot;age&quot; =&gt; 33],
+    [&quot;name&quot; =&gt; &quot;Bob&quot;, &quot;age&quot; =&gt; 42]
+], 'name');
+echo $c['Bob']['age'];  // Returns &quot;5&quot;. Standard array access format.
+echo $c-&gt;Bob['age'];    // Returns &quot;5&quot;. Object access syntax.
+</code></pre>
+
+<h2 id="why-object-syntax">Why Object Syntax?</h2>
+<pre><code class="php">$c = new \Cora\Collection([
+    [&quot;name&quot; =&gt; &quot;Jake&quot;, &quot;age&quot; =&gt; 33],
+    [&quot;name&quot; =&gt; &quot;Bob&quot;, &quot;age&quot; =&gt; 42]
+], 'name');
+echo $c-&gt;Bob-&gt;age;          // Returns &quot;5&quot;. Object access format.
+</code></pre>
+
+<h2 id="warning-about-mixing-closures-with-other-types">Warning About Mixing Closures With Other Types</h2>
+<p>Closures won't be mixed with Singletons in the order they were added when mixed together to form
+the "content" array. So $object-&gt;off5 might not give you the expected result. When mixing Closures 
+with solid values, you need to use named offsets such as $object-&gt;repository.</p></div>
         </div>
 
         <footer class="col-md-12">

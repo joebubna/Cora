@@ -424,6 +424,8 @@
         
             <li><a href="#writing-your-own-gateway">Writing Your Own Gateway:</a></li>
         
+            <li><a href="#using-a-different-database-layer">Using a different database layer</a></li>
+        
     
         <li class="main "><a href="#testing">Testing</a></li>
         
@@ -1048,6 +1050,38 @@ $repo    = new Repository($gateway, $factory);
 <p>As you can see, the process of replacing the gateway for an object repository is
 trivial. The hard part is actually implementing the custom Gateway. Anyways, that's
 the gist of it... happy coding!</p>
+<h3 id="using-a-different-database-layer">Using a different database layer</h3>
+<p>AmBlend provides a lot of ways to customize the way it gets data. If you just want to do some 
+simple modifications to the query it runs to get the data that populates the models, then read 
+the "Light" classes section of this document. However, at the time of this writing there are 
+limitations to the flexibility of the query builder for AmBlend (check the documentation for 
+Cora's Database class for the latest features and limitations). If you feel like the query builder 
+that powers AmBlend is just not cutting it for what you want to do, you can bypass it to fetch 
+models using another database library.</p>
+<p>You'll still need to have Cora's Database class setup in order to dynamically fetch related data for 
+a model or to save it back to the persistence layer, but using another library to fetch a list of 
+models is easy. In the example below we'll use PDO combined with Cora's model factory to fetch a list
+of models.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="php">// Grab database object and Cora model factory
+$db = new PDO($dsn, $user, $pass, $options);
+$factory = new \Cora\Factory('User');
+
+// Create query and get results. Here we'll grab users who have &quot;Rick&quot; in their name. 
+// The only required data is the ID, but fetch any columns from the table that will be used.
+$sth = $db-&gt;prepare(&quot;SELECT user_id, name FROM `users` WHERE `name` LIKE '%Rick%' &quot;);
+$sth-&gt;execute();
+$results = $sth-&gt;fetchAll(\PDO::FETCH_ASSOC);
+
+// Use the factory to create Cora models. Note: Use make() if expecting a single model.
+$users = $factory-&gt;makeGroup($results);
+
+// Showing that it worked
+foreach ($users as $user) {
+    echo &quot;&lt;h1&gt;$user-&gt;name&lt;/h1&gt;&quot;;
+}
+</code></pre>
+
 <h1 id="testing">Testing</h1>
 <p>Alright, the first important thing to realize about AmBlend when considering testing
 is the Data-Mapper pattern it follows. Because the logic to persist a model is

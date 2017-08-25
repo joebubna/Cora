@@ -432,40 +432,51 @@ I'll try to give an example or two.</p>
         <th>Description</th>
     </tr>
     <tr>
-        <td>delete()</td>
-        <td>
-            Called before deletion happens when a Repository is asked to delete
-            an object.
-        </td>
-    </tr>
-    <tr>
-        <td>beforeCreate()</td>
-        <td>
-            Called before insertion happens when a Repository is asked to save
-            a NEW object.
-        </td>
-    </tr>
-    <tr>
-        <td>afterCreate()</td>
+        <td class="unbreak">afterCreate()</td>
         <td>
             Called after insertion happens when a Repository is asked to save
             a NEW object.
         </td>
     </tr>
     <tr>
-        <td>beforeSave()</td>
+        <td class="unbreak">afterGet($property, $value)</td>
         <td>
-            Called before an update happens when a Repository is asked to save
-            an EXISTING object. Also called before an insertion happens when a repo
-            is asked to save a NEW object (called right AFTER afterCreate).
+            Called after a model property gets grabbed.
         </td>
     </tr>
     <tr>
-        <td>afterSave()</td>
+        <td class="unbreak">afterSave()</td>
         <td>
             Called after an update happens when a Repository is asked to save
             an EXISTING object. Also called after an insertion happens when a repo
             is asked to save a NEW object (called right AFTER beforeCreate).
+        </td>
+    </tr>
+    <tr>
+        <td class="unbreak">afterSet($property, $value)</td>
+        <td>
+            Called after a model property gets set.
+        </td>
+    </tr>
+    <tr>
+        <td class="unbreak">beforeCreate()</td>
+        <td>
+            Called before insertion happens when a Repository is asked to save
+            a NEW object.
+        </td>
+    </tr>
+    <tr>
+        <td class="unbreak">beforeGet($property)</td>
+        <td>
+            Called before a model property gets grabbed.
+        </td>
+    </tr>
+    <tr>
+        <td class="unbreak">beforeSave()</td>
+        <td>
+            Called before an update happens when a Repository is asked to save
+            an EXISTING object. Also called before an insertion happens when a repo
+            is asked to save a NEW object (called right AFTER afterCreate).
         </td>
     </tr>
     <tr>
@@ -478,21 +489,18 @@ I'll try to give an example or two.</p>
         </td>
     </tr>
     <tr>
-        <td class="unbreak">afterSet($property, $value)</td>
+        <td class="unbreak">delete()</td>
         <td>
-            Called after a model property gets set.
+            Called before deletion happens when a Repository is asked to delete
+            an object.
         </td>
     </tr>
     <tr>
-        <td class="unbreak">beforeGet($property)</td>
+        <td class="unbreak">onLoad()</td>
         <td>
-            Called before a model property gets grabbed.
-        </td>
-    </tr>
-    <tr>
-        <td class="unbreak">afterGet($property, $value)</td>
-        <td>
-            Called after a model property gets grabbed.
+            Models are populated/hydrated AFTER getting created. So in the constructor you can't create computed properties.
+            This method is called after the model has been populated so you can compute new properties as necessary.
+            I.E. Concatenate a first name and last into a "name" property.
         </td>
     </tr>
 </table>

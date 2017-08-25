@@ -920,6 +920,7 @@ class Example
 <p>Although there are different flavors of the MVC pattern, in the context of the Cora framework, a Controller's job is to take any user input, coordinate any calls to backend classes, and then return a response back to the user. A Controller should be kept "thin" such that it doesn't implement any of the logic that powers your app, it just coordinates between the user and the domain logic. In this sense, it's the Controller's role and responsibility to make the necessary creation calls and coordinate the high level logic flow into the app by handing off execution control. Which is why, combined with the fact that it handles user input and wouldn't typically be unit tested anyway, that it's perfectly legitimate for it to be using the Container.</p>
 <p>On the other hand, the Example class would be a lower level of logic that should use dependency injection for the reasons already discussed.</p>
 <h2 id="creating-abstract-factories">Creating Abstract Factories</h2>
+<p><span class="subTitle-h2">Info Specific to the Cora Framework</span></p>
 <p>So we've established that it's best practice to only grab resources out of a Container from within a Controller. Any lower level classes should receive the dependencies they need through injection. But that leaves the question of how do you deal with classes that need to make objects? For example:</p>
 <pre><code class="php">class A
 {
@@ -1030,8 +1031,9 @@ $container-&gt;{A::class} = function($c) {
 </code></pre>
 
 <h2 id="creating-static-services">Creating Static Services</h2>
+<p><span class="subTitle-h2">Info Specific to the Cora Framework</span></p>
 <p>Cora by default creates a new object anytime a resource is requested from it. This is the opposite methodology as some other Containers such as <a href="https://pimple.sensiolabs.org/">Pimple</a>. If you want a resource to always return the same object, you'll need to either assign a value explicitly or define the resource as a Singleton.</p>
-<h3 id="define-as-singleton">Define as Singleton</h3>
+<h4 id="define-as-singleton">Define as Singleton:</h4>
 <p>In Container Setup:</p>
 <pre><code class="php">&lt;?php
 $container = new \Cora\Container();
@@ -1056,7 +1058,7 @@ echo $obj3-&gt;email.&quot;&lt;br&gt;&quot;;   // Outputs &quot;Johnny@gmail.com
 
 <p>happens, there's no object in the container for that resource. It creates the resource as requested, and before handing it back checks if the resource was defined as a Singleton. If yes, then it stores the object created for return on any future requests for that resource. This is why the result of the above code is three pointers to the same object with an email of "Johnny@gmail.com".</p>
 <p>As a sidenote, I'd recommend avoiding using Singletons for objects that require runtime input like the above example. The fact that you can ask for a User object and pass in an email only to have that email disregarded as happened with "Bobby@gmail.com" above could be a point of confusion for developers. I may make that throw an exception in the future... so you've been warned.</p>
-<h3 id="assign-explicit-value">Assign Explicit Value</h3>
+<h4 id="assign-explicit-value">Assign Explicit Value:</h4>
 <p>In Container Setup:</p>
 <pre><code class="php">&lt;?php
 $container = new \Cora\Container();
@@ -1072,7 +1074,87 @@ echo $obj2-&gt;email.&quot;&lt;br&gt;&quot;;   // Outputs &quot;BobbyJones@gmail
 
 <p>In this case, we assign an object to the "singleUser" offset of the Container directly with no closures involved. When asked for that resource later on, the Container will return the object already created.</p>
 <h2 id="using-runtime-inputs">Using Runtime Inputs</h2>
-<h2 id="sub-containers">Sub-Containers</h2></div>
+<p><span class="subTitle-h2">Info Specific to the Cora Framework</span></p>
+<p>This has been covered indirectly many times throughout examples in this article, but let's quickly cover how to pass runtime inputs to a Container resource. A closure that defines a Container resource always must accept a reference to the Container as the first argument. In all our examples this Container reference is denoted by the variable "c":</p>
+<pre><code class="php">$container-&gt;{Example::class} = function($c) {
+    return new Example($c-&gt;{Mailer::class});
+};
+
+$container-&gt;example2 = function($c) {
+    return new Example2();
+};
+</code></pre>
+
+<p>As seen above, it's using this "$c" Container reference within the closure that allows defining the dependencies that need to be passed in to the object getting created. However, it's important to understand that this self reference to the Container will be given to the closure AUTOMATICALLY. You don't need to do anything except keep the first argument to the closure reserved for it.</p>
+<p>Which brings us to passing runtime input to the closure. To pass runtime input, just add new variables after the "$c" like so:</p>
+<pre><code class="php">$container-&gt;{Example::class} = function($c, $type, $amount) {
+    return new Example($type, $c-&gt;{Mailer::class}, $amount);
+};
+
+$container-&gt;example2 = function($c, $name) {
+    return new Example2($name);
+};
+</code></pre>
+
+<p>Then to get an instance of our Example classes we'd do:</p>
+<pre><code class="php">$example  = $container-&gt;{Example::class}('MyType', 50);
+$example2 = $container-&gt;example2('someName');
+</code></pre>
+
+<p>Notice we're not passing passing any Container reference, that get's handled for us. You just pass along any custom parameters you've defined.</p>
+<h2 id="sub-containers">Sub-Containers</h2>
+<p><span class="subTitle-h2">Info Specific to the Cora Framework</span></p>
+<p>There may be times where you want to better organize the resources in your Container or modify the definitions of a certain type of resource in a loop. To that end, Containers have the capability to be nested such that any children still have access to the resources in the parent Container, even though they can be interated over separately.</p>
+<p>Here's an example:</p>
+<pre><code class="php">&lt;?php
+// Create main Container
+$container = new \Cora\Container();
+
+// Define some resources in main container
+$container-&gt;load = function($c) {
+    return new \Cora\App\Load();
+};
+$container-&gt;mailer = function($c) {
+    return new \Cora\Mailer($c-&gt;PHPMailer());
+};
+$container-&gt;PHPMailer = function($c) {
+    return new \PHPMailer;
+};
+
+// Define sub-Container
+$container-&gt;listeners = new \Cora\Container($container);
+
+// Define sub-sub-Container
+$container-&gt;listeners-&gt;emails = new \Cora\Container($container-&gt;listeners);
+
+// Tell the container to return the listeners as closures.
+$container-&gt;listeners-&gt;emails-&gt;returnClosure(true);
+
+// Define a resource in the sub-sub-Container. Uses dependencies defined in the top level Container.
+$container-&gt;listeners-&gt;emails-&gt;sendPasswordResetToken = function($c) {
+    return new \Listeners\Emails\SendPasswordResetToken($c-&gt;mailer, $c-&gt;load);
+};
+</code></pre>
+
+<p>In the above example we define two sub-containers. The first, "listeners" is a child of the main Container, and the second, "emails" is a child of listeners. Each time we pass in the parent Container in the constructor. Finally, we see in the "sendPasswordResetToken" definition that we can use resources defined in any parent Container up the chain. To get an instance of "sendPasswordResetToken" you do:</p>
+<pre><code class="php">$listener = $container-&gt;listeners-&gt;emails-&gt;sendPasswordResetToken;
+</code></pre>
+
+<p>If you wanted to perform any actions on one of these sub-groupings of resources you could do so like this:</p>
+<pre><code class="php">/**
+ *  Loop through all our email listeners and stub them all.
+ */
+foreach ($this-&gt;app-&gt;listeners-&gt;emails as $listener =&gt; $v) {
+    $this-&gt;app-&gt;listeners-&gt;emails-&gt;$listener = function($c) {
+        return $c-&gt;PHPUnit-&gt;getMockBuilder('\Cora\Listener')-&gt;getMock();
+    };
+}
+</code></pre>
+
+<p>One other thing we were able to do with a sub-container is define that all resources defined within that Container should return the closure directly, rather than resolve it into an object. We did that with the line:</p>
+<pre><code class="php">// Tell the container to return the listeners as closures.
+$container-&gt;listeners-&gt;emails-&gt;returnClosure(true);
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">
