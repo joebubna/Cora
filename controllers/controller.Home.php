@@ -15,6 +15,34 @@ class Home extends \Cora\App\Controller {
         $this->load->view('template', $this->data);
     }
 
+    public function ctest() 
+    {
+        $c = new \Cora\Collection([1,2,3,4,5]);
+        echo $c[4];             // Returns "5". Standard array access format.
+        echo $c->get(4);        // Returns "5". Required by PSR-11.
+        echo $c->offsetGet(4);  // Returns "5". Required by ArrayAccess interface.
+        echo $c->off4;          // Returns "5". Object access syntax.
+        echo $c[5];             // Returns null. No such offset.
+        echo "<BR><BR><BR>";
+
+
+        $c = new \Cora\Collection(["one" => 1, "two" => 2, "three" => 3, "four" => 4, "five" => 5]);
+        echo $c[4];             // Returns "5". Standard array access format.
+        echo $c["one"];
+        echo "<BR><BR><BR>";
+
+        $c = new \Cora\Collection([
+            ["name" => "Jake", "age" => 33],
+            ["name" => "Bob", "age" => 42]
+        ], 'name');
+        echo $c[1]['age'];
+        echo $c['Bob']['age'];             // Returns "5". Standard array access format.
+        echo $c->get(1)['age'];        // Returns "5". Required by PSR-11.
+        echo $c->offsetGet(1)['age'];  // Returns "5". Required by ArrayAccess interface.
+        echo $c->Bob['age'];          // Returns "5". Object access syntax.
+        echo "<BR><BR><BR>";
+    }
+
     public function test()
     {
         //echo \Models\User::class;

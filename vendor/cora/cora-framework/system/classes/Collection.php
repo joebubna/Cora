@@ -69,8 +69,14 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
 
         // If data was passed in, then store it.
         if ($data != false && (is_array($data) || $data instanceof \Traversable)) {
-            foreach ($data as $item) {
-                $this->add($item, false, $dataKey, true);
+            foreach ($data as $k => $item) {
+                // If the array/collection passed in has non-numeric offsets (is associative array or the like)
+                // then reuse that offset in this collection assuming a desired datakey wasn't given.
+                if (is_numeric($k) == false && $dataKey == false) {
+                    $this->add($item, $k, $dataKey, true);
+                } else {
+                    $this->add($item, false, $dataKey, true);
+                }
             }
         }
         $this->generateContent();
@@ -444,6 +450,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
         if ($key != null) {
             return $this->content[$key];
         }
+        
         return null;
     }
 
