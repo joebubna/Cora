@@ -204,11 +204,11 @@ class ContainerTest extends \Cora\App\TestCase
             new \Models\Tests\Date('Debit', '02/14/1994'),
             new \Models\Tests\Date('Deposit', '02/14/1974')
         ]);
-        $collection->sort('timestamp');
+        $collection = $collection->sort('timestamp');
         $this->assertEquals('02/14/1974', $collection->get(0)->timestamp->format("m/d/Y"));
         $this->assertEquals('02/14/2008', $collection->get(8)->timestamp->format("m/d/Y"));
 
-        $collection->sort('timestamp', 'asc');
+        $collection = $collection->sort('timestamp', false, true);
         $this->assertEquals('02/14/1974', $collection->get(8)->timestamp->format("m/d/Y"));
         $this->assertEquals('02/14/2008', $collection->get(0)->timestamp->format("m/d/Y"));
     }

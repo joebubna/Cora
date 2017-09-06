@@ -26,7 +26,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
 
     // Combined contents. This stores the combined resources of both $signature and $singleton objects.
     // When a resource is added or removed, this will get recalculated.
-    protected $content;
+    public $content;
     protected $contentKeys;
     protected $size = 0;
 
@@ -714,16 +714,40 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param dir The sort direction. 
      *  @return A reference to this Container. 
      */
-    public function sort($key = false, $dir = 'desc')
+    public function sort($metric = false, $preserveKeys = true, $descending = false, $options = SORT_REGULAR)
     {
         if ($this->contentModified) {
             $this->generateContent();
         }
-        $this->sortDirection = $dir;
-        $this->sortKey = $key;
-        $this->mergesort($this->content, array($this, 'compare'));
-        $this->contentKeys = array_keys($this->content);
-        return $this;
+
+        $results = [];
+        $values = [];
+        foreach ($this->content as $key => $item) {
+            $value = $item;
+            if ($metric) {
+                if (is_object($item)) {
+                    $value = $item->$metric;
+                }
+                else if (is_array($item)) {
+                    $value = $item[$metric];
+                }
+            }
+            $values[$key] = $value;
+        }
+        
+        $descending ? arsort($values, $options) : asort($values, $options);
+        
+        if ($preserveKeys) {
+            foreach (array_keys($values) as $key) {
+                $results[$key] = $this->content[$key];
+            }
+        } else {
+            foreach (array_keys($values) as $key) {
+                $results[] = $this->content[$key];
+            }
+        }
+        
+        return new self($results);
     }
 
 
@@ -990,52 +1014,31 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
     }
 
 
-    /**
-     *  A simple compare function which is used by the Sort method.
-     *
-     *  @param $a Mixed
-     *  @param $b Mixed
-     *  @return boolean
-     */
-    protected function compare($a, $b)
-    {
-        $key = $this->sortKey;
-        $aValue = $this->getValue($a, $key);
-        $bValue = $this->getValue($b, $key);
-
-        if ($aValue == $bValue) {
-            return 0;
-        }
-        if (strtolower($this->sortDirection) == 'desc') {
-            return ($aValue < $bValue) ? -1 : 1;
-        }
-        else {
-            return ($aValue < $bValue) ? 1 : -1;
-        }
-    }
 
 
     /**
-     *  Returns the value when given a piece of data. 
-     *  If the data item is a primitive or if no key was given, then the item
-     *  is simply returned. However, if the data item is an object or array 
-     *  and a key was given, then returns the offset given by the key as a value.
-     *
-     *  @param $data Mixed
-     *  @param $key Int | String
-     *  @return mixed
+     *  DEPRECIATED STUFF. REMOVE WHEN CONFIDENT IT'S SAFE
      */
-    protected function getValue($data, $key = false)
-    {
-        $returnValue = $data;
-        if ($key && is_object($data)) {
-            $returnValue = $data->$key;
-        }
-        else if ($key && is_array($data)) {
-            $returnValue = $data[$key];
-        }
-        return $returnValue;
-    }
+
+
+    /** 
+     *  Sorts the contents of this Container. 
+     *
+     *  @param key The key on which to sort. 
+     *  @param dir The sort direction. 
+     *  @return A reference to this Container. 
+     */
+     public function sort1($key = false, $dir = 'desc')
+     {
+         if ($this->contentModified) {
+             $this->generateContent();
+         }
+         $this->sortDirection = $dir;
+         $this->sortKey = $key;
+         $this->mergesort($this->content, array($this, 'compare'));
+         $this->contentKeys = array_keys($this->content);
+         return $this;
+     }
 
 
     /**
@@ -1101,4 +1104,156 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
         }
         return true;
     }
+
+
+    /**
+     *  A simple compare function which is used by the Sort method.
+     *
+     *  @param $a Mixed
+     *  @param $b Mixed
+     *  @return boolean
+     */
+     protected function compare($a, $b)
+     {
+         $key = $this->sortKey;
+         $aValue = $this->getValue($a, $key);
+         $bValue = $this->getValue($b, $key);
+ 
+         if ($aValue == $bValue) {
+             return 0;
+         }
+         if (strtolower($this->sortDirection) == 'desc') {
+             return ($aValue < $bValue) ? -1 : 1;
+         }
+         else {
+             return ($aValue < $bValue) ? 1 : -1;
+         }
+     }
+
+
+
+    /** 
+     *  Sorts the contents of this Container. 
+     *
+     *  @param key The key on which to sort. 
+     *  @param dir The sort direction. 
+     *  @return A reference to this Container. 
+     */
+     public function sort2($key = false, $dir = 'desc')
+     {
+         if ($this->contentModified) {
+             $this->generateContent();
+         }
+        $this->sortDirection = $dir;
+        $this->sortKey = $key;
+        $temp = $this->msort(array_values($this->content));
+        return new self($temp);
+     }
+
+    public function msort($data) {
+        $numItems = count($data);
+
+        // Stop if we are down to one item
+        if($numItems>1) {
+            
+            // Find middle point of array so we can split there
+            $midPoint = round($numItems/2, 0, PHP_ROUND_HALF_DOWN);
+
+            // Recursive call
+            $left   = $this->msort(array_slice($data, 0, $midPoint));
+            $right  = $this->msort(array_slice($data, $midPoint, $numItems));
+
+            // Init offset vars
+            $i = $j = $k = 0;
+
+            // Calculate the size of the split arrays
+            $leftSize       = count($left);
+            $rightSize      = count($right);
+            
+            // While both the left and right array still have items...
+            while ($i < $leftSize && $j < $rightSize) {
+                if ($this->compare2($left[$i], $right[$j], true) < 1) {
+                    $data[$k] = $left[$i];
+                    $i++;
+                } else {
+                    $data[$k] = $right[$j];
+                    $j++;
+                }
+                $k++;
+            } 
+
+            // If the left side still had items remaining (I.E. because it was larger)
+            while ($i < $leftSize) {
+                $data[$k] = $left[$i];
+                $i++;
+                $k++;
+            }
+
+            // If the right side still had items remaining (I.E. because it was larger)
+            while ($j < $rightSize) {
+                $data[$k] = $right[$j];
+                $j++;
+                $k++;
+            }
+        }
+        return $data;
+    }
+
+
+    
+ 
+ 
+     /**
+      *  Returns the value when given a piece of data. 
+      *  If the data item is a primitive or if no key was given, then the item
+      *  is simply returned. However, if the data item is an object or array 
+      *  and a key was given, then returns the offset given by the key as a value.
+      *
+      *  @param $data Mixed
+      *  @param $key Int | String
+      *  @return mixed
+      */
+     protected function getValue($data, $key = false)
+     {
+         $returnValue = $data;
+         if ($key && is_object($data)) {
+             $returnValue = $data->$key;
+         }
+         else if ($key && is_array($data)) {
+             $returnValue = $data[$key];
+         }
+         return $returnValue;
+     }
+    /**
+     *  A simple compare function which is used by the Sort method.
+     *
+     *  @param $a Mixed
+     *  @param $b Mixed
+     *  @return boolean
+     */
+     protected function compare2($a, $b, $descending = false)
+     {
+         $key = $this->sortKey;
+         $aValue = $this->getValue($a, $key);
+         $bValue = $this->getValue($b, $key);
+ 
+         if ($aValue == $bValue) {
+             return 0;
+         }
+         if ($descending == true) {
+             return ($aValue > $bValue) ? -1 : 1;
+         }
+         else {
+             return ($aValue > $bValue) ? 1 : -1;
+         }
+     }
+    
 } // END Container
+
+function my_print_r ($a) {
+    $keys = '';
+    foreach(array_keys($a) as $key)
+    $keys .= "$key, ";
+
+    return $keys;
+  }

@@ -49,13 +49,13 @@ class Autoload extends Framework
     
     protected function coraLegacyLoader($className)
     {
-        $fullPath = dirname(__FILE__) . '/' .
-                    //$this->getPathBackslash($className) .
-                    $this->getNameBackslash($className) .
-                    '.php';
-        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
-        if (file_exists($fullPath)) {
-            include($fullPath);
-        }
+        // $fullPath = dirname(__FILE__) . '/' .
+        //             //$this->getPathBackslash($className) .
+        //             $this->getNameBackslash($className) .
+        //             '.php';
+        // //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        // if (file_exists($fullPath)) {
+        //     include($fullPath);
+        // }
     }
 }

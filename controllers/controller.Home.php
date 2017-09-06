@@ -17,30 +17,50 @@ class Home extends \Cora\App\Controller {
 
     public function ctest() 
     {
-        $c = new \Cora\Collection([1,2,3,4,5]);
-        echo $c[4];             // Returns "5". Standard array access format.
-        echo $c->get(4);        // Returns "5". Required by PSR-11.
-        echo $c->offsetGet(4);  // Returns "5". Required by ArrayAccess interface.
-        echo $c->off4;          // Returns "5". Object access syntax.
-        echo $c[5];             // Returns null. No such offset.
-        echo "<BR><BR><BR>";
+        // $c = new \Cora\Collection([1,2,3,4,5]);
+        // echo $c[4];             // Returns "5". Standard array access format.
+        // echo $c->get(4);        // Returns "5". Required by PSR-11.
+        // echo $c->offsetGet(4);  // Returns "5". Required by ArrayAccess interface.
+        // echo $c->off4;          // Returns "5". Object access syntax.
+        // echo $c[5];             // Returns null. No such offset.
+        // echo "<BR><BR><BR>";
 
 
         $c = new \Cora\Collection(["one" => 1, "two" => 2, "three" => 3, "four" => 4, "five" => 5]);
-        echo $c[4];             // Returns "5". Standard array access format.
-        echo $c["one"];
+        // echo $c[4];             // Returns "5". Standard array access format.
+        // echo $c["five"];        // Returns "5". Associative array access format.
+        // echo $c->off4;          // Returns "5". Object access format.
+        // echo $c->five;          // Returns "5". Direct Object access format.
+        //var_dump($c);
+
+        $c->six = 6;
+        // $c->six = function() { return 6; };
+        var_dump($c);
+        echo $c->six;
+        var_dump($c);
+        echo $c->off5;
+        var_dump($c);
         echo "<BR><BR><BR>";
 
-        $c = new \Cora\Collection([
-            ["name" => "Jake", "age" => 33],
-            ["name" => "Bob", "age" => 42]
-        ], 'name');
-        echo $c[1]['age'];
-        echo $c['Bob']['age'];             // Returns "5". Standard array access format.
-        echo $c->get(1)['age'];        // Returns "5". Required by PSR-11.
-        echo $c->offsetGet(1)['age'];  // Returns "5". Required by ArrayAccess interface.
-        echo $c->Bob['age'];          // Returns "5". Object access syntax.
-        echo "<BR><BR><BR>";
+        // $c = new \Cora\Collection([
+        //     ["name" => "Jake", "age" => 33],
+        //     ["name" => "Bob", "age" => 42]
+        // ], 'name');
+        // echo $c[1]['age'];
+        // echo $c['Bob']['age'];             // Returns "5". Standard array access format.
+        // echo $c->get(1)['age'];        // Returns "5". Required by PSR-11.
+        // echo $c->offsetGet(1)['age'];  // Returns "5". Required by ArrayAccess interface.
+        // echo $c->Bob['age'];          // Returns "5". Object access syntax.
+        // echo "<BR><BR><BR>";
+    }
+
+    public function ctest2()
+    {
+        $c = new \Cora\Collection(["one" => 1, "two" => 2, "three" => 3, "four" => 4, "five" => 5]);
+        $c->add(6, "six");
+        //$c->generateContent();
+        echo $c["five"];
+        echo $c["six"];
     }
 
     public function test()
@@ -112,48 +132,28 @@ class Home extends \Cora\App\Controller {
         var_dump($collection->map(function($item) {
             return $item['balance'] * 2;
         }));
-    }
 
-    public function performanceTest()
-    {
-        $collection = $this->app->collection([
-            new \Models\Tests\Date('Debit', '10/10/1980'),
-            new \Models\Tests\Date('Debit', '10/10/2001'),
-            new \Models\Tests\Date('Deposit', '02/14/2008'),
-            new \Models\Tests\Date('Debit', '10/10/1990'),
-            new \Models\Tests\Date('Debit', '10/10/2003'),
-            new \Models\Tests\Date('Deposit', '02/14/2004'),
-            new \Models\Tests\Date('Debit', '02/14/1985'),
-            new \Models\Tests\Date('Debit', '02/14/1994'),
-            new \Models\Tests\Date('Deposit', '02/14/1974')
-        ]);
+        // $collection = $this->app->collection([
+        //     new \Models\Tests\Date('Debit', '10/10/1980'),
+        //     new \Models\Tests\Date('Debit', '10/10/2001'),
+        //     new \Models\Tests\Date('Deposit', '02/14/2008'),
+        //     new \Models\Tests\Date('Debit', '10/10/1990'),
+        //     new \Models\Tests\Date('Debit', '10/10/2003'),
+        //     new \Models\Tests\Date('Deposit', '02/14/2004'),
+        //     new \Models\Tests\Date('Debit', '02/14/1985'),
+        //     new \Models\Tests\Date('Debit', '02/14/1994'),
+        //     new \Models\Tests\Date('Deposit', '02/14/1974')
+        // ]);
 
-        $collection->sort('timestamp');
-        echo $collection->get(0)->timestamp->format("m/d/Y");
+        // $collection->sort('timestamp');
+        // echo $collection->get(0)->timestamp->format("m/d/Y");
 
-        echo "<br><br>";
-        foreach ($collection as $c) {
-            echo $c->timestamp->format("m/d/Y")."<br>";
-        }
-        
-        // $c = $this->app->collection;
-        // $a = [];
-        // for ($i=0; $i<100000; $i++) {
-        //     $c->add($i);
-        //     $a[] = $i;
+        // echo "<br><br>";
+        // foreach ($collection as $c) {
+        //     echo $c->timestamp->format("m/d/Y")."<br>";
         // }
-
-        // $time_start = microtime(true);
-        // $j = 0;
-        // while ($c->fetchOffset($j) != 999) {
-        //     $j += 1;
-        // }
-        // echo $c->fetchOffset($j);
-        // $time_end = microtime(true);
-        // $time = $time_end - $time_start;
-        // echo "Runtime of $time seconds\n";
-        // echo "<br>";
     }
+    
     
     public function view($p1, $p2, $p3 = 'bob') {
         echo $p1 . '<br>';
