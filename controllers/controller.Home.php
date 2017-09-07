@@ -121,37 +121,46 @@ class Home extends \Cora\App\Controller {
 
     public function test2()
     {
-        $collection = new \Cora\Collection([
-            ['name'=>'User1', 'balance'=>200],
-            ['name'=>'User2', 'balance'=>100],
-            ['name'=>'User3', 'balance'=>500],
-            ['name'=>'User4', 'balance'=>400],
-            ['name'=>'User5', 'balance'=>900],
-            ['name'=>'User6', 'balance'=>200]
-        ], 'name');
-        var_dump($collection->map(function($item) {
-            return $item['balance'] * 2;
-        }));
+        // $collection = new \Cora\Collection([
+        //     ['name'=>'User1', 'balance'=>200],
+        //     ['name'=>'User2', 'balance'=>100],
+        //     ['name'=>'User3', 'balance'=>500],
+        //     ['name'=>'User4', 'balance'=>400],
+        //     ['name'=>'User5', 'balance'=>900],
+        //     ['name'=>'User6', 'balance'=>200]
+        // ], 'name');
+        // var_dump($collection->map(function($item) {
+        //     return $item['balance'] * 2;
+        // }));
 
-        // $collection = $this->app->collection([
-        //     new \Models\Tests\Date('Debit', '10/10/1980'),
-        //     new \Models\Tests\Date('Debit', '10/10/2001'),
-        //     new \Models\Tests\Date('Deposit', '02/14/2008'),
-        //     new \Models\Tests\Date('Debit', '10/10/1990'),
-        //     new \Models\Tests\Date('Debit', '10/10/2003'),
-        //     new \Models\Tests\Date('Deposit', '02/14/2004'),
-        //     new \Models\Tests\Date('Debit', '02/14/1985'),
-        //     new \Models\Tests\Date('Debit', '02/14/1994'),
-        //     new \Models\Tests\Date('Deposit', '02/14/1974')
-        // ]);
+        $collection = $this->app->collection([
+            new \Models\Tests\Date('Debit', '10/10/1980'),
+            new \Models\Tests\Date('Debit', '10/10/2001'),
+            new \Models\Tests\Date('Deposit', '02/14/2008'),
+            new \Models\Tests\Date('Debit', '10/10/1990'),
+            new \Models\Tests\Date('Debit', '10/10/2003'),
+            new \Models\Tests\Date('Deposit', '02/14/2004'),
+            new \Models\Tests\Date('Debit', '02/14/1985'),
+            new \Models\Tests\Date('Debit', '02/14/1994'),
+            new \Models\Tests\Date('Infusion', '02/14/1992'),
+            new \Models\Tests\Date('Deposit', '02/14/1974')
+        ]);
 
-        // $collection->sort('timestamp');
-        // echo $collection->get(0)->timestamp->format("m/d/Y");
-
-        // echo "<br><br>";
-        // foreach ($collection as $c) {
-        //     echo $c->timestamp->format("m/d/Y")."<br>";
+        // $collection = $collection->groupBy('name');
+        // foreach ($collection as $groupName => $group) {
+        //     echo $groupName."<br>";
+        //     foreach ($group as $item) {
+        //         echo $item->name." - ".$item->timestamp->format('m/d/Y')."<br>";
+        //     }
         // }
+
+        $collection = $collection->sort('timestamp');
+        echo $collection->get(0)->timestamp->format("m/d/Y");
+
+        echo "<br><br>";
+        foreach ($collection as $c) {
+            echo $c->timestamp->format("m/d/Y")."<br>";
+        }
     }
     
     

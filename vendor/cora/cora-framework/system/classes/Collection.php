@@ -723,15 +723,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
         $results = [];
         $values = [];
         foreach ($this->content as $key => $item) {
-            $value = $item;
-            if ($metric) {
-                if (is_object($item)) {
-                    $value = $item->$metric;
-                }
-                else if (is_array($item)) {
-                    $value = $item[$metric];
-                }
-            }
+            $value = $this->getValue($item, $metric);
             $values[$key] = $value;
         }
         
@@ -748,6 +740,42 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
         }
         
         return new self($results);
+    }
+
+
+   /**
+    *  groupBy
+    *
+    *  @param callback A callable function.
+    *  @return A collection
+    */
+    public function groupBy($metric)
+    {        
+        $collection = $this->getIterator();
+
+        // Create a new collection which we'll populate with our grouped data
+        $GroupedCollection = new self();
+
+        foreach($collection as $key => $item) {
+
+            // Determine the Group this item belongs in.
+            if ($metric instanceof \Closure) {
+                $group = $metric($item);
+            } else {
+                $group = $this->getValue($item, $metric);
+            }
+
+            if (is_numeric($group)) {
+                $group = $metric.$group;
+            }
+
+            // Check if this group already exists, or else create it.
+            if (!isset($GroupedCollection->$group)) {
+                $GroupedCollection->$group = new self();
+            }
+            $GroupedCollection->$group->add($item);
+        }
+        return $GroupedCollection;
     }
 
 
@@ -996,6 +1024,29 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
 
 
     /**
+    *  Returns the value when given a piece of data. 
+    *  If the data item is a primitive or if no key was given, then the item
+    *  is simply returned. However, if the data item is an object or array 
+    *  and a key was given, then returns the offset given by the key as a value.
+    *
+    *  @param $data Mixed
+    *  @param $key Int | String
+    *  @return mixed
+    */
+    protected function getValue($data, $key = false)
+    {
+        $returnValue = $data;
+        if ($key && is_object($data)) {
+            $returnValue = $data->$key;
+        }
+        else if ($key && is_array($data)) {
+            $returnValue = $data[$key];
+        }
+        return $returnValue;
+    }
+
+
+    /**
      *  Find the name/offset of a resource. 
      *  If trying access resource "off0" this should grab the first 
      *  resource stored. Which means removing the "off" part and making 
@@ -1107,48 +1158,51 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
 
 
     /**
-     *  A simple compare function which is used by the Sort method.
-     *
-     *  @param $a Mixed
-     *  @param $b Mixed
-     *  @return boolean
-     */
+    *  A simple compare function which is used by the Sort method.
+    *
+    *  @param $a Mixed
+    *  @param $b Mixed
+    *  @return boolean
+    */
      protected function compare($a, $b)
      {
-         $key = $this->sortKey;
-         $aValue = $this->getValue($a, $key);
-         $bValue = $this->getValue($b, $key);
- 
-         if ($aValue == $bValue) {
-             return 0;
-         }
-         if (strtolower($this->sortDirection) == 'desc') {
-             return ($aValue < $bValue) ? -1 : 1;
-         }
-         else {
-             return ($aValue < $bValue) ? 1 : -1;
-         }
+        $key = $this->sortKey;
+        $aValue = $this->getValue($a, $key);
+        $bValue = $this->getValue($b, $key);
+        echo $aValue->format('m/d/Y')." - ".$bValue->format('m/d/Y')." = ";
+        if ($aValue == $bValue) {
+            echo '0<br>';
+            return 0;
+        }
+        if (strtolower($this->sortDirection) == 'desc') {
+            echo (($aValue < $bValue) ? -1 : 1)."<br>";
+            return ($aValue < $bValue) ? -1 : 1;
+        }
+        else {
+            echo (($aValue < $bValue) ? 1 : -1)."<br>";
+            return ($aValue < $bValue) ? 1 : -1;
+        }
      }
 
 
 
     /** 
-     *  Sorts the contents of this Container. 
-     *
-     *  @param key The key on which to sort. 
-     *  @param dir The sort direction. 
-     *  @return A reference to this Container. 
-     */
-     public function sort2($key = false, $dir = 'desc')
-     {
-         if ($this->contentModified) {
-             $this->generateContent();
-         }
+    *  Sorts the contents of this Container. 
+    *
+    *  @param key The key on which to sort. 
+    *  @param dir The sort direction. 
+    *  @return A reference to this Container. 
+    */
+    public function sort2($key = false, $dir = 'desc')
+    {
+        if ($this->contentModified) {
+            $this->generateContent();
+        }
         $this->sortDirection = $dir;
         $this->sortKey = $key;
         $temp = $this->msort(array_values($this->content));
         return new self($temp);
-     }
+    }
 
     public function msort($data) {
         $numItems = count($data);
@@ -1200,53 +1254,31 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
     }
 
 
-    
- 
- 
-     /**
-      *  Returns the value when given a piece of data. 
-      *  If the data item is a primitive or if no key was given, then the item
-      *  is simply returned. However, if the data item is an object or array 
-      *  and a key was given, then returns the offset given by the key as a value.
-      *
-      *  @param $data Mixed
-      *  @param $key Int | String
-      *  @return mixed
-      */
-     protected function getValue($data, $key = false)
-     {
-         $returnValue = $data;
-         if ($key && is_object($data)) {
-             $returnValue = $data->$key;
-         }
-         else if ($key && is_array($data)) {
-             $returnValue = $data[$key];
-         }
-         return $returnValue;
-     }
-    /**
-     *  A simple compare function which is used by the Sort method.
-     *
-     *  @param $a Mixed
-     *  @param $b Mixed
-     *  @return boolean
-     */
-     protected function compare2($a, $b, $descending = false)
-     {
-         $key = $this->sortKey;
-         $aValue = $this->getValue($a, $key);
-         $bValue = $this->getValue($b, $key);
- 
-         if ($aValue == $bValue) {
-             return 0;
-         }
-         if ($descending == true) {
-             return ($aValue > $bValue) ? -1 : 1;
-         }
-         else {
-             return ($aValue > $bValue) ? 1 : -1;
-         }
-     }
+   /**
+    *  A simple compare function which is used by the Sort method.
+    *
+    *  @param $a Mixed
+    *  @param $b Mixed
+    *  @return boolean
+    */
+    protected function compare2($a, $b, $descending = false)
+    {
+        $key = $this->sortKey;
+        $aValue = $this->getValue($a, $key);
+        $bValue = $this->getValue($b, $key);
+        echo $aValue->format('m/d/Y')." - ".$bValue->format('m/d/Y')." - ";
+        if ($aValue == $bValue) {
+            return 0;
+        }
+        if ($descending == true) {
+            echo (($aValue > $bValue) ? -1 : 1)."<br>";
+            return ($aValue > $bValue) ? -1 : 1;
+        }
+        else {
+            echo (($aValue > $bValue) ? 1 : -1)."<br>";
+            return ($aValue > $bValue) ? 1 : -1;
+        }
+    }
     
 } // END Container
 
