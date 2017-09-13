@@ -8,7 +8,8 @@ class EventMapping extends \Cora\EventMapping
         return [
             'Events\\UserRegistered' => [
                 ['Listeners\\ThankYouForRegistering'],
-                ['Listeners\\NewRegistrationEmail']
+                ['Listeners\\NewRegistrationEmail'],
+                [$this->app->listeners->displayGreeting]
             ],
             'Events\\PasswordReset' => [
                 [$this->app->listeners->emails->sendPasswordResetToken]

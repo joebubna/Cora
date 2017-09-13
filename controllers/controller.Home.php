@@ -78,6 +78,47 @@ class Home extends \Cora\App\Controller {
         echo $hi;
     }
 
+
+    public function test3()
+    {
+        /*
+            SELECT * 
+            FROM users 
+            WHERE 
+                (
+                    firstName = 'Bob' OR 
+                    (
+                        firstName = 'Josiah' AND lastName = 'Bubna'
+                    )
+                ) AND 
+                (
+                    primaryRole = 1 OR 
+                    primaryRole = 3
+                )
+        */
+        
+        // $db = new \Cora\Db_MySQL();
+        // $result = $db->select('*')
+        //    ->from('users')
+        //    ->where([
+        //        ['firstName', '=', 'Josiah', 'OR'],
+        //        function($query) {
+        //            $query->where('firstName', 'Josiah')
+        //                  ->where('lastName', 'Bubna');
+        //        }
+        //    ])
+        //    ->where(function($query) {
+        //        $query->where('primaryRole', 1)
+        //              ->orWhere('primaryRole', 3);
+        //    })
+        //    ->getQuery();
+
+
+           //->where('field1', \Cora\Db_Field('field2'));
+        echo $result;
+    }
+
+
     public function factoryTest()
     {
         // Create a new collection
@@ -177,17 +218,17 @@ class Home extends \Cora\App\Controller {
     
     public function eventSetup() 
     {        
-        $user = new \User('Joe', 'SuperAdmin');
-        $this->event->fire(new \Event\UserRegistered($user));
+        $user = new \Models\User('Joe@test.com', 'superpass');
+        $this->event->fire(new \Events\UserRegistered($user));
         
         
-        $this->event->listenFor('customEvent', function($event) {
-            echo $event->input->name.'<br>';
-        });
-        $this->event->listenFor('customEvent', function($event) {
-            echo 'Higher Priority!<br>';
-        }, 1);
-        $this->event->fire(new Event('customEvent', $user));
+        // $this->event->listenFor('customEvent', function($event) {
+        //     echo $event->input->email.'<br>';
+        // });
+        // $this->event->listenFor('customEvent', function($event) {
+        //     echo 'Higher Priority!<br>';
+        // }, 1);
+        // $this->event->fire(new \Cora\Event('customEvent', $user));
     }
 
     
