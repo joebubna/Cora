@@ -14,7 +14,7 @@ class Db_MySQL extends Database
     protected $usingExternalMysqli = false;
     protected $usingExternalPdo = false;
     
-    public function __construct($connection = false, $existingConnection = false)
+    public function __construct($connection = false, $existingConnection = false, $check = false)
     {
         parent::__construct();
         
@@ -39,6 +39,21 @@ class Db_MySQL extends Database
         // Set DB name
         $this->dbName = $dbConfig['connections'][$connection]['dbName'];
         
+        // Define connection info
+        $connectionInfo = $dbConfig['connections'][$connection];
+        
+        // Check if in TESTING mode 
+        if (isset($GLOBALS['coraRunningTests']) && $GLOBALS['coraRunningTests'] == true) {
+            if (isset($connectionInfo['testOn'])) {
+                $testConnection = $connectionInfo['testOn'];
+                if (isset($dbConfig['connections'][$testConnection])) {
+                    $connectionInfo = $dbConfig['connections'][$testConnection];
+                    $this->connection = $testConnection;
+                    $this->dbName = $connectionInfo['dbName'];
+                }
+            }
+        }
+        
         ////////////////////////////////////////////
         // Setup MySQLi connection
         ////////////////////////////////////////////
@@ -58,10 +73,7 @@ class Db_MySQL extends Database
         // Otherwise create new connection.
         else {
             // Create mysqli connection. This is needed for it's escape function to cleanse variable inputs.
-            $this->mysqli = new \mysqli($dbConfig['connections'][$connection]['host'], 
-                                        $dbConfig['connections'][$connection]['dbUser'], 
-                                        $dbConfig['connections'][$connection]['dbPass'], 
-                                        $dbConfig['connections'][$connection]['dbName']);
+            $this->mysqli = new \mysqli($connectionInfo['host'], $connectionInfo['dbUser'], $connectionInfo['dbPass'], $connectionInfo['dbName']);
         }
         
         
@@ -89,9 +101,9 @@ class Db_MySQL extends Database
                 $errorMode = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
             }
             $this->db = new \PDO(
-                'mysql:host='.$dbConfig['connections'][$connection]['host'].';dbname='.$dbConfig['connections'][$connection]['dbName'], 
-                $dbConfig['connections'][$connection]['dbUser'], 
-                $dbConfig['connections'][$connection]['dbPass'], 
+                'mysql:host='.$connectionInfo['host'].';dbname='.$connectionInfo['dbName'], 
+                $connectionInfo['dbUser'], 
+                $connectionInfo['dbPass'], 
                 $errorMode
             );
         }

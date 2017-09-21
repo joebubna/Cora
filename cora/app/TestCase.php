@@ -115,6 +115,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
     {
         // Load test container.
         require('includes/container.php');
+
+        $GLOBALS['coraRunningTests'] = true;
         
         // Reset primary DB.
         $container->dbBuilder->reset();
@@ -134,5 +136,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         // Since testing using a 2nd database, have to specify we want that one reset too.
         $container->dbBuilder->reset('MySQL2');
+
+        $GLOBALS['coraRunningTests'] = false;
     }
 }
