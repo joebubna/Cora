@@ -1,7 +1,7 @@
 <?php
-namespace Cora;
+namespace Cora\Database;
 
-class Database
+class QueryBuilder
 {
     public static $defaultDb;
 
@@ -25,7 +25,6 @@ class Database
     protected $foreignKeys;
     protected $indexes;
     protected $query;
-    protected $queryDisplay;
 
     // For calculating total row from last query within LIMIT
     protected $last_wheres;
@@ -35,12 +34,76 @@ class Database
     protected $last_havings;
     protected $last_joins;
 
+
     public function __construct()
     {
         $this->reset();
     }
 
 
+
+
+    //////////////////////////////////////////////////////////////
+    //  UTILITY METHODS
+    //////////////////////////////////////////////////////////////
+
+    /**
+    *   reset
+    *
+    *   Resets all data members to their default (empty) values.
+    *   @return void
+    */
+    public function reset()
+    {
+        $this->tables   = array();
+        $this->selects  = array();
+        $this->updates  = array();
+        $this->wheres   = array();
+        $this->ins      = array();
+        $this->groupBys = array();
+        $this->orderBys = array();
+        $this->havings  = array();
+        $this->joins    = array();
+        $this->inserts  = array();
+        $this->values   = array();
+        $this->fields   = array();
+        $this->primaryKeys  = array();
+        $this->foreignKeys  = array();
+        $this->indexes  = array();
+
+        $this->distinct = false;
+        $this->delete   = false;
+        $this->limit    = false;
+        $this->offset   = false;
+        $this->create   = false;
+        $this->query    = '';
+    }
+
+
+    /**
+    *   getQuery
+    *
+    *   Calculates a query and returns it. 
+    *   @return string The query which would be executed.
+    */
+    public function getQuery()
+    {
+        if ($this->query == '') {
+            $this->calculate();
+        }
+        $result = $this->query;
+        $this->query = '';
+
+        return $result;
+    }
+
+
+    /**
+    *   isSelectSet
+    *
+    *   Returns whether any SELECT query has started being built. 
+    *   @return boolean
+    */
     public function isSelectSet()
     {
         if(empty($this->selects))
@@ -48,10 +111,26 @@ class Database
         return true;
     }
 
+
+    /**
+    *   resetSelect
+    *   
+    *   Empties any set SELECT parameters. 
+    *   @return void 
+    */
     public function resetSelect()
     {
         $this->selects  = array();
     }
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////
+    //  SQL DEFINING METHODS
+    //////////////////////////////////////////////////////////////
 
 
     public function table($tables)
@@ -71,7 +150,11 @@ class Database
 
     public function select($fields, $delim = false)
     {
-        $this->storeValue('selects', $fields, $delim);
+        $this->storeValue('selects', $fields);
+        
+        // This version passed optional delimiter in for `field` escaping. This protected against reserved words 
+        // as field names in MySQL.
+        //$this->storeValue('selects', $fields, $delim);
         return $this;
     }
 
@@ -235,46 +318,6 @@ class Database
     }
 
 
-    public function getQuery()
-    {
-        if ($this->query == '') {
-            $this->calculate();
-        }
-        $this->queryDisplay = $this->query;
-        $this->query = '';
-
-        return $this->queryDisplay;
-    }
-
-
-    public function reset()
-    {
-        $this->tables   = array();
-        $this->selects  = array();
-        $this->updates  = array();
-        $this->wheres   = array();
-        $this->ins      = array();
-        $this->groupBys = array();
-        $this->orderBys = array();
-        $this->havings  = array();
-        $this->joins    = array();
-        $this->inserts  = array();
-        $this->values   = array();
-        $this->fields   = array();
-        $this->primaryKeys  = array();
-        $this->foreignKeys  = array();
-        $this->indexes  = array();
-
-        $this->distinct = false;
-        $this->delete   = false;
-        $this->limit    = false;
-        $this->offset   = false;
-        $this->create   = false;
-        $this->query    = '';
-        $this->queryDisplay = '';
-    }
-
-
     /**
     *   JOIN array format:
     *   $this->joins[] = [table, [conditions], type]
@@ -285,6 +328,55 @@ class Database
         $item = [$table, $conditions, $type];
         array_push($dataMember, $item);
         return $this;
+    }
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////
+    //  STORAGE ABSTRACTED METHODS
+    //////////////////////////////////////////////////////////////
+
+
+    /**
+    *   For storing a single value or flat list of values.
+    *   STORAGE FORMAT:
+    *   $this->$field = [item1, item2, item3];
+    *   $this->$field[] = newItem;
+    */
+    protected function storeValue($type, $data, $delim = false)
+    {
+        $dataMember = &$this->$type;
+        // If array or object full of data was passed in, add all data
+        // to appropriate data member.
+        if (is_array($data) || is_object($data)) {
+            foreach ($data as $value) {
+                if ($value !== false) {
+                    if ($delim) {
+                        $value = $delim.$value.$delim;
+                    }
+                }
+                else {
+                    $value = 'NULL';
+                }
+                array_push($dataMember, $value);
+            }
+        }
+
+        // Add singular data item to data member.
+        else {
+            if ($data !== false) {
+                if ($delim) {
+                    $data = $delim.$data.$delim;
+                }
+            }
+            else {
+                $data = 'NULL';
+            }
+            array_push($dataMember, $data);
+        }
     }
 
 
@@ -320,43 +412,7 @@ class Database
         }
     }
 
-    /**
-     *  For storing a single value or flat list of values.
-     *  STORAGE FORMAT:
-     *  [item1, item2, item3]
-     */
-     protected function storeValue($type, $data, $delim = false)
-     {
-         $dataMember = &$this->$type;
-         // If array or object full of data was passed in, add all data
-         // to appropriate data member.
-         if (is_array($data) || is_object($data)) {
-             foreach ($data as $value) {
-                 if ($value !== false) {
-                     if ($delim) {
-                         $value = $delim.$value.$delim;
-                     }
-                 }
-                 else {
-                     $value = 'NULL';
-                 }
-                 array_push($dataMember, $value);
-             }
-         }
-
-         // Add singular data item to data member.
-         else {
-             if ($data !== false) {
-                 if ($delim) {
-                     $data = $delim.$data.$delim;
-                 }
-             }
-             else {
-                 $data = 'NULL';
-             }
-             array_push($dataMember, $data);
-         }
-     }
+    
 
 
     /**
