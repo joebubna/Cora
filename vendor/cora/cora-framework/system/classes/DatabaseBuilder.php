@@ -92,6 +92,10 @@ class DatabaseBuilder extends Framework
                         $db         = $object->getDbAdaptor();
                         $tableName  = $object->getTableName();
 
+                        // It's possible for models to have nothing but references (no actual table data of their own)
+                        // In that case, we don't want to issue a CREATE table statement.
+                        $nonEmptyModel = false;
+
                         foreach ($object->model_attributes as $key => $props) {
                             //echo $key."\n";
                             $rmodel = isset($props['model']);
@@ -161,6 +165,9 @@ class DatabaseBuilder extends Framework
 
                             // If not a model reference, then just add column to this models table.
                             else {
+                                // There's at least one attribute on this model which isn't a reference
+                                $nonEmptyModel = true;
+
                                 // Set primary key if applicable
                                 if (isset($props['primaryKey'])) {
                                     $db ->primaryKey($fieldName);
@@ -178,11 +185,13 @@ class DatabaseBuilder extends Framework
                             }
                         }
 
-                        $this->output("Creating Table: ".$tableName);
-                        $db ->create($tableName);
-                        $this->output($db->getQuery(), 2);
-                        //echo $db->reset();
-                        $db->exec();
+                        if ($nonEmptyModel) {
+                            $this->output("Creating Table: ".$tableName);
+                            $db ->create($tableName);
+                            $this->output($db->getQuery(), 2);
+                            //echo $db->reset();
+                            $db->exec();
+                        }
                     }
                     else {
                         $this->output('NOTICE: '.$model." is not a Cora Model. Ignoring for DB creation", 2);
