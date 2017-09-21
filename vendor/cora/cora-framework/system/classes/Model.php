@@ -831,7 +831,7 @@ class Model
     }
 
 
-    public function afterGet($prop, $value)
+    public function afterGet($prop, &$value)
     {
         //echo __FUNCTION__;
     }
