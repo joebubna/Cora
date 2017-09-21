@@ -58,7 +58,6 @@ class EventManager
         
         // Loop through the event listeners and call them.
         foreach ($listeners as $listener) {
-            
             $objOrClosure = $listener[0];
             
             // If the listener is inside a container class, grab it.

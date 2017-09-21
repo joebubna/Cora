@@ -88,6 +88,12 @@ $container->events->userRegistered = function($c, $user) {
 
 $container->listeners = new \Cora\Container($container);
 
+$container->listeners->returnClosure(true);
+
+$container->listeners->displayGreeting = function($c) {
+    return new \Listeners\DisplayGreeting();
+};
+
 
 
 /*******************************************************************

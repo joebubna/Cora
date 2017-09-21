@@ -4,6 +4,7 @@ namespace Cora;
 class Database
 {
     public static $defaultDb;
+    public static $testingDb;
 
     protected $tables;
     protected $selects;
@@ -527,8 +528,13 @@ class Database
     public static function getDefaultDb($getFresh = false, $existingConnection = false)
     {
         // Check if default DB instance is already created.
-        if (isset(self::$defaultDb) && $getFresh == false) {
+        if (isset(self::$defaultDb) && $getFresh == false && empty($GLOBALS['coraRunningTests'])) {
             return self::$defaultDb;
+        }
+
+        // Check if default TESTING DB instance is already created.
+        if (isset(self::$testingDb) && $getFresh == false && !empty($GLOBALS['coraRunningTests'])) {
+            return self::$testingDb;
         }
 
         // Load Cora DB settings
@@ -544,15 +550,20 @@ class Database
             // Return a brand new default adaptor.
             $defaultConn = $dbConfig['defaultConnection'];
             $dbAdaptor = '\\Cora\\Db_'.$dbConfig['connections'][$defaultConn]['adaptor'];
-            return new $dbAdaptor(false, $existingConnection);
+            return new $dbAdaptor(false, $existingConnection, true);
         }
         else {
             // Use Default Adaptor as defined in the settings.
             $defaultConn = $dbConfig['defaultConnection'];
             $dbAdaptor = '\\Cora\\Db_'.$dbConfig['connections'][$defaultConn]['adaptor'];
-            self::$defaultDb = new $dbAdaptor(false, $existingConnection);
 
-            return self::$defaultDb;
+            if (empty($GLOBALS['coraRunningTests'])) {
+                self::$defaultDb = new $dbAdaptor(false, $existingConnection);
+                return self::$defaultDb;
+            } else {
+                self::$testingDb = new $dbAdaptor(false, $existingConnection);
+                return self::$testingDb;
+            }
         }
     }
 

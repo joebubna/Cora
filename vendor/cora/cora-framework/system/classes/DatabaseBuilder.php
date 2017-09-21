@@ -5,6 +5,7 @@ class DatabaseBuilder extends Framework
 {
     protected $modelPath;
     public $displayOutput;
+    public $newline = "\n";
     
     public function __construct($displayOutput = true)
     {
@@ -201,7 +202,7 @@ class DatabaseBuilder extends Framework
         if ($this->displayOutput) {
             echo $string;
             for($i = 0; $i < $newlines; $i++) {
-                echo "\n";
+                echo $this->newline;
             }
         }
     }
