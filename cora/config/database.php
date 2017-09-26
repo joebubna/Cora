@@ -21,12 +21,20 @@ $dbConfig['connections'] = [
         'host'      => 'localhost:3306',
         'dbName'    => 'cora',
         'dbUser'    => 'root',
-        'dbPass'    => 'root'
+        'dbPass'    => 'root',
+        'testOn'    => 'MySQLTest'
     ],
     'MySQL2' => [
         'adaptor'   => 'MySQL',
         'host'      => 'localhost:3306',
         'dbName'    => 'cora2',
+        'dbUser'    => 'root',
+        'dbPass'    => 'root'
+    ],
+    'MySQLTest' => [
+        'adaptor'   => 'MySQL',
+        'host'      => 'localhost:3306',
+        'dbName'    => 'cora_test',
         'dbUser'    => 'root',
         'dbPass'    => 'root'
     ],

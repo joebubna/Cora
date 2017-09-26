@@ -79,6 +79,19 @@ class Home extends \Cora\App\Controller {
     }
 
 
+    public function test4() 
+    {
+        $GLOBALS['coraRunningTests'] = true;
+
+        $builder = $this->app->dbBuilder;
+        $builder->displayOutput = true;
+        $builder->newline = "<br>";
+        
+        // Reset primary DB.
+        $builder->reset();
+    }
+
+
     public function test3()
     {
         /*
