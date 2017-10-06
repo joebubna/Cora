@@ -900,4 +900,48 @@ class AmblendTest extends \Cora\App\TestCase
         $this->assertEquals('NewArt2', $users->find($user->id)->multiAuthorArticles->off0->text);
     }
 
+
+    /**
+     *  If we create a new Model using just the ID number, without fetching it from a repository,
+     *  can we access related models fetched using the "via" keyword on it?
+     *  
+     *  @test
+     */
+     public function canAccessRelatedModelsFromViaOnNewObject()
+     {
+        $this->app->dbBuilder->reset();
+
+        // Setup
+        $users = $this->app->tests->users;
+        $userComments = $this->app->tests->userComments;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob', 'Admin');
+        $users->save($user);
+
+        // Check that user has no comments.
+        $this->assertEquals(0, $user->comments->count());
+
+        // Create new comment and add to User via normal repo call.
+        $user->comments->add(new \Models\Tests\Users\Comment($user->id, 'Test comment 1'));
+        $users->save($user);
+
+        // Check that user has now has 1 comment
+        $this->assertEquals($user->comments->count(), 1);
+        
+        // Create new comment and add to User via active record type call.
+        $user->comments->add(new \Models\Tests\Users\Comment($user->id, 'Test comment 2'));
+        $user->save();
+        
+        // Check that user has now has 2 comments
+        $this->assertEquals(2, $user->comments->count());
+
+        // Create a new user object from scratch using just the ID number 
+        $user2 = new \Models\Tests\User();
+        $user2->id = $user->id;
+
+        // Check that access works the same on this new model
+        $this->assertEquals(2, $user2->comments->count());
+     }
+
 }

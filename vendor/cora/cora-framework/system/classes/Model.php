@@ -198,39 +198,17 @@ class Model
 
                 $def = $this->model_attributes[$name];
 
-                // If desired data is a reference to a singular object.
-                if (isset($def['model']) && !isset($this->model_dynamicOff)) {
-
-                    // In the rare case that we need to fetch a single related object, and the developer choose
-                    // to use a relation table to represent the relationship.
-                    if (isset($def['usesRefTable'])) {
-                        $this->$name = $this->getModelFromRelationTable($name, $def['model']);
-                    }
-
-                    // In the more common case of fetching a single object, where the related object's
-                    // ID is stored in a column on the parent object.
-                    // Under this scenario, the value stored in $this->$name is the ID of the related
-                    // object that was already fetched. So we can use that ID to populate a blank
-                    // object and then rely on it's dynamic loading to fetch any additional needed info.
-                    else {
-                        // Create a blank object of desired type and assign it the ID we know
-                        // references it. When we try and grab data from this new object,
-                        // dynamic data fetching will trigger on it.
-                        $relatedObj = $this->fetchRelatedObj($def['model']);
-
-                        // Populate the new obj with data we have about it (should only be primaryKey/ID)
-                        //$relatedObj->_populate([$relatedObj->getPrimaryKey() => $this->model_data[$name]]);
-                        // $this->$name = $relatedObj;
-
-                        // Fetch related object in whole
-                        $relObjRepo = $relatedObj->getRepository(true);
-                        $this->$name = $relObjRepo->find($this->model_data[$name]);
-                    }
+                // If desired data is a reference to a singular object, but it's defined as using a reference 
+                // table, then it's abstract in the sense that there's nothing on the current model's table 
+                // leading to it. We need to grab it using our method to grab data from a relation table.
+                if (isset($def['model']) && isset($def['usesRefTable']) && !isset($this->model_dynamicOff)) {
+                    $this->$name = $this->getModelFromRelationTable($name, $def['model']);
                 }
 
-                // If desired data is a reference to a collection of objects.
+                // If desired data is a reference to a collection of objects. This means the relationship is 
+                // abstract (no data on this model's table). We need to call appropriate method to get data 
+                // from external table.
                 else if (isset($def['models']) && !isset($this->model_dynamicOff)) {
-
                     // If the relationship is one-to-many.
                     if (isset($def['via'])) {
                         $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
@@ -242,31 +220,35 @@ class Model
                     else {
                         $this->$name = $this->getModelsFromRelationTable($name, $def['models']);
                     }
-                } else {
-
+                } 
+                
+                // If we fell down to here, then the data we need is located on this model's table. 
+                else {
                     $this->$name = $this->fetchData($name);
-                    $this->beforeGet($name); // Lifecycle callback
-                    $returnValue = $this->model_data[$name];
-                    $this->afterGet($name, $returnValue); // Lifecycle callback
+                }
+                    
+                // Fetch the value for this attribute that presumably got loaded from one of the above logic blocks.
+                $this->beforeGet($name); // Lifecycle callback
+                $returnValue = $this->model_data[$name];
+                $this->afterGet($name, $returnValue); // Lifecycle callback
 
-                    // Ref this model's attributes in a shorter variable.
-                    $def = $this->model_attributes[$name];
-
-                    // If the unset attribute is defined as a collection, return an empty one.
-                    if (isset($def['models'])) {
-                        if ($returnValue == null) {
-                            $this->$name = new \Cora\Collection();
-                            return $this->model_data[$name];
-                        } else {
-                            return $this->__get($name);
-                        }
-                    } // If the unset attribute is defined as a single model, return null.
-                    else {
-                        if (isset($def['model'])) {
-                            if ($returnValue != null) {
-                                return $this->__get($name);
-                            }
-                        }
+                // If the data we fetched from this model's table is a reference to either a single or collection of models
+                // then we need to do some more work. If the data we fetched is an ID reference to model, that will need to be 
+                // turned into an actual model still. If the data want is a collection of models, but the collection is empty, 
+                // we'll have a null value on our hands - in this case let's return an empty collecion object instead.
+                if (isset($def['models'])) {
+                    if ($returnValue == null) {
+                        $this->$name = new \Cora\Collection();
+                        return $this->model_data[$name];
+                    } else {
+                        return $this->__get($name);
+                    }
+                }
+                else if (isset($def['model'])) {
+                    if ($returnValue != null) {
+                        // Now that we fetched the ID, let's recursively call this method again and return the result so that ID 
+                        // gets turned into an object.
+                        return $this->__get($name);
                     }
                 }
                 return $returnValue;
