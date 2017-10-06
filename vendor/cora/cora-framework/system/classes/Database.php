@@ -248,6 +248,12 @@ class Database
     }
 
 
+    public function __toString()
+    {
+        return $this->getQuery();
+    }
+
+
     public function reset()
     {
         $this->tables   = array();

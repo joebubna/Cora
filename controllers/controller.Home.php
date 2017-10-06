@@ -26,21 +26,47 @@ class Home extends \Cora\App\Controller {
         // echo "<BR><BR><BR>";
 
 
-        $c = new \Cora\Collection(["one" => 1, "two" => 2, "three" => 3, "four" => 4, "five" => 5]);
+        //$c = new \Cora\Collection(["one" => 1, "two" => 2, "three" => 3, "four" => 4, "five" => 5]);
         // echo $c[4];             // Returns "5". Standard array access format.
         // echo $c["five"];        // Returns "5". Associative array access format.
         // echo $c->off4;          // Returns "5". Object access format.
         // echo $c->five;          // Returns "5". Direct Object access format.
         //var_dump($c);
 
-        $c->six = 6;
-        // $c->six = function() { return 6; };
-        var_dump($c);
-        echo $c->six;
-        var_dump($c);
-        echo $c->off5;
-        var_dump($c);
-        echo "<BR><BR><BR>";
+        // $c->six = 6;
+        // // $c->six = function() { return 6; };
+        // var_dump($c);
+        // echo $c->six;
+        // var_dump($c);
+        // echo $c->off5;
+        // var_dump($c);
+        // echo "<BR><BR><BR>";
+
+        
+        
+        $app = new \Cora\Collection();
+        $app->resource1 = function($app) {
+          return ['item1', 'item2'];
+        };
+        $app->subfolder = new \Cora\Collection($app);
+        $app->subfolder->resource3 = "Hello world";
+
+        echo $app->subfolder->count();  // Returns 2
+        echo $app->subfolder->resource1[0]; // Returns "item1"
+ 
+        // foreach ($app->subfolder->resource3 as $item) {
+        //   echo $item; // Returns "item1" and "item2"
+        // }
+
+        // $user1 = new \stdClass();
+        // $user1->name = 'bob';
+        // $user2 = new \stdClass();
+        // $user2->name = 'jim';
+
+        // $users = new \Cora\Collection([$user1, $user2], 'name');
+        // $users->bob->father = $users->jim;
+
+        // echo $users->bob->father->name;
 
         // $c = new \Cora\Collection([
         //     ["name" => "Jake", "age" => 33],
@@ -50,7 +76,7 @@ class Home extends \Cora\App\Controller {
         // echo $c['Bob']['age'];             // Returns "5". Standard array access format.
         // echo $c->get(1)['age'];        // Returns "5". Required by PSR-11.
         // echo $c->offsetGet(1)['age'];  // Returns "5". Required by ArrayAccess interface.
-        // echo $c->Bob['age'];          // Returns "5". Object access syntax.
+        //echo $c->Bob['age'];          // Returns "5". Object access syntax.
         // echo "<BR><BR><BR>";
     }
 
