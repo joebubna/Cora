@@ -125,7 +125,6 @@ class Model
         // to boolean true, meaning we have to dynamically fetch the model)
         ///////////////////////////////////////////////////////////////////////
         if (isset($this->model_data[$name])) {
-
             // Check if the stored data is numeric.
             // If it's not, then we don't need to worry about it being a
             // class reference that we need to fetch.
@@ -166,7 +165,6 @@ class Model
 
                 // If desired data is a reference to a collection of objects.
                 else if (isset($def['models']) && !isset($this->model_dynamicOff)) {
-
                     // If the relationship is one-to-many.
                     if (isset($def['via'])) {
                         $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
@@ -197,31 +195,80 @@ class Model
 
             // If the attribute isn't the primary key of our current model, do dynamic fetch.
             if ($name != $this->getPrimaryKey()) {
-                $this->$name = $this->fetchData($name);
-                $this->beforeGet($name); // Lifecycle callback
-                $returnValue = $this->model_data[$name];
-                $this->afterGet($name, $returnValue); // Lifecycle callback
 
-                // Ref this model's attributes in a shorter variable.
                 $def = $this->model_attributes[$name];
 
-                // If the unset attribute is defined as a collection, return an empty one.
-                if (isset($def['models'])) {
-                    if ($returnValue == null) {
-                        $this->$name = new \Cora\Collection();
-                        return $this->model_data[$name];
+                // If desired data is a reference to a singular object.
+                if (isset($def['model']) && !isset($this->model_dynamicOff)) {
+
+                    // In the rare case that we need to fetch a single related object, and the developer choose
+                    // to use a relation table to represent the relationship.
+                    if (isset($def['usesRefTable'])) {
+                        $this->$name = $this->getModelFromRelationTable($name, $def['model']);
                     }
+
+                    // In the more common case of fetching a single object, where the related object's
+                    // ID is stored in a column on the parent object.
+                    // Under this scenario, the value stored in $this->$name is the ID of the related
+                    // object that was already fetched. So we can use that ID to populate a blank
+                    // object and then rely on it's dynamic loading to fetch any additional needed info.
                     else {
-                        return $this->__get($name);
-                    }
-                }
-                // If the unset attribute is defined as a single model, return null.
-                else if (isset($def['model'])) {
-                    if ($returnValue != null) {
-                        return $this->__get($name);
+                        // Create a blank object of desired type and assign it the ID we know
+                        // references it. When we try and grab data from this new object,
+                        // dynamic data fetching will trigger on it.
+                        $relatedObj = $this->fetchRelatedObj($def['model']);
+
+                        // Populate the new obj with data we have about it (should only be primaryKey/ID)
+                        //$relatedObj->_populate([$relatedObj->getPrimaryKey() => $this->model_data[$name]]);
+                        // $this->$name = $relatedObj;
+
+                        // Fetch related object in whole
+                        $relObjRepo = $relatedObj->getRepository(true);
+                        $this->$name = $relObjRepo->find($this->model_data[$name]);
                     }
                 }
 
+                // If desired data is a reference to a collection of objects.
+                else if (isset($def['models']) && !isset($this->model_dynamicOff)) {
+
+                    // If the relationship is one-to-many.
+                    if (isset($def['via'])) {
+                        $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
+                    }
+
+                    // If the relationship is many-to-many.
+                    // OR if the relationship is one-to-many and no 'owner' type column is set,
+                    // meaning there needs to be a relation table.
+                    else {
+                        $this->$name = $this->getModelsFromRelationTable($name, $def['models']);
+                    }
+                } else {
+
+                    $this->$name = $this->fetchData($name);
+                    $this->beforeGet($name); // Lifecycle callback
+                    $returnValue = $this->model_data[$name];
+                    $this->afterGet($name, $returnValue); // Lifecycle callback
+
+                    // Ref this model's attributes in a shorter variable.
+                    $def = $this->model_attributes[$name];
+
+                    // If the unset attribute is defined as a collection, return an empty one.
+                    if (isset($def['models'])) {
+                        if ($returnValue == null) {
+                            $this->$name = new \Cora\Collection();
+                            return $this->model_data[$name];
+                        } else {
+                            return $this->__get($name);
+                        }
+                    } // If the unset attribute is defined as a single model, return null.
+                    else {
+                        if (isset($def['model'])) {
+                            if ($returnValue != null) {
+                                return $this->__get($name);
+                            }
+                        }
+                    }
+                }
                 return $returnValue;
             }
             else {
