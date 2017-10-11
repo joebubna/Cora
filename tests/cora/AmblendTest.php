@@ -944,4 +944,24 @@ class AmblendTest extends \Cora\App\TestCase
         $this->assertEquals(2, $user2->comments->count());
      }
 
+
+     /**
+     *  Checks that model constraints added via the model_constraints method correctly apply
+     *  to a collection.
+     *
+     *  @test
+     */
+    public function canLimitCollectionByModelConstraints()
+    {
+        // Setup
+        $users = $this->app->users;
+        $inactiveUsers = $this->app->tests->inactiveUsers;
+
+        // Check that user has no comments.
+        $this->assertEquals(1001, $users->count());
+
+        // Check that user has no comments.
+        $this->assertEquals(10, $inactiveUsers->count());
+    }
+
 }

@@ -223,6 +223,10 @@ $container->singleton('testSingleton', function($c) {
 
 $container->tests = new \Cora\Container($container);
 
+$container->tests->inactiveUsers = function($c) {
+    return $c->repository('Tests\InactiveUser');
+};
+
 $container->tests->users = function($c) {
     return $c->repository('Tests\User');
 };

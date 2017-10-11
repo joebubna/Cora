@@ -7,13 +7,15 @@ class Repository
 {
     protected $factory;
     protected $gateway;
+    protected $model;           // An instance of the model this Repository is for.
     protected $saveStarted;
     protected $savedAdaptors;
 
-    public function __construct(Gateway $gateway, Factory $factory)
+    public function __construct(Gateway $gateway, Factory $factory, $dummyModel)
     {
         $this->gateway = $gateway;
         $this->factory = $factory;
+        $this->model = $dummyModel;
 
         $this->saveStarted = &$GLOBALS['coraSaveStarted'];
         $this->savedAdaptors = &$GLOBALS['coraAdaptorsForCurrentSave'];
@@ -39,35 +41,48 @@ class Repository
 
     public function find($id)
     {
+        // $coraDbQuery = $this->gateway->getDb();
+        // $coraDbQuery = $this->model::model_constraints($coraDbQuery);
         $record = $this->gateway->fetch($id);
         return $this->factory->make($record);
     }
 
-    public function findOne($coraDbQuery)
+    public function findOne($coraDbQuery = false)
     {
+        // If no query builder object was passed in, then grab the gateway's.
+        if (!$coraDbQuery) {
+            $coraDbQuery = $this->gateway->getDb();
+        }
+
+        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
         $all = $this->gateway->fetchByQuery($coraDbQuery);
         return $this->factory->makeGroup($all)->get(0);
     }
 
     public function findAll($coraDbQuery = false)
     {
-        if ($coraDbQuery) {
-            $all = $this->gateway->fetchByQuery($coraDbQuery);
+        // If no query builder object was passed in, then grab the gateway's.
+        if (!$coraDbQuery) {
+            $coraDbQuery = $this->gateway->getDb();
         }
-        else {
-            $all = $this->gateway->fetchAll();
-        }
+        
+        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
+        $all = $this->gateway->fetchByQuery($coraDbQuery);
         return $this->factory->makeGroup($all);
     }
 
     public function findBy($prop, $value, $options = array())
     {
+        $coraDbQuery = $this->gateway->getDb();
+        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
         $all = $this->gateway->fetchBy($prop, $value, $options);
         return $this->factory->makeGroup($all);
     }
 
     public function findOneBy($prop, $value, $options = array())
     {
+        $coraDbQuery = $this->gateway->getDb();
+        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
         $all = $this->gateway->fetchBy($prop, $value, $options);
         return $this->factory->makeGroup($all)->get(0);
     }
@@ -77,9 +92,11 @@ class Repository
      */
     public function count($coraDbQuery = false)
     {
+        // If no query builder object was passed in, then grab the gateway's.
         if (!$coraDbQuery) {
             $coraDbQuery = $this->gateway->getDb();
         }
+        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
         return $this->gateway->count($coraDbQuery);
     }
 

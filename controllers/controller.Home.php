@@ -79,6 +79,16 @@ class Home extends \Cora\App\Controller {
     }
 
 
+    public function limitedTest()
+    {
+        $permRepo = $this->app->repository('PermissionLimited');
+        $perms = [$permRepo->find(3)];
+        foreach ($perms as $perm) {
+            echo $perm->name."<br>";
+        }
+    }
+
+
     public function test4() 
     {
         $GLOBALS['coraRunningTests'] = true;

@@ -864,4 +864,9 @@ class Model
     {
         //echo __FUNCTION__;
     }
+
+    public static function model_constraints($query) 
+    {
+        return $query;
+    }
 }
