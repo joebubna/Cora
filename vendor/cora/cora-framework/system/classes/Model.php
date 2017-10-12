@@ -137,7 +137,7 @@ class Model
                 if (isset($def['model']) && !isset($this->model_dynamicOff)) {
 
                     if (isset($def['using'])) {
-                        $this->$name = $this->getModelsFromCustomRelationship($name, $def['model']);
+                        $this->$name = $this->getModelFromCustomRelationship($name, $def['model']);
                     }
 
                     // In the rare case that we need to fetch a single related object, and the developer choose
@@ -207,7 +207,7 @@ class Model
                 $def = $this->model_attributes[$name];
 
                 if (isset($def['model']) && isset($def['using']) && !isset($this->model_dynamicOff)) {
-                    $this->$name = $this->getModelsFromCustomRelationship($name, $def['model']);
+                    $this->$name = $this->getModelFromCustomRelationship($name, $def['model']);
                 }
 
                 // If desired data is a reference to a singular object, but it's defined as using a reference 
@@ -509,6 +509,12 @@ class Model
          
          return $repo->findAll($query);
      }
+
+
+    public function getModelFromCustomRelationship($attributeName, $objName)
+    {
+        return $this->getModelsFromCustomRelationship($attributeName, $objName)->get(0);
+    }
 
 
     public function getClassName($class = false)
