@@ -75,6 +75,10 @@ class User extends \Cora\App\Model {
         'writings' => [
             'models' => 'Tests\\Article',
             'relName' => 'authorPaper'
+        ],
+        'sameType' => [
+            'models' => 'Tests\\User',
+            'using' => '_similarUsers'
         ]
         // 'roleName' => [
         //     'from' => 'roles',
@@ -87,6 +91,12 @@ class User extends \Cora\App\Model {
     {
         $this->name = $name;
         $this->type = $type;
+    }
+
+    public function _similarUsers($query) {
+        $query->where('type', $this->type)
+              ->where('id', $this->id, '<>');
+        return $query;
     }
 
 }

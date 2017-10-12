@@ -81,10 +81,12 @@ class Home extends \Cora\App\Controller {
 
     public function limitedTest()
     {
-        $permRepo = $this->app->repository('PermissionLimited');
-        $perms = [$permRepo->find(3)];
-        foreach ($perms as $perm) {
-            echo $perm->name."<br>";
+        $repo = $this->app->repository('user');
+        $user = $repo->find(1);
+        //$items = $user->getModelsFromCustomRelationship('alike', 'User');
+        $items = $user->alike;
+        foreach ($items as $user) {
+            echo $user->name."<br>";
         }
     }
 

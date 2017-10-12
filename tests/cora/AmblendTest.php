@@ -945,12 +945,12 @@ class AmblendTest extends \Cora\App\TestCase
      }
 
 
-     /**
-     *  Checks that model constraints added via the model_constraints method correctly apply
-     *  to a collection.
-     *
-     *  @test
-     */
+    /**
+    *   Checks that model constraints added via the model_constraints method correctly apply
+    *   to a collection.
+    *
+    *   @test
+    */
     public function canLimitCollectionByModelConstraints()
     {
         // Setup
@@ -962,6 +962,53 @@ class AmblendTest extends \Cora\App\TestCase
 
         // Check that user has no comments.
         $this->assertEquals(10, $inactiveUsers->count());
+    }
+
+
+    /**
+    *   Abstract relationships between models are ones where there isn't an explicitly defined
+    *   ID => ID connection. An explicit connection is something like a "parent" field with an ID number,
+    *   a relation table defining Model A is related to Model B, etc. An abstract relationship is something 
+    *   like "theSameAge" where the result is all users within 5 years of age to the person in question. 
+    *   Representing explicit ID => ID connections for every person in the database to define this relationship 
+    *   would be rediculous and non-feasible. 
+    *
+    *   The "using" definition allows you to specify a method that will define an abstract relationship.
+    *
+    *   @test
+    */
+    public function canGrabRelatedModelsFromAbstractRelationship()
+    {
+        // Setup
+        $this->app->dbBuilder->reset();
+        $users = $this->app->tests->users;
+
+        // Check that the test users table is empty
+        $this->assertEquals(0, $users->count());
+        
+        $testUsers = new \Cora\Collection([
+            new \Models\Tests\User('Bob1', 'Adult'),
+            new \Models\Tests\User('Jimmy', 'Child'),
+            new \Models\Tests\User('Jenine', 'Adult'),
+            new \Models\Tests\User('Jeff', 'Adult'),
+            new \Models\Tests\User('Matt', 'Child'),
+            new \Models\Tests\User('Sarah', 'Child'),
+            new \Models\Tests\User('Kevin', 'Adult')
+        ]);
+
+        $users->save($testUsers);
+
+        // Check that the users were saved
+        $this->assertEquals(7, $users->count());
+
+        // Grab Jenine
+        $user = $users->find(3);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jenine', $user->name);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals(3, $user->sameType->count());
     }
 
 }

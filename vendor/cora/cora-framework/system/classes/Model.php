@@ -136,9 +136,13 @@ class Model
                 // If desired data is a reference to a singular object.
                 if (isset($def['model']) && !isset($this->model_dynamicOff)) {
 
+                    if (isset($def['using'])) {
+                        $this->$name = $this->getModelsFromCustomRelationship($name, $def['model']);
+                    }
+
                     // In the rare case that we need to fetch a single related object, and the developer choose
                     // to use a relation table to represent the relationship.
-                    if (isset($def['usesRefTable'])) {
+                    else if (isset($def['usesRefTable'])) {
                         $this->$name = $this->getModelFromRelationTable($name, $def['model']);
                     }
 
@@ -170,6 +174,10 @@ class Model
                         $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
                     }
 
+                    else if (isset($def['using'])) {
+                        $this->$name = $this->getModelsFromCustomRelationship($name, $def['models']);
+                    }
+
                     // If the relationship is many-to-many.
                     // OR if the relationship is one-to-many and no 'owner' type column is set,
                     // meaning there needs to be a relation table.
@@ -198,10 +206,14 @@ class Model
 
                 $def = $this->model_attributes[$name];
 
+                if (isset($def['model']) && isset($def['using']) && !isset($this->model_dynamicOff)) {
+                    $this->$name = $this->getModelsFromCustomRelationship($name, $def['model']);
+                }
+
                 // If desired data is a reference to a singular object, but it's defined as using a reference 
                 // table, then it's abstract in the sense that there's nothing on the current model's table 
                 // leading to it. We need to grab it using our method to grab data from a relation table.
-                if (isset($def['model']) && isset($def['usesRefTable']) && !isset($this->model_dynamicOff)) {
+                else if (isset($def['model']) && isset($def['usesRefTable']) && !isset($this->model_dynamicOff)) {
                     $this->$name = $this->getModelFromRelationTable($name, $def['model']);
                 }
 
@@ -212,6 +224,10 @@ class Model
                     // If the relationship is one-to-many.
                     if (isset($def['via'])) {
                         $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
+                    }
+
+                    else if (isset($def['using'])) {
+                        $this->$name = $this->getModelsFromCustomRelationship($name, $def['models']);
                     }
 
                     // If the relationship is many-to-many.
@@ -468,6 +484,31 @@ class Model
         //$db->select($idField);
         return $repo->findAll($db);
     }
+
+
+    /**
+     *  The Related Obj's are defined by a custom query. A "using" definition states which model 
+     *  method defines the relationship. Within that method any query parameters must bet set and 
+     *  a Query Builder object returned.
+     */
+     public function getModelsFromCustomRelationship($attributeName, $objName)
+     {
+         // Grab a dummy instance of the related object.
+         $relatedObj = $this->fetchRelatedObj($objName);
+
+         // Create a repository for the related object.
+         $repo = \Cora\RepositoryFactory::make($objName, false, false, false, $this->model_db);
+        
+         // Grab a Query Builder object for the connection this related model uses.
+         $query = $relatedObj->getDbAdaptor();
+         
+         // Grab the name of the method that defines the relationship
+         $definingFunctionName = $this->model_attributes[$attributeName]['using'];
+         
+         $query = $this->$definingFunctionName($query);
+         
+         return $repo->findAll($query);
+     }
 
 
     public function getClassName($class = false)
