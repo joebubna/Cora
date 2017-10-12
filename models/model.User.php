@@ -57,10 +57,6 @@ class User extends \Cora\App\Model {
         ],
         'parent' => [
             'model' => 'User'
-        ],
-        'alike' => [
-            'models' => 'User',
-            'using' => 'relAlike'
         ]
         // 'roleName' => [
         //     'from' => 'roles',
