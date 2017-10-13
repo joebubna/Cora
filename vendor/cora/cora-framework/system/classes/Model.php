@@ -805,10 +805,10 @@ class Model
         echo $this->toJson();
     }
 
-    public function toArray($inputData = false)
+    public function toArray($inputData = '__cora__empty')
     {
         // If nothing was passed in, default to this object. 
-        if ($inputData === false) {
+        if ($inputData == '__cora__empty') {
             $inputData = $this;
         }
         

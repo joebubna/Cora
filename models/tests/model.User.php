@@ -80,11 +80,6 @@ class User extends \Cora\App\Model {
             'models' => 'Tests\\User',
             'using' => '_similarUsers'
         ]
-        // 'roleName' => [
-        //     'from' => 'roles',
-        //     'select' => 'name',
-        //     'where' => ['primaryRole', '=', 'id']
-        // ]
     ];
 
     public function __construct($name = null, $type = null)
@@ -93,7 +88,7 @@ class User extends \Cora\App\Model {
         $this->type = $type;
     }
 
-    public function _similarUsers($query) {
+    protected function _similarUsers($query) {
         $query->where('type', $this->type)
               ->where('id', $this->id, '<>');
         return $query;
