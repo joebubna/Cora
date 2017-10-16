@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../../../img/favicon.ico">
+
+	<title>Model Relationships - Cora Framework Documentation</title>
+
+        <link href="../../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../../css/highlight.css">
+        <link href="../../../../css/base.css" rel="stylesheet">
+        <link href="../../../../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../../..">Cora Framework Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../../..">About</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../setup/install/">Installation</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/configuration/">Configuration</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../setup/advanced/">Advanced Configuration</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorals <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../tutorials/intro/">Intro to Cora</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../../../tutorials/composer/">Using Composer</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">ADM ORM</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../implementation/">Implementation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../model/">Model</a>
+</li>
+
+        
+            
+<li class="active">
+    <a href="./">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../repository/">Repository</a>
+</li>
+
+        
+            
+<li >
+    <a href="../gateway/">Gateway</a>
+</li>
+
+        
+            
+<li >
+    <a href="../factory/">Factory</a>
+</li>
+
+        
+            
+<li >
+    <a href="../lifecycle/">Lifecycle Callbacks</a>
+</li>
+
+        
+            
+<li >
+    <a href="../database_gen/">Automated DB Creation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../opt_locking/">Optimistic Locking</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../collections/">Collection Class</a>
+</li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Database Class</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_utility/">Utility Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_select/">SELECT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_update/">UPDATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_insert/">INSERT Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_delete/">DELETE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/methods_create/">CREATE Methods</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/databaseresult/">DatabaseResult Class</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../dependency-injection/overview/">Dependency Injection</a>
+</li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Events</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../events/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmanager/">Event Manager</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/eventmapping/">Event Mapping</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/event/">Event</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../events/listener/">Listener</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">MVC Pattern</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../mvc/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/models/">Models</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/views/">Views</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/controllers/">Controllers</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../mvc/libraries/">Libraries</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+  <li class="dropdown-submenu">
+    <a tabindex="-1" href="">Routing</a>
+    <ul class="dropdown-menu">
+        
+            
+<li >
+    <a href="../../routing/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../routing/custom_routes/">Custom Routes</a>
+</li>
+
+        
+    </ul>
+  </li>
+
+                    
+                        
+<li >
+    <a href="../../validationclass/overview/">Validate Class</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">CS Topics <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../../../computerscience/computability/">Computability</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../model/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../repository/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#model-relationships">Model Relationships</a></li>
+        
+            <li><a href="#model-to-database">Model to Database</a></li>
+        
+            <li><a href="#model-to-table">Model to Table</a></li>
+        
+            <li><a href="#model-to-table-rows">Model to Table Rows</a></li>
+        
+            <li><a href="#model-attribute-to-table-column">Model Attribute to Table Column</a></li>
+        
+            <li><a href="#one-to-one-via-relation-table">One-to-One via Relation Table</a></li>
+        
+            <li><a href="#one-to-one-via-abstract">One-to-One via Abstract</a></li>
+        
+            <li><a href="#one-to-many-via-column">One-to-Many via Column</a></li>
+        
+            <li><a href="#one-to-many-via-relation-table">One-to-Many via Relation Table</a></li>
+        
+            <li><a href="#one-to-many-via-abstract">One-to-Many via Abstract</a></li>
+        
+            <li><a href="#many-to-many-via-relation-table">Many-to-Many via Relation Table</a></li>
+        
+            <li><a href="#default-table-names">Default Table Names</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="model-relationships">Model Relationships</h1>
+<p><span class="text-green">
+A key piece of using ADM effectively is going to be knowing how to setup relationships between models and the database, 
+and models with other models. This page will walk through the more common scenarios and how to deal with them.
+</span></p>
+<h2 id="model-to-database">Model to Database</h2>
+<p>This is super simple, but super important. Models are mapped to a persistance layer (likely a database) by defining what connection they use for storage and retrieval. If no connection is explicitly defined on a model, then it is assumed to use the Default connection from the config settings. The connection can be defined via a $model_connection data member.</p>
+<pre><code class="php">class User extends \Cora\Model {
+    // Specify that this model uses the connection named &quot;Db2&quot;.
+    public $model_connection = 'Db2';
+
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ]
+    ];
+}
+</code></pre>
+
+<h2 id="model-to-table">Model to Table</h2>
+<p>Normally a model will be mapped to a table/collection that is the same name as the model itself, but with an "s" added to the end. For example, a User model would by default be mapped to a "users" table. Then for models outside the base models directory, each piece of their namespace will have an underscore (see Default Table Names section). However, if you want to change what table a model gets mapped to, you can do so by defining a <code>$model_table</code> data member.</p>
+<pre><code class="php">class User extends \Cora\Model {
+    // Specify the name of the table we want to map this User model to.
+    public $model_table = 'site_users';
+
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ]
+    ];
+}
+</code></pre>
+
+<p>This is also a good opportunity to mention that if you are using a connection to something other than a database (say the connection adaptor saves to plain text files), then it's up to the creator of that adaptor to decide what to do with settings that don't map perfectly to non-database storage mediums.</p>
+<h2 id="model-to-table-rows">Model to Table Rows</h2>
+<p>Normally there's a 1-to-1 relationship between a model and the number of rows in a table. If you call:</p>
+<pre><code class="php">$users = $usersRepository-&gt;findAll();
+</code></pre>
+
+<p>On a Users repository, the result will be all the users in the table. If you wanted only "active" users you would have to normally pass in a partial query or else grab everything and then filter afterwards:</p>
+<pre><code class="php">// Grab only &quot;active&quot; users
+$dbQuery = $usersRepository-&gt;getDb();
+$dbQuery-&gt;where('type', 'Active');
+$users = $usersRepository-&gt;findAll($dbQuery);
+
+// Grab all users, but then filter out non-active ones after the fact
+$users = $usersRepository-&gt;findAll();
+$users-&gt;filter(function($user) {
+    return $user-&gt;type == 'Active';
+});
+</code></pre>
+
+<p>This works fine, but if you have a specific subset you need to access often in your app, having to do this extra work every time can end up being cumbersome. ADM provides an answer to this in the form of a static method you can define called model_constraints. </p>
+<p>Assuming we have a "User" model defined, below we define a subset ActiveUser model that extends it and only fetches users who's status is "Active'. This model will fetch data from the Users table, but there will no longer be a 1-to-1 relationship between the model and the number of rows on the table.</p>
+<h3 id="model-constraints-example">Model Constraints Example</h3>
+<pre><code class="php">&lt;?php
+class ActiveUser extends \Models\User {
+    // Specify that we want to fetch data from the Users table
+    public $model_table = 'users';
+
+    // Define constraints on this model
+    public static function model_constraints($query) 
+    {
+        $query-&gt;where('status', 'Active');
+        return $query;
+    }
+}
+</code></pre>
+
+<p>Now if we grab all the models from an ActiveUsers repository, it will pull from the Users table but only give us the subset.</p>
+<pre><code class="php">$activeUsers = $activeUsersRepository-&gt;findAll();
+</code></pre>
+
+<h2 id="model-attribute-to-table-column">Model Attribute to Table Column</h2>
+<p>By default, an attribute on a model will map to a column of the same name in a database table. However, it will be common that you will want to change this behavior. Doing so is easy, just add a "field" definition to tell ADM which column to map that field to. In the example below we say to map the "name" attribute to a column named "full_name" in the database.</p>
+<pre><code class="php">class User extends \Cora\Model {
+    // Specify the name of the table we want to map this User model to.
+    public $model_table = 'site_users';
+
+    public $model_attributes = [
+        'user_id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar',
+            'field' =&gt; 'full_name'
+        ]
+    ];
+}
+</code></pre>
+
+<p>It's important to note that as of this writing, the primary key column cannot utilize the "field" setting. In the case of the primary ID, it must match the name of the underlying table column. However, there is a way to achieve the same functionality. </p>
+<p>Using the above as an example, our model ID is defined as "user_id" because presumably that's what the ID column on the database table is called. But let's say we wanted to be able to just type <code>$user-&gt;id</code> in our code. We can do this by defining can alias for the ID column:</p>
+<pre><code class="php">class User extends \Cora\Model {
+    // Specify the name of the table we want to map this User model to.
+    public $model_table = 'site_users';
+
+    public $model_attributes = [
+        'user_id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar',
+            'field' =&gt; 'full_name'
+        ]
+    ];
+
+    // This let's us type $user-&gt;id instead of $user-&gt;user_id.
+    protected $id_name = 'user_id';
+}
+</code></pre>
+
+<h2 id="one-to-one-via-relation-table">One-to-One via Relation Table</h2>
+<p>So this is a relationship setup I generally don't recommend be used, but for completeness sake I added it in at some point. The idea is you want a pure one-to-one relationship between one model and another. Let's say you have a forum where users can chat and each user has the option to upload a custom profile picture for themselves. That picture will be stored a separate table from the main users table, and each pic will be unique to the user that uploaded it. One way to setup that relation would be:</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'pic' => [
+            'model' => 'Avatar',
+            'usesRefTable' => true,
+            'relName' = 'userAvatar'
+        ]
+    ];
+
+    public function __construct($name = null)
+    {   parent::__construct();
+        $this->name = $name;
+    }
+}
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+class Avatar extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'file' => [
+            'type' => 'blob'
+        ],
+        'owner' => [
+            'model' => 'User',
+            'usesRefTable' => true,
+            'relName' = 'userAvatar'
+        ]
+    ];
+
+    public function __construct($file = null)
+    {   parent::__construct();
+        $this->file = $file;
+    }
+}
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<p>The "usesRefTable" descriptor is necessary because normally a single related model would be stored as a column on the same table and this forces the use of a 3rd relation table. The "relName" descriptor is to ensure both sides of the relationship use the same relation table.</p>
+<p>Note that relation tables by nature support many-to-many relationships, so what we're doing here is artificially limiting that capability. Also, relation tables necessitate the need for JOINs on the data fetched, so there's some level of performance cost. What I'd probably recommend using instead is a one-to-many by column setup where you just limit the relationship to a one-to-one by convention within your codebase.</p>
+<h2 id="one-to-one-via-abstract">One-to-One via Abstract</h2>
+<p>For another pure one-to-one solution, you can use abstract model constraints. This yet again is a solution I would advise against, but is included here for completeness' sake. For a better description of how Abstract relationships work, please see the "One-to-many by Abstract" section.</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'pic' => [
+            'model' => 'Avatar'
+        ]
+    ];
+
+    public function __construct($name = null)
+    {   parent::__construct();
+        $this->name = $name;
+    }
+}
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+class Avatar extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'file' => [
+            'type' => 'blob'
+        ],
+        'owner' => [
+            'model' => 'User',
+            'using' => '_getOwner'
+        ]
+    ];
+
+    public function __construct($file = null)
+    {   parent::__construct();
+        $this->file = $file;
+    }
+
+    protected function _getOwner($query) {
+        $query->where('pic', $this->id);
+        return $query;
+    }
+}
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<h2 id="one-to-many-via-column">One-to-Many via Column</h2>
+<p>Let's say you have some Users and some Roles (admin, moderator, registered user, etc). Your Users are stored in a table named "users" and your list of Roles are stored in a table named "roles". You want to be able to assign a role to a user. You can do that by simply defining a "model" descriptor on an attribute and specifying to which type of model it's related.</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'role' => [
+            'model' => 'Role'
+        ]
+    ];
+
+    public function __construct($name = null)
+    {   parent::__construct();
+        $this->name = $name;
+    }
+}
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+class Role extends \Cora\Model {
+    // Set collection access key
+    public $model_collection_offset = 'name';
+
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ]
+    ];
+
+    public function __construct($name = null)
+    {   parent::__construct();
+        $this->name = $name;
+    }
+}
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<p>What this does is map the "role" column on the users table to a specific role in the roles table. To assign a role to a user, you would then either assign the person a pre-existing role or else create a new one.</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+//////////////////////////////////////
+//  Assign an existing role to a user
+//////////////////////////////////////
+
+// Let's create a new user Bob
+$user = new \Models\User('Bob');
+
+// Grab pre-existing list of roles
+$roles = $this->rolesRepository->findAll();
+
+// Assign a role to Bob
+$user->role = $roles->admin;
+
+// Save
+$usersRepository->save($user);
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+//////////////////////////////////////
+//  Create a new role for a user
+//////////////////////////////////////
+
+// Let's create a new user Bob
+$user = new \Models\User('Bob');
+
+// Create a new role for Bob
+$user->role = new \Models\Role('CoolDude');
+
+// Save
+$usersRepository->save($user);
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<p>After doing this, if you pull up Bob in your database you should see an ID number corresponding to the role he was assigned in his "role" column.</p>
+<p>This is considered a one-to-many relationship because while a user would only have a single Role, a Role (say "admin") could have many users who belong to it. Let's modify our solution to have a reference on the Roles side of the relationship to all the Users who have that Role:</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'role' => [
+            'model' => 'Role'
+        ]
+    ];
+
+    public function __construct($name = null)
+    {   parent::__construct();
+        $this->name = $name;
+    }
+}
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+class Role extends \Cora\Model {
+    // Set collection access key
+    public $model_collection_offset = 'name';
+
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'users' => [
+            'models' => 'User',
+            'via' => 'role'
+        ]
+    ];
+
+    public function __construct($name = null)
+    {   parent::__construct();
+        $this->name = $name;
+    }
+}
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<p>A User has a single Role, but a Role can have multiple Users. Calling <code>$user-&gt;role</code> will return a single Role model (if one has been assigned), while calling <code>$role-&gt;users</code> will return a collection that may have any number of Users within it. </p>
+<p>The "via" descriptor tells ADM which column on the Users table to look at when fetching users. Let's say the "admin" role has an ID number of 3 in the roles table. "via" tells ADM to look at the users table via the "role" column and find all the users who have a value of 3 for their role. What you're saying is "grab me all the related users via this column".</p>
+<p>For one more example, let's view a User and a Comment model. This time the plural side will be on the Users model (a user can have many comments) while the singular side is with the comment (a comment can only have one owner who made it).</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'comments' => [
+            'models' => 'Comment',
+            'via' => 'madeBy'
+        ]
+    ];
+
+    public function __construct($name = null)
+    {   parent::__construct();
+        $this->name = $name;
+    }
+}
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+class Comment extends \Cora\App\Model {
+    public $model_attributes = [ 
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'madeBy' => [
+            'model' => 'User'
+        ],
+        'timestamp' => [
+            'type' => 'datetime'
+        ],
+        'text' => [
+            'type' => 'text'
+        ]
+    ];
+
+    public function __construct($madeBy = null, $text = null)
+    {
+        $this->madeBy = $madeBy;
+        $this->text = $text;
+    }
+}
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<h2 id="one-to-many-via-relation-table">One-to-Many via Relation Table</h2>
+<p>Below is an example of a one-to-many relationship between a User (a user can have many Articles they've written) and and some Articles (an article can only have a single author).</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'articles' => [
+            'models' => 'Article',
+            'relName' = 'userArticle'
+        ]
+    ];
+}
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+class Article extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'author' => [
+            'model' => 'User',
+            'usesRefTable' => true,
+            'relName' = 'userArticle'
+        ]
+    ];
+}
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<p>As discussed in previous sections, you have to force the singular side of the relationship to use a reference table. Then defining the relationship name is so that both sides of the relationship use the same table. Another option is explicitly defining the relation table name using "relTable", but see the many-to-many via relation table section for more info on that.</p>
+<h2 id="one-to-many-via-abstract">One-to-Many via Abstract</h2>
+<p>Most relationships between models tend to be explicit. A User has X role as defined by their role ID. A Topic has X comments, where each comment is related to a topic by the topic's ID. Model X is related to model Y via a relation table that says ID A on table X is related to ID B on table Y. All these are explicit connections.</p>
+<p>However, there very well might be situations where the relationship is somewhat abstract and not explicitly defined. An example might be getting users from the same city:</p>
+<pre><code class="php">$user = $usersRepository-&gt;find(1); // Grab user #1
+foreach ($user-&gt;usersFromSameCity as $person) {
+    echo $person-&gt;name.&quot;&lt;br&gt;&quot;;
+}
+</code></pre>
+
+<p>Could you keep a giant relation table that maps every user to every other user in the same city? Possibly. Would it be a rediculous solution? Yes. Yes, it would.</p>
+<p>A better solution is to use a method to define some sort of custom relationship. This is done via the "using" descriptor on an attribute. The value should be the name of the method that will define the relationship.</p>
+<pre><code class="php">class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' =&gt; [
+            'type'          =&gt; 'int',
+            'primaryKey'    =&gt; true
+        ],
+        'name' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'city' =&gt; [
+            'type' =&gt; 'varchar'
+        ],
+        'usersFromSameCity' =&gt; [
+            'models' =&gt; 'User',
+            'using' = '_similarUsers'
+        ]
+    ];
+
+    protected function _similarUsers($query) {
+        // (This query will be executed against the Users table)
+
+        // Specify that we only want Users who are from the same city
+        $query-&gt;where('city', $this-&gt;city);
+
+        // Exclude the current user from the results.
+        $query-&gt;where('id', $this-&gt;id, '&lt;&gt;');
+
+        // Now that our custom restrictions have been defined, return the query.
+        return $query;
+    }
+}
+</code></pre>
+
+<h2 id="many-to-many-via-relation-table">Many-to-Many via Relation Table</h2>
+<h3 id="default-table-names-same-database">Default Table Names, Same Database</h3>
+<p>This case uses ADM's default settings and would likely only be useful to someone that is generating their database from the models. We're also saying that both these models are located in the same database for this example.</p>
+<p>For this example let's pretend we're operating a collaborative blogging site that let's multiple users author the same article together. This is a many-to-many relationship in that a User can have multiple articles they've written and an Article can have multiple Users that helped write it.</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'articles' => [
+            'models' => 'Article',
+            'relName' => 'authorArticle'
+        ]
+    ];
+}
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+class Article extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'authors' => [
+            'models' => 'User',
+            'relName' => 'authorArticle'
+        ]
+    ];
+}
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<p>One quick thing of note is the "relName" (relationship name) field. Why did we need this? The answer in short is that we needed that because we want both sides of the relationship to use the same relation table. If we edit an Article's authors, we want that change to also be reflected in the list of Articles a user has written if the data gets pulled from the User side of the relationhip. If we didn't put this in then the User side of the relationship would pull from a table named </p>
+<pre><code class="php">ref_users__articles__articles
+</code></pre>
+
+<p>and the Article side would have pulled from a relation table named </p>
+<pre><code class="php">ref_users__authors__article
+</code></pre>
+
+<p>See the section of this document related to Default Table Names for more info.</p>
+<p>Another option to solve the above problem is we could have explicitly set the full name of the relation table with the "relTable" setting. You can see that in action in this section by looking at the "Custom Table Names" use case.</p>
+<p>[Picture of Tables]</p>
+<h3 id="default-table-names-different-database">Default Table Names, Different Database</h3>
+<p>Let's use the same collaborative blogging site example from above, only this time let's have the Articles live in a different database from the Users. This setup is almost identical, the exception being you have to tell ADM which database to use for the relation table. This is done by specifying one side of the relationship as the "passive" side. ADM will then know not to use this "passive" side when looking for the relation table.</p>
+<p>The Article model is defined as using connection 'DB2'. Because no $model_connection attribute is defined on the User model, it will use the default connection as defined in your app's database config file.</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'articles' => [
+            'models' => 'Article'
+        ]
+    ];
+}
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+class Article extends \Cora\Model {
+    public $model_connection = 'DB2';
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'authors' => [
+            'models' => 'User',
+            'passive' => true
+        ]
+    ];
+}
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<p>It's worth noting that we didn't need the "relName" setting this time. Because we're forcing the relationship to be controlled by one side, ADM knows to use the same relation table for both sides.</p>
+<p>[Picture of Tables]</p>
+<h3 id="custom-table-names-pre-existing-database">Custom Table Names, Pre-Existing Database</h3>
+<p>For many of you reading this, you'll either already have a database schema setup that you need to adhere to, or you'll just want to setup the database yourself without any sort of auto-generation or consideration of models. In these cases you'll need the flexibility to map the model to the database as it already exists. Here we show how to tell ADM which table to use for the relations, and also which columns in that table have the IDs for each side of the relationship.</p>
+<p>Notice that "relThis" and "relThat" swap depending on which side of the relationship you're looking at.</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'articles' => [
+            'models' => 'Article',
+            'relTable' => 'users_articles',
+            'relThis' => 'user_id',
+            'relThat' => 'article_id'
+        ]
+    ];
+}
+</code></pre>
+        </td>
+        <td>
+<pre><code class="php">
+class Article extends \Cora\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'authors' => [
+            'models' => 'User',
+            'relTable' => 'users_articles',
+            'relThis' => 'article_id',
+            'relThat' => 'user_id'
+        ]
+    ];
+}
+</code></pre>
+        </td>
+    </tr>
+</table>
+
+<p>[Picture of Tables]</p>
+<h3 id="special-case-same-type">Special Case, Same Type</h3>
+<p>Let's talk about the special case where a model has a relationship with other models of the same type and you're using a relation table. For instance, a User might have some relationship to other Users that you need to represent.</p>
+<p>In this example we'll say a user has "friends" who are other users.</p>
+<table class="codeCompare">
+    <tr>
+        <td>
+<pre><code class="php">
+class User extends \Cora\App\Model {
+    public $model_attributes = [
+        'id' => [
+            'type'          => 'int',
+            'primaryKey'    => true
+        ],
+        'name' => [
+            'type' => 'varchar'
+        ],
+        'friends' => [
+            'models' => 'User',
+            'relTable' => 'ref_users_friends',
+            'relThis' => 'user_id',
+            'relThat' => 'friend_id'
+        ]
+    ];
+}
+</code></pre>
+        </td>
+        <td>
+<pre>
+<code class="php">
+// In this edge case there is no 2nd model. The User is getting related to other users.
+</code>
+</pre>
+        </td>
+    </tr>
+</table>
+
+<h2 id="default-table-names">Default Table Names</h2>
+<p>The default reference table name is "ref_" followed by the namespace of the first model with plural "s" on the end, then a double underscore, then the name of the relationship, then a double underscore, and the namespace of the second model (likewise plural). Each piece of a namespace is separated by a single underscore "_". </p>
+<div class="text-blue">For example:</div>
+
+<p>Relating a User model to a number of Users\Comment models where the relationvia relation table would default to "ref_users__users_comments".</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../../js/highlight.pack.js"></script>
+        <script>var base_url = '../../../..';</script>
+        <script data-main="../../../../mkdocs/js/search.js" src="../../../../mkdocs/js/require.js"></script>
+        <script src="../../../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

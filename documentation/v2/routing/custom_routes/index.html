@@ -111,60 +111,66 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">AmBlend ORM</a>
+    <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../../amblend/overview/">Overview</a>
+    <a href="../../ADM/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/implementation/">Implementation</a>
+    <a href="../../ADM/implementation/">Implementation</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/repository/">Repository</a>
+    <a href="../../ADM/model/">Model</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/model/">Model</a>
+    <a href="../../ADM/relationships/">Model Relationships</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/gateway/">Gateway</a>
+    <a href="../../ADM/repository/">Repository</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/factory/">Factory</a>
+    <a href="../../ADM/gateway/">Gateway</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/lifecycle/">Lifecycle Callbacks</a>
+    <a href="../../ADM/factory/">Factory</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/database_gen/">Automated DB Creation</a>
+    <a href="../../ADM/lifecycle/">Lifecycle Callbacks</a>
 </li>
 
         
             
 <li >
-    <a href="../../amblend/opt_locking/">Optimistic Locking</a>
+    <a href="../../ADM/database_gen/">Automated DB Creation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../ADM/opt_locking/">Optimistic Locking</a>
 </li>
 
         
@@ -731,7 +737,7 @@ exists, but they aren't being given access, while preMatch can hide the existanc
 <p>So the "args" callback is an interesting feature and I haven't made up my mind on whether it's really 
 useful... but I'll explain the reasoning behind it and how it works, and let you be the judge.</p>
 <p>Normally, Controllers can't really be unit tested, as they just handle user input, pass off logic processing to other backend classes (which can be unit tested), and return some output. If you are testing the controllers, it's probably through a front-end tool like Selenium. The thought I had, which inspired this feature, was what I could do to make Controllers more testable by way of unit testing. </p>
-<p>In developing apps... depending on how thin I made the controllers, the usage of the AmBlend ORM, etc, I could get in situations where I felt like unit testing the controller made sense as opposed to making the controller method any thinner. Here's a hypothetical example below where I use AmBlend to grab data models and I return them as JSON:</p>
+<p>In developing apps... depending on how thin I made the controllers, the usage of the ADM ORM, etc, I could get in situations where I felt like unit testing the controller made sense as opposed to making the controller method any thinner. Here's a hypothetical example below where I use ADM to grab data models and I return them as JSON:</p>
 <pre><code class="php">public function index($category, $year, $month)
 {
     // Grab database query object

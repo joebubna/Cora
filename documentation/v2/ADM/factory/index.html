@@ -9,7 +9,7 @@
         
         <link rel="shortcut icon" href="../../../../img/favicon.ico">
 
-	<title>Gateway - Cora Framework Documentation</title>
+	<title>Factory - Cora Framework Documentation</title>
 
         <link href="../../../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../../../css/font-awesome-4.0.3.css" rel="stylesheet">
@@ -111,7 +111,7 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">AmBlend ORM</a>
+    <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
         
             
@@ -128,25 +128,31 @@
         
             
 <li >
+    <a href="../model/">Model</a>
+</li>
+
+        
+            
+<li >
+    <a href="../relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li >
     <a href="../repository/">Repository</a>
 </li>
 
         
             
 <li >
-    <a href="../model/">Model</a>
+    <a href="../gateway/">Gateway</a>
 </li>
 
         
             
 <li class="active">
-    <a href="./">Gateway</a>
-</li>
-
-        
-            
-<li >
-    <a href="../factory/">Factory</a>
+    <a href="./">Factory</a>
 </li>
 
         
@@ -375,12 +381,12 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../model/">
+                    <a rel="next" href="../gateway/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../factory/">
+                    <a rel="prev" href="../lifecycle/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -394,36 +400,40 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#gateway-class">Gateway Class</a></li>
+        <li class="main active"><a href="#factory-class">Factory Class</a></li>
         
     
-        <li class="main "><a href="#creating-a-gateway">Creating a Gateway</a></li>
+        <li class="main "><a href="#creating-a-factory">Creating a Factory</a></li>
         
     
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="gateway-class">Gateway Class</h1>
-<p>The Gateway directly interacts with the persistence layer (databases, files) to
-grab and return data. It takes a request form a Repository, figures out how to
-grab the needed info, and then returns that info to the Repository.</p>
-<h1 id="creating-a-gateway">Creating a Gateway</h1>
-<p>Normally you shouldn't be creating Gateways yourself. If you refer to the
+<h1 id="factory-class">Factory Class</h1>
+<p>The Factory takes an array of info and turns it into objects. It's use within
+ADM is to receive from the Repository some data grabbed from the persistence
+layer via the Gateway. It then turns this data into one or more objects and
+gives these objects back to the Repository.</p>
+<h1 id="creating-a-factory">Creating a Factory</h1>
+<p>Normally you shouldn't be creating Factories yourself. If you refer to the
 Repository documentation and use the recommended Repository creation method of
-utilizing the RepositoryFactory class, then it will create a Gateway for you
+utilizing the RepositoryFactory class, then it will create a Factory for you
 and handle passing it off to the Repository.</p>
-<p>If for some reason you do need to create your own Gateway object and you're
-using Cora's default Gateway, then do so like this:</p>
-<pre><code class="php">$db = \Cora\Database::getDb('name_of_db_connection_to_use');
-$gateway = new Gateway($db);
+<p>If for some reason you do need to create your own Factory object and you're
+using Cora's default Factory, then do so like this:</p>
+<pre><code class="php">// Create a User factory
+$factory = new Factory('User');
 </code></pre>
 
-<p>Optionally you can include a couple extra arguments in the form of setting the
-table to use and the unique identifying field of records in that table if it's
-something other than 'id':</p>
+<p>Optionally you can include a 2nd argument in the form of a Cora database adaptor.
+If you do this, the adaptor will get passed on to any objects created by the Factory.
+The reason for this is when you want to override the default database for a model.
+If for instance you have a model that normally is found in your main database, but
+for unit testing you want to use a separate test database, you can pass in a connection
+to the test database this way so it gets used.</p>
 <pre><code class="PHP">$db = \Cora\Database::getDb('name_of_db_connection_to_use');
-$gateway = new Gateway($db, 'users', 'email');
+$factory = new Factory('User', $db);
 </code></pre></div>
         </div>
 

@@ -111,60 +111,66 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">AmBlend ORM</a>
+    <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
         
             
 <li >
-    <a href="../amblend/overview/">Overview</a>
+    <a href="../ADM/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../amblend/implementation/">Implementation</a>
+    <a href="../ADM/implementation/">Implementation</a>
 </li>
 
         
             
 <li >
-    <a href="../amblend/repository/">Repository</a>
+    <a href="../ADM/model/">Model</a>
 </li>
 
         
             
 <li >
-    <a href="../amblend/model/">Model</a>
+    <a href="../ADM/relationships/">Model Relationships</a>
 </li>
 
         
             
 <li >
-    <a href="../amblend/gateway/">Gateway</a>
+    <a href="../ADM/repository/">Repository</a>
 </li>
 
         
             
 <li >
-    <a href="../amblend/factory/">Factory</a>
+    <a href="../ADM/gateway/">Gateway</a>
 </li>
 
         
             
 <li >
-    <a href="../amblend/lifecycle/">Lifecycle Callbacks</a>
+    <a href="../ADM/factory/">Factory</a>
 </li>
 
         
             
 <li >
-    <a href="../amblend/database_gen/">Automated DB Creation</a>
+    <a href="../ADM/lifecycle/">Lifecycle Callbacks</a>
 </li>
 
         
             
 <li >
-    <a href="../amblend/opt_locking/">Optimistic Locking</a>
+    <a href="../ADM/database_gen/">Automated DB Creation</a>
+</li>
+
+        
+            
+<li >
+    <a href="../ADM/opt_locking/">Optimistic Locking</a>
 </li>
 
         
@@ -375,7 +381,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../amblend/opt_locking/">
+                    <a rel="next" href="../ADM/opt_locking/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -402,11 +408,13 @@
         
             <li><a href="#create-from-associative-array">Create From Associative Array</a></li>
         
-            <li><a href="#performance-optimizations">Performance Optimizations</a></li>
+            <li><a href="#create-from-object-array">Create From Object Array</a></li>
         
             <li><a href="#using-data-keys">Using Data Keys</a></li>
         
-            <li><a href="#why-object-syntax">Why Object Syntax?</a></li>
+            <li><a href="#utility-methods">Utility Methods</a></li>
+        
+            <li><a href="#performance-optimizations">Performance Optimizations</a></li>
         
             <li><a href="#warning-about-mixing-closures-with-other-types">Warning About Mixing Closures With Other Types</a></li>
         
@@ -416,19 +424,165 @@
             <div class="col-md-9" role="main">
 
 <h1 id="collections">Collections</h1>
-<p>Cora's Collection class is meant to be a substitute for arrays and gives you much more control over 
+<p><span class="text-green">
+Cora's Collection class is meant to be a substitute for arrays and gives you much more control over 
 your data. You can either store items of the same type (recommended) or items of mixed type (have to 
-be careful). Under the hood it makes efforts to optimize the fetching and counting of data.</p>
+be careful). Under the hood it makes efforts to optimize the fetching and counting of data.
+</span></p>
 <h2 id="introduction">Introduction</h2>
+<p><span class="subTitle-h2">A few quick examples to spark interest</span></p>
+<p>Cora Collections are:</p>
 <ul>
-<li>Fast</li>
-<li>Flexible</li>
-<li>Easy</li>
+<li><span class="text-green">Fast</span> (speed comparable to standard arrays)</li>
+<li><span class="text-green">Flexible</span> (many different types of syntax you can use)</li>
+<li><span class="text-green">Easy</span> (things just work the way you'd expect)</li>
 </ul>
-<p>cool examples</p>
-<p>direct offset assignment</p>
-<p>reference speed tests</p>
-<p>used for closures too</p>
+<h3 id="example-1-smooth-object-to-collection-transitions">Example #1 - Smooth Object to Collection Transitions</h3>
+<p>Rather than force developers to use a PSR-11 style get() method to access items, I wanted to do something that would flow better when working with data (although you can still use get() if you want).</p>
+<p>Role in this example is a simple object with a name property and an associated access level you can set through the constructor. The second argument passed to our Collection tells it to index the items using each Role's name. This allows us to easily access the data in a symantically friendly way:</p>
+<pre><code class="php">$roles = new \Cora\Collection([
+    new Role('user', 1),
+    new Role('admin', 2),
+    new Role('developer', 3)
+], 'name');
+
+echo $roles-&gt;admin-&gt;accessLevel;        // Returns 2 - Using Object syntax
+echo $roles-&gt;get('admin')-&gt;accessLevel; // Returns 2 - Using PSR11 standard syntax
+</code></pre>
+
+<p>Under the hood, both the approaches above do the same thing, but the first hides the fact a function call is happening in order to provide a more seemless experience. To really see the power of this approach it's necessary to wire up multiple pieces of data together which we'll do next. This starts to get at the heart of why this Collection class was designed, which was to provide an innovative approach to manipulating highly interconnected data using Cora's ORM.</p>
+<pre><code class="php">// Setup some data we can play with
+$users = new \Cora\Collection([
+    (object) ['name'=&gt;'bob', 'age'=&gt;32],
+    (object) ['name'=&gt;'jim', 'age'=&gt;62],
+    (object) ['name'=&gt;'luann', 'age'=&gt;58]
+], 'name');
+
+$roles = new \Cora\Collection([
+    (object) ['name'=&gt;'user', 'accessLevel'=&gt;1],
+    (object) ['name'=&gt;'admin', 'accessLevel'=&gt;2],
+    (object) ['name'=&gt;'developer', 'accessLevel'=&gt;3]
+], 'name');
+
+// Setup relationship between one user and another
+$users-&gt;bob-&gt;father = $users-&gt;jim;
+
+// Setup relationship between roles and users
+$roles-&gt;admin-&gt;peopleWithThisPermission = new \Cora\Collection([$users-&gt;bob, $users-&gt;luann], 'name');
+
+// Show how we can chain stuff together (exaggerated example)
+echo $roles-&gt;admin-&gt;peopleWithThisPermission-&gt;bob-&gt;father-&gt;name;                // Returns &quot;jim&quot;
+echo $roles-&gt;get('admin')-&gt;peopleWithThisPermission-&gt;get('bob')-&gt;father-&gt;name;  // Returns &quot;jim&quot;
+
+// loop (more typical usage example)
+foreach ($roles-&gt;admin-&gt;peopleWithThisPermission as $user) {
+  echo $user-&gt;name; // Returns &quot;bob&quot; and &quot;luann&quot;
+}
+</code></pre>
+
+<p>The object syntax provided by the Cora Collection class allows you to write code that feels cohesive when interweaving calls to collections of objects and individual objects together.</p>
+<h3 id="example-2-direct-offset-assignment">Example #2 - Direct Offset Assignment</h3>
+<p>Another thing you may find refreshing about the Cora collection class is the way in which you can add things to the collection. While other collection classes may require you call "push()" or "add()" to add additional things to the collection, Cora Collections give you the option to do direct assignment when it makes sense.</p>
+<pre><code class="php">$items = new \Cora\Collection();
+$items-&gt;thing1 = 'A Hat';
+$items-&gt;thing2 = 'Subglasses';
+
+echo $items-&gt;thing1; // Returns &quot;A Hat&quot;;
+foreach ($items as $item) {
+  echo $item; // Returns both items
+}
+</code></pre>
+
+<p>If you read up on our Dependency Injection documentation, it's actually a derivative of this Collection class that provides the underlying container for it.</p>
+<pre><code class="php">$app = new \Cora\Collection();
+
+$app-&gt;resource1 = function($app) {
+  $user = new \stdClass();
+  $user-&gt;name = 'Bob';
+  return $user;
+};
+
+$app-&gt;resource2 = function($app) {
+  return ['item1', 'item2'];
+};
+
+// Simulating a 3rd resource that has a dependency on Resource #2
+$app-&gt;resource3 = function($app) {
+  return new \Cora\Collection($app-&gt;resource2);
+};
+
+echo $app-&gt;resource1-&gt;name; // Returns &quot;Bob&quot;;
+echo $app-&gt;resource1()-&gt;name; // Returns &quot;Bob&quot;;
+
+foreach ($app-&gt;resource3 as $item) {
+  echo $item; // Returns &quot;item1&quot; and &quot;item2&quot;
+}
+</code></pre>
+
+<p>Note that by default the Collection will attempt to execute Closures when they are the resource fetched unless you tell it not to. That's why the example above has the same result with and without the parenthesis. That might seem a little strange at first thought, but the reason is to yet again facilitate a smooth object syntax:</p>
+<pre><code class="php">// Friendly syntax. Returns 'item1'
+echo $app-&gt;resource3[0];
+echo $app-&gt;resource3-&gt;off0;
+
+// Less friendly
+echo $app-&gt;resource3()[0]; 
+echo $app-&gt;resource3()-&gt;off0;
+</code></pre>
+
+<p>When a Closure is executed by the collection, an instance of the collection is passed in as the first argument. That's how resource 3 was able to have a dependency on another Collection item. If you don't want this behavior (the auto-execution of Closures and passing in first argument) you can tell the collection not to execute them via:</p>
+<pre><code class="php">$collection-&gt;returnClosure(true);   // Don't execute closure automatically
+</code></pre>
+
+<p>For more on Dependency Injection you can read our article regarding it.</p>
+<h3 id="example-3-inheritance">Example #3 - Inheritance</h3>
+<p>It's possible to create sub-collections within a collection and allow the sub collections to access the items present in the parent. To do so you just pass the parent collection in via the constructor.</p>
+<pre><code class="php">// Create parent collection
+$app = new \Cora\Collection();
+
+// Define resource on parent
+$app-&gt;resource1 = function($app) {
+  return ['item1', 'item2'];
+};
+
+// Create child collection, passing parent in constructor
+$app-&gt;subfolder = new \Cora\Collection($app);
+
+// Define resource in child that depends on resource in parent
+$app-&gt;subfolder-&gt;resource3 = function($app) {
+  return new \Cora\Collection($app-&gt;resource1);
+};
+
+foreach ($app-&gt;subfolder-&gt;resource3 as $item) {
+  echo $item; // Returns &quot;item1&quot; and &quot;item2&quot;
+}
+</code></pre>
+
+<h3 id="speed-tests">Speed Tests</h3>
+<p>The following tests were done using Cora model objects as the items. The sort method for the standard PHP sort test was done using "usort". Laravel and Cora use the same algorithm for sorting, so no comparison between them was necessary for sorting.</p>
+<p><span class="text-green">Adding 30000 items to:</span>   </p>
+<pre><code>Standard PHP Array  = 0.0063 seconds 
+stdClass object     = 0.0172 seconds  
+Laravel Collection  = 0.0988 seconds 
+Cora Collection     = 0.1331 seconds        
+</code></pre>
+
+<p><span class="text-green">Accessing all 30000 items:</span>   </p>
+<pre><code>Standard PHP Array  = 0.0047 seconds
+Cora Collection     = 0.0823 seconds
+Laravel Collection  = 0.1005 seconds
+</code></pre>
+
+<p><span class="text-green">Counting all 30000 items 30000 times:</span>   </p>
+<pre><code>Standard PHP Array  = 0.0237 seconds
+Cora Collection     = 0.0324 seconds
+Laravel Collection  = 0.0577 seconds
+</code></pre>
+
+<p><span class="text-green">Sorting all 30000 items:</span>    </p>
+<pre><code>Cora Collection     = 0.4270 seconds
+Standard PHP Array  = 0.6603 seconds
+</code></pre>
+
 <h2 id="create-from-simple-array">Create From Simple Array</h2>
 <p><span class="subTitle-h2">How to turn a basic array of items into a Collection object</span></p>
 <pre><code class="php">$c = new \Cora\Collection([1,2,3,4,5]);
@@ -448,7 +602,7 @@ Make sure to check for a potentially null return as necessary when using this cl
 
 <p>You probably noticed that there's a bunch of different ways to access the same data via offsets. This is because 
 different interfaces this class tries to be compatible with use different terminology. This first example was just 
-for completeness; in the rest of this document we'll only use the array style and object property access styles.</p>
+for completeness; in the rest of this document we'll only show examples that feel appropriate.</p>
 <h2 id="create-from-associative-array">Create From Associative Array</h2>
 <p><span class="subTitle-h2">How to turn a basic array of items into a Collection object</span></p>
 <pre><code class="php">$c = new \Cora\Collection([&quot;one&quot; =&gt; 1, &quot;two&quot; =&gt; 2, &quot;three&quot; =&gt; 3, &quot;four&quot; =&gt; 4, &quot;five&quot; =&gt; 5]);
@@ -465,6 +619,34 @@ echo $c-&gt;five;          // Returns &quot;5&quot;. Direct Object access format
 
 <p>The two different Object style access options both work well, but a discussion into the difference 
 (internally) will be covered in the section on performance optimizations.</p>
+<h2 id="create-from-object-array">Create From Object Array</h2>
+<p><span class="subTitle-h2">How to turn a basic array of objects into a Collection object</span></p>
+<p>Below you'll find the most basic example of loading objects into a Collection. However, this does NOT showoff the cool features of Collections. See the Introduction or the "Why Object Syntax" sections for examples that much neater.</p>
+<pre><code class="php">$rolesList = new \Cora\Collection([
+    new \Models\Role('User'),
+    new \Models\Role('Admin'),
+    new \Models\Role('Developer')
+];
+echo $c[1]-&gt;name;        // Returns &quot;Admin&quot;
+echo $c-&gt;off1-&gt;name;     // Returns &quot;Admin&quot;
+</code></pre>
+
+<h2 id="using-data-keys">Using Data Keys</h2>
+<pre><code class="php">$c = new \Cora\Collection([
+    [&quot;name&quot; =&gt; &quot;Jake&quot;, &quot;age&quot; =&gt; 33],
+    [&quot;name&quot; =&gt; &quot;Bob&quot;, &quot;age&quot; =&gt; 42]
+], 'name');
+echo $c['Bob']['age'];  // Returns &quot;5&quot;. Standard array access format.
+echo $c-&gt;Bob['age'];    // Returns &quot;5&quot;. Object access syntax.
+</code></pre>
+
+<p>When dealing with associative arrays or objects, you can optionally pass in a second argument to a Collection to make the items accessible by that identifier. In the example above, we used "name" as the key and so were able to grab Bob by 
+his name directly.</p>
+<p>If the key is not unique, the last item using that key will be the one returned.</p>
+<h2 id="utility-methods">Utility Methods</h2>
+<p>map</p>
+<p>filter</p>
+<p>where</p>
 <h2 id="performance-optimizations">Performance Optimizations</h2>
 <p><span class="subTitle-h2">The tricks used to make Cora Collections fast</span></p>
 <p>Earlier we had an example (shown again below) in which there was two different ways to access 
@@ -573,7 +755,7 @@ but the efficiency stays in O(1). This is how access times are kept low and comp
 <p>Of course, this means we have to compute some data any time the content of our Collection changes. Which brings us to the next optimization...</p>
 <h3 id="optimization-2-data-computed-only-when-needed">Optimization #2: Data Computed Only When Needed</h3>
 <p>So without going into all the details, it's been established so far that there's computed data stored within a 
-Collection instance. One of the pieces of computed data is the contentKeys lookup that enables efficient lookup 
+Collection instance. One of the pieces of computed data is the contentKeys array that enables efficient lookup 
 of collection items no matter if you use a key or an offset number. What's important is that this table gets computed
 only when necessary. Let's execute the following code:</p>
 <pre><code class="php">// Add a new item to our collection
@@ -606,7 +788,7 @@ is despite the fact that we added a new item to our collection:</p>
 
 <p>The reason for this is that the keys are NOT recomputed automatically when you add a new item to the collection. Same goes for 
 grabbing the item by its name. Neither of those actions required use of the key lookup array, and so the work to recompute it 
-wasn't bothered with. When a collection is modified, is simply sets a flag internally, and when an action is taken that requires 
+wasn't bothered with. When a collection is modified, it simply sets a flag internally, and when an action is taken that requires 
 data be recomputed, THEN it will do it.</p>
 <p>Let's try grabbing the new item 6 by numerical offset. That should cause the keys to get recomputed.</p>
 <pre><code class="php">echo $collection[5];
@@ -634,23 +816,6 @@ data be recomputed, THEN it will do it.</p>
 <p>And sure enough, there's our new item in the keys array.</p>
 <p>So to summarize, computed data should only get re-computed when necessary and will get avoided for efficiency's sake 
 whenever possible.</p>
-<h2 id="using-data-keys">Using Data Keys</h2>
-<pre><code class="php">$c = new \Cora\Collection([
-    [&quot;name&quot; =&gt; &quot;Jake&quot;, &quot;age&quot; =&gt; 33],
-    [&quot;name&quot; =&gt; &quot;Bob&quot;, &quot;age&quot; =&gt; 42]
-], 'name');
-echo $c['Bob']['age'];  // Returns &quot;5&quot;. Standard array access format.
-echo $c-&gt;Bob['age'];    // Returns &quot;5&quot;. Object access syntax.
-</code></pre>
-
-<h2 id="why-object-syntax">Why Object Syntax?</h2>
-<pre><code class="php">$c = new \Cora\Collection([
-    [&quot;name&quot; =&gt; &quot;Jake&quot;, &quot;age&quot; =&gt; 33],
-    [&quot;name&quot; =&gt; &quot;Bob&quot;, &quot;age&quot; =&gt; 42]
-], 'name');
-echo $c-&gt;Bob-&gt;age;          // Returns &quot;5&quot;. Object access format.
-</code></pre>
-
 <h2 id="warning-about-mixing-closures-with-other-types">Warning About Mixing Closures With Other Types</h2>
 <p>Closures won't be mixed with Singletons in the order they were added when mixed together to form
 the "content" array. So $object-&gt;off5 might not give you the expected result. When mixing Closures 

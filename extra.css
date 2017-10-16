@@ -1,3 +1,9 @@
+/*
+    Green/aqua colors I like:
+    #109279 for Selected Items / Headers
+    #18bc9c for regular shade
+*/
+
 div[role="main"] {
     font-size: 1.25em;
 }
@@ -90,6 +96,19 @@ table.tg tr th.center { text-align: center; }
     content: '';
 }
 
+
+/* //////////////////////////////////////////
+// Special Tables
+////////////////////////////////////////// */
+
+.codeCompare {
+    border: none;
+}
+
+.codeCompare td {
+    width: 50%;
+    border: none;
+}
 
 /* //////////////////////////////////////////
 // MOBILE STYLES

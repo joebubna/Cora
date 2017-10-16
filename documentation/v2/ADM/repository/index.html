@@ -111,7 +111,7 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">AmBlend ORM</a>
+    <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
         
             
@@ -127,14 +127,20 @@
 
         
             
-<li class="active">
-    <a href="./">Repository</a>
+<li >
+    <a href="../model/">Model</a>
 </li>
 
         
             
 <li >
-    <a href="../model/">Model</a>
+    <a href="../relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li class="active">
+    <a href="./">Repository</a>
 </li>
 
         
@@ -375,12 +381,12 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../implementation/">
+                    <a rel="next" href="../relationships/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../model/">
+                    <a rel="prev" href="../gateway/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -491,10 +497,10 @@ a Test database for testing purposes.</li>
     an advanced developer interested in writing your own Gateway implementations.
 </div>
 
-<p>AmBlend is
+<p>ADM is
 built using Cora's Database class, and since most apps probably only use a single
 database, part of the database setup process is setting a "default connection".
-When fetching models, if no particular connection is specified in the model definition, AmBlend
+When fetching models, if no particular connection is specified in the model definition, ADM
 will default to using the default connection. In order to make this typical use case more
 efficient, the Database class stores an instance of the default DB as a static data member.
 When a database operation involving the default database is performed, this statically stored

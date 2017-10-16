@@ -9,7 +9,7 @@
         
         <link rel="shortcut icon" href="../../../../img/favicon.ico">
 
-	<title>Optimistic Locking - Cora Framework Documentation</title>
+	<title>Gateway - Cora Framework Documentation</title>
 
         <link href="../../../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../../../css/font-awesome-4.0.3.css" rel="stylesheet">
@@ -111,7 +111,7 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">AmBlend ORM</a>
+    <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
         
             
@@ -128,19 +128,25 @@
         
             
 <li >
-    <a href="../repository/">Repository</a>
-</li>
-
-        
-            
-<li >
     <a href="../model/">Model</a>
 </li>
 
         
             
 <li >
-    <a href="../gateway/">Gateway</a>
+    <a href="../relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../repository/">Repository</a>
+</li>
+
+        
+            
+<li class="active">
+    <a href="./">Gateway</a>
 </li>
 
         
@@ -163,8 +169,8 @@
 
         
             
-<li class="active">
-    <a href="./">Optimistic Locking</a>
+<li >
+    <a href="../opt_locking/">Optimistic Locking</a>
 </li>
 
         
@@ -375,12 +381,12 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../database_gen/">
+                    <a rel="next" href="../repository/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../../collections/">
+                    <a rel="prev" href="../factory/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -394,11 +400,37 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
+        <li class="main active"><a href="#gateway-class">Gateway Class</a></li>
+        
+    
+        <li class="main "><a href="#creating-a-gateway">Creating a Gateway</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<p>Optimistic Locking</p></div>
+<h1 id="gateway-class">Gateway Class</h1>
+<p>The Gateway directly interacts with the persistence layer (databases, files) to
+grab and return data. It takes a request form a Repository, figures out how to
+grab the needed info, and then returns that info to the Repository.</p>
+<h1 id="creating-a-gateway">Creating a Gateway</h1>
+<p>Normally you shouldn't be creating Gateways yourself. If you refer to the
+Repository documentation and use the recommended Repository creation method of
+utilizing the RepositoryFactory class, then it will create a Gateway for you
+and handle passing it off to the Repository.</p>
+<p>If for some reason you do need to create your own Gateway object and you're
+using Cora's default Gateway, then do so like this:</p>
+<pre><code class="php">$db = \Cora\Database::getDb('name_of_db_connection_to_use');
+$gateway = new Gateway($db);
+</code></pre>
+
+<p>Optionally you can include a couple extra arguments in the form of setting the
+table to use and the unique identifying field of records in that table if it's
+something other than 'id':</p>
+<pre><code class="PHP">$db = \Cora\Database::getDb('name_of_db_connection_to_use');
+$gateway = new Gateway($db, 'users', 'email');
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

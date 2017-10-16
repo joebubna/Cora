@@ -111,7 +111,7 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">AmBlend ORM</a>
+    <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
         
             
@@ -128,13 +128,19 @@
         
             
 <li >
-    <a href="../repository/">Repository</a>
+    <a href="../model/">Model</a>
 </li>
 
         
             
 <li >
-    <a href="../model/">Model</a>
+    <a href="../relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../repository/">Repository</a>
 </li>
 
         
@@ -413,6 +419,9 @@
             <li><a href="#enforcing-restrictions-on-a-data-member">Enforcing Restrictions on a Data Member</a></li>
         
     
+        <li class="main "><a href="#beforeget-gotchas">beforeGet() Gotchas</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
@@ -547,7 +556,7 @@ get saved to the database as such.</p>
 an object. Say you have some sort of "Comment" object representing comments users
 can leave on content on your site. Let's also say for this example that Users can
 upload files as an attachment to a comment and those files are stored in a separate
-table/collection with a reference back to the parent. When you tell AmBlend to delete
+table/collection with a reference back to the parent. When you tell ADM to delete
 the parent comment like so:</p>
 <pre><code class="php">$repo = \Cora\RepositoryFactory::make('Comment');
 $comment = $repo-&gt;find($id);
@@ -555,7 +564,7 @@ $comment-&gt;delete();
 </code></pre>
 
 <p>Any related children WILL NOT get automatically deleted along with it (because
-AmBlend can't safely assume that deleting all related objects is desired behavior)!
+ADM can't safely assume that deleting all related objects is desired behavior)!
 In order to avoid leaving unwanted orphans in the database, you can
 utilize the delete() callback to manually delete or reassign any related data.</p>
 <pre><code class="php">class Comment extends \Cora\Model {
@@ -586,7 +595,7 @@ utilize the delete() callback to manually delete or reassign any related data.</
 <p>Another area where callbacks could be useful is if you have a date in your model
 that is stored as a string in the "mm-dd-yyyy" format and you need to convert it
 to a "yyyy-mm-dd" string for insertion into a database.</p>
-<p>And before I give this example, let me just point out that AmBlend is meant to work
+<p>And before I give this example, let me just point out that ADM is meant to work
 well with php DateTime objects. If you grab a model using a Repository that
 has a "date" or "datetime" database field, that field will automatically get
 converted into a DateTime object for you when it's populated into your model.
@@ -639,7 +648,7 @@ then the following example could be useful to you:</p>
 User object is saved, and then swaps it back to its original mm-dd-yyyy format
 after the save is finished.</p>
 <h2 id="grab-date-in-particular-format">Grab Date in Particular Format</h2>
-<p>When AmBlend fetches date fields from a database, it converts them into php
+<p>When ADM fetches date fields from a database, it converts them into php
 DateTime objects. If you've used DateTime object before, then you probably know
 you can get their value formatting in a certain way by doing:</p>
 <pre><code class="php">echo $someDate-&gt;format('m-d-Y');
@@ -719,7 +728,11 @@ assigned to it. You can do this by utilizing the beforeSet() callback:</p>
         }
     }
 }
-</code></pre></div>
+</code></pre>
+
+<h1 id="beforeget-gotchas">beforeGet() Gotchas</h1>
+<p>All data members and attributes on a model are intended to be public. Models really shouldn't be hiding domain logic and shouldn't need private or protected data members. They are akin to fancy structs for those familar with the term.</p>
+<p>A potential gotcha is if you define a public data member on a model (since logically everything should be public) and then get confused as to why it's not triggering the callback if you access it. Public data members won't trigger the magic <strong>get() method that contains the callback logic. Only attempts to access normally inaccessible data will trigger </strong>get(). For this reason, you should define any computed or additional fields on a model that aren't part of the Attributes definition as protected and let the model make it accessible. Note: Any dynamically defined data members will also be public by default, and cause the same issue.</p></div>
         </div>
 
         <footer class="col-md-12">

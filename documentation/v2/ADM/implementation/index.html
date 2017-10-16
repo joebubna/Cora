@@ -111,7 +111,7 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">AmBlend ORM</a>
+    <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
         
             
@@ -128,13 +128,19 @@
         
             
 <li >
-    <a href="../repository/">Repository</a>
+    <a href="../model/">Model</a>
 </li>
 
         
             
 <li >
-    <a href="../model/">Model</a>
+    <a href="../relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../repository/">Repository</a>
 </li>
 
         
@@ -380,7 +386,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../repository/">
+                    <a rel="prev" href="../model/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -406,7 +412,7 @@
         <li class="main "><a href="#data-mapper-pattern">Data-Mapper Pattern</a></li>
         
     
-        <li class="main "><a href="#understanding-amblends-implementation">Understanding AmBlend's Implementation</a></li>
+        <li class="main "><a href="#understanding-adms-implementation">Understanding ADM's Implementation</a></li>
         
             <li><a href="#fetching-from-a-repository">Fetching from a Repository</a></li>
         
@@ -419,9 +425,9 @@
 
 <h1 id="implementation-details">Implementation Details</h1>
 <p>Obviously a developer can dig through the code to see exactly how things work, but as that's a more extreme measure most people probably
-don't bother with (and honestly AmBlend is kinda complicated),
-here's the general understanding of how AmBlend is implemented. We'll start by talking about the ActiveRecord and Data-Mapper
-patterns as those are an important segway into understanding the implementation of AmBlend.</p>
+don't bother with (and honestly ADM is kinda complicated),
+here's the general understanding of how ADM is implemented. We'll start by talking about the ActiveRecord and Data-Mapper
+patterns as those are an important segway into understanding the implementation of ADM.</p>
 <h1 id="orm-basics">ORM Basics</h1>
 <p>Alright, so first off, Object Relational Mapping only makes sense to use when you are doing object oriented programming. If you aren't familiar with OO programming,
 I'd recommend you look into it, as it makes keeping your app well organized way easier. Assuming however that you have a basic understanding of what objects are,
@@ -485,9 +491,9 @@ might have been to add a "save" method that executes some SQL (structured query 
 a user in the database when the save() method is called. Already you can see that this is quickly adding a lot of lines of code
 to our user model, and this is for a simple example which only contains a name and email. What's more, we haven't even added any code
 yet for fetching users from the database! We only added code to save a user.</p>
-<p>The goal of an ORM like AmBlend is to free you from having to implement methods to save and grab the model data from the database.
+<p>The goal of an ORM like ADM is to free you from having to implement methods to save and grab the model data from the database.
 This not only allows you to get rid of a lot of code clutter from your classes, it also saves you time by freeing you from having
-to implement error-prone, busy-work like writing all those SQL queries. Using AmBlend, your model and the controller code to create
+to implement error-prone, busy-work like writing all those SQL queries. Using ADM, your model and the controller code to create
 a new user would look something like this:</p>
 <pre><code class="php">class User extends \Cora\Model {
 
@@ -519,7 +525,7 @@ class Users extends \MyApp {
 </code></pre>
 
 <p>Let's quickly discuss ActiveRecord vs. Data-Mapper implementations
-which will then segway into how AmBlend is implemented in the next section.</p>
+which will then segway into how ADM is implemented in the next section.</p>
 <h1 id="activerecord-pattern">ActiveRecord Pattern</h1>
 <p>In terms of functionality, ActiveRecord basically works just like the example from the above section where I showed what your code might look like if you implemented
 handling database persistance on your own. The difference being that your model will extend from a base class that handles the database related logic for you.
@@ -618,7 +624,7 @@ You have the option of just passing the object to a different data mapper! Need 
 object to a different storage location? Using Data Mapper you can write the functionality to handle this without adding all sorts of unrelated logical clutter to your models!
 In these and other ways, the Data Mapper pattern is much more flexible than ActiveRecord.</p>
 <p>The downsides to this Data Mapper pattern are that it can be a little hard to understand and use, and it can require more setup time and thought because it doesn't necessarily have the 1-to-1 type of relationship with a database many AR implementations possess.</p>
-<h1 id="understanding-amblends-implementation">Understanding AmBlend's Implementation</h1>
+<h1 id="understanding-adms-implementation">Understanding ADM's Implementation</h1>
 <div class="alert alert-warning">
     WARNING: The following two paragraphs are chock-full of
     fancy terminology you may not understand. Don't freak out! Just keep reading
@@ -626,30 +632,30 @@ In these and other ways, the Data Mapper pattern is much more flexible than Acti
 </div>
 
 <p>Alright, with the understandings from the previous section in place, we're now
-ready to talk about how AmBlend implements object relational mapping. In short,
-AmBlend uses a generalized Repository-Gateway-Factory design pattern where the
+ready to talk about how ADM implements object relational mapping. In short,
+ADM uses a generalized Repository-Gateway-Factory design pattern where the
 Gateway (which acts as the mapper between the domain and the persistence layer) asks
 the model for various pieces of information about itself and the data it has ownership over.
 The Gateway does this via the utility methods the Cora Model class provides. This
 separation of concerns with the Gateway acting as the mapper between the persistence
 layer and the domain, is in-line with using a Data Mapper and provides
 you with all the benefits of that pattern.</p>
-<p>However, AmBlend, as discussed previously, is not just a pure Data-Mapper implementation,
-but instead a blend of both ActiveRecord and Data-Mapper. The goal of AmBlend is
+<p>However, ADM, as discussed previously, is not just a pure Data-Mapper implementation,
+but instead a blend of both ActiveRecord and Data-Mapper. The goal of ADM is
 to provide the ease of use ActiveRecord is famous for, but
 also the separation of concerns and flexibility that Data Mapper excels at.
-The way AmBlend accomplishes this is by using the repository-gateway-factory pattern
+The way ADM accomplishes this is by using the repository-gateway-factory pattern
 AND by having its models inherit methods from Cora's
 Model class. This inheritance is obviously similar to ActiveRecord, however,
 unlike AR, those methods do not directly interact with the persistence
 layer. Instead, they help other classes (particularly the Gateway) understand and
 use the attributes defined in the model. They also provide the model with
 knowledge of the repository's existence, so the model can ask the repository to
-fetch data dynamically (<a href="../../../../documentation/amblend/overview/#dynamic-loading">Click Here</a>
+fetch data dynamically (<a href="../../../../documentation/ADM/overview/#dynamic-loading">Click Here</a>
 to read about how that works).</p>
 <p>PHEWWW! Was that a mouthful or what? Hold on a sec, I think I need to cram a few
 more buzzwords in those two paragraphs... Seriously though, now that's I've given
-the highly compact description of how AmBlend works, let's slow down a bit and kinda
+the highly compact description of how ADM works, let's slow down a bit and kinda
 walk through it bit-by-bit.</p>
 <p>So there's really two different logic flows that are important for understanding exactly
 what's going on, the regular logic flow of fetching objects from a repository,
@@ -692,7 +698,7 @@ with the persistence layer and grab data from whatever database, or text file, o
 it needs to interact with in order to get you the raw data you need. It also interacts
 with the storage mediums to save objects when an object needs to be persisted.</li>
 <li><strong>The Factory:</strong> The Factory is a class that makes objects. If you have a "User" factory,
-then it's going to create User objects for you. In AmBlend, the Factory is given
+then it's going to create User objects for you. In ADM, the Factory is given
 the raw data (an array) from the Gateway and returns back objects.</li>
 </ul>
 <hr />
@@ -731,17 +737,17 @@ repository returns them. When a controller already has a Cora model and needs
 to grab a related object, that's when the logic built into the Cora model class
 kicks in to facilitate. The model looks at its own definition and any data passed
 in when it was created, and from those determines how to create a Repository to
-grab the needed related object. This is how AmBlend implements ActiveRecord like
+grab the needed related object. This is how ADM implements ActiveRecord like
 simplicity in fetching objects, while still maintaining separation of concerns.
 The model doesn't directly interact with the persistence layer (knowing that's not
 its responsibility), but rather the Cora Model class gives it the necessary knowledge
 on how to use the Repository system. And then, just to make sure testing doesn't get
 difficult, options are included to disable Dynamic Fetching, or to pass in a
 different database adaptor to override any defaults (I.E. force dynamic fetching to
-use a test database). See <a href="../../../../documentation/v2/amblend/overview/#testing">Here</a>
+use a test database). See <a href="../../../../documentation/v2/ADM/overview/#testing">Here</a>
 for more information on testing.</p>
 <hr />
-<p>Ok, that's it! Hopefully you have a high level understanding of how AmBlend blends
+<p>Ok, that's it! Hopefully you have a high level understanding of how ADM blends
 together the best of Data-Mapper and ActiveRecord into a new best-of-both worlds system.</p></div>
         </div>
 

@@ -111,7 +111,7 @@
                     
                         
   <li class="dropdown-submenu">
-    <a tabindex="-1" href="">AmBlend ORM</a>
+    <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
         
             
@@ -127,14 +127,20 @@
 
         
             
-<li >
-    <a href="../repository/">Repository</a>
+<li class="active">
+    <a href="./">Model</a>
 </li>
 
         
             
-<li class="active">
-    <a href="./">Model</a>
+<li >
+    <a href="../relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../repository/">Repository</a>
 </li>
 
         
@@ -375,12 +381,12 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../repository/">
+                    <a rel="next" href="../implementation/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../gateway/">
+                    <a rel="prev" href="../relationships/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -433,7 +439,7 @@
 <p>The purpose of Cora's Model class is to provide methods that allow Gateways
 to examine the properties and relations of models, and to give models the knowledge
 of the Repository system's existence and the Repository's responsibility for grabbing and
-persisting models. This enables the ActiveRecord like features of AmBlend
+persisting models. This enables the ActiveRecord like features of ADM
 such as dynamic loading.</p>
 <h1 id="creating-a-cora-model">Creating a Cora Model</h1>
 <p>To create a Cora Model, you just need to have your model extend \Cora\Model like
@@ -442,14 +448,14 @@ such:</p>
 </code></pre>
 
 <p>However, to actually make your model do anything useful, you need to define your
-model using some data members so that AmBlend knows how to use it. The core of
+model using some data members so that ADM knows how to use it. The core of
 this definition, is the "model_attributes" array.</p>
 <h1 id="attributes">Attributes</h1>
 <p>tl;dr - A Cora model's attributes define the data that composes the model.</p>
 <p>Normally when talking about data members for a class in PHP, the term "properties" is used.
 However, since it's possible to define properties on a Cora model just like you would any
 other class, "attributes" is the term I've coined to describe those model properties
-that relate directly to AmBlend so that the two don't get confused.</p>
+that relate directly to ADM so that the two don't get confused.</p>
 <p>Let's jump right in to how it works, as it's easier to describe using examples.</p>
 <h2 id="how-it-works">How it Works</h2>
 <p>Let's say you have a model definition that looks like the following:</p>
@@ -459,7 +465,7 @@ that relate directly to AmBlend so that the two don't get confused.</p>
     // These WON'T be saved to the database.
     protected $lastAction;
 
-    // Amblend properties
+    // ADM properties
     // aka the model's &quot;Attributes&quot;
     // These WILL be saved in the database.
     public $model_attributes = [
@@ -507,12 +513,12 @@ the lastAction WILL NOT get saved to the database if we save the model. That's
 super important to understand! You can use normal class properties, but only those
 attributes defined in the $model_attributes property will be persisted (saved).
 This makes the "$model_attributes" property the backbone that supports all of
-AmBlend's functionality.</p>
+ADM's functionality.</p>
 <p>In terms of implementation, as can be seen in the example above, $model_attributes
 is just an associative array where the key is the name of the attribute, and the
 value is another associative array for defining that attribute's details. The
 most basic detail which I always recommend including is that attribute's "type".
-By defining this, you can use AmBlend's automated database creation tool.</p>
+By defining this, you can use ADM's automated database creation tool.</p>
 <h2 id="definition">Definition</h2>
 <p>Below are the basic properties you can use to describe an attribute definition.</p>
 <table>
@@ -611,12 +617,12 @@ let's say we know we'll be searching a lot by email, so we want to index the ema
 ];
 </code></pre>
 
-<p>Now if you generate a database using AmBlend's database generation tool, it will
+<p>Now if you generate a database using ADM's database generation tool, it will
 reflect these changes.</p>
 <h2 id="object-relations">Object Relations</h2>
 <p>Alright, hopefully the general gist of how to define a model's attributes is becoming
 clearer. An important thing we haven't addressed yet is how to setup relationships
-with other objects. This is where things get exciting and Cora's AmBlend really shines.
+with other objects. This is where things get exciting and Cora's ADM really shines.
 Going back to our User object example, let's say a user has a Location associated
 with them as well as a number of articles they've written (maybe we're running a
 blogging site or something). We would setup this relationship like so:</p>
@@ -757,7 +763,7 @@ you can see we have a reference to one or more User models representing the auth
 of said guide. But what if our Users model also keeps a reference to Guides a user
 has been an author of? Let's add a reference to Guides in our User model:</p>
 <p><em>Note: Because our User model was defined as using the default connection
-(we didn't tell it to use anything different) AmBlend will know to fetch the authors
+(we didn't tell it to use anything different) ADM will know to fetch the authors
 from the main database.</em></p>
 <pre><code class="php">public $model_attributes = [
     'id' =&gt; [
@@ -835,14 +841,14 @@ mark one side of that relationship as the 'passive' side like so:</p>
 }
 </code></pre>
 
-<p>By marking the User side of the relationship as the passive side, AmBlend will
+<p>By marking the User side of the relationship as the passive side, ADM will
 now know to make the relationship table on the database represented by Guide's
 connection.</p>
 <h1 id="advanced-configuration">Advanced Configuration</h1>
-<p>Alright, using AmBlend's automated database creation feature and simply setting
-relationships as singular "model" or plural "models" and letting AmBlend handle the
+<p>Alright, using ADM's automated database creation feature and simply setting
+relationships as singular "model" or plural "models" and letting ADM handle the
 rest is nice and all for new projects. But let's talk about configuration options
-for incorporating AmBlend into a pre-existing database where you have to work within
+for incorporating ADM into a pre-existing database where you have to work within
 the constraints of the existing setup.</p>
 <p>First off, let's talk table names.</p>
 <h2 id="change-the-table-to-which-a-model-is-mapped">Change the table to which a model is mapped</h2>
@@ -898,12 +904,12 @@ column names within the relation table. The relation table column names must be
 the name of the model who's ID they hold. For the above example with User and
 Article, the relation table will need a 'user' column and an 'article' column. If
 you have existing relation tables that don't follow this format, you'll have to change
-them or else not use AmBlend.</p>
+them or else not use ADM.</p>
 <h2 id="one-to-many-via-an-owner-column">One-to-Many via an "owner" column</h2>
-<p>The default setup for plural relationships in AmBlend is the use of relation tables
+<p>The default setup for plural relationships in ADM is the use of relation tables
 just because they are the most flexible. However, if you want to force the use of
 an "owner" type column in a one-to-many relationship either because it's your
-personal preference or it's necessary to integrate with an existing database, AmBlend
+personal preference or it's necessary to integrate with an existing database, ADM
 makes this possible.</p>
 <p>What you'll need to do is just throw a 'via' setting in with a plural model definition.
 For instance, let's say we don't care about supporting multiple authors for an article
@@ -969,7 +975,7 @@ as seen in the picture below:</p>
 </code></pre>
 
 <p><strong>"users" table:</strong> <br />
-<img alt="dynamic_pattern" src="../../../img/documentation_amblend_overview_table2.png" /></p>
+<img alt="dynamic_pattern" src="../../../img/documentation_ADM_overview_table2.png" /></p>
 <p>However, if for some reason you wanted to force a single reference to use a relation
 table (maybe you felt it could change to a plural relationship in the future or something),
 you could do so by specifying "usesRefTable" as true:</p>
