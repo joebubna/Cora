@@ -128,7 +128,15 @@ class Input
     {
         if ($field) {
             if ($this->files($field)) {
-                return true;
+                if (is_numeric(array_keys($this->files($field))[0])) {
+                    $the_files = array();
+                    foreach ($this->files($field) as $file) {
+                        if ($file['error'] == 0) {
+                            $the_files[] = $file;
+                        }
+                    }
+                    return count($the_files) > 0;
+                }
             }
             return false;
         }
@@ -160,22 +168,5 @@ class Input
             return $this->_cleanInput($input);
         }
         return htmlspecialchars($input, ENT_QUOTES | ENT_HTML401, $encoding);
-        // $pattern = '/((<[\s\/]*script\b[^>]*>)([^>]*)(<\/script>))/i';
-        // if (preg_match($pattern, $string)) {
-        //     return false;
-        // }
-        // $pattern = '/(<[\s\/]*script\b[^>]*>)/i';
-        // if (preg_match($pattern, $string)) {
-        //     return false;
-        // }
-        // $pattern = '/<\/script>/i';
-        // if (preg_match($pattern, $string)) {
-        //     return false;
-        // }
-        // $pattern = '/data-bind/i';
-        // if (preg_match($pattern, $string)) {
-        //     return false;
-        // }
-        // return $string;
     }
 }
