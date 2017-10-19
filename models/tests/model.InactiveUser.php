@@ -15,9 +15,9 @@ class InactiveUser extends \Models\User {
 
     public static function model_constraints($query) 
     {
-        if ($query) {
+        //if ($query) {
             $query->where('status', 'Inactive');
-        }
+        //}
         return $query;
     }
 

@@ -26,7 +26,7 @@ Cora is a flexible MVC PHP framework for rapid app development. It's powered by 
   - Adds abstaction layer over databases that allows you to build queries dynamically.
   - In the future will allow you to access multiple database types using the same API as more adaptors are built. (I.E. querying a NoSQL database but using SQL looking code.
   
-- **A state-of-the-art ORM called AmBlend**
+- **A state-of-the-art ORM called ADM**
   - Uses a Data-Mapper implementation in the form of a Repository-Gateway-Factory pattern.
   - Models are defined using a simple data member array. No special comment tags or weird methods.
   - Models are just regular classes, can be used just like any other class.

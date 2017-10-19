@@ -118,7 +118,7 @@ class Model
         // -------------------------------------
         // If the model DB data is already set.
         // -------------------------------------
-        // AmBlend allows fetching of only part of a model's data when fetching
+        // ADM allows fetching of only part of a model's data when fetching
         // a record. So we have to check if the data in question has been fetched
         // from the DB already or not. If it has been fetched, we have to check
         // if it's a placeholder for a related model (related models can be set

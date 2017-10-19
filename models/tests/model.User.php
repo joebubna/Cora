@@ -30,7 +30,7 @@ class User extends \Cora\App\Model {
             'via' => 'madeBy'
         ],
         'articles' => [ // Stored in 2nd database
-            'models' => 'Tests\\Article'
+            'models' => 'Tests\\Article',
         ],
         'multiAuthorArticles' => [ // Stored in 2nd database
             'models' => 'Tests\\MultiAuthorArticle'
@@ -73,7 +73,7 @@ class User extends \Cora\App\Model {
             'via' => 'owner'
         ],
         'writings' => [
-            'models' => 'Tests\\Article',
+            'models' => 'Tests\\MultiArticle',
             'relName' => 'authorPaper'
         ],
         'sameType' => [

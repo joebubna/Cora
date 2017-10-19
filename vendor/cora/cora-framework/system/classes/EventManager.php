@@ -15,10 +15,10 @@ class EventManager
         Event\\Cache\\Hit
         Event\\Cache\\Miss
         Event\\Cache\\Delete
-        Event\\AmBlend\\PreSave
-        Event\\AmBlend\\PostSave
-        Event\\AmBlend\\PreFetch
-        Event\\AmBlend\\PostFetch
+        Event\\ADM\\PreSave
+        Event\\ADM\\PostSave
+        Event\\ADM\\PreFetch
+        Event\\ADM\\PostFetch
         Event\\Database\\Connected
         Event\\Database\\Delete
         Event\\Database\\Insert

@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Cora;
 
-class AmblendTest extends \Cora\App\TestCase
+class ADMTest extends \Cora\App\TestCase
 {   
     /**
      *  Check that it's possible to create a simple model located that doesn't inherit from another model.
@@ -587,7 +587,7 @@ class AmblendTest extends \Cora\App\TestCase
     /**
      *  Test that a "relName" definition correctly causes attributes on two 
      *  different models to read from the same relation table.
-     *
+     *  @group failing
      *  @test
      */
     public function canSetRelationshipNameToLinkDataBetweenModels()
@@ -596,17 +596,17 @@ class AmblendTest extends \Cora\App\TestCase
         $users = $this->app->tests->users;
 
         // Create user 
-        $user = new \Models\Tests\User('Bob');
+        $user = new \Models\Tests\User('Bob47');
         $users->save($user);
 
         // Check that user has no stored references
-        $this->assertEquals(0, $user->articles->count());
+        $this->assertEquals(0, $user->writings->count());
 
         // Set and create ref
         $user->writings = $this->app->collection([
-            new \Models\Tests\Article('My Favorite Books Vol 1'),
-            new \Models\Tests\Article('My Favorite Books Vol 2'),
-            new \Models\Tests\Article('My Favorite Books Vol 3')
+            new \Models\Tests\MultiArticle('My Favorite Books Vol 1'),
+            new \Models\Tests\MultiArticle('My Favorite Books Vol 2'),
+            new \Models\Tests\MultiArticle('My Favorite Books Vol 3')
         ]);
         $users->save($user);
 
@@ -616,8 +616,14 @@ class AmblendTest extends \Cora\App\TestCase
         // Pull user fresh from DB just to make sure references were saved on DB.
         $freshUser = $users->find($user->id);
         $this->assertEquals(3, $freshUser->writings->count());
+        $this->assertEquals('My Favorite Books Vol 1', $freshUser->writings->get(0)->name);
 
-        $this->assertEquals('My Favorite Books Vol 1', $freshUser->writings->get(0)->text);
+        // Grab the first article
+        $article = $user->writings->get(0);
+
+        // Check that grabbing the authors from the Article side of the relationship reads 
+        // from the same relation table and thus returns the author. 
+        $this->assertEquals(1, $article->authors->count());
     }
 
 
