@@ -91,8 +91,8 @@ class Input
             foreach ($data as $field_name => $files) {
                 $errors = $this->_getErrors($files);
                 $file_array = $this->rearrange($files);
-                if (array_keys($file_array)[0] == 'name') {
-                    $file_array = [$file_array];
+                if (array_keys($file_array)[0] === 'name') {
+                    $file_array = array($file_array);
                 }
                 $FileArray[$field_name] = $this->_clearErrors($file_array, $errors);
             }
