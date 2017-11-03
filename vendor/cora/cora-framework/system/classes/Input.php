@@ -140,9 +140,17 @@ class Input
             }
             return false;
         }
-        foreach ($this->filesData as $files) {
-            if ($files && count($this->filesData)) {
-                return true;
+        foreach ($this->filesData as $key => $files) {
+            if (is_numeric(array_keys($files)[0])) {
+                $the_files = array();
+                foreach ($files as $file) {
+                    if ($file['error'] == 0) {
+                        $the_files[] = $file;
+                    }
+                }
+                if (count($the_files) > 0) {
+                    return true;
+                }
             }
         }
         return false;
