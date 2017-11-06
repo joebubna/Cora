@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Cora;
 
-class AmblendTest extends \Cora\App\TestCase
+class ADMTest extends \Cora\App\TestCase
 {   
     /**
      *  Check that it's possible to create a simple model located that doesn't inherit from another model.
@@ -587,7 +587,7 @@ class AmblendTest extends \Cora\App\TestCase
     /**
      *  Test that a "relName" definition correctly causes attributes on two 
      *  different models to read from the same relation table.
-     *
+     *  @group failing
      *  @test
      */
     public function canSetRelationshipNameToLinkDataBetweenModels()
@@ -596,17 +596,17 @@ class AmblendTest extends \Cora\App\TestCase
         $users = $this->app->tests->users;
 
         // Create user 
-        $user = new \Models\Tests\User('Bob');
+        $user = new \Models\Tests\User('Bob47');
         $users->save($user);
 
         // Check that user has no stored references
-        $this->assertEquals(0, $user->articles->count());
+        $this->assertEquals(0, $user->writings->count());
 
         // Set and create ref
         $user->writings = $this->app->collection([
-            new \Models\Tests\Article('My Favorite Books Vol 1'),
-            new \Models\Tests\Article('My Favorite Books Vol 2'),
-            new \Models\Tests\Article('My Favorite Books Vol 3')
+            new \Models\Tests\MultiArticle('My Favorite Books Vol 1'),
+            new \Models\Tests\MultiArticle('My Favorite Books Vol 2'),
+            new \Models\Tests\MultiArticle('My Favorite Books Vol 3')
         ]);
         $users->save($user);
 
@@ -616,8 +616,14 @@ class AmblendTest extends \Cora\App\TestCase
         // Pull user fresh from DB just to make sure references were saved on DB.
         $freshUser = $users->find($user->id);
         $this->assertEquals(3, $freshUser->writings->count());
+        $this->assertEquals('My Favorite Books Vol 1', $freshUser->writings->get(0)->name);
 
-        $this->assertEquals('My Favorite Books Vol 1', $freshUser->writings->get(0)->text);
+        // Grab the first article
+        $article = $user->writings->get(0);
+
+        // Check that grabbing the authors from the Article side of the relationship reads 
+        // from the same relation table and thus returns the author. 
+        $this->assertEquals(1, $article->authors->count());
     }
 
 
@@ -898,6 +904,117 @@ class AmblendTest extends \Cora\App\TestCase
         $user->multiAuthorArticles->off0->version = 3;
         $users->save($user);
         $this->assertEquals('NewArt2', $users->find($user->id)->multiAuthorArticles->off0->text);
+    }
+
+
+    /**
+     *  If we create a new Model using just the ID number, without fetching it from a repository,
+     *  can we access related models fetched using the "via" keyword on it?
+     *  
+     *  @test
+     */
+     public function canAccessRelatedModelsFromViaOnNewObject()
+     {
+        $this->app->dbBuilder->reset();
+
+        // Setup
+        $users = $this->app->tests->users;
+        $userComments = $this->app->tests->userComments;
+
+        // Create user 
+        $user = new \Models\Tests\User('Bob', 'Admin');
+        $users->save($user);
+
+        // Check that user has no comments.
+        $this->assertEquals(0, $user->comments->count());
+
+        // Create new comment and add to User via normal repo call.
+        $user->comments->add(new \Models\Tests\Users\Comment($user->id, 'Test comment 1'));
+        $users->save($user);
+
+        // Check that user has now has 1 comment
+        $this->assertEquals($user->comments->count(), 1);
+        
+        // Create new comment and add to User via active record type call.
+        $user->comments->add(new \Models\Tests\Users\Comment($user->id, 'Test comment 2'));
+        $user->save();
+        
+        // Check that user has now has 2 comments
+        $this->assertEquals(2, $user->comments->count());
+
+        // Create a new user object from scratch using just the ID number 
+        $user2 = new \Models\Tests\User();
+        $user2->id = $user->id;
+
+        // Check that access works the same on this new model
+        $this->assertEquals(2, $user2->comments->count());
+     }
+
+
+    /**
+    *   Checks that model constraints added via the model_constraints method correctly apply
+    *   to a collection.
+    *
+    *   @test
+    */
+    public function canLimitCollectionByModelConstraints()
+    {
+        // Setup
+        $users = $this->app->users;
+        $inactiveUsers = $this->app->tests->inactiveUsers;
+
+        // Check that user has no comments.
+        $this->assertEquals(1001, $users->count());
+
+        // Check that user has no comments.
+        $this->assertEquals(10, $inactiveUsers->count());
+    }
+
+
+    /**
+    *   Abstract relationships between models are ones where there isn't an explicitly defined
+    *   ID => ID connection. An explicit connection is something like a "parent" field with an ID number,
+    *   a relation table defining Model A is related to Model B, etc. An abstract relationship is something 
+    *   like "theSameAge" where the result is all users within 5 years of age to the person in question. 
+    *   Representing explicit ID => ID connections for every person in the database to define this relationship 
+    *   would be rediculous and non-feasible. 
+    *
+    *   The "using" definition allows you to specify a method that will define an abstract relationship.
+    *
+    *   @test
+    */
+    public function canGrabRelatedModelsFromAbstractRelationship()
+    {
+        // Setup
+        $this->app->dbBuilder->reset();
+        $users = $this->app->tests->users;
+
+        // Check that the test users table is empty
+        $this->assertEquals(0, $users->count());
+        
+        $testUsers = new \Cora\Collection([
+            new \Models\Tests\User('Bob1', 'Adult'),
+            new \Models\Tests\User('Jimmy', 'Child'),
+            new \Models\Tests\User('Jenine', 'Adult'),
+            new \Models\Tests\User('Jeff', 'Adult'),
+            new \Models\Tests\User('Matt', 'Child'),
+            new \Models\Tests\User('Sarah', 'Child'),
+            new \Models\Tests\User('Kevin', 'Adult')
+        ]);
+
+        $users->save($testUsers);
+
+        // Check that the users were saved
+        $this->assertEquals(7, $users->count());
+
+        // Grab Jenine
+        $user = $users->find(3);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jenine', $user->name);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals(3, $user->sameType->count());
     }
 
 }

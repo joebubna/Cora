@@ -128,14 +128,14 @@ class TestCase extends \PHPUnit\Framework\TestCase
     
     public static function tearDownAfterClass()
     {
-        // Load test container.
-        require('includes/container.php');
+        // // Load test container.
+        // require('includes/container.php');
         
-        // Reset DB.
-        $container->dbBuilder->reset();
+        // // Reset DB.
+        // $container->dbBuilder->reset();
 
-        // Since testing using a 2nd database, have to specify we want that one reset too.
-        $container->dbBuilder->reset('MySQL2');
+        // // Since testing using a 2nd database, have to specify we want that one reset too.
+        // $container->dbBuilder->reset('MySQL2');
 
         $GLOBALS['coraRunningTests'] = false;
     }

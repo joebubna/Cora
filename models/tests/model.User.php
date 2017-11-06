@@ -30,7 +30,7 @@ class User extends \Cora\App\Model {
             'via' => 'madeBy'
         ],
         'articles' => [ // Stored in 2nd database
-            'models' => 'Tests\\Article'
+            'models' => 'Tests\\Article',
         ],
         'multiAuthorArticles' => [ // Stored in 2nd database
             'models' => 'Tests\\MultiAuthorArticle'
@@ -73,20 +73,25 @@ class User extends \Cora\App\Model {
             'via' => 'owner'
         ],
         'writings' => [
-            'models' => 'Tests\\Article',
+            'models' => 'Tests\\MultiArticle',
             'relName' => 'authorPaper'
+        ],
+        'sameType' => [
+            'models' => 'Tests\\User',
+            'using' => '_similarUsers'
         ]
-        // 'roleName' => [
-        //     'from' => 'roles',
-        //     'select' => 'name',
-        //     'where' => ['primaryRole', '=', 'id']
-        // ]
     ];
 
     public function __construct($name = null, $type = null)
     {
         $this->name = $name;
         $this->type = $type;
+    }
+
+    protected function _similarUsers($query) {
+        $query->where('type', $this->type)
+              ->where('id', $this->id, '<>');
+        return $query;
     }
 
 }

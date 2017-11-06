@@ -122,6 +122,10 @@ for ($i = 3; $i < 1000; $i++) {
     $user->firstName = "Bob$i";
     $user->lastName = "Ross$i";
     $user->createdDate = $curDate;
+    if ($i > 20 && $i < 31) {
+        $user->status = 'Inactive';
+    }
+
     $usersList->add($user, false, 'email');
 }
 

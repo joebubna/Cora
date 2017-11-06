@@ -118,14 +118,13 @@ class Model
         // -------------------------------------
         // If the model DB data is already set.
         // -------------------------------------
-        // AmBlend allows fetching of only part of a model's data when fetching
+        // ADM allows fetching of only part of a model's data when fetching
         // a record. So we have to check if the data in question has been fetched
         // from the DB already or not. If it has been fetched, we have to check
         // if it's a placeholder for a related model (related models can be set
         // to boolean true, meaning we have to dynamically fetch the model)
         ///////////////////////////////////////////////////////////////////////
         if (isset($this->model_data[$name])) {
-
             // Check if the stored data is numeric.
             // If it's not, then we don't need to worry about it being a
             // class reference that we need to fetch.
@@ -137,9 +136,13 @@ class Model
                 // If desired data is a reference to a singular object.
                 if (isset($def['model']) && !isset($this->model_dynamicOff)) {
 
+                    if (isset($def['using'])) {
+                        $this->$name = $this->getModelFromCustomRelationship($name, $def['model']);
+                    }
+
                     // In the rare case that we need to fetch a single related object, and the developer choose
                     // to use a relation table to represent the relationship.
-                    if (isset($def['usesRefTable'])) {
+                    else if (isset($def['usesRefTable'])) {
                         $this->$name = $this->getModelFromRelationTable($name, $def['model']);
                     }
 
@@ -166,10 +169,13 @@ class Model
 
                 // If desired data is a reference to a collection of objects.
                 else if (isset($def['models']) && !isset($this->model_dynamicOff)) {
-
                     // If the relationship is one-to-many.
                     if (isset($def['via'])) {
                         $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
+                    }
+
+                    else if (isset($def['using'])) {
+                        $this->$name = $this->getModelsFromCustomRelationship($name, $def['models']);
                     }
 
                     // If the relationship is many-to-many.
@@ -197,31 +203,70 @@ class Model
 
             // If the attribute isn't the primary key of our current model, do dynamic fetch.
             if ($name != $this->getPrimaryKey()) {
-                $this->$name = $this->fetchData($name);
+
+                $def = $this->model_attributes[$name];
+
+                if (isset($def['model']) && isset($def['using']) && !isset($this->model_dynamicOff)) {
+                    $this->$name = $this->getModelFromCustomRelationship($name, $def['model']);
+                }
+
+                // If desired data is a reference to a singular object, but it's defined as using a reference 
+                // table, then it's abstract in the sense that there's nothing on the current model's table 
+                // leading to it. We need to grab it using our method to grab data from a relation table.
+                else if (isset($def['model']) && isset($def['usesRefTable']) && !isset($this->model_dynamicOff)) {
+                    $this->$name = $this->getModelFromRelationTable($name, $def['model']);
+                }
+
+                // If desired data is a reference to a collection of objects. This means the relationship is 
+                // abstract (no data on this model's table). We need to call appropriate method to get data 
+                // from external table.
+                else if (isset($def['models']) && !isset($this->model_dynamicOff)) {
+                    // If the relationship is one-to-many.
+                    if (isset($def['via'])) {
+                        $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
+                    }
+
+                    else if (isset($def['using'])) {
+                        $this->$name = $this->getModelsFromCustomRelationship($name, $def['models']);
+                    }
+
+                    // If the relationship is many-to-many.
+                    // OR if the relationship is one-to-many and no 'owner' type column is set,
+                    // meaning there needs to be a relation table.
+                    else {
+                        $this->$name = $this->getModelsFromRelationTable($name, $def['models']);
+                    }
+                } 
+                
+                // If we fell down to here, then the data we need is located on this model's table. 
+                else {
+                    $this->$name = $this->fetchData($name);
+                }
+                    
+                // Fetch the value for this attribute that presumably got loaded from one of the above logic blocks.
                 $this->beforeGet($name); // Lifecycle callback
                 $returnValue = $this->model_data[$name];
                 $this->afterGet($name, $returnValue); // Lifecycle callback
 
-                // Ref this model's attributes in a shorter variable.
-                $def = $this->model_attributes[$name];
-
-                // If the unset attribute is defined as a collection, return an empty one.
+                // If the data we fetched from this model's table is a reference to either a single or collection of models
+                // then we need to do some more work. If the data we fetched is an ID reference to model, that will need to be 
+                // turned into an actual model still. If the data want is a collection of models, but the collection is empty, 
+                // we'll have a null value on our hands - in this case let's return an empty collecion object instead.
                 if (isset($def['models'])) {
                     if ($returnValue == null) {
                         $this->$name = new \Cora\Collection();
                         return $this->model_data[$name];
-                    }
-                    else {
+                    } else {
                         return $this->__get($name);
                     }
                 }
-                // If the unset attribute is defined as a single model, return null.
                 else if (isset($def['model'])) {
                     if ($returnValue != null) {
+                        // Now that we fetched the ID, let's recursively call this method again and return the result so that ID 
+                        // gets turned into an object.
                         return $this->__get($name);
                     }
                 }
-
                 return $returnValue;
             }
             else {
@@ -438,6 +483,37 @@ class Model
         $db->where($relationColumnName, $this->{$this->getPrimaryKey()});
         //$db->select($idField);
         return $repo->findAll($db);
+    }
+
+
+    /**
+     *  The Related Obj's are defined by a custom query. A "using" definition states which model 
+     *  method defines the relationship. Within that method any query parameters must bet set and 
+     *  a Query Builder object returned.
+     */
+     public function getModelsFromCustomRelationship($attributeName, $objName)
+     {
+         // Grab a dummy instance of the related object.
+         $relatedObj = $this->fetchRelatedObj($objName);
+
+         // Create a repository for the related object.
+         $repo = \Cora\RepositoryFactory::make($objName, false, false, false, $this->model_db);
+        
+         // Grab a Query Builder object for the connection this related model uses.
+         $query = $relatedObj->getDbAdaptor();
+         
+         // Grab the name of the method that defines the relationship
+         $definingFunctionName = $this->model_attributes[$attributeName]['using'];
+         
+         $query = $this->$definingFunctionName($query);
+         
+         return $repo->findAll($query);
+     }
+
+
+    public function getModelFromCustomRelationship($attributeName, $objName)
+    {
+        return $this->getModelsFromCustomRelationship($attributeName, $objName)->get(0);
     }
 
 
@@ -729,10 +805,10 @@ class Model
         echo $this->toJson();
     }
 
-    public function toArray($inputData = false)
+    public function toArray($inputData = '__cora__empty')
     {
         // If nothing was passed in, default to this object. 
-        if ($inputData === false) {
+        if ($inputData == '__cora__empty') {
             $inputData = $this;
         }
         
@@ -831,8 +907,13 @@ class Model
     }
 
 
-    public function afterGet($prop, $value)
+    public function afterGet($prop, &$value)
     {
         //echo __FUNCTION__;
+    }
+
+    public static function model_constraints($query) 
+    {
+        return $query;
     }
 }
