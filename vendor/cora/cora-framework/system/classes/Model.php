@@ -808,7 +808,7 @@ class Model
     public function toArray($inputData = '__cora__empty')
     {
         // If nothing was passed in, default to this object. 
-        if ($inputData == '__cora__empty') {
+        if ($inputData === '__cora__empty') {
             $inputData = $this;
         }
         
@@ -844,6 +844,8 @@ class Model
             }
             return (array) $object;
         }
+        
+        //return $inputData;
 
         // If input is present
         else if ($inputData) {

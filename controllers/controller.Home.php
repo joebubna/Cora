@@ -15,6 +15,7 @@ class Home extends \Cora\App\Controller {
         $this->load->view('template', $this->data);
     }
 
+
     public function ctest() 
     {
         // $c = new \Cora\Collection([1,2,3,4,5]);

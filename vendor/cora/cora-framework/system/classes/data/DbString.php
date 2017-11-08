@@ -1,17 +1,17 @@
 <?php
-namespace Cora\Database;
+namespace Cora\Data;
 
 class DbString
 {
-    public $str;
+    public $value;
     
     public function __construct($str)
     {
-        $this->str = $str;
+        $this->value = $str;
     }
 
     public function __toString()
     {
-        return $this->str;
+        return $this->value;
     }
 }

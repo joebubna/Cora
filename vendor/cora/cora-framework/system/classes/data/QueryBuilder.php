@@ -1,10 +1,8 @@
 <?php
-namespace Cora\Database;
+namespace Cora\Data;
 
 class QueryBuilder
 {
-    public static $defaultDb;
-
     protected $tables;
     protected $selects;
     protected $updates;
@@ -38,6 +36,14 @@ class QueryBuilder
     public function __construct()
     {
         $this->reset();
+    }
+
+    public function __get($name)
+    {
+        if (isset($this->$name)) {
+            return $this->$name;
+        }
+        return false;
     }
 
 
@@ -151,10 +157,6 @@ class QueryBuilder
     public function select($fields, $delim = false)
     {
         $this->storeValue('selects', $fields);
-        
-        // This version passed optional delimiter in for `field` escaping. This protected against reserved words 
-        // as field names in MySQL.
-        //$this->storeValue('selects', $fields, $delim);
         return $this;
     }
 
@@ -188,12 +190,28 @@ class QueryBuilder
     }
 
     /**
-    *   WHERE array format:
+    *   Possible WHERE array format:
     *   $this->wheres[] = [[['amount', '>', '1000'],['savings', '>', '100']], 'AND']
+    *
+    *   $field may be a Closure or an array.
     */
-    public function where($conditions, $value = false, $comparison = '=')
+    public function where($field, $value = false, $comparison = '=')
     {
-        $this->store('condition', 'wheres', $conditions, $value, $comparison);
+        // Field is a subset defined in closure
+        if ($field instanceof \Closure) {
+            $this->wheres[] = $field;
+        } 
+
+        // Field is an array of expressions
+        else if ($comparison != 'IN' && (is_array($field) || is_object($field))) {
+            $this->storeExprGroup('wheres', $value, $key, $comparison, $conjunction);
+        }
+
+        // A single expression was given
+        else {
+            $this->storeExpr('wheres', $field, $value, $comparison);
+        }
+
         return $this;
     }
 
@@ -331,6 +349,34 @@ class QueryBuilder
     }
 
 
+    //////////////////////////////////////////////////////////////
+    //  NEW STORAGE ABSTRACTED METHODS
+    //////////////////////////////////////////////////////////////
+
+    protected function storeExprGroup($type, $data, $key = false, $comparison = false, $conjunction = false)
+    {
+
+    }
+
+    protected function storeExpr($type, $data, $key = false, $comparison = false, $conjunction = false)
+    {
+        $dataMember = &$this->$type;
+        // If array or object full of data was passed in, add all data
+        // to appropriate data member.
+        if ($comparison != 'IN' && (is_array($data) || is_object($data))) {
+            $conj = $key;
+            $condition = array($data, $conj);
+            array_push($dataMember, $condition);
+        }
+
+        // Add singular data item to data member.
+        else {
+            $item = [array($key, $comparison, $data)];
+            $condition = array($item, $conjunction);
+            array_push($dataMember, $condition);
+        }
+    }
+
 
 
 
@@ -380,6 +426,7 @@ class QueryBuilder
     }
 
 
+    // $this->store('condition', 'wheres', $conditions, $value, $comparison);
     protected function store($type, $dataMember, $fields, $value = false, $comparison = '=', $conjunction = 'AND')
     {
 
