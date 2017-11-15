@@ -845,13 +845,7 @@ class Model
             return (array) $object;
         }
 
-        // If input is present
-        else if ($inputData) {
-            return $inputData;
-        }
-
-        // If nothing was passed in
-        return null;
+        return $inputData;
     }
 
     public function toJson($inputData = false)
