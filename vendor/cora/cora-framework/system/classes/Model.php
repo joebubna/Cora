@@ -802,7 +802,7 @@ class Model
 
     public function __toString()
     {
-        echo $this->toJson();
+        return $this->toJson();
     }
 
     public function toArray($inputData = '__cora__empty')
