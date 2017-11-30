@@ -1017,4 +1017,69 @@ class ADMTest extends \Cora\App\TestCase
         $this->assertEquals(3, $user->sameType->count());
     }
 
+
+    /**
+    *   Check that models which utilize abstract models can be saved.
+    *
+    *   @test
+    */
+    public function canSaveModelUtilizingAbstractRelationship()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Grab Jenine
+        $user = $users->find(3);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jenine', $user->name);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals(3, $user->sameType->count());
+
+        // Change Bob1 to child
+        $user->sameType[0]->type = 'Child';
+
+        // Save user
+        $users->save($user);
+
+        // Re-Grab Jenine
+        $user = $users->find(3);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals(2, $user->sameType->count());
+    }
+
+
+    /**
+    *   Check that models which utilize abstract models can be saved.
+    *
+    *   @test
+    */
+    public function canSaveModelUtilizingAbstractRelationshipToDifferentModel()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Grab Jenine
+        $user = $users->find(3);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jenine', $user->name);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals(2, $user->multiAbstract->count());
+
+        // Change Admin to Admin2
+        $user->multiAbstract[1]->name = 'Admin2';
+        
+        // Save user
+        $users->save($user);
+
+        // Re-Grab Jenine
+        $user = $users->find(3);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals('Admin2', $user->multiAbstract[1]->name);
+    }
 }
