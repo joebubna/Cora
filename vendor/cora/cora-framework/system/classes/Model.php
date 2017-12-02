@@ -714,7 +714,7 @@ class Model
     public function usesRelationTable($relatedObj, $attribute)
     {
         $def = $this->model_attributes[$attribute];
-        if (isset($def['models']) && !isset($def['via'])) {
+        if (isset($def['models']) && !isset($def['via']) && !isset($def['using'])) {
             return $this->getRelationTableName($relatedObj, $attribute, $def);
         }
         else if (isset($def['model']) && isset($def['usesRefTable'])) {

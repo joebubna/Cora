@@ -369,7 +369,7 @@ class Gateway
                     }
 
                     // If uses Via column
-                    else {
+                    else if ($model->usesViaColumn($relatedObjBlank, $key)) {
                         $db = $repo->getDb();
                         $objTable = $relatedObjBlank->getTableName();
                         $modelId = $model->{$model->getPrimaryKey()};
@@ -407,6 +407,26 @@ class Gateway
                             }
 
                             $db->exec();
+                        }
+                    }
+
+                    // If is some sort of Abtract relationship
+                    else {
+                        // Save each object in the collection
+                        foreach ($collection as $relatedObj) {
+                            // Check if this object has already been saved during this recursive call series.
+                            // If not, save it.
+                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            if (!$this->getSavedModel($relatedObj)) {
+                                if ($id) {
+                                    $this->addSavedModel($relatedObj);
+                                    $repo->save($relatedObj);
+                                }
+                                else {
+                                    $id = $repo->save($relatedObj);
+                                    $this->addSavedModel($relatedObj);
+                                }
+                            }
                         }
                     }
                 }
@@ -664,7 +684,7 @@ class Gateway
                     }
 
                     // If uses Via column
-                    else {
+                    else if ($model->usesViaColumn($relatedObjBlank, $key)) {
                         $db = $repo->getDb();
                         $objTable = $relatedObjBlank->getTableName();
                         $modelId = $model->{$model->getPrimaryKey()};
@@ -702,6 +722,26 @@ class Gateway
                             }
                             //echo $db->getQuery();
                             $db->exec();
+                        }
+                    }
+
+                    // If is some sort of Abtract relationship
+                    else {
+                        // Save each object in the collection
+                        foreach ($collection as $relatedObj) {
+                            // Check if this object has already been saved during this recursive call series.
+                            // If not, save it.
+                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            if (!$this->getSavedModel($relatedObj)) {
+                                if ($id) {
+                                    $this->addSavedModel($relatedObj);
+                                    $repo->save($relatedObj);
+                                }
+                                else {
+                                    $id = $repo->save($relatedObj);
+                                    $this->addSavedModel($relatedObj);
+                                }
+                            }
                         }
                     }
                 }
