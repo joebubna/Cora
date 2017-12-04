@@ -83,6 +83,10 @@ class User extends \Cora\App\Model {
         'multiAbstract' => [
             'models' => 'Role',
             'using' => '_customRoles'
+        ],
+        'singleAbstract' => [
+            'model' => 'Role',
+            'using' => '_customRoles'
         ]
     ];
 

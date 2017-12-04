@@ -1056,7 +1056,7 @@ class ADMTest extends \Cora\App\TestCase
     *
     *   @test
     */
-    public function canSaveModelUtilizingAbstractRelationshipToDifferentModel()
+    public function canSaveModelsUtilizingAbstractRelationshipToDifferentModel()
     {
         // Setup
         $users = $this->app->tests->users;
@@ -1081,5 +1081,35 @@ class ADMTest extends \Cora\App\TestCase
 
         // Check that the abstract relationship to other "adults" works
         $this->assertEquals('Admin2', $user->multiAbstract[1]->name);
+    }
+
+
+    /**
+    *   Check that singular relationship to an abstract model can be saved.
+    *
+    *   @test
+    */
+    public function canSaveModelUtilizingAbstractRelationshipToDifferentModel()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Grab Jenine
+        $user = $users->find(3);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jenine', $user->name);
+
+        // Change User to User2
+        $user->singleAbstract->name = 'User2';
+        
+        // Save user
+        $users->save($user);
+
+        // Re-Grab Jenine
+        $user = $users->find(3);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals('User2', $user->singleAbstract->name);
     }
 }
