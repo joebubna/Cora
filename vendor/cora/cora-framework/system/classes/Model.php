@@ -714,7 +714,7 @@ class Model
     public function usesRelationTable($relatedObj, $attribute)
     {
         $def = $this->model_attributes[$attribute];
-        if (isset($def['models']) && !isset($def['via'])) {
+        if (isset($def['models']) && !isset($def['via']) && !isset($def['using'])) {
             return $this->getRelationTableName($relatedObj, $attribute, $def);
         }
         else if (isset($def['model']) && isset($def['usesRefTable'])) {
@@ -802,7 +802,7 @@ class Model
 
     public function __toString()
     {
-        echo $this->toJson();
+        return $this->toJson();
     }
 
     public function toArray($inputData = '__cora__empty')
@@ -847,13 +847,7 @@ class Model
         
         //return $inputData;
 
-        // If input is present
-        else if ($inputData) {
-            return $inputData;
-        }
-
-        // If nothing was passed in
-        return null;
+        return $inputData;
     }
 
     public function toJson($inputData = false)

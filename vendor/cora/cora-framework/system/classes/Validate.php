@@ -387,4 +387,31 @@ class Validate
         }
     }
 
+
+    /**
+     *  For resetting a form Select's data after a failed validation.
+     *  $name = Select's name
+     *  $value = Option's value
+     *  $default = whether this Option should be selected by default.
+     */
+    public function setMultiSelect($name, $value, $default = false)
+    {
+        if (isset($this->data[$name])) {
+            if (in_array($value, $this->data[$name])) {
+                return 'selected';
+            }
+            else {
+                return '';
+            }
+        }
+        else {
+            if ($default) {
+                return 'selected';
+            }
+            else {
+                return '';
+            }
+        }
+    }
+
 }

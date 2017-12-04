@@ -79,6 +79,14 @@ class User extends \Cora\App\Model {
         'sameType' => [
             'models' => 'Tests\\User',
             'using' => '_similarUsers'
+        ],
+        'multiAbstract' => [
+            'models' => 'Role',
+            'using' => '_customRoles'
+        ],
+        'singleAbstract' => [
+            'model' => 'Role',
+            'using' => '_customRoles'
         ]
     ];
 
@@ -91,6 +99,11 @@ class User extends \Cora\App\Model {
     protected function _similarUsers($query) {
         $query->where('type', $this->type)
               ->where('id', $this->id, '<>');
+        return $query;
+    }
+
+    protected function _customRoles($query) {
+        $query->where('id', 3, '<');
         return $query;
     }
 
