@@ -197,21 +197,7 @@ class QueryBuilder
     */
     public function where($field, $value = false, $comparison = '=')
     {
-        // Field is a subset defined in closure
-        if ($field instanceof \Closure) {
-            $this->wheres[] = $field;
-        } 
-
-        // Field is an array of expressions
-        else if ($comparison != 'IN' && (is_array($field) || is_object($field))) {
-            $this->storeExprGroup('wheres', $value, $key, $comparison, $conjunction);
-        }
-
-        // A single expression was given
-        else {
-            $this->storeExpr('wheres', $field, $value, $comparison);
-        }
-
+        $this->storeExprGroup('wheres', $field, $value, $comparison, 'AND');
         return $this;
     }
 
@@ -353,28 +339,86 @@ class QueryBuilder
     //  NEW STORAGE ABSTRACTED METHODS
     //////////////////////////////////////////////////////////////
 
-    protected function storeExprGroup($type, $data, $key = false, $comparison = false, $conjunction = false)
-    {
-
-    }
-
-    protected function storeExpr($type, $data, $key = false, $comparison = false, $conjunction = false)
+    protected function storeExprGroup($type, $field, $value = false, $comparison = false, $conjunction = false)
     {
         $dataMember = &$this->$type;
-        // If array or object full of data was passed in, add all data
-        // to appropriate data member.
-        if ($comparison != 'IN' && (is_array($data) || is_object($data))) {
-            $conj = $key;
-            $condition = array($data, $conj);
-            array_push($dataMember, $condition);
+        $expGroup = new \Cora\Data\DbExprGroup();
+        
+        if (is_array($field) || is_object($field)) {
+            // If given a closure for field
+            // ->where(function($qb) {
+            //     $qb->where('name', '%dolly%', 'LIKE')
+            //        ->orWhere('type', 'Admin');
+            // });
+            if ($field instanceof \Closure) {
+                $qb = new \Cora\Data\QueryBuilder();
+                $field($qb);
+                $expGroup->add($qb);
+            }
+
+            // If dealing with multiple expressions
+            // ->where([
+            //     ['type', '=', 'admin', 'OR'],
+            //     ['type', '=', 'super', 'AND'],
+            //     ['type', '=', 'moderator']
+            // ])
+            else {
+                foreach ($field as $expData) {
+                    list($field, $value, $comparision, $conj) = array_pad($expData, 4, null);
+                    $field = $this->processField($field);
+                    $value = $this->processValue($value);
+                    $exp = new \Cora\Data\DbExprCompound($field, $comparison, $value, $conjunction);
+                    $expGroup->add($exp);
+                }
+            }
         }
 
-        // Add singular data item to data member.
+
+        // If dealing with a single expression
+        // $db->where('date', '2014-01-01', '>=')
+        // $db ->in('name', ['bob', 'jeff', 'susan'])  'IN' is comparision
         else {
-            $item = [array($key, $comparison, $data)];
-            $condition = array($item, $conjunction);
-            array_push($dataMember, $condition);
+            $field = $this->processField($field);
+            $value = $this->processValue($value);
+
+            // If dealing with closures (subQueries)
+            // $db ->in('name', 'SELECT name FROM users WHERE name LIKE s%')   query is closure
+            if ($value instanceof \Closure) {
+                $qb = new \Cora\Data\QueryBuilder();
+                $function = $value;
+                $function($qb);
+                $value = $qb;
+            }
+            $exp = new \Cora\Data\DbExpr($field, $comparison, $value);
+            $expGroup->add($exp);
         }
+
+        array_push($dataMember, $expGroup);
+    }
+
+
+    protected function processField($input) 
+    {
+        if ($this->isFieldIdentifier($input)) {
+            return new \Cora\Data\DbField($input);
+        }
+        return $input;
+    }
+
+    protected function processValue($input) 
+    {
+        if ($this->isFieldIdentifier($input)) {
+            return new \Cora\Data\DbField($input);
+        }
+        return $input;
+    }
+
+    protected function isFieldIdentifier($input) 
+    {
+        if (!is_object($input) && ':' == substr($input, 0, 1)) {
+            return true;
+        }
+        return false;
     }
 
 

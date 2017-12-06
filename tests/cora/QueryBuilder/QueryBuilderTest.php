@@ -181,7 +181,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
     *  Check that adding multiple WHERE fields works properly
-    *
+    *  @group failing
     *  @test
     */
     public function canWhereMultipleWithFunctionCalls()
@@ -194,20 +194,10 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(['name', 'email'], $qb->selects);
         $this->assertEquals(['users'], $qb->tables);
-        $this->assertEquals([
-            [
-                [
-                    ['status', '=', 'active']
-                ], 
-                'AND'
-            ],
-            [
-                [
-                    ['money', '>', ':debt']
-                ],
-                'AND'
-            ]
-        ], $qb->wheres);
+        
+        $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[0]);
+        $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[1]);
+        $this->assertEquals('status', $qb->wheres[0]->group[0]->leftExpr);
     }
 
 
@@ -229,18 +219,10 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(['name', 'email'], $qb->selects);
         $this->assertEquals(['users'], $qb->tables);
-        $this->assertEquals([
-            [
-                [
-                    ['status', '=', 'active']
-                ], 
-                'AND'
-            ],
-            function($qb) {
-                $qb->where('name', '%dolly%', 'LIKE')
-                   ->orWhere('type', 'Admin');
-            }
-        ], $qb->wheres);
+        $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[0]);
+        $this->assertInstanceOf(\Cora\Data\QueryBuilder::class, $qb->wheres[1]->group[0]);
+        $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[1]->group[0]->wheres[0]);
+        $this->assertEquals('name', $qb->wheres[1]->group[0]->wheres[0]->group[0]->leftExpr);
     }
 
 

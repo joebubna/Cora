@@ -42,4 +42,26 @@ class Testing extends \Cora\App\Controller
         // Check that the abstract relationship to other "adults" works
         echo $user->multiAbstract[1]->name;
     }
+
+
+    public function queryBuilder1()
+    {
+        list($field, $value, $comp) = array_pad(['name', 'bob'], 3, null);
+        echo $field;
+        echo $value;
+        var_dump($comp);
+    }
+
+
+    public function queryBuilder2()
+    {
+        $qb = new \Cora\Data\QueryBuilder();
+        $qb->select(['name', 'email'])
+           ->from('users')
+           ->where('status', 'active')
+           ->where(function($qb) {
+               $qb->where('name', '%dolly%', 'LIKE')
+                  ->orWhere('type', 'Admin');
+           });
+    }
 }
