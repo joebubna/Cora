@@ -198,6 +198,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[0]);
         $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[1]);
         $this->assertEquals('status', $qb->wheres[0]->group[0]->leftExpr);
+        $this->assertInstanceOf(\Cora\Data\DbField::class, $qb->wheres[1]->group[0]->rightExpr);
     }
 
 

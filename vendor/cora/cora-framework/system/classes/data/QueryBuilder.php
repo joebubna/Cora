@@ -397,6 +397,12 @@ class QueryBuilder
     }
 
 
+    /**
+     *  Take query input passed to a "field" parameter and transforms it as necessary into DB objects.
+     *  
+     *  @param input A "field" input parameter
+     *  @return mixed Will either transform the input into an object or return it as-is.
+     */
     protected function processField($input) 
     {
         if ($this->isFieldIdentifier($input)) {
@@ -405,6 +411,13 @@ class QueryBuilder
         return $input;
     }
 
+
+    /**
+     *  Take query input passed to a "value" parameter and transforms it as necessary into DB objects.
+     *  
+     *  @param input A "value" input parameter
+     *  @return mixed Will either transform the input into an object or return it as-is.
+     */
     protected function processValue($input) 
     {
         if ($this->isFieldIdentifier($input)) {
@@ -413,6 +426,13 @@ class QueryBuilder
         return $input;
     }
 
+
+    /**
+     *  Determines if the given input refers to a database field.
+     * 
+     *  @param input Query input
+     *  @return boolean
+     */
     protected function isFieldIdentifier($input) 
     {
         if (!is_object($input) && ':' == substr($input, 0, 1)) {
