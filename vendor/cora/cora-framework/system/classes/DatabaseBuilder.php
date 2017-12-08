@@ -157,7 +157,7 @@ class DatabaseBuilder extends Framework
                                 // If abstract reference (via keyword is set), then we don't want to do anything
                                 // here. The ownership column will be handled when the other object is processed.
                                 else {
-                                    if (!isset($props['via'])) {
+                                    if (!isset($props['via']) && !isset($props['using'])) {
                                         $db ->field($fieldName, 'int');
                                     }    
                                 }
