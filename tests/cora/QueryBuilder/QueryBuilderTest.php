@@ -181,7 +181,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
     *  Check that adding multiple WHERE fields works properly
-    *  @group failing
+    *  
     *  @test
     */
     public function canWhereMultipleWithFunctionCalls()
@@ -224,6 +224,33 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(\Cora\Data\QueryBuilder::class, $qb->wheres[1]->group[0]);
         $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[1]->group[0]->wheres[0]);
         $this->assertEquals('name', $qb->wheres[1]->group[0]->wheres[0]->group[0]->leftExpr);
+        $this->assertEquals('Admin', $qb->wheres[1]->group[0]->wheres[1]->group[0]->rightExpr);
+    }
+
+
+    /**
+    *  Check that IN works properly
+    *  
+    *  @test
+    */
+    public function canIn()
+    {
+        $qb = new \Cora\Data\QueryBuilder();
+        $qb->select(['name', 'email'])
+           ->from('users')
+           ->where('status', 'active')
+           ->in('type', ['Admin', 'Manager'])
+           ->in('country', function($qb) {
+               $qb->select('country')
+                  ->from('suppliers');
+           });
+
+        $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[0]);
+        $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[1]);
+        $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[2]);
+
+        $this->assertEquals('status', $qb->wheres[0]->group[0]->leftExpr);
+        $this->assertInstanceOf(array(), $qb->wheres[1]->group[0]->rightExpr);
     }
 
 

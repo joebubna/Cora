@@ -197,26 +197,28 @@ class QueryBuilder
     */
     public function where($field, $value = false, $comparison = '=')
     {
-        $this->storeExprGroup('wheres', $field, $value, $comparison, 'AND');
+        $this->storeConditionExprGroup('wheres', $field, $value, $comparison, 'AND');
         return $this;
     }
 
 
-    public function orWhere($conditions, $value = false, $comparison = '=')
+    public function orWhere($field, $value = false, $comparison = '=')
     {
-        $this->store('condition', 'wheres', $conditions, $value, $comparison, 'OR');
+        //$this->store('condition', 'wheres', $field, $value, $comparison, 'OR');
+        $this->storeConditionExprGroup('wheres', $field, $value, $comparison, 'AND');
         return $this;
     }
 
 
     //public function in($column, $fields)
-    public function in($conditions, $value = false, $comparison = 'IN')
+    public function in($field, $value = false)
     {
         $val = $value;
-        if (!is_array($value)) {
+        if (!is_array($value) && !$value instanceof \Closure) {
             $val = explode(',', $val);
         }
-        $this->store('condition', 'wheres', $conditions, $val, $comparison);
+        $this->storeConditionExprGroup('wheres', $field, $value, 'IN', 'AND');
+        //$this->store('condition', 'wheres', $conditions, $val, $comparison);
         return $this;
     }
 
@@ -339,7 +341,7 @@ class QueryBuilder
     //  NEW STORAGE ABSTRACTED METHODS
     //////////////////////////////////////////////////////////////
 
-    protected function storeExprGroup($type, $field, $value = false, $comparison = false, $conjunction = false)
+    protected function storeConditionExprGroup($type, $field, $value = false, $comparison = false, $conjunction = false)
     {
         $dataMember = &$this->$type;
         $expGroup = new \Cora\Data\DbExprGroup();
@@ -405,9 +407,6 @@ class QueryBuilder
      */
     protected function processField($input) 
     {
-        if ($this->isFieldIdentifier($input)) {
-            return new \Cora\Data\DbField($input);
-        }
         return $input;
     }
 
