@@ -279,6 +279,16 @@ class Model
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // If this model extends another, and the data is present on the parent, return the data.
+        ///////////////////////////////////////////////////////////////////////
+        if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends]) && !isset($this->model_dynamicOff) && isset($this->{$this->model_extends}->{$name})) {
+            $this->beforeGet($name); // Lifecycle callback
+            $returnValue = $this->{$this->model_extends}->{$name};
+            $this->afterGet($name, $returnValue); // Lifecycle callback
+            return $returnValue;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // If there is a defined DATA property (non-DB related), return the data.
         ///////////////////////////////////////////////////////////////////////
         if (isset($this->data->{$name})) {
@@ -365,6 +375,11 @@ class Model
                 $id_name = $this->id_name;
                 $this->{$id_name} = $value;
             }
+        }
+
+        // If this model extends a parent, and the parent has this attribute.
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends]) && isset($this->{$this->model_extends}->{$name})) {
+            $this->{$this->model_extends}->{$name} = $value;
         }
 
         // Otherwise if a plain model attribute is defined.
