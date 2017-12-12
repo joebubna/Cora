@@ -40,21 +40,24 @@ class Model
                     $fieldName = $this->getFieldName($key);
                     if (\Cora\Gateway::is_serialized($record[$fieldName])) {
                         $value = unserialize($record[$fieldName]);
-                        $this->beforeSet($key, $value); // Lifecycle callback
-                        $this->model_data[$key] = $value;
-                        $this->afterSet($key, $value); // Lifecycle callback
+                        if ($this->beforeSet($key, $value)) { // Lifecycle callback
+                            $this->model_data[$key] = $value;
+                            $this->afterSet($key, $value); // Lifecycle callback
+                        }
                     }
                     else if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime')) {
                         $value = new \DateTime($record[$fieldName]);
-                        $this->beforeSet($key, $value); // Lifecycle callback
-                        $this->model_data[$key] = $value;
-                        $this->afterSet($key, $value); // Lifecycle callback
+                        if ($this->beforeSet($key, $value)) { // Lifecycle callback
+                            $this->model_data[$key] = $value;
+                            $this->afterSet($key, $value); // Lifecycle callback
+                        }
                     }
                     else {
                         $value = $record[$fieldName];
-                        $this->beforeSet($key, $value); // Lifecycle callback
-                        $this->model_data[$key] = $value;
-                        $this->afterSet($key, $value); // Lifecycle callback
+                        if ($this->beforeSet($key, $value)) { // Lifecycle callback
+                            $this->model_data[$key] = $value;
+                            $this->afterSet($key, $value); // Lifecycle callback
+                        }
                     }
                 }
                 else if (isset($def['models']) || (isset($def['model']) && isset($def['usesRefTable']))) {
@@ -279,6 +282,16 @@ class Model
         }
 
         ///////////////////////////////////////////////////////////////////////
+        // If this model extends another, and the data is present on the parent, return the data.
+        ///////////////////////////////////////////////////////////////////////
+        if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends]) && !isset($this->model_dynamicOff) && isset($this->{$this->model_extends}->{$name})) {
+            $this->beforeGet($name); // Lifecycle callback
+            $returnValue = $this->{$this->model_extends}->{$name};
+            $this->afterGet($name, $returnValue); // Lifecycle callback
+            return $returnValue;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
         // If there is a defined DATA property (non-DB related), return the data.
         ///////////////////////////////////////////////////////////////////////
         if (isset($this->data->{$name})) {
@@ -340,40 +353,46 @@ class Model
     public function __set($name, $value)
     {
         // Lifecycle callback
-        $this->beforeSet($name, $value);
+        if ($this->beforeSet($name, $value)) {
 
-        // If a matching DB attribute is defined for this model.
-        if (isset($this->model_attributes[$name])) {
-            $def = $this->model_attributes[$name];
-            if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime') && is_string($value)) {
-                $value = new \DateTime($value);
-                $this->model_data[$name] = $value;
+            // If a matching DB attribute is defined for this model.
+            if (isset($this->model_attributes[$name])) {
+                $def = $this->model_attributes[$name];
+                if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime') && is_string($value)) {
+                    $value = new \DateTime($value);
+                    $this->model_data[$name] = $value;
+                }
+                else {
+                    $this->model_data[$name] = $value;
+                }
             }
-            else {
-                $this->model_data[$name] = $value;
-            }
-        }
 
-        // If your DB id's aren't 'id', but instead something like "note_id",
-        // but you always want to be able to refer to 'id' within a class.
-        else if ($name == 'id' && property_exists(get_class($this), 'id_name')) {
-            $id_name = $this->id_name;
-            if (isset($this->model_attributes[$id_name])) {
-                $this->model_data[$id_name] = $value;
-            }
-            else {
+            // If your DB id's aren't 'id', but instead something like "note_id",
+            // but you always want to be able to refer to 'id' within a class.
+            else if ($name == 'id' && property_exists(get_class($this), 'id_name')) {
                 $id_name = $this->id_name;
-                $this->{$id_name} = $value;
+                if (isset($this->model_attributes[$id_name])) {
+                    $this->model_data[$id_name] = $value;
+                }
+                else {
+                    $id_name = $this->id_name;
+                    $this->{$id_name} = $value;
+                }
             }
-        }
 
-        // Otherwise if a plain model attribute is defined.
-        else {
-            $this->{$name} = $value;
-        }
+            // If this model extends a parent, and the parent has this attribute.
+            else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends]) && isset($this->{$this->model_extends}->{$name})) {
+                $this->{$this->model_extends}->{$name} = $value;
+            }
 
-        // Lifecycle callback
-        $this->afterSet($name, $value);
+            // Otherwise if a plain model attribute is defined.
+            else {
+                $this->{$name} = $value;
+            }
+
+            // Lifecycle callback
+            $this->afterSet($name, $value);
+        }
     }
 
     /**
@@ -888,6 +907,7 @@ class Model
     public function beforeSet($prop, $value)
     {
         //echo __FUNCTION__;
+        return true;
     }
 
 

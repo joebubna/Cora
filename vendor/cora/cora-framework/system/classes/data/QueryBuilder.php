@@ -434,7 +434,7 @@ class QueryBuilder
      */
     protected function isFieldIdentifier($input) 
     {
-        if (!is_object($input) && ':' == substr($input, 0, 1)) {
+        if (is_string($input) && ':' == substr($input, 0, 1)) {
             return true;
         }
         return false;

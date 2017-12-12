@@ -216,4 +216,23 @@ class Testing extends \Cora\App\Controller
         return false;
     }
 
+
+    public function dbFunction() 
+    {
+        $fn = new \Cora\Data\DbFunction('SUM', 'thing1', 'thing2');
+        echo $fn->name;
+        var_dump($fn->args);
+    }
+
+    public function modelExtends()
+    {
+        $business = new \Models\Ifuel\Business('Business1');
+        $business->type = 'Lead';
+
+        $practice = new \Models\Ifuel\Practice('Practice1');
+        $practice->business = $business;
+        $practice->type = 'Member';
+        echo $practice->business->type;
+    }
+
 }

@@ -250,8 +250,32 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[2]);
 
         $this->assertEquals('status', $qb->wheres[0]->group[0]->leftExpr);
-        $this->assertInstanceOf(array(), $qb->wheres[1]->group[0]->rightExpr);
+        $this->assertEquals(['Admin', 'Manager'], $qb->wheres[1]->group[0]->rightExpr);
+        $this->assertInstanceOf(\Cora\Data\QueryBuilder::class, $qb->wheres[2]->group[0]->rightExpr);
     }
+
+
+    /**
+    *  Check that HAVING works properly
+    *  
+    *  @test
+    */
+    // public function canHaving()
+    // {
+    //     $qb = new \Cora\Data\QueryBuilder();
+    //     $qb->select(['name', 'email'])
+    //        ->from('users')
+    //        ->groupBy('type', 'DESC')
+    //        ->having('#COUNT(user_id)')
+
+    //     $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[0]);
+    //     $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[1]);
+    //     $this->assertInstanceOf(\Cora\Data\DbExprGroup::class, $qb->wheres[2]);
+
+    //     $this->assertEquals('status', $qb->wheres[0]->group[0]->leftExpr);
+    //     $this->assertEquals(['Admin', 'Manager'], $qb->wheres[1]->group[0]->rightExpr);
+    //     $this->assertInstanceOf(\Cora\Data\QueryBuilder::class, $qb->wheres[2]->group[0]->rightExpr);
+    // }
 
 
     // $qb->select(new DbFunction('SUM', 'money'))
