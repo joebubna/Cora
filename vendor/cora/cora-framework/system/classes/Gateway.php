@@ -307,7 +307,7 @@ class Gateway
                         $this->refInsert($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
 
                     }
-                    else {
+                    else if (!isset($prop['using'])) {
                         // The reference must be stored in the parent's table.
                         // So we just set the column to the new ID.
                         $this->db->set($fieldName, $id);
@@ -623,7 +623,7 @@ class Gateway
                         // Insert reference to this object in ref table. 
                         $this->refInsert($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
                     }
-                    else {
+                    else if (!isset($prop['using'])) {
                         $this->db   ->update($table)
                                     ->set($fieldName, $id)
                                     ->where($model->getPrimaryKey(), $model->{$model->getPrimaryKey()});
