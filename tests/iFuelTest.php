@@ -16,12 +16,14 @@ class iFuelTest extends \Cora\App\TestCase
         
         $business = new \Models\Ifuel\Business('Business1');
         $business->type = 'Lead';
-        //$this->businesses->save($business);
+        $businesses->save($business);
 
         $practice = new \Models\Ifuel\Practice('Practice1');
         $practice->business = $business;
-        $practices->save($practice);
         $practice->type = 'Member';
+        $practices->save($practice);
+
+        $practice = $practices->find(1);
 
         $this->assertEquals('Member', $practice->business->type);
     }

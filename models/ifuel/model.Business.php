@@ -10,6 +10,9 @@ class Business extends \Cora\App\Model {
             'type'          => 'int',
             'primaryKey'    => true
         ],
+        'parent' => [
+            'model' => 'Ifuel\\Business'
+        ],
         'name' => [
             'type' => 'varchar'
         ],
@@ -18,9 +21,6 @@ class Business extends \Cora\App\Model {
         ],
         'status' => [
             'type' => 'varchar'
-        ],
-        'parent' => [
-            'model' => 'Ifuel\\Business'
         ]
     ];
     
