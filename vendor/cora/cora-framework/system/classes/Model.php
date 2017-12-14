@@ -281,9 +281,9 @@ class Model
         ///////////////////////////////////////////////////////////////////////
         // If this model extends another, and the data is present on the parent, return the data.
         ///////////////////////////////////////////////////////////////////////
-        if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends]) && !isset($this->model_dynamicOff) && isset($this->{$this->model_extends}->{$name})) {
+        if ($this->issetExtended($name)) {
             $this->beforeGet($name); // Lifecycle callback
-            $returnValue = $this->{$this->model_extends}->{$name};
+            $returnValue = $this->getExtendedAttribute($name);
             $this->afterGet($name, $returnValue); // Lifecycle callback
             return $returnValue;
         }
@@ -378,8 +378,8 @@ class Model
         }
 
         // If this model extends a parent, and the parent has this attribute.
-        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends]) && isset($this->{$this->model_extends}->{$name})) {
-            $this->{$this->model_extends}->{$name} = $value;
+        else if ($this->issetExtended($name)) {
+            $this->setExtendedAttribute($name, $value);
         }
 
         // Otherwise if a plain model attribute is defined.
@@ -390,6 +390,51 @@ class Model
         // Lifecycle callback
         $this->afterSet($name, $value);
     }
+
+
+    public function issetExtended($name) 
+    {
+        if (isset($this->$name)) {
+            return true;
+        }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            if ($extendedModel) {
+                return $extendedModel->issetExtended($name);
+            }
+        }
+        return false;
+    }
+
+
+    public function getExtendedAttribute($name) 
+    {
+        if (isset($this->$name)) {
+            return $this->$name;
+        }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            if ($extendedModel) {
+                return $extendedModel->getExtendedAttribute($name);
+            }
+        }
+        return null;
+    }
+
+
+    public function setExtendedAttribute($name, $value) 
+    {
+        if (isset($this->$name)) {
+            $this->$name = $value;
+        }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            if ($extendedModel) {
+                $extendedModel->setExtendedAttribute($name, $value);
+            }
+        }
+    }
+
 
     /**
      *  For getting model data without triggering dynamic data fetching.
