@@ -7,6 +7,7 @@ namespace Cora;
 class Model
 {
     protected $model_data;
+    protected $model_hydrating = false;
     public $data;
     public $model_db = false;
     public $model_dynamicOff;
@@ -22,6 +23,9 @@ class Model
 
     public function _populate($record = null, $db = false)
     {
+        // In order to stop unnecessary recursive issetExtended() checks while doing initial hydrating of model.
+        $this->model_hydrating = true;
+
         // If this model is having a custom DB object passed into it,
         // then we'll use that for any dynamic fetching instead of
         // the connection defined on the model.
@@ -88,6 +92,8 @@ class Model
 
         // Call onLoad method 
         $this->onLoad();
+
+        $this->model_hydrating = false;
     }
 
 
@@ -278,15 +284,6 @@ class Model
             }
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        // If this model extends another, and the data is present on the parent, return the data.
-        ///////////////////////////////////////////////////////////////////////
-        if ($this->issetExtended($name)) {
-            $this->beforeGet($name); // Lifecycle callback
-            $returnValue = $this->getExtendedAttribute($name);
-            $this->afterGet($name, $returnValue); // Lifecycle callback
-            return $returnValue;
-        }
 
         ///////////////////////////////////////////////////////////////////////
         // If there is a defined DATA property (non-DB related), return the data.
@@ -310,6 +307,7 @@ class Model
             return $returnValue;
         }
 
+
         ///////////////////////////////////////////////////////////////////////
         // IF NONE OF THE ABOVE WORKED BECAUSE TRANSLATION FROM 'ID' TO A CUSTOM ID NAME
         // NEEDS TO BE DONE:
@@ -327,6 +325,18 @@ class Model
             $this->afterGet($this->id_name, $returnValue); // Lifecycle callback
             return $returnValue;
         }
+
+
+        ///////////////////////////////////////////////////////////////////////
+        // If this model extends another, and the data is present on the parent, return the data.
+        ///////////////////////////////////////////////////////////////////////
+        if (substr($name, 0, 6 ) != "model_" && $this->issetExtended($name)) {
+            $this->beforeGet($name); // Lifecycle callback
+            $returnValue = $this->getExtendedAttribute($name);
+            $this->afterGet($name, $returnValue); // Lifecycle callback
+            return $returnValue;
+        }
+
 
         ///////////////////////////////////////////////////////////////////////
         // No matching property was found! Normally this will return null.
@@ -378,7 +388,7 @@ class Model
         }
 
         // If this model extends a parent, and the parent has this attribute.
-        else if ($this->issetExtended($name)) {
+        else if ($this->model_hydrating == 0 && $this->issetExtended($name)) {
             $this->setExtendedAttribute($name, $value);
         }
 
