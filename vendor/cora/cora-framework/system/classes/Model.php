@@ -206,27 +206,40 @@ class Model
         // in the case of the attribute pointing to models.
         ///////////////////////////////////////////////////////////////////////
         else if (isset($this->model_attributes[$name]) && !isset($this->model_dynamicOff)) {
-
+            
             // If the attribute isn't the primary key of our current model, do dynamic fetch.
             if ($name != $this->getPrimaryKey()) {
-
+                
                 $def = $this->model_attributes[$name];
+                
+                if (isset($def['model'])) {
 
-                if (isset($def['model']) && isset($def['using']) && !isset($this->model_dynamicOff)) {
-                    $this->$name = $this->getModelFromCustomRelationship($name, $def['model']);
+                    // If fetching via a defined column on a table.
+                    if (isset($def['via'])) {
+                        $this->$name = $this->getModelFromTableColumn($def['model'], $def['via']);
+                    }
+
+                    // If custom defined relationship for this single model
+                    else if (isset($def['using'])) {
+                        $this->$name = $this->getModelFromCustomRelationship($name, $def['model']);
+                    }
+
+                    // If desired data is a reference to a singular object, but it's defined as using a reference 
+                    // table, then it's abstract in the sense that there's nothing on the current model's table 
+                    // leading to it. We need to grab it using our method to grab data from a relation table.
+                    else if (isset($def['usesRefTable'])) {
+                        $this->$name = $this->getModelFromRelationTable($name, $def['model']);
+                    }
+
+                    // If we fell down to here, then the data we need is located on this model's table. 
+                    else {
+                        $this->$name = $this->fetchData($name);
+                    }
                 }
-
-                // If desired data is a reference to a singular object, but it's defined as using a reference 
-                // table, then it's abstract in the sense that there's nothing on the current model's table 
-                // leading to it. We need to grab it using our method to grab data from a relation table.
-                else if (isset($def['model']) && isset($def['usesRefTable']) && !isset($this->model_dynamicOff)) {
-                    $this->$name = $this->getModelFromRelationTable($name, $def['model']);
-                }
-
                 // If desired data is a reference to a collection of objects. This means the relationship is 
                 // abstract (no data on this model's table). We need to call appropriate method to get data 
                 // from external table.
-                else if (isset($def['models']) && !isset($this->model_dynamicOff)) {
+                else if (isset($def['models'])) {
                     // If the relationship is one-to-many.
                     if (isset($def['via'])) {
                         $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
@@ -533,6 +546,13 @@ class Model
             $leftSet->merge($rightSet);
             return $leftSet;
         }
+    }
+
+
+    protected function getModelFromTableColumn($objName, $relationColumnName)
+    {
+        // Same logic as grabbing multiple objects, we just return the first (and only expected) result.
+        return $this->getModelsFromTableColumn($objName, $relationColumnName)->get(0);
     }
 
 
