@@ -474,6 +474,12 @@ class Model
         if (isset($this->data->{$name})) {
             return $this->data->{$name};
         }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            if ($extendedModel && $result = $extendedModel->getAttributeValue($name)) {
+                return $result;
+            }
+        }
         return null;
     }
 
