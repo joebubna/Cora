@@ -131,11 +131,12 @@ class Model
         // to boolean true, meaning we have to dynamically fetch the model)
         ///////////////////////////////////////////////////////////////////////
         if (isset($this->model_data[$name])) {
+            
             // Check if the stored data is numeric.
             // If it's not, then we don't need to worry about it being a
             // class reference that we need to fetch.
             if (is_numeric($this->model_data[$name])) {
-
+                
                 // Ref this model's attributes in a shorter variable.
                 $def = $this->model_attributes[$name];
 
@@ -463,6 +464,35 @@ class Model
      *  For getting model data without triggering dynamic data fetching.
      */
     public function getAttributeValue($name, $convertDates = true)
+    {
+        if (isset($this->model_data[$name])) {
+            $result = $this->model_data[$name];
+            if ($result instanceof \DateTime && $convertDates == true) {
+                $result = $result->format('Y-m-d H:i:s');
+            }
+            return $result;
+        }
+        if (isset($this->data->{$name})) {
+            return $this->data->{$name};
+        }
+        return null;
+    }
+
+
+    /**
+     *  For getting model data without triggering unnecessary dynamic data fetching.
+     *  Will trigger load of extended object, but not on any ID being referenced.
+     * 
+     *  If EMPLOYEE extends USER and each user has a reference to another user who is their boss,
+     *  you may want to grab $employee->boss->id, but not want to load the info for their boss.
+     *  $employee->getAttributeValueExtended('boss') allows you to do that.
+     * 
+     *  This method is different from getAttributeValue in that this one checks extended relationships
+     *  and the other doesn't. They could theoretically be combined, but some places seem to use 
+     *  getAttributeValue as an "issetAttribute" check, so if it returns any value for stuff not 
+     *  on the model's immediate table, it screws stuff up.
+     */
+    public function getAttributeValueExtended($name, $convertDates = true)
     {
         if (isset($this->model_data[$name])) {
             $result = $this->model_data[$name];
