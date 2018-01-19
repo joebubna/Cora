@@ -375,7 +375,7 @@ class Model
     {
         // Lifecycle callback
         $this->beforeSet($name, $value);
-
+        
         // If a matching DB attribute is defined for this model.
         if (isset($this->model_attributes[$name])) {
             $def = $this->model_attributes[$name];
@@ -402,7 +402,7 @@ class Model
         }
 
         // If this model extends a parent, and the parent has this attribute.
-        else if ($this->model_hydrating == 0 && $this->issetExtended($name)) {
+        else if ($this->model_hydrating == 0 && $this->hasAttribute($name)) {
             $this->setExtendedAttribute($name, $value);
         }
 
@@ -416,6 +416,22 @@ class Model
     }
 
 
+    public function hasAttribute($name) 
+    {
+        if (isset($this->model_attributes[$name])) {
+            return true;
+        }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            
+            if ($extendedModel) {
+                return $extendedModel->hasAttribute($name);
+            }
+        }
+        return false;
+    }
+
+
     public function issetExtended($name) 
     {
         if (isset($this->$name)) {
@@ -423,6 +439,7 @@ class Model
         }
         else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
             $extendedModel = $this->{$this->model_extends};
+            
             if ($extendedModel) {
                 return $extendedModel->issetExtended($name);
             }
@@ -448,7 +465,7 @@ class Model
 
     public function setExtendedAttribute($name, $value) 
     {
-        if (isset($this->$name)) {
+        if (isset($this->model_attributes[$name])) {
             $this->$name = $value;
         }
         else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
