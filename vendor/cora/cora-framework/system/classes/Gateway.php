@@ -78,7 +78,11 @@ class Gateway
         }
 
         if (is_numeric($model->{$id_name})) {
-        	return $this->_update($model, $table, $id_name);
+            $query = $this->getDb();
+            $query->where($model->getFieldName($id_name), $model->{$id_name});
+            if ($this->count($query)) {
+                return $this->_update($model, $table, $id_name);
+            }
         }
         return $this->_create($model, $table, $id_name);
 	}
@@ -561,10 +565,12 @@ class Gateway
         //echo $this->db->getQuery()."<br>";
         $modelId = $this->db->exec()->lastInsertId();
 
-        // Assign the database ID to the model.
-        $record['id'] = $modelId;
-        $model->_populate($record);
-        //$model->id = $modelId;
+        // Assign the database ID to the model if necessary
+        if ($modelId) {
+            $record['id'] = $modelId;
+            $model->_populate($record);
+        }
+        
 
         // Mark this object as saved.
         if (!$this->getSavedModel($model)) {

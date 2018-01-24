@@ -42,6 +42,7 @@ class Model
                 // Otherwise ignore any data returned from the DB that isn't defined in the model.
                 if (isset($record[$this->getFieldName($key)])) {
                     $fieldName = $this->getFieldName($key);
+                    
                     if (\Cora\Gateway::is_serialized($record[$fieldName])) {
                         $value = unserialize($record[$fieldName]);
                         $this->beforeSet($key, $value); // Lifecycle callback
@@ -445,6 +446,33 @@ class Model
             }
         }
         return false;
+    }
+
+
+    /**
+     *  Fetches a collection of the data attributes that apply to this model.
+     *  Does not include relationships. Will included extended fields unless set to exclude.
+     *  
+     *  @param boolean $excludeExtended Whether or not to exclude extended data elements. Defaults to false.
+     *  @return \Cora\Collection
+     */
+    public function getDataAttributes($excludeExtended = false) 
+    {
+        $attributes = new \Cora\Collection();
+
+        foreach ($this->model_attributes as $key => $def) {
+            if (!isset($def['model']) && !isset($def['models'])) {
+                $attributes->add($key);
+            }
+        }
+
+        if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            if ($extendedModel) {
+                $attributes->merge($extendedModel->getDataAttributes());
+            }
+        }
+        return array_unique($attributes->toArray());
     }
 
 
