@@ -18,7 +18,7 @@ $dbConfig['defaultConnection'] = 'MySQL';
 $dbConfig['connections'] = [
     'MySQL' => [
         'adaptor'   => 'MySQL',
-        'host'      => 'localhost:3306',
+        'host'      => 'db',
         'dbName'    => 'cora',
         'dbUser'    => 'root',
         'dbPass'    => 'root',
@@ -26,21 +26,21 @@ $dbConfig['connections'] = [
     ],
     'MySQL2' => [
         'adaptor'   => 'MySQL',
-        'host'      => 'localhost:3306',
+        'host'      => 'db',
         'dbName'    => 'cora2',
         'dbUser'    => 'root',
         'dbPass'    => 'root'
     ],
     'MySQLTest' => [
         'adaptor'   => 'MySQL',
-        'host'      => 'localhost:3306',
+        'host'      => 'db',
         'dbName'    => 'cora_test',
         'dbUser'    => 'root',
         'dbPass'    => 'root'
     ],
     'EnterConnectionNameHere' => [
         'adaptor'   => 'MySQL',
-        'host'      => 'localhost:3306',
+        'host'      => 'db',
         'dbName'    => 'cora3',
         'dbUser'    => 'root',
         'dbPass'    => 'root'
