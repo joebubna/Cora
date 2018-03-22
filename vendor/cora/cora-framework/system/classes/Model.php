@@ -112,10 +112,11 @@ class Model
 
     public function __isset($name)
     {
-        if ($this->getAttributeValue($name) != null) {
-            return true;
+        $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['class'];
+        if ($caller == self::class) {
+            return $this->getAttributeValue($name) != null;
         }
-        return false;
+        return $this->getAttributeValueExtended($name) != null;
     }
 
 
