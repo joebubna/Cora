@@ -7,6 +7,7 @@ namespace Cora;
 class Model
 {
     protected $model_data;
+    protected $model_hydrating = false;
     public $data;
     public $model_db = false;
     public $model_dynamicOff;
@@ -22,6 +23,9 @@ class Model
 
     public function _populate($record = null, $db = false)
     {
+        // In order to stop unnecessary recursive issetExtended() checks while doing initial hydrating of model.
+        $this->model_hydrating = true;
+
         // If this model is having a custom DB object passed into it,
         // then we'll use that for any dynamic fetching instead of
         // the connection defined on the model.
@@ -38,26 +42,24 @@ class Model
                 // Otherwise ignore any data returned from the DB that isn't defined in the model.
                 if (isset($record[$this->getFieldName($key)])) {
                     $fieldName = $this->getFieldName($key);
+                    
                     if (\Cora\Gateway::is_serialized($record[$fieldName])) {
                         $value = unserialize($record[$fieldName]);
-                        if ($this->beforeSet($key, $value)) { // Lifecycle callback
-                            $this->model_data[$key] = $value;
-                            $this->afterSet($key, $value); // Lifecycle callback
-                        }
+                        $this->beforeSet($key, $value); // Lifecycle callback
+                        $this->model_data[$key] = $value;
+                        $this->afterSet($key, $value); // Lifecycle callback
                     }
                     else if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime')) {
                         $value = new \DateTime($record[$fieldName]);
-                        if ($this->beforeSet($key, $value)) { // Lifecycle callback
-                            $this->model_data[$key] = $value;
-                            $this->afterSet($key, $value); // Lifecycle callback
-                        }
+                        $this->beforeSet($key, $value); // Lifecycle callback
+                        $this->model_data[$key] = $value;
+                        $this->afterSet($key, $value); // Lifecycle callback
                     }
                     else {
                         $value = $record[$fieldName];
-                        if ($this->beforeSet($key, $value)) { // Lifecycle callback
-                            $this->model_data[$key] = $value;
-                            $this->afterSet($key, $value); // Lifecycle callback
-                        }
+                        $this->beforeSet($key, $value); // Lifecycle callback
+                        $this->model_data[$key] = $value;
+                        $this->afterSet($key, $value); // Lifecycle callback
                     }
                 }
                 else if (isset($def['models']) || (isset($def['model']) && isset($def['usesRefTable']))) {
@@ -91,6 +93,8 @@ class Model
 
         // Call onLoad method 
         $this->onLoad();
+
+        $this->model_hydrating = false;
     }
 
 
@@ -128,11 +132,12 @@ class Model
         // to boolean true, meaning we have to dynamically fetch the model)
         ///////////////////////////////////////////////////////////////////////
         if (isset($this->model_data[$name])) {
+            
             // Check if the stored data is numeric.
             // If it's not, then we don't need to worry about it being a
             // class reference that we need to fetch.
             if (is_numeric($this->model_data[$name])) {
-
+                
                 // Ref this model's attributes in a shorter variable.
                 $def = $this->model_attributes[$name];
 
@@ -189,7 +194,7 @@ class Model
                     }
                 }
             }
-
+            
             $this->beforeGet($name); // Lifecycle callback
             $returnValue = $this->model_data[$name];
             $this->afterGet($name, $returnValue); // Lifecycle callback
@@ -203,27 +208,40 @@ class Model
         // in the case of the attribute pointing to models.
         ///////////////////////////////////////////////////////////////////////
         else if (isset($this->model_attributes[$name]) && !isset($this->model_dynamicOff)) {
-
+            
             // If the attribute isn't the primary key of our current model, do dynamic fetch.
             if ($name != $this->getPrimaryKey()) {
-
+                
                 $def = $this->model_attributes[$name];
+                
+                if (isset($def['model'])) {
 
-                if (isset($def['model']) && isset($def['using']) && !isset($this->model_dynamicOff)) {
-                    $this->$name = $this->getModelFromCustomRelationship($name, $def['model']);
+                    // If fetching via a defined column on a table.
+                    if (isset($def['via'])) {
+                        $this->$name = $this->getModelFromTableColumn($def['model'], $def['via']);
+                    }
+
+                    // If custom defined relationship for this single model
+                    else if (isset($def['using'])) {
+                        $this->$name = $this->getModelFromCustomRelationship($name, $def['model']);
+                    }
+
+                    // If desired data is a reference to a singular object, but it's defined as using a reference 
+                    // table, then it's abstract in the sense that there's nothing on the current model's table 
+                    // leading to it. We need to grab it using our method to grab data from a relation table.
+                    else if (isset($def['usesRefTable'])) {
+                        $this->$name = $this->getModelFromRelationTable($name, $def['model']);
+                    }
+
+                    // If we fell down to here, then the data we need is located on this model's table. 
+                    else {
+                        $this->$name = $this->fetchData($name);
+                    }
                 }
-
-                // If desired data is a reference to a singular object, but it's defined as using a reference 
-                // table, then it's abstract in the sense that there's nothing on the current model's table 
-                // leading to it. We need to grab it using our method to grab data from a relation table.
-                else if (isset($def['model']) && isset($def['usesRefTable']) && !isset($this->model_dynamicOff)) {
-                    $this->$name = $this->getModelFromRelationTable($name, $def['model']);
-                }
-
                 // If desired data is a reference to a collection of objects. This means the relationship is 
                 // abstract (no data on this model's table). We need to call appropriate method to get data 
                 // from external table.
-                else if (isset($def['models']) && !isset($this->model_dynamicOff)) {
+                else if (isset($def['models'])) {
                     // If the relationship is one-to-many.
                     if (isset($def['via'])) {
                         $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
@@ -281,15 +299,6 @@ class Model
             }
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        // If this model extends another, and the data is present on the parent, return the data.
-        ///////////////////////////////////////////////////////////////////////
-        if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends]) && !isset($this->model_dynamicOff) && isset($this->{$this->model_extends}->{$name})) {
-            $this->beforeGet($name); // Lifecycle callback
-            $returnValue = $this->{$this->model_extends}->{$name};
-            $this->afterGet($name, $returnValue); // Lifecycle callback
-            return $returnValue;
-        }
 
         ///////////////////////////////////////////////////////////////////////
         // If there is a defined DATA property (non-DB related), return the data.
@@ -313,6 +322,7 @@ class Model
             return $returnValue;
         }
 
+
         ///////////////////////////////////////////////////////////////////////
         // IF NONE OF THE ABOVE WORKED BECAUSE TRANSLATION FROM 'ID' TO A CUSTOM ID NAME
         // NEEDS TO BE DONE:
@@ -330,6 +340,18 @@ class Model
             $this->afterGet($this->id_name, $returnValue); // Lifecycle callback
             return $returnValue;
         }
+
+
+        ///////////////////////////////////////////////////////////////////////
+        // If this model extends another, and the data is present on the parent, return the data.
+        ///////////////////////////////////////////////////////////////////////
+        if (substr($name, 0, 6 ) != "model_" && $this->issetExtended($name)) {
+            $this->beforeGet($name); // Lifecycle callback
+            $returnValue = $this->getExtendedAttribute($name);
+            $this->afterGet($name, $returnValue); // Lifecycle callback
+            return $returnValue;
+        }
+
 
         ///////////////////////////////////////////////////////////////////////
         // No matching property was found! Normally this will return null.
@@ -353,47 +375,135 @@ class Model
     public function __set($name, $value)
     {
         // Lifecycle callback
-        if ($this->beforeSet($name, $value)) {
-
-            // If a matching DB attribute is defined for this model.
-            if (isset($this->model_attributes[$name])) {
-                $def = $this->model_attributes[$name];
-                if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime') && is_string($value)) {
-                    $value = new \DateTime($value);
-                    $this->model_data[$name] = $value;
-                }
-                else {
-                    $this->model_data[$name] = $value;
-                }
+        $this->beforeSet($name, $value);
+        
+        // If a matching DB attribute is defined for this model.
+        if (isset($this->model_attributes[$name])) {
+            $def = $this->model_attributes[$name];
+            if (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime') && is_string($value)) {
+                $value = new \DateTime($value);
+                $this->model_data[$name] = $value;
             }
-
-            // If your DB id's aren't 'id', but instead something like "note_id",
-            // but you always want to be able to refer to 'id' within a class.
-            else if ($name == 'id' && property_exists(get_class($this), 'id_name')) {
-                $id_name = $this->id_name;
-                if (isset($this->model_attributes[$id_name])) {
-                    $this->model_data[$id_name] = $value;
-                }
-                else {
-                    $id_name = $this->id_name;
-                    $this->{$id_name} = $value;
-                }
-            }
-
-            // If this model extends a parent, and the parent has this attribute.
-            else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends]) && isset($this->{$this->model_extends}->{$name})) {
-                $this->{$this->model_extends}->{$name} = $value;
-            }
-
-            // Otherwise if a plain model attribute is defined.
             else {
-                $this->{$name} = $value;
+                $this->model_data[$name] = $value;
             }
+        }
 
-            // Lifecycle callback
-            $this->afterSet($name, $value);
+        // If your DB id's aren't 'id', but instead something like "note_id",
+        // but you always want to be able to refer to 'id' within a class.
+        else if ($name == 'id' && property_exists(get_class($this), 'id_name')) {
+            $id_name = $this->id_name;
+            if (isset($this->model_attributes[$id_name])) {
+                $this->model_data[$id_name] = $value;
+            }
+            else {
+                $id_name = $this->id_name;
+                $this->{$id_name} = $value;
+            }
+        }
+
+        // If this model extends a parent, and the parent has this attribute.
+        else if ($this->model_hydrating == 0 && $this->hasAttribute($name)) {
+            $this->setExtendedAttribute($name, $value);
+        }
+
+        // Otherwise if a plain model attribute is defined.
+        else {
+            $this->{$name} = $value;
+        }
+
+        // Lifecycle callback
+        $this->afterSet($name, $value);
+    }
+
+
+    public function hasAttribute($name) 
+    {
+        if (isset($this->model_attributes[$name])) {
+            return true;
+        }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            
+            if ($extendedModel) {
+                return $extendedModel->hasAttribute($name);
+            }
+        }
+        return false;
+    }
+
+
+    public function issetExtended($name) 
+    {
+        if (isset($this->$name)) {
+            return true;
+        }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            
+            if ($extendedModel) {
+                return $extendedModel->issetExtended($name);
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     *  Fetches a collection of the data attributes that apply to this model.
+     *  Does not include relationships. Will included extended fields unless set to exclude.
+     *  
+     *  @param boolean $excludeExtended Whether or not to exclude extended data elements. Defaults to false.
+     *  @return \Cora\Collection
+     */
+    public function getDataAttributes($excludeExtended = false) 
+    {
+        $attributes = new \Cora\Collection();
+
+        foreach ($this->model_attributes as $key => $def) {
+            if (!isset($def['model']) && !isset($def['models'])) {
+                $attributes->add($key);
+            }
+        }
+
+        if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            if ($extendedModel) {
+                $attributes->merge($extendedModel->getDataAttributes());
+            }
+        }
+        return array_unique($attributes->toArray());
+    }
+
+
+    public function getExtendedAttribute($name) 
+    {
+        if (isset($this->$name)) {
+            return $this->$name;
+        }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            if ($extendedModel) {
+                return $extendedModel->getExtendedAttribute($name);
+            }
+        }
+        return null;
+    }
+
+
+    public function setExtendedAttribute($name, $value) 
+    {
+        if (isset($this->model_attributes[$name])) {
+            $this->$name = $value;
+        }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            if ($extendedModel) {
+                $extendedModel->setExtendedAttribute($name, $value);
+            }
         }
     }
+
 
     /**
      *  For getting model data without triggering dynamic data fetching.
@@ -409,6 +519,41 @@ class Model
         }
         if (isset($this->data->{$name})) {
             return $this->data->{$name};
+        }
+        return null;
+    }
+
+
+    /**
+     *  For getting model data without triggering unnecessary dynamic data fetching.
+     *  Will trigger load of extended object, but not on any ID being referenced.
+     * 
+     *  If EMPLOYEE extends USER and each user has a reference to another user who is their boss,
+     *  you may want to grab $employee->boss->id, but not want to load the info for their boss.
+     *  $employee->getAttributeValueExtended('boss') allows you to do that.
+     * 
+     *  This method is different from getAttributeValue in that this one checks extended relationships
+     *  and the other doesn't. They could theoretically be combined, but some places seem to use 
+     *  getAttributeValue as an "issetAttribute" check, so if it returns any value for stuff not 
+     *  on the model's immediate table, it screws stuff up.
+     */
+    public function getAttributeValueExtended($name, $convertDates = true)
+    {
+        if (isset($this->model_data[$name])) {
+            $result = $this->model_data[$name];
+            if ($result instanceof \DateTime && $convertDates == true) {
+                $result = $result->format('Y-m-d H:i:s');
+            }
+            return $result;
+        }
+        if (isset($this->data->{$name})) {
+            return $this->data->{$name};
+        }
+        else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
+            $extendedModel = $this->{$this->model_extends};
+            if ($extendedModel && $result = $extendedModel->getAttributeValue($name)) {
+                return $result;
+            }
         }
         return null;
     }
@@ -482,6 +627,13 @@ class Model
             $leftSet->merge($rightSet);
             return $leftSet;
         }
+    }
+
+
+    protected function getModelFromTableColumn($objName, $relationColumnName)
+    {
+        // Same logic as grabbing multiple objects, we just return the first (and only expected) result.
+        return $this->getModelsFromTableColumn($objName, $relationColumnName)->get(0);
     }
 
 
@@ -863,8 +1015,6 @@ class Model
             }
             return (array) $object;
         }
-        
-        //return $inputData;
 
         return $inputData;
     }
@@ -907,7 +1057,6 @@ class Model
     public function beforeSet($prop, $value)
     {
         //echo __FUNCTION__;
-        return true;
     }
 
 
