@@ -110,12 +110,21 @@ class Model
     }
 
 
+    /**
+     *  Within this model class, isset() is needed to check if things are set. Internally this needs to return false 
+     *  for Cora extended class attributes.
+     *  However, outside this class, isset() can also be called, but in that case extended (using Cora extends system) 
+     *  attributes need to return true.
+     *  In order to handle these opposite needed behaviors depending on who is calling, code was added to grab the calling class.
+     */
     public function __isset($name)
     {
-        if ($this->getAttributeValue($name) != null) {
-            return true;
+        // Get the calling class, so we can determine if isset was called internally or externally.
+        $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['class'];
+        if ($caller == self::class) {
+            return $this->getAttributeValue($name) != null;
         }
-        return false;
+        return $this->getAttributeValueExtended($name) != null;
     }
 
 
