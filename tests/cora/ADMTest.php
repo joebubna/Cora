@@ -1052,6 +1052,76 @@ class ADMTest extends \Cora\App\TestCase
 
 
     /**
+     *  Sometimes you might not want to fetch all the related models for a relationship.
+     *  For example you may want to paginate or search. This checks that you can pass a closure
+     *  to a plural relationship for customizing the data that gets returned.
+     *
+     *  @test
+     */
+    public function canPassClosureToCustomizeFetchingOfRelatedModels()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Change Bob1 back to Adult from previous test
+        $bob = $users->find(1);
+        $bob->type = 'Adult';
+        $users->save($bob);
+
+        // Grab Jenine
+        $user = $users->find(3);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jenine', $user->name);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals(3, $user->sameType->count());
+
+        // Grab adults named either Jeff or Kevin
+        $this->assertEquals(2, $user->sameType(function($query) {
+          $query->in('name', ['Jeff', 'Kevin']);
+          return $query;
+        })->count());
+    }
+
+
+    /**
+     *  Sometimes you might not want to fetch all the related models for a relationship.
+     *  For example you may want to paginate or search. This checks that you can pass a closure
+     *  to a plural relationship for customizing the data that gets returned.
+     * 
+     *  This test checks that you can pass arguments to the closure.
+     *
+     *  @test
+     */
+    public function canPassClosureArguments()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Change Bob1 back to Adult from previous test
+        $bob = $users->find(1);
+        $bob->type = 'Adult';
+        $users->save($bob);
+
+        // Grab Jenine
+        $user = $users->find(3);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jenine', $user->name);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals(3, $user->sameType->count());
+
+        // Grab adults named either Jeff or Kevin
+        $this->assertEquals(2, $user->sameType(function($query, $args) {
+          $query->in('name', $args);
+          return $query;
+        }, ['Jeff', 'Kevin'])->count());
+    }
+
+
+    /**
     *   Check that models which utilize abstract models can be saved.
     *
     *   @test
@@ -1085,11 +1155,22 @@ class ADMTest extends \Cora\App\TestCase
 
 
     /**
-    *   Check that singular relationship to an abstract model can be saved.
-    *
-    *   @test
-    */
-    public function canSaveModelUtilizingAbstractRelationshipToDifferentModel()
+     *  Check that you can perform LoadMapping to efficiently load additional models.
+     * 
+     *  For example, pretend you run some sort of ancentry website:
+     *  Say you want to grab a list of users and you want to iterate over them grabbing
+     *  the name of each user's father.
+     * 
+     *  In most ORMs, each iteration would result in a new query of the database. So if you 
+     *  have 100 users, you'll end up doing 101 queries (one to fetch the users, then 100 to fetch
+     *  the father of each user). This is not ideal and one of the biggest drawbacks to ORMs.
+     * 
+     *  Using the feature below, you can intelligently grab and populate all the data you need 
+     *  in one query.
+     *  
+     *  @test
+     */
+    public function canLoadMapData()
     {
         // Setup
         $users = $this->app->tests->users;

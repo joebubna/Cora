@@ -21,6 +21,7 @@ class Model
         }
     }
 
+
     public function _populate($record = null, $db = false)
     {
         // In order to stop unnecessary recursive issetExtended() checks while doing initial hydrating of model.
@@ -188,7 +189,7 @@ class Model
                 else if (isset($def['models']) && !isset($this->model_dynamicOff)) {
                     // If the relationship is one-to-many.
                     if (isset($def['via'])) {
-                        $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
+                        $this->$name = $this->getModelsFromTableColumn($name, $def['models'], $def['via']);
                     }
 
                     else if (isset($def['using'])) {
@@ -227,7 +228,7 @@ class Model
 
                     // If fetching via a defined column on a table.
                     if (isset($def['via'])) {
-                        $this->$name = $this->getModelFromTableColumn($def['model'], $def['via']);
+                        $this->$name = $this->getModelFromTableColumn($name, $def['model'], $def['via']);
                     }
 
                     // If custom defined relationship for this single model
@@ -253,7 +254,7 @@ class Model
                 else if (isset($def['models'])) {
                     // If the relationship is one-to-many.
                     if (isset($def['via'])) {
-                        $this->$name = $this->getModelsFromTableColumn($def['models'], $def['via']);
+                        $this->$name = $this->getModelsFromTableColumn($name, $def['models'], $def['via']);
                     }
 
                     else if (isset($def['using'])) {
@@ -426,6 +427,108 @@ class Model
     }
 
 
+    /**
+     *  Intercepts methods calls on this object.
+     *  $model->method(arg1, arg2)
+     *  OR
+     *  $model->pluralObjRelationProperty(argClosure, argParams, argLoadMapping)
+     *
+     *  @param name The name of a function in this model OR a plural relationship to another model 
+     *  @param arguments 1. A closure, 2. An argument (or array of arguments), 3. A loadmap array
+     *  @return The function or relationship result
+     */
+    public function __call($name, $arguments)
+    {   
+      // Vars
+      $def = [];
+
+      // If matching attribute is defined, then grab info
+      if (isset($this->model_attributes[$name])) {
+        $def = $this->model_attributes[$name];
+
+        // If the attribute is a reference to a collection of models
+        if (isset($def['models'])) {
+
+          // Get query object that we can use
+          $query = $this->getQueryObjectForRelation($name);
+
+          // Call the provided callback with the query
+          $query = $arguments[0]($query, isset($arguments[1]) ? $arguments[1] : false);
+
+          // Loadmapping?
+          // Fetch data
+          $this->$name = $this->getModels($name, $def['models'], $query);
+          return $this->$name;
+        }
+      }
+
+      // If a plural model relationship wasn't what was called, then assume it's a normal 
+      // function call and pass on the request to the matching function (or error out)
+      call_user_func_array(array($this, $name), $arguments);
+    }
+
+
+    /**
+     *  Returns a query object for a specific related model.
+     */
+    protected function getQueryObjectForRelation($attribute)
+    {
+      // Setup
+      $def = $this->model_attributes[$attribute];
+      $relatedObj = isset($def['models']) ? $this->fetchRelatedObj($def['models']) : $this->fetchRelatedObj($def['model']);
+
+      // Get DB adaptor to use for one-to-many relationships
+      $query = $relatedObj->getDbAdaptor();
+
+      // If the relationship is many-to-many and uses a relation table.
+      // OR if the relationship is one-to-many and no 'owner' type column is set,
+      // meaning there needs to be a relation table.
+      // If 'via' or 'using' is not set, then it's assumed the relation utilizes a relation table.
+      if (!isset($def['via']) && !isset($def['using'])) {
+        
+        // Grab relation table name
+        $relTable = $this->getRelationTableName($relatedObj, $attribute, $this->model_attributes[$attribute]);
+
+        // In situations where multiple DBs are being used and there's a relation table 
+        // between data on different DBs, we can't be sure which DB holds the relation table. 
+        // First try the DB the related object is on. If that doesn't contain the relation table,
+        // then try the current object's DB.
+        if (!$query->tableExists($relTable)) {
+          $query = $this->getDbAdaptor();
+        }
+      }
+      return $query;
+    }
+
+
+    /**
+     * 
+     */
+    protected function getModels($attributeName, $relatedObjName = false, $query = false)
+    {
+      $def = $this->model_attributes[$attributeName];
+      $result = [];
+      if ($relatedObjName) {
+        // If the relationship is one-to-many.
+        if (isset($def['via'])) {
+            $result = $this->getModelsFromTableColumn($attributeName, $relatedObjName, $def['via'], $query);
+        }
+
+        else if (isset($def['using'])) {
+            $result = $this->getModelsFromCustomRelationship($attributeName, $relatedObjName, $query);
+        }
+
+        // If the relationship is many-to-many.
+        // OR if the relationship is one-to-many and no 'owner' type column is set,
+        // meaning there needs to be a relation table.
+        else {
+            $result = $this->getModelsFromRelationTable($attributeName, $relatedObjName, $query);
+        }
+      }
+      return $result;
+    }
+
+
     public function hasAttribute($name) 
     {
         if (isset($this->model_attributes[$name])) {
@@ -570,79 +673,76 @@ class Model
 
     protected function getModelFromRelationTable($attributeName, $objName)
     {
-        // Same logic as grabbing multiple objects, we just return the first (and only expected) result.
-        return $this->getModelsFromRelationTable($attributeName, $objName)->get(0);
+      // Same logic as grabbing multiple objects, we just return the first (and only expected) result.
+      return $this->getModelsFromRelationTable($attributeName, $objName)->get(0);
     }
 
 
-    protected function getModelsFromRelationTable($attributeName, $objName)
+    protected function getModelsFromRelationTable($attributeName, $objName, $query = false)
     {
-        $relatedObj = $this->fetchRelatedObj($objName);
+      $relatedObj = $this->fetchRelatedObj($objName);
 
-        // Grab relation table name and the name of this class.
-        $relTable = $this->getRelationTableName($relatedObj, $attributeName, $this->model_attributes[$attributeName]);
-        $className = strtolower((new \ReflectionClass($this))->getShortName());
-        $objectId = $this->getPrimaryKey();
-        $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
+      // Grab relation table name and the name of this class.
+      $relTable = $this->getRelationTableName($relatedObj, $attributeName, $this->model_attributes[$attributeName]);
+      $className = strtolower((new \ReflectionClass($this))->getShortName());
+      $objectId = $this->getPrimaryKey();
+      $relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
 
-        // Create repo that uses the relationtable, but returns models populated
-        // with their IDs.
-        $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, $relTable, false, $this->model_db);
-        
-        ///////////////////////////////////////
-        // Define custom query for repository.
-        ///////////////////////////////////////
+      // Create repo that uses the relationtable, but returns models populated
+      // with their IDs.
+      $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, $relTable, false, $this->model_db);
+      
+      ///////////////////////////////////////
+      // Define custom query for repository.
+      ///////////////////////////////////////
 
-        // Get DB adaptor to use. 
-        // In situations where multiple DBs are being used and there's a relation table 
-        // between data on different DBs, we can't be sure which DB holds the relation table. 
-        // First try the DB the related object is on. If that doesn't contain the relation table,
-        // then try the current object's DB.
-        $db = $relatedObj->getDbAdaptor();
-        if (!$db->tableExists($relTable)) {
-            $db = $this->getDbAdaptor();
-        }
+      // Get DB adaptor to use. 
+      // In situations where multiple DBs are being used and there's a relation table 
+      // between data on different DBs, we can't be sure which DB holds the relation table. 
+      // First try the DB the related object is on. If that doesn't contain the relation table,
+      // then try the current object's DB.
+      if (!$query) $query = $this->getQueryObjectForRelation($attributeName);
 
-        // Setup relation table field names 
-        $relThis = isset($this->model_attributes[$attributeName]['relThis']) ? $this->model_attributes[$attributeName]['relThis'] : $className;
-        $relThat = isset($this->model_attributes[$attributeName]['relThat']) ? $this->model_attributes[$attributeName]['relThat'] : $relatedClassName;
-        
-        // DEFAULT CASE 
-        // The objects that are related aren't the same class of object...
-        // (or they are, but relThis and relThat definitions were setup)
-        if ($relThis != $relThat) {
-            $db ->select($relThat.' as '.$relatedObj->getPrimaryKey())
-                ->where($relThis, $this->$objectId);
+      // Setup relation table field names 
+      $relThis = isset($this->model_attributes[$attributeName]['relThis']) ? $this->model_attributes[$attributeName]['relThis'] : $className;
+      $relThat = isset($this->model_attributes[$attributeName]['relThat']) ? $this->model_attributes[$attributeName]['relThat'] : $relatedClassName;
+      
+      // DEFAULT CASE 
+      // The objects that are related aren't the same class of object...
+      // (or they are, but relThis and relThat definitions were setup)
+      if ($relThis != $relThat) {
+        $query->select($relThat.' as '.$relatedObj->getPrimaryKey())
+              ->where($relThis, $this->$objectId);
 
-            return $repo->findAll($db);
-        }
-        
-        // EDGE CASE 
-        // The objects that are related ARE the same class of object...
-        // If two Users are related to each other, can't have two "user" columns in the ref table. Instead 2nd column gets named "User2" 
-        // TABLE: ref_users__example__users
-        // COLUMNS:   User      |  User2 
-        //            Bob's ID     Bob's relative's ID
-        else {
-            // Fetch related objects where the subject is the left side reference.
-            $db ->select($relThat.'2'.' as '.$relatedObj->getPrimaryKey())
-                ->where($relThis, $this->$objectId);
-            $leftSet = $repo->findAll($db);
+        return $repo->findAll($query);
+      }
+      
+      // EDGE CASE 
+      // The objects that are related ARE the same class of object...
+      // If two Users are related to each other, can't have two "user" columns in the ref table. Instead 2nd column gets named "User2" 
+      // TABLE: ref_users__example__users
+      // COLUMNS:   User      |  User2 
+      //            Bob's ID     Bob's relative's ID
+      else {
+        // Fetch related objects where the subject is the left side reference.
+        $query->select($relThat.'2'.' as '.$relatedObj->getPrimaryKey())
+              ->where($relThis, $this->$objectId);
+        $leftSet = $repo->findAll($query);
 
-            // Fetch related objects where the subject is the right side reference.
-            $db ->select($relThat.' as '.$relatedObj->getPrimaryKey())
-                ->where($relThis.'2', $this->$objectId);
-            $rightSet = $repo->findAll($db);
-            $leftSet->merge($rightSet);
-            return $leftSet;
-        }
+        // Fetch related objects where the subject is the right side reference.
+        $query->select($relThat.' as '.$relatedObj->getPrimaryKey())
+              ->where($relThis.'2', $this->$objectId);
+        $rightSet = $repo->findAll($query);
+        $leftSet->merge($rightSet);
+        return $leftSet;
+      }
     }
 
 
-    protected function getModelFromTableColumn($objName, $relationColumnName)
+    protected function getModelFromTableColumn($attributeName, $objName, $relationColumnName)
     {
-        // Same logic as grabbing multiple objects, we just return the first (and only expected) result.
-        return $this->getModelsFromTableColumn($objName, $relationColumnName)->get(0);
+      // Same logic as grabbing multiple objects, we just return the first (and only expected) result.
+      return $this->getModelsFromTableColumn($attributeName, $objName, $relationColumnName)->get(0);
     }
 
 
@@ -650,19 +750,23 @@ class Model
      *  The Related Obj's table should have some sort of 'owner' column
      *  for us to fetch by.
      */
-    protected function getModelsFromTableColumn($objName, $relationColumnName)
+    protected function getModelsFromTableColumn($attributeName, $objName, $relationColumnName, $query = false)
     {
-        // Figure out the unique identifying field of the model we want to grab.
-        $relatedObj = $this->fetchRelatedObj($objName);
-        $idField = $relatedObj->getPrimaryKey();
+      // Figure out the unique identifying field of the model we want to grab.
+      $relatedObj = $this->fetchRelatedObj($objName);
+      $idField = $relatedObj->getPrimaryKey();
 
-        //$relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
-        $repo = \Cora\RepositoryFactory::make($objName, false, false, false, $this->model_db);
+      //$relatedClassName = strtolower((new \ReflectionClass($relatedObj))->getShortName());
+      $repo = \Cora\RepositoryFactory::make($objName, false, false, false, $this->model_db);
 
-        $db = $relatedObj->getDbAdaptor();
-        $db->where($relationColumnName, $this->{$this->getPrimaryKey()});
-        //$db->select($idField);
-        return $repo->findAll($db);
+      // If no query object was passed in, then grab an appropriate one.
+      if (!$query) $query = $this->getQueryObjectForRelation($attributeName);
+      if (!$query) $query = $relatedObj->getDbAdaptor();
+
+      // Set association condition
+      $query->where($relationColumnName, $this->{$this->getPrimaryKey()});
+
+      return $repo->findAll($query);
     }
 
 
@@ -671,36 +775,35 @@ class Model
      *  method defines the relationship. Within that method any query parameters must bet set and 
      *  a Query Builder object returned.
      */
-     public function getModelsFromCustomRelationship($attributeName, $objName)
+     public function getModelsFromCustomRelationship($attributeName, $objName, $query = false)
      {
-         // Grab a dummy instance of the related object.
-         $relatedObj = $this->fetchRelatedObj($objName);
+      // Create a repository for the related object.
+      $repo = \Cora\RepositoryFactory::make($objName, false, false, false, $this->model_db);
+      
+      // Grab a Query Builder object for the connection this related model uses.
+      // If no query object was passed in, then grab an appropriate one.
+      if (!$query) $query = $this->getQueryObjectForRelation($attributeName);
 
-         // Create a repository for the related object.
-         $repo = \Cora\RepositoryFactory::make($objName, false, false, false, $this->model_db);
-        
-         // Grab a Query Builder object for the connection this related model uses.
-         $query = $relatedObj->getDbAdaptor();
-         
-         // Grab the name of the method that defines the relationship
-         $definingFunctionName = $this->model_attributes[$attributeName]['using'];
-         
-         $query = $this->$definingFunctionName($query);
-         
-         return $repo->findAll($query);
+      // Grab the name of the method that defines the relationship
+      $definingFunctionName = $this->model_attributes[$attributeName]['using'];
+      
+      // Pass query to the defining function
+      $query = $this->$definingFunctionName($query);
+      
+      return $repo->findAll($query);
      }
 
 
     public function getModelFromCustomRelationship($attributeName, $objName)
     {
-        return $this->getModelsFromCustomRelationship($attributeName, $objName)->get(0);
+      return $this->getModelsFromCustomRelationship($attributeName, $objName)->get(0);
     }
 
 
     public function getClassName($class = false)
     {
-        if ($class == false) { $class = $this; }
-        return strtolower((new \ReflectionClass($class))->getShortName());
+      if ($class == false) { $class = $this; }
+      return strtolower((new \ReflectionClass($class))->getShortName());
     }
 
 
@@ -711,39 +814,39 @@ class Model
      */
     function getFullClassName($class = false)
     {
-        if ($class == false) { $class = $this; }
-        $className = get_class($class);
-        if ($pos = strpos($className, '\\')) return substr($className, $pos + 1);
-        return $className;
+      if ($class == false) { $class = $this; }
+      $className = get_class($class);
+      if ($pos = strpos($className, '\\')) return substr($className, $pos + 1);
+      return $className;
     }
 
 
     public function fetchRelatedObj($objFullName)
     {
-        // Load and set cora config.
-        require(dirname(__FILE__).'/../config/config.php');
+      // Load and set cora config.
+      require(dirname(__FILE__).'/../config/config.php');
 
-        // Load custom app config
-        include($config['basedir'].'cora/config/config.php');
+      // Load custom app config
+      include($config['basedir'].'cora/config/config.php');
 
-        $objType = CORA_MODEL_NAMESPACE.$objFullName;
-        return new $objType();
+      $objType = CORA_MODEL_NAMESPACE.$objFullName;
+      return new $objType();
     }
 
 
     protected function fetchData($name)
     {
-        $gateway = new \Cora\Gateway($this->getDbAdaptor(), $this->getTableName(), $this->getPrimaryKey());
-        return $gateway->fetchData($this->getFieldName($name), $this);
+      $gateway = new \Cora\Gateway($this->getDbAdaptor(), $this->getTableName(), $this->getPrimaryKey());
+      return $gateway->fetchData($this->getFieldName($name), $this);
     }
 
 
     public function returnExistingConnectionIfExists($connectionName)
     {
-        if (isset($GLOBALS['coraAdaptorsForCurrentSave'][$connectionName])) {
-            return $GLOBALS['coraAdaptorsForCurrentSave'][$connectionName];
-        }
-        return false;
+      if (isset($GLOBALS['coraAdaptorsForCurrentSave'][$connectionName])) {
+        return $GLOBALS['coraAdaptorsForCurrentSave'][$connectionName];
+      }
+      return false;
     }
 
 
