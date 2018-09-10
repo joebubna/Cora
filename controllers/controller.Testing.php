@@ -50,8 +50,7 @@ class Testing extends \Cora\App\Controller
       $model->id = 1;
       var_dump(
         $model->comments(function($query) {
-          $query->in('id', [2]);
-          return $query;
+          return $query->in('id', [2]);
         })
       );
     }
@@ -61,13 +60,57 @@ class Testing extends \Cora\App\Controller
     {
       $users = $this->app->users;
 
-      
-      var_dump(
-        $model->comments(function($query) {
-          $query->in('id', [2]);
-          return $query;
-        })
-      );
+      $loadMap = new \Cora\Adm\LoadMap([
+        'email' => 'firstName'
+      ], [
+        'primaryRole' => new \Cora\Adm\LoadMap([
+          'role_id' => 'id',
+          'name' => '!name'
+        ])
+      ]);
+
+      $results = $users->findAll(function($query, $arg) {
+        $query->in('primaryRole', $arg)
+              ->join('roles', [['users.primaryRole', '=', 'roles.id']])
+              ->select('users.*')
+              ->select('roles.id as role_id')
+              ->select('roles.name as role_name')
+              ->limit(5);
+        return $query;
+      }, 1, $loadMap);
+
+      var_dump($results[0]->model_data);
+
+      echo $results[1]->firstName;
+      echo $results[1]->primaryRole->name;
+    }
+
+
+    public function test3()
+    {
+      //$GLOBALS['coraRunningTests'] = true;
+      $model = new \Models\User();
+      $model->id = 1;
+
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'madeBy' => new \Cora\Adm\LoadMap([
+          'user_firstName' => 'firstName',
+          'user_lastName' => 'lastName',
+          'user_id' => 'id'
+        ])
+      ]);
+
+      $model->comments(function($query) {
+        return $query->join('users', [['comments.id', '=', 'users.id']], 'LEFT')
+                     ->select('comments.*')
+                     ->select('users.id as user_id')
+                     ->select('users.firstName as user_firstName')
+                     ->select('users.lastName as user_lastName');
+      }, false, $loadMap);
+
+      $model->comments[1]->model_dynamicOff = true;
+
+      var_dump($model->comments[1]->madeBy->firstName);
     }
 
 
