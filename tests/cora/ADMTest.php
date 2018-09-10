@@ -1407,4 +1407,46 @@ class ADMTest extends \Cora\App\TestCase
       // Ensure that the father of that friend was loaded and populated without any dynamic queries
       $this->assertEquals('George', $user->father->name);
     }
+
+
+    /**
+     *  Check that you can specify an onLoad function to run using LoadMaps
+     *  
+     *  @group current
+     *  @test
+     */
+    public function canLoadMapAnOnLoadFunction()
+    {
+      // Grab users repo
+      $users = $this->app->tests->users;
+
+      // Create LoadMap that passes a closure as 3rd argument and params as the 4th
+      $loadMap = new \Cora\Adm\LoadMap([
+          'name' => 'type'
+        ], [
+          'father' => new \Cora\Adm\LoadMap([
+            'father_id' => 'id',
+            'father_name' => 'name'
+          ])
+        ],
+        function($model, $str1, $str2) {
+          $model->lastName = $str1.$str2;
+        },
+        ['foo', 'BAR']
+      );
+
+      // Grab user using the LoadMap
+      $user = $users->findOne(function($query, $id) {
+        return $query->where('id', $id);
+      }, 1, $loadMap);
+
+      // Ensure we have Bob
+      $this->assertEquals('Bob', $user->name);
+
+      // Ensure the mapping from name => type worked
+      $this->assertEquals('Bob', $user->type);
+
+      // Ensure that Bob's lastname was set using the onLoad closure
+      $this->assertEquals('fooBAR', $user->lastName);
+    }
 }

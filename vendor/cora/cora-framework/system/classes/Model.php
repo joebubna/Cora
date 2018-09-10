@@ -56,6 +56,19 @@ class Model
       // Call onLoad method 
       $this->onLoad();
 
+      // If a custom onLoad function was given as part of a loadMap
+      // Also call that
+      if ($loadMap && $func = $loadMap->getOnLoadFunction()) {
+        // Fetch any array of args passed along with the LoadMap
+        $args = $loadMap->getOnLoadArgs();
+
+        // Add a reference to this model as the first argument
+        array_unshift($args, $this);
+
+        // Call user provided onLoad closure
+        call_user_func_array($func, $args); 
+      }
+
       $this->model_hydrating = false;
     }
 

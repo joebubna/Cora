@@ -98,7 +98,12 @@ class Testing extends \Cora\App\Controller
           'user_lastName' => 'lastName',
           'user_id' => 'id'
         ])
-      ]);
+      ],
+        function($model, $str) {
+          $model->status = $str;
+        },
+        ['Hoola Hoop']
+      );
 
       $model->comments(function($query) {
         return $query->join('users', [['comments.id', '=', 'users.id']], 'LEFT')
@@ -110,6 +115,7 @@ class Testing extends \Cora\App\Controller
 
       $model->comments[1]->model_dynamicOff = true;
 
+      echo $model->comments[0]->status."<br>";
       var_dump($model->comments[1]->madeBy->firstName);
     }
 
