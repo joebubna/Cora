@@ -7,13 +7,15 @@ class Repository
 {
     protected $factory;
     protected $gateway;
+    protected $model;           // An instance of the model this Repository is for.
     protected $saveStarted;
     protected $savedAdaptors;
 
-    public function __construct(Gateway $gateway, Factory $factory)
+    public function __construct(Gateway $gateway, Factory $factory, $dummyModel)
     {
         $this->gateway = $gateway;
         $this->factory = $factory;
+        $this->model = $dummyModel;
 
         $this->saveStarted = &$GLOBALS['coraSaveStarted'];
         $this->savedAdaptors = &$GLOBALS['coraAdaptorsForCurrentSave'];
@@ -39,35 +41,81 @@ class Repository
 
     public function find($id)
     {
+        // $coraDbQuery = $this->gateway->getDb();
+        // $coraDbQuery = $this->model::model_constraints($coraDbQuery);
         $record = $this->gateway->fetch($id);
         return $this->factory->make($record);
     }
 
-    public function findOne($coraDbQuery)
+    public function findOne($query = false, $vars = false, $loadMap = false)
     {
-        $all = $this->gateway->fetchByQuery($coraDbQuery);
-        return $this->factory->makeGroup($all)->get(0);
+      // Vars
+      $queryDefinition = false;
+
+      // If a closure was passed in instead of query object, then store it
+      if ($query instanceof \Closure) {
+        $queryDefinition = $query;
+      }
+
+      // If no query builder object was passed in OR we were given a closure, 
+      // then grab the gateway's query object.
+      if (!$query || $queryDefinition) {
+        $query = $this->gateway->getDb();
+      }
+
+      // Pass the query through any defined model constraints
+      $query = $this->model::model_constraints($query);
+
+      // If a closure was given for defining the query, then through that
+      if ($queryDefinition) {
+        $query = $queryDefinition($query, $vars);
+      }
+
+      $all = $this->gateway->fetchByQuery($query);
+      return $this->factory->makeGroup($all, $loadMap)->get(0);
     }
 
-    public function findAll($coraDbQuery = false)
+    
+    public function findAll($query = false, $vars = false, $loadMap = false)
     {
-        if ($coraDbQuery) {
-            $all = $this->gateway->fetchByQuery($coraDbQuery);
-        }
-        else {
-            $all = $this->gateway->fetchAll();
-        }
-        return $this->factory->makeGroup($all);
+      // Vars
+      $queryDefinition = false;
+
+      // If a closure was passed in instead of query object, then store it
+      if ($query instanceof \Closure) {
+        $queryDefinition = $query;
+      }
+
+      // If no query builder object was passed in OR we were given a closure, 
+      // then grab the gateway's query object.
+      if (!$query || $queryDefinition) {
+        $query = $this->gateway->getDb();
+      }
+      
+      // Pass the query through any defined model constraints
+      $query = $this->model::model_constraints($query);
+
+      // If a closure was given for defining the query, then through that
+      if ($queryDefinition) {
+        $query = $queryDefinition($query, $vars);
+      }
+
+      $all = $this->gateway->fetchByQuery($query);
+      return $this->factory->makeGroup($all, $loadMap);
     }
 
     public function findBy($prop, $value, $options = array())
     {
+        $coraDbQuery = $this->gateway->getDb();
+        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
         $all = $this->gateway->fetchBy($prop, $value, $options);
         return $this->factory->makeGroup($all);
     }
 
     public function findOneBy($prop, $value, $options = array())
     {
+        $coraDbQuery = $this->gateway->getDb();
+        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
         $all = $this->gateway->fetchBy($prop, $value, $options);
         return $this->factory->makeGroup($all)->get(0);
     }
@@ -77,9 +125,11 @@ class Repository
      */
     public function count($coraDbQuery = false)
     {
+        // If no query builder object was passed in, then grab the gateway's.
         if (!$coraDbQuery) {
             $coraDbQuery = $this->gateway->getDb();
         }
+        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
         return $this->gateway->count($coraDbQuery);
     }
 

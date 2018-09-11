@@ -17,7 +17,7 @@ $builder = new \Cora\DatabaseBuilder();
 
 // Make sure a command was passed in.
 if (!isset($argv[1])) {
-    echo "You must give a command to run. See Cora's /Amblend/DatabaseBuilder documentation.\r\n";
+    echo "You must give a command to run. See Cora's /ADM/DatabaseBuilder documentation.\r\n";
     exit;
 }
 
@@ -39,7 +39,7 @@ switch ($argv[1]) {
         $builder->dbBuild();
         break;
     default:
-        echo "The command '".$argv[1]."' is not recognized. See Cora's /Amblend/DatabaseBuilder documentation.\r\n";
+        echo "The command '".$argv[1]."' is not recognized. See Cora's /ADM/DatabaseBuilder documentation.\r\n";
 }
 
 // Create newline for cleaner console output.

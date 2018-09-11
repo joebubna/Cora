@@ -91,6 +91,9 @@ class Input
             foreach ($data as $field_name => $files) {
                 $errors = $this->_getErrors($files);
                 $file_array = $this->rearrange($files);
+                if (array_keys($file_array)[0] === 'name') {
+                    $file_array = array($file_array);
+                }
                 $FileArray[$field_name] = $this->_clearErrors($file_array, $errors);
             }
         }
@@ -100,10 +103,15 @@ class Input
     protected function _getErrors($file)
     {
         $errors = array();
-        foreach ($file['error'] as $i => $error_code) {
-            if ($error_code != 0) {
-                $errors[] = $i;
+        if (is_array($file['error'])) {
+            foreach ($file['error'] as $i => $error_code) {
+                if ($error_code != 0) {
+                    $errors[] = $i;
+                }
             }
+        }
+        if ($file['error'] != 0) {
+            return $errors[] = 0;
         }
         return $errors;
     }
@@ -120,13 +128,29 @@ class Input
     {
         if ($field) {
             if ($this->files($field)) {
-                return true;
+                if (is_numeric(array_keys($this->files($field))[0])) {
+                    $the_files = array();
+                    foreach ($this->files($field) as $file) {
+                        if ($file['error'] == 0) {
+                            $the_files[] = $file;
+                        }
+                    }
+                    return count($the_files) > 0;
+                }
             }
             return false;
         }
-        foreach ($this->filesData as $files) {
-            if ($files && count($this->filesData)) {
-                return true;
+        foreach ($this->filesData as $key => $files) {
+            if (is_numeric(array_keys($files)[0])) {
+                $the_files = array();
+                foreach ($files as $file) {
+                    if ($file['error'] == 0) {
+                        $the_files[] = $file;
+                    }
+                }
+                if (count($the_files) > 0) {
+                    return true;
+                }
             }
         }
         return false;
@@ -135,12 +159,15 @@ class Input
     private function rearrange($file_post)
     {
         $file_array = array();
-        foreach ($file_post['name'] as  $i => $name) {
-            foreach (array_keys($file_post) as $key) {
-                $file_array[$i][$key] = $file_post[$key][$i];
+        if (is_array($file_post['name'])) {
+            foreach ($file_post['name'] as $i => $name) {
+                foreach (array_keys($file_post) as $key) {
+                    $file_array[$i][$key] = $file_post[$key][$i];
+                }
             }
+            return $file_array;
         }
-        return $file_array;
+        return $file_post;
     }
 
     protected function _purify($input, $encoding = 'UTF-8')
@@ -149,22 +176,5 @@ class Input
             return $this->_cleanInput($input);
         }
         return htmlspecialchars($input, ENT_QUOTES | ENT_HTML401, $encoding);
-        // $pattern = '/((<[\s\/]*script\b[^>]*>)([^>]*)(<\/script>))/i';
-        // if (preg_match($pattern, $string)) {
-        //     return false;
-        // }
-        // $pattern = '/(<[\s\/]*script\b[^>]*>)/i';
-        // if (preg_match($pattern, $string)) {
-        //     return false;
-        // }
-        // $pattern = '/<\/script>/i';
-        // if (preg_match($pattern, $string)) {
-        //     return false;
-        // }
-        // $pattern = '/data-bind/i';
-        // if (preg_match($pattern, $string)) {
-        //     return false;
-        // }
-        // return $string;
     }
 }

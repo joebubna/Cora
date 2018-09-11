@@ -78,7 +78,11 @@ class Gateway
         }
 
         if (is_numeric($model->{$id_name})) {
-        	return $this->_update($model, $table, $id_name);
+            $query = $this->getDb();
+            $query->where($model->getFieldName($id_name), $model->{$id_name});
+            if ($this->count($query)) {
+                return $this->_update($model, $table, $id_name);
+            }
         }
         return $this->_create($model, $table, $id_name);
 	}
@@ -106,7 +110,7 @@ class Gateway
         if ($this->viewQuery) {
             echo $this->db->getQuery();
         }
-
+        
         return $this->db->fetchAll();
 	}
 
@@ -149,7 +153,8 @@ class Gateway
         if ($this->viewQuery) {
             echo $query->getQuery();
         }
-
+        //fwrite(STDERR, $query->getQuery());
+        //echo $query->getQuery();
         return $query->fetchAll();
 	}
 
@@ -307,7 +312,7 @@ class Gateway
                         $this->refInsert($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
 
                     }
-                    else {
+                    else if (!isset($prop['using'])) {
                         // The reference must be stored in the parent's table.
                         // So we just set the column to the new ID.
                         $this->db->set($fieldName, $id);
@@ -369,7 +374,7 @@ class Gateway
                     }
 
                     // If uses Via column
-                    else {
+                    else if ($model->usesViaColumn($relatedObjBlank, $key)) {
                         $db = $repo->getDb();
                         $objTable = $relatedObjBlank->getTableName();
                         $modelId = $model->{$model->getPrimaryKey()};
@@ -407,6 +412,26 @@ class Gateway
                             }
 
                             $db->exec();
+                        }
+                    }
+
+                    // If is some sort of Abtract relationship
+                    else {
+                        // Save each object in the collection
+                        foreach ($collection as $relatedObj) {
+                            // Check if this object has already been saved during this recursive call series.
+                            // If not, save it.
+                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            if (!$this->getSavedModel($relatedObj)) {
+                                if ($id) {
+                                    $this->addSavedModel($relatedObj);
+                                    $repo->save($relatedObj);
+                                }
+                                else {
+                                    $id = $repo->save($relatedObj);
+                                    $this->addSavedModel($relatedObj);
+                                }
+                            }
                         }
                     }
                 }
@@ -541,10 +566,12 @@ class Gateway
         //echo $this->db->getQuery()."<br>";
         $modelId = $this->db->exec()->lastInsertId();
 
-        // Assign the database ID to the model.
-        $record['id'] = $modelId;
-        $model->_populate($record);
-        //$model->id = $modelId;
+        // Assign the database ID to the model if necessary
+        if ($modelId) {
+            $record['id'] = $modelId;
+            $model->_populate($record);
+        }
+        
 
         // Mark this object as saved.
         if (!$this->getSavedModel($model)) {
@@ -603,7 +630,7 @@ class Gateway
                         // Insert reference to this object in ref table. 
                         $this->refInsert($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
                     }
-                    else {
+                    else if (!isset($prop['using'])) {
                         $this->db   ->update($table)
                                     ->set($fieldName, $id)
                                     ->where($model->getPrimaryKey(), $model->{$model->getPrimaryKey()});
@@ -664,7 +691,7 @@ class Gateway
                     }
 
                     // If uses Via column
-                    else {
+                    else if ($model->usesViaColumn($relatedObjBlank, $key)) {
                         $db = $repo->getDb();
                         $objTable = $relatedObjBlank->getTableName();
                         $modelId = $model->{$model->getPrimaryKey()};
@@ -702,6 +729,26 @@ class Gateway
                             }
                             //echo $db->getQuery();
                             $db->exec();
+                        }
+                    }
+
+                    // If is some sort of Abtract relationship
+                    else {
+                        // Save each object in the collection
+                        foreach ($collection as $relatedObj) {
+                            // Check if this object has already been saved during this recursive call series.
+                            // If not, save it.
+                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                            if (!$this->getSavedModel($relatedObj)) {
+                                if ($id) {
+                                    $this->addSavedModel($relatedObj);
+                                    $repo->save($relatedObj);
+                                }
+                                else {
+                                    $id = $repo->save($relatedObj);
+                                    $this->addSavedModel($relatedObj);
+                                }
+                            }
                         }
                     }
                 }

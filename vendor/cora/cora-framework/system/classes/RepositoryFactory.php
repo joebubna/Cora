@@ -69,6 +69,6 @@ class RepositoryFactory
         $gateway = new Gateway($db, $tableName, $idField);
 
         //echo print_r($GLOBALS['savedModelsList']);
-        return new Repository($gateway, $factory);
+        return new Repository($gateway, $factory, $classObj);
     }
 }

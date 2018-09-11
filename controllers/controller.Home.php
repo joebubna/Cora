@@ -79,6 +79,18 @@ class Home extends \Cora\App\Controller {
     }
 
 
+    public function limitedTest()
+    {
+        $repo = $this->app->repository('user');
+        $user = $repo->find(1);
+        //$items = $user->getModelsFromCustomRelationship('alike', 'User');
+        $items = $user->alike;
+        foreach ($items as $user) {
+            echo $user->name."<br>";
+        }
+    }
+
+
     public function test4() 
     {
         $GLOBALS['coraRunningTests'] = true;

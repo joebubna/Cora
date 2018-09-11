@@ -92,6 +92,13 @@ class DatabaseBuilder extends Framework
                         $db         = $object->getDbAdaptor();
                         $tableName  = $object->getTableName();
 
+                        // It's possible for models to have nothing but references (no actual table data of their own)
+                        // In that case, we don't want to issue a CREATE table statement.
+                        $nonEmptyModel = false;
+
+                        // For tracking fields that have already been set for creation on this model 
+                        $modelFields = new \Cora\Collection();
+
                         foreach ($object->model_attributes as $key => $props) {
                             //echo $key."\n";
                             $rmodel = isset($props['model']);
@@ -153,14 +160,20 @@ class DatabaseBuilder extends Framework
                                 // If abstract reference (via keyword is set), then we don't want to do anything
                                 // here. The ownership column will be handled when the other object is processed.
                                 else {
-                                    if (!isset($props['via'])) {
-                                        $db ->field($fieldName, 'int');
+                                    if (!isset($props['via']) && !isset($props['using'])) {
+                                        if (!$modelFields->{$fieldName}) {
+                                            $db ->field($fieldName, 'int');
+                                            $modelFields->$fieldName = true;
+                                        }
                                     }    
                                 }
                             }
 
                             // If not a model reference, then just add column to this models table.
                             else {
+                                // There's at least one attribute on this model which isn't a reference
+                                $nonEmptyModel = true;
+
                                 // Set primary key if applicable
                                 if (isset($props['primaryKey'])) {
                                     $db ->primaryKey($fieldName);
@@ -168,21 +181,26 @@ class DatabaseBuilder extends Framework
 
                                 // Grab column type and then set it.
                                 //$attr = $this->getAttributes($props);
-                                $attr = $db->getAttributes($props);
-                                $type = $db->getType($props);
-                                $def = $type.' '.$attr;
-                                $db ->field($fieldName, $def);
-
+                                if (!$modelFields->{$fieldName}) {
+                                    $attr = $db->getAttributes($props);
+                                    $type = $db->getType($props);
+                                    $def = $type.' '.$attr;
+                                    $db ->field($fieldName, $def);
+                                    $modelFields->$fieldName = true;
+                                }
+                                
                                 // If the column is defined to have an index, create one.
                                 $db->setIndex($fieldName, $props);
                             }
                         }
 
-                        $this->output("Creating Table: ".$tableName);
-                        $db ->create($tableName);
-                        $this->output($db->getQuery(), 2);
-                        //echo $db->reset();
-                        $db->exec();
+                        if ($nonEmptyModel) {
+                            $this->output("Creating Table: ".$tableName);
+                            $db ->create($tableName);
+                            $this->output($db->getQuery(), 2);
+                            //echo $db->reset();
+                            $db->exec();
+                        }
                     }
                     else {
                         $this->output('NOTICE: '.$model." is not a Cora Model. Ignoring for DB creation", 2);

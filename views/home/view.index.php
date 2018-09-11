@@ -21,7 +21,7 @@
                 <div class="card-block">
                     <h4 class="card__card-title">Define a New Model</h4>
                     <p class="card-text">
-                        The recommended way of developing in Cora is to use the built-in ORM named Amblend.
+                        The recommended way of developing in Cora is to use the built-in ORM named ADM.
                     </p>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                 <div class="card-block">
                     <h4 class="card__card-title">Create Your Database</h4>
                     <p class="card-text">
-                        Once you have an AmBlend model defined, you can have Cora create your database schema for you automatically.
+                        Once you have an ADM model defined, you can have Cora create your database schema for you automatically.
                     </p>
                     <a href="#" class="btn btn-primary">Learn More</a>
                 </div>
