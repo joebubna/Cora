@@ -110,7 +110,7 @@ class Gateway
         if ($this->viewQuery) {
             echo $this->db->getQuery();
         }
-
+        
         return $this->db->fetchAll();
 	}
 
@@ -153,7 +153,8 @@ class Gateway
         if ($this->viewQuery) {
             echo $query->getQuery();
         }
-
+        //fwrite(STDERR, $query->getQuery());
+        //echo $query->getQuery();
         return $query->fetchAll();
 	}
 

@@ -1052,6 +1052,76 @@ class ADMTest extends \Cora\App\TestCase
 
 
     /**
+     *  Sometimes you might not want to fetch all the related models for a relationship.
+     *  For example you may want to paginate or search. This checks that you can pass a closure
+     *  to a plural relationship for customizing the data that gets returned.
+     *
+     *  @test
+     */
+    public function canPassClosureToCustomizeFetchingOfRelatedModels()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Change Bob1 back to Adult from previous test
+        $bob = $users->find(1);
+        $bob->type = 'Adult';
+        $users->save($bob);
+
+        // Grab Jenine
+        $user = $users->find(3);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jenine', $user->name);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals(3, $user->sameType->count());
+
+        // Grab adults named either Jeff or Kevin
+        $this->assertEquals(2, $user->sameType(function($query) {
+          $query->in('name', ['Jeff', 'Kevin']);
+          return $query;
+        })->count());
+    }
+
+
+    /**
+     *  Sometimes you might not want to fetch all the related models for a relationship.
+     *  For example you may want to paginate or search. This checks that you can pass a closure
+     *  to a plural relationship for customizing the data that gets returned.
+     * 
+     *  This test checks that you can pass arguments to the closure.
+     *
+     *  @test
+     */
+    public function canPassClosureArguments()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Change Bob1 back to Adult from previous test
+        $bob = $users->find(1);
+        $bob->type = 'Adult';
+        $users->save($bob);
+
+        // Grab Jenine
+        $user = $users->find(3);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jenine', $user->name);
+
+        // Check that the abstract relationship to other "adults" works
+        $this->assertEquals(3, $user->sameType->count());
+
+        // Grab adults named either Jeff or Kevin
+        $this->assertEquals(2, $user->sameType(function($query, $args) {
+          $query->in('name', $args);
+          return $query;
+        }, ['Jeff', 'Kevin'])->count());
+    }
+
+
+    /**
     *   Check that models which utilize abstract models can be saved.
     *
     *   @test
@@ -1085,31 +1155,298 @@ class ADMTest extends \Cora\App\TestCase
 
 
     /**
-    *   Check that singular relationship to an abstract model can be saved.
-    *
-    *   @test
-    */
-    public function canSaveModelUtilizingAbstractRelationshipToDifferentModel()
+     *  Check that you can perform attribute mapping when interacting with a repository.
+     * 
+     *  This allows you to map from an associative array to model attributes which are named differently.
+     *  This is necessary if you have data from a database that doesn't have the correct 
+     *  column names for what a model is expecting. For example: If you need to do some sort 
+     *  of:
+     *    SELECT users.id, users.name, roles.id as 'role_id', roles.name as 'role_name' FROM users, roles
+     * 
+     *  If the "Role" model expects an array offset named "name", then you'll run into a problem.
+     *  By mapping "role_name" => "name" you can solve the issue.
+     *  
+     *  @group current
+     *  @test
+     */
+    public function canLoadMapOffsetsToAttributesUsingRepository()
     {
-        // Setup
-        $users = $this->app->tests->users;
+      $this->app->dbBuilder->reset();
 
-        // Grab Jenine
-        $user = $users->find(3);
+      // Grab users repo
+      $users = $this->app->tests->users;
 
-        // Ensure we have jenine
-        $this->assertEquals('Jenine', $user->name);
+      // Create new user named Bob with type 'SuperRadDude'
+      $user = new \Models\Tests\User('Bob', 'SuperRadDude');
+      $users->save($user);
 
-        // Change User to User2
-        $user->singleAbstract->name = 'User2';
-        
-        // Save user
-        $users->save($user);
+      // Create a basic LoadMap
+      // State that the 'type' field should be mapped to the 'name' attribute on the model.
+      // Inversely let's state that the 'name' field should be mapped tot he 'type' attribute.
+      $loadMap = new \Cora\Adm\LoadMap([
+        'type' => 'name',
+        'name' => 'type'
+      ]);
 
-        // Re-Grab Jenine
-        $user = $users->find(3);
+      // Grab Bob fresh.
+      // (No need to modify the query at all for this example)
+      $bob = $users->findOne(function($query) {
+        return $query;
+      }, false, $loadMap);
 
-        // Check that the abstract relationship to other "adults" works
-        $this->assertEquals('User2', $user->singleAbstract->name);
+      // Ensure 'type' got inversed by the mapping
+      $this->assertEquals('Bob', $bob->type);
+
+      // Check that Bob's 'name' is "SuperRadDude" per the mapping
+      $this->assertEquals('SuperRadDude', $bob->name);
+    }
+
+
+    /**
+     *  Check that you can specify relationships to load and pass them a LoadMap when interacting with a repository.
+     * 
+     *  In the previous test we explained offset to attribute mapping using the following query as an example: 
+     *  SELECT users.id, users.name, roles.id as 'role_id', roles.name as 'role_name' FROM users, roles
+     * 
+     *  In this test we'll actually run a query like that and we'll use the Role data to populate a related 
+     *  Role model without the need for additional queries.
+     * 
+     *  For example, pretend you run some sort of ancentry website:
+     *  Say you want to grab a list of users and you want to iterate over them grabbing
+     *  the name of each user's father.
+     * 
+     *  In most ORMs, each iteration would result in a new query of the database. So if you 
+     *  have 100 users, you'll end up doing 101 queries (one to fetch the users, then 100 to fetch
+     *  the father of each user). This is not ideal and one of the biggest drawbacks to ORMs.
+     * 
+     *  Using the feature below, you can intelligently grab and populate all the data you need 
+     *  in one query.
+     *  
+     *  @group current
+     *  @test
+     */
+    public function canLoadMapRelationshipsUsingRepository()
+    {
+      ///////////////////////////////
+      // DB setup for test
+      ///////////////////////////////
+
+      // Grab users repo
+      $users = $this->app->tests->users;
+
+      // Grab the user Bob we created in the previous test
+      $user = $users->find(1);
+
+      // Check that user has no father
+      $this->assertEquals(NULL, $user->father);
+
+      // Set and create father 
+      $dad = new \Models\Tests\User('George');
+      $user->father = $dad;
+      $users->save($user);
+
+
+      ///////////////////////////////
+      // Verify that with dynamic loading turned off, that no data about a father 
+      // relationship will be loaded.
+      ///////////////////////////////
+
+      // Grab Bob fresh using normal ID find
+      $bobNormal = $users->find($user->id);
+
+      // Turn off dynamic loading
+      $bobNormal->model_dynamicOff = true;
+
+      // Ensure that no data for the father is loaded or gets dynamically loaded when we try and access it
+      // The value for the father attribute should be an ID number, which since we created the father 
+      // 2nd should be 2.
+      $this->assertEquals(2, $bobNormal->father);
+
+
+      ///////////////////////////////
+      // Verify that using a custom JOIN query and a LoadMap, the father data can be loaded
+      // as part of the original query without the need for dynamic loading
+      ///////////////////////////////
+
+      // Create LoadMap for a custom query we will do
+      // State that we want to load the "father" relationship and that 'father_id' and 
+      // 'father_name' fields should be mapped to the id and name attributes on the father 
+      // user model.
+      $loadMap = new \Cora\Adm\LoadMap([
+        'name' => 'type'
+      ], [
+        'father' => new \Cora\Adm\LoadMap([
+          'father_id' => 'id',
+          'father_name' => 'name'
+        ])
+      ]);
+
+      // Grab Bob fresh.
+      // Define a custom query to execute that joins the Father data we need
+      // Then pass the loadMap we created so it knows how to populate the Father model.
+      $bob = $users->findOne(function($query, $id) {
+        $query->where('tests_users.id', $id)
+              ->join('tests_users usersB', [['tests_users.father', '=', 'usersB.id']], 'LEFT')
+              ->select(['tests_users.*', 'usersB.id as father_id', 'usersB.name as father_name']);
+        return $query;
+      }, $user->id, $loadMap);
+
+      // Ensure we have Bob
+      $this->assertEquals('Bob', $bob->name);
+
+      // Ensure the mapping from name => type worked
+      $this->assertEquals('Bob', $bob->type);
+
+      // Turn off dynamic loading
+      $bob->model_dynamicOff = true;
+
+      // Ensure Bob's father was loaded non-dynamically using the data 
+      // from the original closure query above.
+      $this->assertEquals('George', $bob->father->name);
+    }
+
+    /**
+     *  Ensure that we can use LoadMaps with plural relationships when using the 
+     *  Active-Record-like functionality of models. (vs. directly interacting with a repository)
+     * 
+     *  @group current
+     *  @test
+     */
+    public function canLoadMapRelationshipsUsingModelNoDynamic()
+    {
+      ///////////////////////////////
+      // DB setup for test
+      ///////////////////////////////
+
+      // Grab users repo
+      $users = $this->app->tests->users;
+
+      // Grab Bob
+      $user = $users->find(1);
+
+      // Give bob some friends
+      $user->friends = new \Cora\Collection([
+        new \Models\Tests\User('Suzzy'),
+        new \Models\Tests\User('Jeff'),
+        new \Models\Tests\User('Randel')
+      ]);
+
+      // Give those friends some fathers
+      $user->friends[0]->father = new \Models\Tests\User('Dad0');
+      $user->friends[1]->father = new \Models\Tests\User('Dad1');
+      $user->friends[2]->father = new \Models\Tests\User('Dad2');
+      $users->save($user);
+
+      ///////////////////////////////
+      // Verify that using a custom JOIN query and a LoadMap, the father data can be loaded
+      // as part of the original query without the need for dynamic loading
+      ///////////////////////////////
+
+      // Create LoadMap for a custom query we will do
+      // State that we want to load the "father" relationship and that 'father_id' and 
+      // 'father_name' fields should be mapped to the id and name attributes on the father 
+      // user model.
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'father' => new \Cora\Adm\LoadMap([
+          'father_id' => 'id',
+          'father_name' => 'name'
+        ])
+      ]);
+
+      // Grab George fresh.
+      // Define a custom query to execute that joins the Father data we need
+      // Then pass the loadMap we created so it knows how to populate the Father model.
+      $bobsFriends = $user->friends(function($query) {
+        $query->join('tests_users', [['tests_users.id', '=', 'user2']], 'LEFT')
+              ->join('tests_users usersB', [['tests_users.father', '=', 'usersB.id']], 'LEFT')
+              ->select(['tests_users.*', 'usersB.id as father_id', 'usersB.name as father_name']);
+        return $query;
+      }, false, $loadMap);
+
+      // Ensure we have the right amount of friends
+      $this->assertEquals(3, $bobsFriends->count());
+
+      // Turn off dynamic loading on one of the friends
+      $user->friends[1]->model_dynamicOff = true;
+
+      // Ensure that the father of that friend was loaded and populated without any dynamic queries
+      $this->assertEquals('Dad1', $user->friends[1]->father->name);
+    }
+
+
+    /**
+     *  Checks that just specifying the relationships you want to initially load work 
+     *  without also giving an attribute mapping array or a recursive LoadMap.
+     * 
+     *  @group current
+     *  @test
+     */
+    public function canLoadMapRelationshipsNoSubLoadMap()
+    {
+      // Grab users repo
+      $users = $this->app->tests->users;
+
+      // Create a simple LoadMap
+      // For this we will just specify which relationships we want pre-loaded
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'father' => true,
+        'friends' => true
+      ]);
+
+      // Grab Bob (again), giving the loadMap
+      $user = $users->findOne(function($query, $id) {
+        return $query->where('id', $id);
+      }, 1, $loadMap);
+
+      // Turn off dynamic loading
+      $user->model_dynamicOff = true;
+
+      // Ensure we have the right amount of friends
+      $this->assertEquals(3, $user->friends->count());
+
+      // Ensure that the father of that friend was loaded and populated without any dynamic queries
+      $this->assertEquals('George', $user->father->name);
+    }
+
+
+    /**
+     *  Check that you can specify an onLoad function to run using LoadMaps
+     *  
+     *  @group current
+     *  @test
+     */
+    public function canLoadMapAnOnLoadFunction()
+    {
+      // Grab users repo
+      $users = $this->app->tests->users;
+
+      // Create LoadMap that passes a closure as 3rd argument and params as the 4th
+      $loadMap = new \Cora\Adm\LoadMap([
+          'name' => 'type'
+        ], [
+          'father' => new \Cora\Adm\LoadMap([
+            'father_id' => 'id',
+            'father_name' => 'name'
+          ])
+        ],
+        function($model, $str1, $str2) {
+          $model->lastName = $str1.$str2;
+        },
+        ['foo', 'BAR']
+      );
+
+      // Grab user using the LoadMap
+      $user = $users->findOne(function($query, $id) {
+        return $query->where('id', $id);
+      }, 1, $loadMap);
+
+      // Ensure we have Bob
+      $this->assertEquals('Bob', $user->name);
+
+      // Ensure the mapping from name => type worked
+      $this->assertEquals('Bob', $user->type);
+
+      // Ensure that Bob's lastname was set using the onLoad closure
+      $this->assertEquals('fooBAR', $user->lastName);
     }
 }

@@ -65,174 +65,158 @@ class Testing extends \Cora\App\Controller
            });
     }
 
-    // [1, 1, 4, 9, 49]
-    // [2, 4, 6, 11, 112, 6360]
-    public function intTest($maxN = 6361)
-    {
-        $n = $maxN;
-        $remaining = $n**2;
-        while ($remaining > 0) {
-            $i = $n-1;
-            echo "I: $i, ";
-            $remaining -= $i**2;
-            echo "Remaining: $remaining, I: $i, ";
-            $nextN = $n > 12 ? ((int) sqrt($remaining))+2 : $n-1;
-            $sqrt = ((int) sqrt($remaining))+2;
-            echo "Next: $nextN, Sqrt: $sqrt<br>";
-            $n = $nextN;
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static function decompose3($n) {
-        $GLOBALS['i'] = 0;
-        var_dump(self::partInSquares($n*$n, $n-1));
-        echo $GLOBALS['i'];
-    }   
-    
-    private static function partInSquares($area, $maxN){
-      for ($n = $maxN; $n > 0; $n--){
-        $testArea = $n * $n;
-        $remain = $area - $testArea;
-        $GLOBALS['i']++;
-        if ($remain == 0) {
-          return array($n);
-        } elseif ($remain > 0){
-          $result = self::partInSquares($remain, $n - 1);
-          if (is_array($result)){
-            $result[] = $n;
-            return $result;
-          }
-        }
-      }
-      return null;
-    }
-
-
-    public static function decompose2($n) {
-        $GLOBALS['i'] = 0;
-        var_dump(self::reduce($n**2, $n-1));
-        echo $GLOBALS['i'];
-    }   
-    
-    private static function reduce($total, $maxN) {
-        for ($n = $maxN; $n > 0; $n--) {
-            $remaining = $total - $n**2;
-            $GLOBALS['i']++;
-            if ($remaining == 0) {
-                return [$n];
-            } else if ($remaining > 0) {
-                $nextN = $nextN = $n > 12 ? ((int) sqrt($remaining))+2 : $n-1;
-                $results = self::reduce($remaining, $nextN);
-                if (is_array($results)) {
-                    $results[] = $n;
-                    return $results;
-                }
-            }
-        }
-        return null;
-    }
-
-
-    public static function decompose($n) 
-    {
-        // 11² = 121 = 1 + 4 + 16 + 100 = 1² + 2² + 4² + 10² but don't return [2,6,9]
-        // 50^2 = don't return [1, 1, 4, 9, 49] but [1, 3, 5, 8, 49]
-        $GLOBALS['i'] = 0;
-        $result = self::search($n-1, [], $n**2, 'S');
-        $value = count($result) ? $result : null;
-        var_dump($value);
-        //echo "Comps: ".$GLOBALS['i'];
-    }
-
-    protected static function search($n, $result, $remaining) 
-    {
-        $GLOBALS['i'] += 1;
-        // Base cases
-        if ($remaining == 0) {
-            return $result;
-        }
-        else if ($n <= 0 || $remaining < 0) {
-            return false;
-        }
-
-        // Logic
-        $addNumber = self::canDeduct($n, $remaining);
-        if ($addNumber) {
-            $branchResult = $result;
-            array_unshift($branchResult, $n); // 10
-            //var_dump($branchResult);
-            $i = $n > 12 ? ((int) sqrt($remaining))+2 : $n;
-            //echo "N: $n, Remaining: $remaining, I: $i<br>";
-            while ($i > 0) {
-                $subSearch = self::search($i-1, $branchResult, $remaining);
-                if ($subSearch) {
-                    return $subSearch;
-                }
-                $i--;
-            }
-        }
-
-        // Recursion
-        return self::search($n-1, $result, $remaining);
-    }
-
-    protected static function canDeduct($n, &$remaining) 
-    {
-        $subTotal = $remaining - ($n**2);
-        if ($subTotal >= 0) {
-            $remaining = $subTotal;
-            return true;
-        }
-        return false;
-    }
-
-
     public function dbFunction() 
     {
         $fn = new \Cora\Data\DbFunction('SUM', 'thing1', 'thing2');
         echo $fn->name;
         var_dump($fn->args);
     }
+    
 
-    public function modelExtends()
+    public function test()
     {
-        $business = new \Models\Ifuel\Business('Business1');
-        $business->type = 'Lead';
-
-        $practice = new \Models\Ifuel\Practice('Practice1');
-        $practice->business = $business;
-        $practice->type = 'Member';
-        echo $practice->business->type;
+      $model = new \Models\User();
+      $model->id = 1;
+      var_dump(
+        $model->comments(function($query) {
+          return $query->in('id', [2]);
+        })
+      );
     }
 
+
+    public function test2()
+    {
+      $users = $this->app->users;
+
+      $loadMap = new \Cora\Adm\LoadMap([
+        'email' => 'firstName'
+      ], [
+        'primaryRole' => new \Cora\Adm\LoadMap([
+          'role_id' => 'id',
+          'name' => '!name'
+        ])
+      ]);
+
+      $results = $users->findAll(function($query, $arg) {
+        $query->in('primaryRole', $arg)
+              ->join('roles', [['users.primaryRole', '=', 'roles.id']])
+              ->select('users.*')
+              ->select('roles.id as role_id')
+              ->select('roles.name as role_name')
+              ->limit(5);
+        return $query;
+      }, 1, $loadMap);
+
+      var_dump($results[0]->model_data);
+
+      echo $results[1]->firstName;
+      echo $results[1]->primaryRole->name;
+    }
+
+
+    public function test3()
+    {
+      //$GLOBALS['coraRunningTests'] = true;
+      $model = new \Models\User();
+      $model->id = 1;
+
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'madeBy' => new \Cora\Adm\LoadMap([
+          'user_firstName' => 'firstName',
+          'user_lastName' => 'lastName',
+          'user_id' => 'id'
+        ])
+      ],
+        function($model, $str) {
+          $model->status = $str;
+        },
+        ['Hoola Hoop']
+      );
+
+      $model->comments(function($query) {
+        return $query->join('users', [['comments.id', '=', 'users.id']], 'LEFT')
+                     ->select('comments.*')
+                     ->select('users.id as user_id')
+                     ->select('users.firstName as user_firstName')
+                     ->select('users.lastName as user_lastName');
+      }, false, $loadMap);
+
+      $model->comments[1]->model_dynamicOff = true;
+
+      echo $model->comments[0]->status."<br>";
+      var_dump($model->comments[1]->madeBy->firstName);
+    }
+
+
+    public function test4()
+    {
+      $model = new \Models\User();
+      $model->id = 1;
+
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'madeBy' => new \Cora\Adm\LoadMap([
+          'user_firstName' => 'firstName',
+          'user_lastName' => 'lastName',
+          'user_id' => 'id'
+        ])
+      ],
+        function($model, $str) {
+          $model->status = $str;
+        },
+        ['Hoola Hoop']
+      );
+
+      $model->comments(function($query) {
+        return $query->custom("
+          SELECT 
+            comments.*,
+            users.id as user_id,
+            users.firstName as user_firstName,
+            users.lastName as user_lastName
+          FROM comments
+          LEFT JOIN users ON (comments.id = users.id)
+          WHERE 
+            comments.id = :id OR comments.madeBy IN(:ids)
+        ", [
+          "id" => 1,
+          "ids" => [2,3]
+        ]);
+      }, false, $loadMap);
+
+      $model->comments[1]->model_dynamicOff = true;
+
+      echo $model->comments[0]->status."<br>";
+      var_dump($model->comments[1]->madeBy->firstName);
+    }
+
+
+    /**
+     *  
+     */
+    public function getAllIdeal($list_id) 
+    {
+      // Fetch list model
+      $list = $this->lists->find($list_id);
+
+      // Define how the model should be loaded 
+      $loadMapping = [
+        'practice' => [
+          'practice.id' => 'id'
+        ],
+        'practice.business' => [
+          'business.id' => 'id'
+        ]
+      ];
+
+      // Fetch the items we are interested in from that list.
+      $list->items(function($query, $controller) {
+        $query->join('practices', [['practices.business_id', '=', 'leads_lists_items.business_id']])
+              ->join('businesses', [['businesses.business_id', '=', 'leads_lists_items.business_id']]);
+        return $controller->_paginate($query, 16, ['name']);
+      }, $this, $loadMapping);
+
+      // Return JSON
+      echo $list->items->toJson();
+    }
 }
