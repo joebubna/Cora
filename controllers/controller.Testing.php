@@ -120,6 +120,48 @@ class Testing extends \Cora\App\Controller
     }
 
 
+    public function test4()
+    {
+      $model = new \Models\User();
+      $model->id = 1;
+
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'madeBy' => new \Cora\Adm\LoadMap([
+          'user_firstName' => 'firstName',
+          'user_lastName' => 'lastName',
+          'user_id' => 'id'
+        ])
+      ],
+        function($model, $str) {
+          $model->status = $str;
+        },
+        ['Hoola Hoop']
+      );
+
+      $model->comments(function($query) {
+        return $query->custom("
+          SELECT 
+            comments.*,
+            users.id as user_id,
+            users.firstName as user_firstName,
+            users.lastName as user_lastName
+          FROM comments
+          LEFT JOIN users ON (comments.id = users.id)
+          WHERE 
+            comments.id = :id OR comments.madeBy IN(:ids)
+        ", [
+          "id" => 1,
+          "ids" => [2,3]
+        ]);
+      }, false, $loadMap);
+
+      $model->comments[1]->model_dynamicOff = true;
+
+      echo $model->comments[0]->status."<br>";
+      var_dump($model->comments[1]->madeBy->firstName);
+    }
+
+
     /**
      *  
      */
