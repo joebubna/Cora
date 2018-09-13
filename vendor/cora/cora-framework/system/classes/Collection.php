@@ -90,10 +90,11 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      */
     public function __isset($name)
     {
-        if ($this->find($name) !== null) {
-            return true;
-        }
-        return false;
+      $value = $this->find($name);
+      if ($value !== null && !($value instanceof \Exception)) {
+          return true;
+      }
+      return false;
     }
 
 
@@ -181,7 +182,11 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
     public function __call($name, $arguments)
     {   
         // Grab the callback for the specified name.
-        $resource = call_user_func_array(array($this, 'find'), array($name));
+        $resource = call_user_func_array(array($this, 'find'), array($name, false, true));
+
+        if ($resource instanceof \Exception) {
+          throw $resource;
+        }
 
         // If received a callback
         if ($resource != false && $resource instanceof \Closure) {
@@ -221,7 +226,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param container A parent container. 
      *  @return A resource or NULL.
      */
-    public function find($name, $container = false)
+    public function find($name, $container = false, $exceptionOnNoMatch = false)
     {
         // Handle if recursive call or not.
         if (!$container) {
@@ -248,6 +253,10 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
         // Else check any parents.
         elseif ($container->parent) {
             return $container->find($name, $container->parent);
+        }
+
+        if ($exceptionOnNoMatch) {
+          return new \Exception("No such resource ('$name') exists within this collection");
         }
         return null;
     }

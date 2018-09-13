@@ -207,6 +207,21 @@ class Testing extends \Cora\App\Controller
     }
 
 
+    public function test6()
+    {
+      $list = new \Cora\Collection();
+      var_dump($list->{'testAtt'});
+
+      $q = \Cora\Database::getDefaultDb(true);
+      $q->select('*')
+        ->from('users')
+        ->where('id', 5, '<');
+      var_dump($q->fetchAll());
+
+      var_dump($list->fetchAll());
+    }
+
+
     /**
      *  
      */
