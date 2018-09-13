@@ -1086,6 +1086,31 @@ class ADMTest extends \Cora\App\TestCase
 
 
     /**
+     *  Check that you can pass a closure even for a single model relationship
+     *
+     *  @test
+     */
+    public function canPassClosureToCustomizeFetchingOfRelatedModel()
+    {
+        // Setup
+        $users = $this->app->tests->users;
+
+        // Grab 4th user from db. Should be "Jeff"
+        $user = $users->find(4);
+
+        // Ensure we have jenine
+        $this->assertEquals('Jeff', $user->name);
+
+        // Verify that we can override the "father" query
+        $this->assertEquals("Jenine", $user->father(function($query) {
+          return $query->custom("
+            SELECT * FROM tests_users WHERE id = 3
+          ");
+        })->name);
+    }
+
+
+    /**
      *  Sometimes you might not want to fetch all the related models for a relationship.
      *  For example you may want to paginate or search. This checks that you can pass a closure
      *  to a plural relationship for customizing the data that gets returned.
@@ -1166,7 +1191,6 @@ class ADMTest extends \Cora\App\TestCase
      *  If the "Role" model expects an array offset named "name", then you'll run into a problem.
      *  By mapping "role_name" => "name" you can solve the issue.
      *  
-     *  @group current
      *  @test
      */
     public function canLoadMapOffsetsToAttributesUsingRepository()
@@ -1222,7 +1246,6 @@ class ADMTest extends \Cora\App\TestCase
      *  Using the feature below, you can intelligently grab and populate all the data you need 
      *  in one query.
      *  
-     *  @group current
      *  @test
      */
     public function canLoadMapRelationshipsUsingRepository()
@@ -1305,11 +1328,11 @@ class ADMTest extends \Cora\App\TestCase
       $this->assertEquals('George', $bob->father->name);
     }
 
+
     /**
      *  Ensure that we can use LoadMaps with plural relationships when using the 
      *  Active-Record-like functionality of models. (vs. directly interacting with a repository)
      * 
-     *  @group current
      *  @test
      */
     public function canLoadMapRelationshipsUsingModelNoDynamic()
@@ -1378,7 +1401,6 @@ class ADMTest extends \Cora\App\TestCase
      *  Checks that just specifying the relationships you want to initially load work 
      *  without also giving an attribute mapping array or a recursive LoadMap.
      * 
-     *  @group current
      *  @test
      */
     public function canLoadMapRelationshipsNoSubLoadMap()
@@ -1412,7 +1434,6 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  Check that you can specify an onLoad function to run using LoadMaps
      *  
-     *  @group current
      *  @test
      */
     public function canLoadMapAnOnLoadFunction()

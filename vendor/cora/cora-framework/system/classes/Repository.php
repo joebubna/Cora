@@ -99,7 +99,7 @@ class Repository
       if ($queryDefinition) {
         $query = $queryDefinition($query, $vars);
       }
-
+      
       $all = $this->gateway->fetchByQuery($query);
       return $this->factory->makeGroup($all, $loadMap);
     }

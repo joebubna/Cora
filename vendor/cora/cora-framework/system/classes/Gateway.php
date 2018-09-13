@@ -149,12 +149,11 @@ class Gateway
             $query->select('*');
         }
         $query->from($this->tableName);
-
+        
         if ($this->viewQuery) {
             echo $query->getQuery();
         }
-        //fwrite(STDERR, $query->getQuery());
-        //echo $query->getQuery();
+
         return $query->fetchAll();
 	}
 

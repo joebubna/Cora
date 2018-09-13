@@ -70,6 +70,8 @@ class Model
       }
 
       $this->model_hydrating = false;
+
+      return $this;
     }
 
 
@@ -532,7 +534,7 @@ class Model
         $def = $this->model_attributes[$name];
 
         // If the attribute is a reference to a collection of models
-        if (isset($def['models'])) {
+        //if (isset($def['models']) || isset($def['model'])) {
 
           // Get query object that we can use
           $query = $this->getQueryObjectForRelation($name);
@@ -541,14 +543,19 @@ class Model
           $query = $arguments[0]($query, isset($arguments[1]) ? $arguments[1] : false);
           
           // Fetch data
-          $this->$name = $this->getModels($name, $def['models'], $query, isset($arguments[2]) ? $arguments[2] : false);
+          $this->$name = $this->getCustomValue($name, $query, isset($arguments[2]) ? $arguments[2] : false);
+          //$this->$name = $this->getModels($name, $def['models'], $query, isset($arguments[2]) ? $arguments[2] : false);
           return $this->$name;
-        }
+        //}
       }
 
-      // If a plural model relationship wasn't what was called, then assume it's a normal 
+      // If an attribute relationship wasn't what was called, then assume it's a normal 
       // function call and pass on the request to the matching function (or error out)
-      call_user_func_array(array($this, $name), $arguments);
+      if (method_exists($this, $name)) {
+        call_user_func_array(array($this, $name), $arguments);
+      } else {
+        throw new \Exception('Made a method call on a model when no such method or model relationship exists.');
+      }
     }
 
 
@@ -559,9 +566,14 @@ class Model
     {
       // Setup
       $def = $this->model_attributes[$attribute];
-      $relatedObj = isset($def['models']) ? $this->fetchRelatedObj($def['models']) : $this->fetchRelatedObj($def['model']);
+      
+      // If not a model relationship, just return an adaptor for this model
+      if (!isset($def['model']) && !isset($def['models'])) {
+        return $this->getDbAdaptor();
+      }
 
-      // Get DB adaptor to use for one-to-many relationships
+      // Get DB adaptor to use for model relationships
+      $relatedObj = isset($def['models']) ? $this->fetchRelatedObj($def['models']) : $this->fetchRelatedObj($def['model']);
       $query = $relatedObj->getDbAdaptor();
 
       // If the relationship is many-to-many and uses a relation table.
@@ -585,10 +597,30 @@ class Model
     }
 
 
+    protected function getCustomValue($name, $query, $loadMap = false)
+    {
+      $def = $this->model_attributes[$name];
+      $result = false;
+
+      if (isset($def['models'])) {
+        $result = $this->getModels($name, $def['models'], $query, $loadMap);
+      } 
+      
+      else if (isset($def['model'])) {
+        $result = $this->getModel($name, $def['model'], $query, $loadMap);
+      }
+
+      else {
+        $result = $query->fetch();
+      }
+      return $result;
+    }
+
+
     /**
      * 
      */
-    protected function getModel($attributeName, $relatedObjName = false, $query = false)
+    protected function getModel($attributeName, $relatedObjName = false, $query = false, $loadMap = false)
     {
       $def = $this->model_attributes[$attributeName];
       $result = null;
@@ -597,12 +629,12 @@ class Model
 
         // If fetching via a defined column on a table.
         if (isset($def['via'])) {
-          $result = $this->getModelFromTableColumn($attributeName, $def['model'], $def['via']);
+          $result = $this->getModelFromTableColumn($attributeName, $def['model'], $def['via'], $query, $loadMap);
         }
         
         // If custom defined relationship for this single model
         else if (isset($def['using'])) {
-          $result = $this->getModelFromCustomRelationship($attributeName, $def['model']);
+          $result = $this->getModelFromCustomRelationship($attributeName, $def['model'], $query, $loadMap);
         }
 
         // In the rare case that we need to fetch a single related object, and the developer choose
@@ -610,7 +642,7 @@ class Model
         // It's abstract in the sense that there's nothing on the current model's table 
         // leading to it. We need to grab it using our method to grab data from a relation table.
         else if (isset($def['usesRefTable'])) {
-          $result = $this->getModelFromRelationTable($attributeName, $def['model']);
+          $result = $this->getModelFromRelationTable($attributeName, $def['model'], $query, $loadMap);
         }
 
         // In the more common case of fetching a single object, where the related object's
@@ -619,18 +651,21 @@ class Model
         // object that was already fetched. So we can use that ID to populate a blank
         // object and then rely on it's dynamic loading to fetch any additional needed info.
         else {
-          // Create a blank object of desired type and assign it the ID we know
-          // references it. When we try and grab data from this new object,
-          // dynamic data fetching will trigger on it.
+          // Create a blank object of desired type
           $relatedObj = $this->fetchRelatedObj($def['model']);
 
-          // Populate the new obj with data we have about it (should only be primaryKey/ID)
-          //$relatedObj->_populate([$relatedObj->getPrimaryKey() => $this->model_data[$name]]);
-          // $this->$name = $relatedObj;
+          // If a custom query was passed in, execute it
+          // Then populate a model with the data result
+          if ($query && $query->isCustom()) {
+            $data = $query->fetch();
+            $result = $relatedObj->_populate($data);
+          }
 
-          // Fetch related object in whole 
-          $relObjRepo = $relatedObj->getRepository(true);
-          $result = $relObjRepo->find($this->model_data[$attributeName]);
+          else {
+            // Fetch related object in whole (The model_data we have on it should be an ID reference)
+            $relObjRepo = $relatedObj->getRepository(true);
+            $result = $relObjRepo->find($this->model_data[$attributeName]);
+          }
         }
       }
       return $result;
@@ -930,9 +965,9 @@ class Model
      }
 
 
-    public function getModelFromCustomRelationship($attributeName, $objName)
+    public function getModelFromCustomRelationship($attributeName, $objName, $query = false, $loadMap = false)
     {
-      return $this->getModelsFromCustomRelationship($attributeName, $objName)->get(0);
+      return $this->getModelsFromCustomRelationship($attributeName, $objName, $query, $loadMap)->get(0);
     }
 
 

@@ -56,6 +56,20 @@ class Testing extends \Cora\App\Controller
     }
 
 
+    public function test1()
+    {
+      $model = new \Models\User();
+      $model->id = 1;
+      var_dump($model->primaryRole);
+      var_dump(
+        $model->primaryRole(function($query) {
+          return $query->custom("SELECT * FROM roles WHERE id = 3");
+        })
+      );
+      var_dump($model->primaryRole);
+    }
+
+
     public function test2()
     {
       $users = $this->app->users;
@@ -159,6 +173,37 @@ class Testing extends \Cora\App\Controller
 
       echo $model->comments[0]->status."<br>";
       var_dump($model->comments[1]->madeBy->firstName);
+    }
+
+
+    public function test5()
+    {
+      $users = $this->app->users;
+
+      $loadMap = new \Cora\Adm\LoadMap([
+        'email' => 'firstName'
+      ], [
+        'primaryRole' => new \Cora\Adm\LoadMap([
+          'role_id' => 'id',
+          'name' => '!name'
+        ])
+      ]);
+
+      $results = $users->findAll(function($query, $arg) {
+        return $query->custom('
+          SELECT 
+            users.*,
+            roles.id as role_id,
+            roles.name as role_name 
+          FROM users LEFT JOIN roles ON (users.primaryRole = roles.id) 
+          LIMIT 5
+        ');
+      }, 1, $loadMap);
+
+      var_dump($results[0]->model_data);
+
+      echo $results[1]->firstName;
+      echo $results[1]->primaryRole->name;
     }
 
 
