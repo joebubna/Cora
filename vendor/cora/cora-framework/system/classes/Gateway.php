@@ -110,7 +110,7 @@ class Gateway
         if ($this->viewQuery) {
             echo $this->db->getQuery();
         }
-
+        
         return $this->db->fetchAll();
 	}
 
@@ -149,7 +149,7 @@ class Gateway
             $query->select('*');
         }
         $query->from($this->tableName);
-
+        
         if ($this->viewQuery) {
             echo $query->getQuery();
         }

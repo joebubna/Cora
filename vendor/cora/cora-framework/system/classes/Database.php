@@ -28,6 +28,11 @@ class Database
     protected $query;
     protected $queryDisplay;
 
+    // For overridding with a custom query
+    protected $customQuery;
+    protected $customValues;
+    protected $customStmt;
+
     // For calculating total row from last query within LIMIT
     protected $last_wheres;
     protected $last_distinct;
@@ -48,6 +53,18 @@ class Database
             return false;
         return true;
     }
+
+
+    /**
+     *  Whether or not a custom query is defined on this query builder object.
+     *  
+     *  @return bool
+     */
+    public function isCustom() 
+    {
+      return $this->customQuery;
+    }
+
 
     public function resetSelect()
     {
@@ -246,13 +263,23 @@ class Database
 
     public function getQuery()
     {
-        if ($this->query == '') {
-            $this->calculate();
-        }
-        $this->queryDisplay = $this->query;
-        $this->query = '';
+      // If a user written custom query was passed in, use that
+      if ($this->customQuery != '') {
+        return $this->calculateCustom();
+      }  
 
-        return $this->queryDisplay;
+      // Otherwise calculate the query from the components
+      if ($this->query == '') {
+          $this->calculate();
+      }
+
+      // Save the generated query
+      $this->queryDisplay = $this->query;
+
+      // Reset the query string, since we don't want to execute that yet.
+      $this->query = '';
+
+      return $this->queryDisplay;
     }
 
 
@@ -281,6 +308,9 @@ class Database
         $this->create   = false;
         $this->query    = '';
         $this->queryDisplay = '';
+
+        $this->customQuery  = '';
+        $this->customValues = [];
     }
 
 
@@ -458,6 +488,13 @@ class Database
     }
 
 
+    protected function execCustom()
+    {
+        // To be implemented by specific DB adaptor.
+        throw new Exception('execCustom() needs to be implemented by a specific database adaptor!');
+    }
+
+
     public function emptyDatabase()
     {
         // to be implemented by specific adaptor.
@@ -470,6 +507,14 @@ class Database
         // To be implemented by specific DB adaptor.
         throw new Exception('getQuery() calls calculate(), which needs to be implemented by a specific database adaptor!');
     }
+
+
+    protected function calculateCustom()
+    {
+        // To be implemented by specific DB adaptor.
+        throw new Exception('getQuery() calls calculate(), which needs to be implemented by a specific database adaptor!');
+    }
+
 
     public function tableExists($name)
     {

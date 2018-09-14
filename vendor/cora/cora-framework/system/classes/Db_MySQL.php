@@ -166,36 +166,154 @@ class Db_MySQL extends Database
         $this->havings = $this->last_havings;
         $this->joins = $this->last_joins;
     }
+
+
+    /**
+     *  
+     */
+    public function custom($query, $variables = []) 
+    {
+      $this->customQuery = $query;
+      $this->customValues = $variables;
+      return $this;
+    }
+
+    
+    /**
+     *  
+     */
+    protected function execCustom()
+    {
+      $preppedQuery = $this->customQuery;
+
+      // Replace instances of arrays such as ":ids" with a list ":id1, :id2, :id3, ..."
+      foreach($this->customValues as $key => $value) {
+        if (is_array($value)) {
+          // Generage the string we want to insert in place of the variable
+          $str = $this->parseArray(":$key", $value);
+          $preppedQuery = preg_replace('/:'.$key."(?!\w)/", $str, $preppedQuery);
+        }
+      }
+      
+      // Sent the query string to the database for preparation
+      try {
+        $this->customStmt = $this->db->prepare($preppedQuery);
+      }
+      catch (\PDOException $e) {
+        if ($this->config['mode'] == 'development') {
+            echo $preppedQuery;
+        }
+        $this->reset();
+        throw $e;
+      }
+
+      // Do any values bindings necessary
+      foreach($this->customValues as $key => $value) {
+        if (is_array($value)) {
+          $this->bindArray(":$key", $value);
+        } else {
+          $this->bind(":$key", $value);
+        }
+      }
+
+      // Execute the prepped query
+      $this->customStmt->execute();
+      
+      // Reset query object
+      $this->reset();
+    
+      // Return Result
+      $dbResult = new Db_MySQLResult($this->customStmt, $this->db);
+      return $dbResult;
+    }
+
+    /**
+     *  
+     */
+    public function bind($param, $value, $type = null) {
+      if (is_null($type)) {
+        switch (true) {
+          case is_int($value):
+            $type = \PDO::PARAM_INT;
+            break;
+          case is_bool($value):
+            $type = \PDO::PARAM_BOOL;
+            break;
+          case is_null($value):
+            $type = \PDO::PARAM_NULL;
+            break;
+          default:
+            $type = \PDO::PARAM_STR;
+        }
+      }
+      $this->customStmt->bindValue($param, $value, $type);
+    }
+
+
+    /**
+     *  Iterates over an array binding each element.
+     *  Giving it ":id" for the param would result in the bindings of:
+     *  :id1,
+     *  :id2,
+     *  :id3, etc
+     */
+    public function bindArray($param, $values, $type = null)
+    {
+      foreach ($values as $index => $value) {
+        $this->bind($param.$index, $value, $type);
+      }   
+    }
+
+
+    /**
+     *  Returns a string representing an array where each element is bound.
+     *  Giving it ":id" for the param would result in:
+     *  ":id1,:id2,:id3", etc
+     */
+    public static function parseArray($param, $values)
+    {
+        $str = "";
+        foreach($values as $index => $value){
+          $str .= $param.$index.",";
+        }
+        return rtrim($str,",");     
+    }
+
     
     // Create SQL string and execute it on our database.
     public function exec()
     {
-        // Save copy of relevant data so we can calculate the total rows of this query
-        // Does not save LIMIT as this is for use with pagination.
-        $this->last_wheres = $this->wheres;
-        $this->last_distinct = $this->distinct;
-        $this->last_ins = $this->ins;
-        $this->last_groupBys = $this->groupBys;
-        $this->last_havings = $this->havings;
-        $this->last_joins = $this->joins;
-        
-        // Execute this query
-        $this->calculate();
-        try {
-            $result = $this->db->query($this->query);
-        }
-        catch (\PDOException $e) {
-            if ($this->config['mode'] == 'development') {
-                echo $this->getQuery();
-            }
-            $this->reset();
-            throw $e;
-        }
-        $this->reset();
-        
-        // Return Result
-        $dbResult = new Db_MySQLResult($result, $this->db);
-        return $dbResult;
+      // If there's a custom query to execute, do that instead of building one.
+      if ($this->customQuery) {
+        return $this->execCustom();
+      }
+      
+      // Save copy of relevant data so we can calculate the total rows of this query
+      // Does not save LIMIT as this is for use with pagination.
+      $this->last_wheres = $this->wheres;
+      $this->last_distinct = $this->distinct;
+      $this->last_ins = $this->ins;
+      $this->last_groupBys = $this->groupBys;
+      $this->last_havings = $this->havings;
+      $this->last_joins = $this->joins;
+      
+      // Execute this query
+      $this->calculate();
+      try {
+          $result = $this->db->query($this->query);
+      }
+      catch (\PDOException $e) {
+          if ($this->config['mode'] == 'development') {
+              echo $this->getQuery();
+          }
+          $this->reset();
+          throw $e;
+      }
+      $this->reset();
+      
+      // Return Result
+      $dbResult = new Db_MySQLResult($result, $this->db);
+      return $dbResult;
     }
 
 
@@ -247,41 +365,75 @@ class Db_MySQL extends Database
         $this->reset();
         return $result;
     }
+
+
+    /**
+     * 
+     */
+    protected function calculateCustom()
+    {
+      $preppedQuery = $this->customQuery;
+
+      // Replace instances of arrays such as ":ids" with a list ":id1, :id2, :id3, ..."
+      foreach($this->customValues as $key => $value) {
+        if (is_array($value)) {
+          $str = $this->parseArray(":$key", $value);
+          $preppedQuery = preg_replace('/:'.$key."(?!\w)/", $str, $preppedQuery);
+        }
+      }
+
+      // Do any values bindings necessary
+      foreach($this->customValues as $key => $value) {
+        if (is_array($value)) {
+          $values = $value;
+          foreach ($values as $i => $v) {
+            $preppedQuery = preg_replace('/:'.$key.$i."(?!\w)/", $v, $preppedQuery);
+          }  
+        } else {
+          $preppedQuery = preg_replace('/:'.$key."(?!\w)/", $value, $preppedQuery);
+        }
+      }
+    
+      // Return Result
+      return $preppedQuery;
+    }
     
     
-    // Create the SQL string from Database class raw data.
+    /** 
+     * Create the SQL string from Database class raw data.
+     */
     protected function calculate()
     {
-        // Determine Action
-        $action = false;
-        $actions = 0;
-        if($this->delete) {
-            $actions += 1;
-            $action = 'DELETE';
-        }
-        if(!empty($this->inserts)) {
-            $actions += 1;
-            $action = 'INSERT';
-        }
-        if(!empty($this->updates)) {
-            $actions += 1;
-            $action = 'UPDATE';
-        }
-        if(!empty($this->selects)) {
-            $actions += 1;
-            $action = 'SELECT';
-        }
-        if(!empty($this->create)) {
-            $actions += 1;
-            $action = 'CREATE';
-        }
-        if ($actions > 1) {
-            throw new \Exception("More than one query action specified! When using Cora's query builder class, only one type of query (select, update, delete, insert) can be done at a time.");
-        }
-        else {
-            $calcMethod = 'calculate'.$action;
-            $this->$calcMethod();
-        }      
+      // Determine Action
+      $action = false;
+      $actions = 0;
+      if($this->delete) {
+        $actions += 1;
+        $action = 'DELETE';
+      }
+      if(!empty($this->inserts)) {
+        $actions += 1;
+        $action = 'INSERT';
+      }
+      if(!empty($this->updates)) {
+        $actions += 1;
+        $action = 'UPDATE';
+      }
+      if(!empty($this->selects)) {
+        $actions += 1;
+        $action = 'SELECT';
+      }
+      if(!empty($this->create)) {
+        $actions += 1;
+        $action = 'CREATE';
+      }
+      if ($actions > 1) {
+        throw new \Exception("More than one query action specified! When using Cora's query builder class, only one type of query (select, update, delete, insert) can be done at a time.");
+      }
+      else {
+          $calcMethod = 'calculate'.$action;
+          $this->$calcMethod();
+      }      
     }
     
     // Create a SELECT statement
