@@ -213,10 +213,15 @@ class Testing extends \Cora\App\Controller
       var_dump($list->{'testAtt'});
 
       $q = \Cora\Database::getDefaultDb(true);
-      $q->select('*')
-        ->from('users')
-        ->where('id', 5, '<');
+      $q->custom('SELECT * FROM users WHERE id = :id OR firstName IN(:names)', [
+        'id' => 1,
+        'names' => ['Josiah', "Susan"]
+      ]);
       var_dump($q->fetchAll());
+      // $q->select('*')
+      //   ->from('users')
+      //   ->where('id', 5, '<');
+      // var_dump($q->fetchAll());
 
       var_dump($list->fetchAll());
     }
