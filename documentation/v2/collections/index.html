@@ -110,6 +110,12 @@
                     <ul class="dropdown-menu">
                     
                         
+<li >
+    <a href="../release_notes/">Release Notes</a>
+</li>
+
+                    
+                        
   <li class="dropdown-submenu">
     <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
@@ -135,6 +141,12 @@
             
 <li >
     <a href="../ADM/relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../ADM/subsets_loadmapping/">Subsets and LoadMapping</a>
 </li>
 
         
@@ -192,6 +204,12 @@
             
 <li >
     <a href="../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../databaseclass/custom_query/">Custom Queries</a>
 </li>
 
         
@@ -417,6 +435,8 @@
             <li><a href="#performance-optimizations">Performance Optimizations</a></li>
         
             <li><a href="#warning-about-mixing-closures-with-other-types">Warning About Mixing Closures With Other Types</a></li>
+        
+            <li><a href="#non-existent-resources">Non-Existent Resources</a></li>
         
     
     </ul>
@@ -819,7 +839,36 @@ whenever possible.</p>
 <h2 id="warning-about-mixing-closures-with-other-types">Warning About Mixing Closures With Other Types</h2>
 <p>Closures won't be mixed with Singletons in the order they were added when mixed together to form
 the "content" array. So $object-&gt;off5 might not give you the expected result. When mixing Closures 
-with solid values, you need to use named offsets such as $object-&gt;repository.</p></div>
+with solid values, you need to use named offsets such as $object-&gt;repository.</p>
+<h2 id="non-existent-resources">Non-Existent Resources</h2>
+<p>This behavior has changed slightly in release 2.6. In the past, asking for a resource out of a collection
+would return NULL if it wasn't present; this applied whether you used named offset or function syntax.</p>
+<p><strong>How it used to work:</strong>    </p>
+<pre><code class="php">$c = new \Cora\Collection();
+$c-&gt;item1 = 'Foo';
+$c-&gt;item2 = 'Bar';
+echo $c-&gt;item3; // Returns NULL
+echo $c-&gt;item3(); // Returns NULL
+if ($c-&gt;count()) {
+  echo 'There are items!';
+}
+</code></pre>
+
+<p>Notice that "count()", since it's a function on the Collection class, was intelligently NOT treated like a 
+resource offset. The problem with this setup was when you made a typo such as <code>$c-&gt;countt()</code> you would get 
+no exceptions letting you know you goofed up. Instead it would think you were trying to access a resource 
+and just return null without errors. This was a big programmer headache and bad design choice.</p>
+<p>This has now been changed so that non-function calls to non-existent resources will still return null, but 
+function calls will throw an exception.</p>
+<p><strong>How it works now:</strong></p>
+<pre><code class="php">$c = new \Cora\Collection();
+$c-&gt;item1 = 'Foo';
+$c-&gt;item2 = 'Bar';
+echo $c-&gt;item2;   // Returns &quot;Bar&quot;
+echo $c-&gt;item2(); // Returns &quot;Bar&quot;
+echo $c-&gt;item3;   // Returns NULL
+echo $c-&gt;item3(); // Throws an Exception!
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

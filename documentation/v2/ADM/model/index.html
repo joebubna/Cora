@@ -110,6 +110,12 @@
                     <ul class="dropdown-menu">
                     
                         
+<li >
+    <a href="../../release_notes/">Release Notes</a>
+</li>
+
+                    
+                        
   <li class="dropdown-submenu">
     <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
@@ -135,6 +141,12 @@
             
 <li >
     <a href="../relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../subsets_loadmapping/">Subsets and LoadMapping</a>
 </li>
 
         
@@ -192,6 +204,12 @@
             
 <li >
     <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/custom_query/">Custom Queries</a>
 </li>
 
         
@@ -677,10 +695,10 @@ $user = $this-&gt;repo-&gt;find($id);
 $user-&gt;location = new Location('Fuel Medical LLC', 'Camas', 'WA');
 
 // Associate a set of Articles to this user:
-$user-&gt;articles =   new \Cora\ResultSet([
-                        new Article('How to Write Good Code'),
-                        new Article('How to Unit Test')
-                    ]);
+$user-&gt;articles = new \Cora\Collection([
+  new Article('How to Write Good Code'),
+  new Article('How to Unit Test')
+]);
 
 // Save the changes
 $repo-&gt;save($user);

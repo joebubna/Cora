@@ -110,6 +110,12 @@
                     <ul class="dropdown-menu">
                     
                         
+<li >
+    <a href="../../release_notes/">Release Notes</a>
+</li>
+
+                    
+                        
   <li class="dropdown-submenu">
     <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
@@ -135,6 +141,12 @@
             
 <li >
     <a href="../relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../subsets_loadmapping/">Subsets and LoadMapping</a>
 </li>
 
         
@@ -192,6 +204,12 @@
             
 <li >
     <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/custom_query/">Custom Queries</a>
 </li>
 
         
@@ -381,7 +399,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../relationships/">
+                    <a rel="next" href="../subsets_loadmapping/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -567,10 +585,50 @@ $user = $repo-&gt;find($id);
 The findOne() method is for grabbing a single object from a database based on
 the passed in query parameters.</p>
 <p><strong>Format:</strong></p>
-<pre><code class="php">findOne(coraDbQuery)
+<pre><code class="php">findOne([function | coraDbQuery])
 </code></pre>
 
-<p><strong>Examples:</strong>  </p>
+<p><strong>Examples using a function:</strong><br />
+Basic Example:</p>
+<pre><code>// Create Repository
+$repo = \Cora\RepositoryFactory::make('User');
+
+// Fetch a user using a closure
+$user = $repo-&gt;findOne(function($query) {
+  return $query-&gt;where('name', 'testUser');
+});
+</code></pre>
+
+<p>Passing in a variable:</p>
+<pre><code>// Create Repository
+$repo = \Cora\RepositoryFactory::make('User');
+
+// Fetch a user using a closure and pass in a variable
+$user = $repo-&gt;findOne(function($query, $name) {
+  return $query-&gt;where('name', $name);
+}, 'testUser');
+</code></pre>
+
+<p>Using a simple LoadMap:</p>
+<pre><code>// Create Repository
+$repo = \Cora\RepositoryFactory::make('User');
+
+// Create LoadMap which will cause 'email' field from database
+// to load into the 'name' field on the User model and also 
+// load the 'primaryRole' model relationship right away.
+$loadMap = new \Cora\Adm\LoadMap([
+  'email' =&gt; 'name'
+], [
+  'primaryRole' =&gt; true
+]);
+
+// Fetch a user using a closure and pass in a variable and a LoadMap
+$user = $repo-&gt;findOne(function($query, $name) {
+  return $query-&gt;where('name', $name);
+}, 'testUser', $loadMap);
+</code></pre>
+
+<p><strong>Examples using query object:</strong>  </p>
 <pre><code>// Create Repository
 $repo = \Cora\RepositoryFactory::make('User');
 
@@ -589,10 +647,50 @@ $user = $repo-&gt;findOne($db);
 The findAll() method is for grabbing all objects from a database collection.
 The results can be limited by optionally passing along query parameters.</p>
 <p><strong>Format:</strong></p>
-<pre><code class="php">findAll([coraDbQuery])
+<pre><code class="php">findAll([function | coraDbQuery])
 </code></pre>
 
-<p><strong>Examples:</strong>  </p>
+<p><strong>Examples using a function:</strong><br />
+Basic Example:</p>
+<pre><code>// Create Repository
+$repo = \Cora\RepositoryFactory::make('User');
+
+// Fetch users using a closure
+$users = $repo-&gt;findAll(function($query) {
+  return $query-&gt;where('type', 'Admin');
+});
+</code></pre>
+
+<p>Passing in a variable:</p>
+<pre><code>// Create Repository
+$repo = \Cora\RepositoryFactory::make('User');
+
+// Fetching users using a closure and pass in a variable
+$users = $repo-&gt;findAll(function($query, $type) {
+  return $query-&gt;where('type', $type);
+}, 'Admin');
+</code></pre>
+
+<p>Using a simple LoadMap:</p>
+<pre><code>// Create Repository
+$repo = \Cora\RepositoryFactory::make('User');
+
+// Create LoadMap which will cause 'email' field from database
+// to load into the 'name' field on the User models and also 
+// load the 'primaryRole' model relationship right away on all models.
+$loadMap = new \Cora\Adm\LoadMap([
+  'email' =&gt; 'name'
+], [
+  'primaryRole' =&gt; true
+]);
+
+// Fetch users using a closure and pass in a variable and a LoadMap
+$users = $repo-&gt;findAll(function($query, $type) {
+  return $query-&gt;where('type', $type);
+}, 'Admin', $loadMap);
+</code></pre>
+
+<p><strong>Examples using query object:</strong>  </p>
 <pre><code>// Create Repository
 $repo = \Cora\RepositoryFactory::make('User');
 

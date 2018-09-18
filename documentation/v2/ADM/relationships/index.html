@@ -110,6 +110,12 @@
                     <ul class="dropdown-menu">
                     
                         
+<li >
+    <a href="../../release_notes/">Release Notes</a>
+</li>
+
+                    
+                        
   <li class="dropdown-submenu">
     <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
@@ -135,6 +141,12 @@
             
 <li class="active">
     <a href="./">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../subsets_loadmapping/">Subsets and LoadMapping</a>
 </li>
 
         
@@ -192,6 +204,12 @@
             
 <li >
     <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/custom_query/">Custom Queries</a>
 </li>
 
         
@@ -386,7 +404,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../repository/">
+                    <a rel="prev" href="../subsets_loadmapping/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -452,6 +470,16 @@ and models with other models. This page will walk through the more common scenar
 }
 </code></pre>
 
+<h3 id="solid-principles">SOLID Principles</h3>
+<p>A quick sidenote for SOLID purists - the idea of having a separate mapper for Model =&gt; Connection was considered, but ultimately decided against. Being able to look at a model an infer something about what data store it came from and gets stored to is convenient, especially considering there's no direct tie to the persistence layer. More importantly, adding an additional mapping layer would add complexity without any benefit in functionality. Currently the relationship between objects looks like this: <code>Model =&gt; Connection =&gt; Storage Medium</code>. </p>
+<ul>
+<li>If we want to change the mapping for an individual model from one persistence medium to a new one, we just change the mapping from <code>Model =&gt; Connection</code> to something else.</li>
+<li>If we want to change the mapping for all models from one persistence medium to a new one, we just change the mapping from <code>Connection =&gt; Storage Medium</code> to something else.</li>
+</ul>
+<p>Comparing that to <code>Model =&gt; Mapper =&gt; Connection =&gt; Storage Medium</code> just sub out "Model" for "Mapper" in the above bullet list and the functionality is the exact same. The only difference is there's no indication on the Model of how it's used. </p>
+<p><span class="text-green">
+[How to save a model to multiple mediums? Say I want to save the same model to both Database1 and Database2? If passed to different Repo, issues with related models?]
+</span></p>
 <h2 id="model-to-table">Model to Table</h2>
 <p>Normally a model will be mapped to a table/collection that is the same name as the model itself, but with an "s" added to the end. For example, a User model would by default be mapped to a "users" table. Then for models outside the base models directory, each piece of their namespace will have an underscore (see Default Table Names section). However, if you want to change what table a model gets mapped to, you can do so by defining a <code>$model_table</code> data member.</p>
 <pre><code class="php">class User extends \Cora\Model {
@@ -478,9 +506,9 @@ and models with other models. This page will walk through the more common scenar
 
 <p>On a Users repository, the result will be all the users in the table. If you wanted only "active" users you would have to normally pass in a partial query or else grab everything and then filter afterwards:</p>
 <pre><code class="php">// Grab only &quot;active&quot; users
-$dbQuery = $usersRepository-&gt;getDb();
-$dbQuery-&gt;where('type', 'Active');
-$users = $usersRepository-&gt;findAll($dbQuery);
+$users = $usersRepository-&gt;findAll(function($query) {
+  return $query-&gt;where('type', 'Active');
+})
 
 // Grab all users, but then filter out non-active ones after the fact
 $users = $usersRepository-&gt;findAll();
@@ -549,6 +577,21 @@ class ActiveUser extends \Models\User {
     // This let's us type $user-&gt;id instead of $user-&gt;user_id.
     protected $id_name = 'user_id';
 }
+</code></pre>
+
+<h3 id="dynamic-field-mapping-new-as-of-v26">Dynamic field mapping (new as of v2.6)</h3>
+<p>Another way you can change which the mapping from database fields to model attribute is by passing in a LoadMap when fetching the models.
+Note: This will override any mappings hard-coded into the model definitions.</p>
+<pre><code>// Create a LoadMap
+$loadMap = new \Cora\Adm\LoadMap([
+  'full_name' =&gt; 'name'
+]);
+
+// Fetch users and pass in the LoadMap
+// If you don't want to apply constraints, just return the query
+$users = $repo-&gt;findAll(function($query) {
+  return $query;
+}, false, $loadMap);
 </code></pre>
 
 <h2 id="one-to-one-via-relation-table">One-to-One via Relation Table</h2>

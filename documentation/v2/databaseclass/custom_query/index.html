@@ -9,7 +9,7 @@
         
         <link rel="shortcut icon" href="../../../../img/favicon.ico">
 
-	<title>Optimistic Locking - Cora Framework Documentation</title>
+	<title>Custom Queries - Cora Framework Documentation</title>
 
         <link href="../../../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../../../css/font-awesome-4.0.3.css" rel="stylesheet">
@@ -122,67 +122,67 @@
         
             
 <li >
-    <a href="../overview/">Overview</a>
+    <a href="../../ADM/overview/">Overview</a>
 </li>
 
         
             
 <li >
-    <a href="../implementation/">Implementation</a>
+    <a href="../../ADM/implementation/">Implementation</a>
 </li>
 
         
             
 <li >
-    <a href="../model/">Model</a>
+    <a href="../../ADM/model/">Model</a>
 </li>
 
         
             
 <li >
-    <a href="../relationships/">Model Relationships</a>
+    <a href="../../ADM/relationships/">Model Relationships</a>
 </li>
 
         
             
 <li >
-    <a href="../subsets_loadmapping/">Subsets and LoadMapping</a>
+    <a href="../../ADM/subsets_loadmapping/">Subsets and LoadMapping</a>
 </li>
 
         
             
 <li >
-    <a href="../repository/">Repository</a>
+    <a href="../../ADM/repository/">Repository</a>
 </li>
 
         
             
 <li >
-    <a href="../gateway/">Gateway</a>
+    <a href="../../ADM/gateway/">Gateway</a>
 </li>
 
         
             
 <li >
-    <a href="../factory/">Factory</a>
+    <a href="../../ADM/factory/">Factory</a>
 </li>
 
         
             
 <li >
-    <a href="../lifecycle/">Lifecycle Callbacks</a>
+    <a href="../../ADM/lifecycle/">Lifecycle Callbacks</a>
 </li>
 
         
             
 <li >
-    <a href="../database_gen/">Automated DB Creation</a>
+    <a href="../../ADM/database_gen/">Automated DB Creation</a>
 </li>
 
         
             
-<li class="active">
-    <a href="./">Optimistic Locking</a>
+<li >
+    <a href="../../ADM/opt_locking/">Optimistic Locking</a>
 </li>
 
         
@@ -203,55 +203,55 @@
         
             
 <li >
-    <a href="../../databaseclass/overview/">Overview</a>
+    <a href="../overview/">Overview</a>
+</li>
+
+        
+            
+<li class="active">
+    <a href="./">Custom Queries</a>
 </li>
 
         
             
 <li >
-    <a href="../../databaseclass/custom_query/">Custom Queries</a>
+    <a href="../methods_utility/">Utility Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../databaseclass/methods_utility/">Utility Methods</a>
+    <a href="../methods_select/">SELECT Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../databaseclass/methods_select/">SELECT Methods</a>
+    <a href="../methods_update/">UPDATE Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../databaseclass/methods_update/">UPDATE Methods</a>
+    <a href="../methods_insert/">INSERT Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../databaseclass/methods_insert/">INSERT Methods</a>
+    <a href="../methods_delete/">DELETE Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../databaseclass/methods_delete/">DELETE Methods</a>
+    <a href="../methods_create/">CREATE Methods</a>
 </li>
 
         
             
 <li >
-    <a href="../../databaseclass/methods_create/">CREATE Methods</a>
-</li>
-
-        
-            
-<li >
-    <a href="../../databaseclass/databaseresult/">DatabaseResult Class</a>
+    <a href="../databaseresult/">DatabaseResult Class</a>
 </li>
 
         
@@ -399,12 +399,12 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../database_gen/">
+                    <a rel="next" href="../overview/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../../collections/">
+                    <a rel="prev" href="../methods_utility/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -418,11 +418,39 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
+        <li class="main active"><a href="#database-class-methods">Database Class Methods</a></li>
+        
+            <li><a href="#custom-method">custom() method</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<p>Optimistic Locking</p></div>
+<h1 id="database-class-methods">Database Class Methods</h1>
+<h2 id="custom-method">custom() method</h2>
+<p><strong>Purpose:</strong> <br />
+To run a hand-written SQL query.</p>
+<p><strong>Format:</strong>  </p>
+<pre><code class="php">custom(query_string [, array(associative_array_of_values)])
+</code></pre>
+
+<p><strong>Examples:</strong>  </p>
+<pre><code class="php">// Fetch a list of user records
+$db -&gt;custom('SELECT * FROM users WHERE user_id = :id OR status IN(:statuses)', [
+  'id' =&gt; 5,
+  'statuses' =&gt; ['Admin', 'Moderator']
+])-&gt;fetchAll();
+</code></pre>
+
+<p><strong>Implementation Explanation:</strong> <br />
+This method utilizes prepared queries when possible. The example above, when using the MySQL adaptor, will first get transformed into 
+the following format:</p>
+<pre><code>SELECT * FROM users WHERE user_id = :id OR status IN(:statuses1, :statuses2)
+</code></pre>
+
+<p>That query will get sent to the MySQL server as a prepared statement.</p>
+<p>From there the values you passed in as the 2nd argument will get bound to each of the variables.</p></div>
         </div>
 
         <footer class="col-md-12">

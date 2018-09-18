@@ -110,6 +110,12 @@
                     <ul class="dropdown-menu">
                     
                         
+<li >
+    <a href="../../release_notes/">Release Notes</a>
+</li>
+
+                    
+                        
   <li class="dropdown-submenu">
     <a tabindex="-1" href="">ADM ORM</a>
     <ul class="dropdown-menu">
@@ -135,6 +141,12 @@
             
 <li >
     <a href="../relationships/">Model Relationships</a>
+</li>
+
+        
+            
+<li >
+    <a href="../subsets_loadmapping/">Subsets and LoadMapping</a>
 </li>
 
         
@@ -192,6 +204,12 @@
             
 <li >
     <a href="../../databaseclass/overview/">Overview</a>
+</li>
+
+        
+            
+<li >
+    <a href="../../databaseclass/custom_query/">Custom Queries</a>
 </li>
 
         
@@ -381,7 +399,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="next" href="../../../../tutorials/composer/">
+                    <a rel="next" href="../../release_notes/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -422,6 +440,8 @@
             <li><a href="#collection-subsets">Collection Subsets:</a></li>
         
             <li><a href="#dynamic-loading">Dynamic Loading</a></li>
+        
+            <li><a href="#loadmaps-for-reduced-queries">LoadMaps for Reduced Queries</a></li>
         
             <li><a href="#limiting-resource-creation">Limiting Resource Creation</a></li>
         
@@ -800,7 +820,7 @@ if you were creating a blogging site and each user had a collection of "articles
 they've written where each article is its own object. If you are an experienced
 developer who's concerned about performance, how ADM grabs these related objects
 from a database is something you should know.</p>
-<p>The answer to that question is that ADM only grabs related objects "on-demand"
+<p>The answer to that question is that ADM <em>generally</em> grabs related objects "on-demand"
 utilizing what I call Dynamic Loading. The way in which this is done varies a little
 bit depending on how the data is stored, but all follows the same concept.
 Going back to the "User has a Job" example, the way we defined the Job attribute
@@ -913,16 +933,19 @@ result in the equivalent of 1,000 of these queries:</p>
 <pre><code class="sql">SELECT * FROM jobs WHERE `id` = :id
 </code></pre>
 
-<p>I'm not a database mega-expert, but I'm sure that doing
-1,000 small queries is less efficient than if you just did one larger query to
-grab all the data you needed in one go. Maybe if you consider the fact that you'd
-then have to loop through the results of the larger query to assign each row of
-data to an object it might come out as a wash, but that's for you to decide and
-not me. The point I want to communicate is that this is how it works when you
+<p>Doing 1,000 small queries is NOT ideal, but this a problem inherent to most ORMs and a 
+problem developers need to be aware of. The point I want to communicate is that this is how it works when you
 try and access related objects to whatever the primary object you're using is.</p>
-<p>If you wanted to grab all the Jobs from the database and have ADM return
+<p>If you wanted to grab all the users' Jobs from the database and have ADM return
 them for you as objects, but you DON'T want to go through that process of executing
 1,000 individual queries... you have a few options:</p>
+<div class="alert alert-info">
+    NEW IN v2.6: <br>   
+    There is now a solution to the N+1 problem in the form of LoadMaps. For most situations
+    LoadMaps will be the way to go, but the discussion below could still be useful so I'll 
+    leave it up. <a href="/documentation/v2/ADM/overview/#loadmaps-for-reduced-queries">Click Here</a> to jump to the LoadMaps section.
+</div>
+
 <hr />
 <p><strong>Avoiding Lots of Mini-Queries - Option #0:</strong></p>
 <p>(Yes, I did just call this option zero. On purpose.)</p>
@@ -998,6 +1021,60 @@ really nice, BUT that doesn't mean you can't override its default behavior if yo
 to handle more complicated tasks. See the section below on how you can modify or
 replace the default Gateway (the class in charge of fetching data from the persistence layer)
 with a custom one of your own making.</p>
+<h2 id="loadmaps-for-reduced-queries">LoadMaps for Reduced Queries</h2>
+<p><div class="subTitleH2">Overcoming the N+1 problem of ORMs</div></p>
+<p>One of the biggest problems ORMs tend to have is that trying to access related models in a loop
+usually results in N+1 number of queries. For example, if you have a collection of 100 users and you do
+the following where "job" is a Job model, then you end up doing one query to fetch the users and 
+then one query per user to fetch each user's Job info:</p>
+<pre><code>$users = $repo-&gt;findAll();
+foreach ($users as $user) {
+  echo $user-&gt;job-&gt;title;
+}
+</code></pre>
+
+<p>To solve this performance issue we now can utilize LoadMaps along with customized queries. The first step is 
+figuring out how to properly modify the query that will be run to fetch all the info you need. This will typically 
+mean doing a JOIN to grab the additional data in one query. Following the User+Jobs examples we've been using on this page, 
+what we need to do is modify the query so that it JOINs with the Jobs table like so:</p>
+<pre><code>SELECT users.*, job.id as 'job_id', job.title FROM users JOIN jobs ON (users.job = jobs.id);
+</code></pre>
+
+<div class="alert alert-info">
+Note: Both the "users" table and "jobs" table have "id" as their primary identifier, so when PDO returns an array of results, 
+unless we rename the jobs table ID to job_id, it will overwrite the users' ID in the returned associative array.
+</div>
+
+<p>Then we replace the generic findAll() call with one that will generate the modified query we need:</p>
+<pre><code>$users = $repo-&gt;findAll(function($query) {
+  $query-&gt;join('jobs', [['users.job', '=', 'jobs.id']])
+        -&gt;select([&quot;users.*&quot;, &quot;job.id as 'job_id'&quot;, &quot;job.title&quot;]);
+  return $query;
+});
+</code></pre>
+
+<p>In theory that should be returning each user from the database along with their job ID and Title. The next step is 
+we need to tell ADM to load these additional database fields we've fetched into a Job model for each user. This is done 
+via a LoadMap:</p>
+<pre><code>// The LoadMap we just created
+$loadMap = new \Cora\Adm\LoadMap([], [
+  'job' =&gt; new \Cora\Adm\LoadMap([
+    'role_id' =&gt; 'id'
+  ])
+]);
+
+// Just add the LoadMap as the 3rd argument to our findAll() call
+$users = $repo-&gt;findAll(function($query) {
+  $query-&gt;join('jobs', [['users.job', '=', 'jobs.id']])
+        -&gt;select([&quot;users.*&quot;, &quot;job.id as 'job_id'&quot;, &quot;job.title&quot;]);
+  return $query;
+}, false, $loadMap);
+</code></pre>
+
+<p>And that's it! Now your User models should come pre-loaded with Job models already attached and looping through to grab the title 
+off each job won't trigger dynamic loading! We've now done in one query what previously took N+1.</p>
+<p>You might be confused about why there is a LoadMap embedded within another LoadMap, but to understand that I recommend you read the 
+documentation for LoapMaps which can be accessed HERE</p>
 <h2 id="limiting-resource-creation">Limiting Resource Creation</h2>
 <p>Another optimization made in ADM is statically declared data when possible.
 Specifically, since most apps are likely created using a single
