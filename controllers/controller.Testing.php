@@ -113,10 +113,11 @@ class Testing extends \Cora\App\Controller
           'user_id' => 'id'
         ])
       ],
-        function($model, $str) {
+        function($model, $str, $str2) {
           $model->status = $str;
+          $model->status = $str2;
         },
-        ['Hoola Hoop']
+        ['Hoola Hoop', 'Str2']
       );
 
       $model->comments(function($query) {
@@ -224,6 +225,15 @@ class Testing extends \Cora\App\Controller
       // var_dump($q->fetchAll());
 
       var_dump($list->fetchAll());
+    }
+
+
+    public function testActive()
+    {
+      $app = new \Cora\Collection();
+
+      //$app->test1 = 'Foo';
+      echo $app->test1;
     }
 
 

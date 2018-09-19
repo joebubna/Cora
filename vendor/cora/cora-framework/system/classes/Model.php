@@ -538,9 +538,16 @@ class Model
 
           // Get query object that we can use
           $query = $this->getQueryObjectForRelation($name);
-
-          // Call the provided callback with the query
-          $query = $arguments[0]($query, isset($arguments[1]) ? $arguments[1] : false);
+          
+          // Build arguments array for closure as necessary
+          $funcArgs = [];
+          if (isset($arguments[1])) {
+            $funcArgs = is_array($arguments[1]) ? $arguments[1] : [$arguments[1]];
+          }
+          array_unshift($funcArgs, $query);
+          
+          // Call the provided function with the query and arguments
+          $query = call_user_func_array($arguments[0], $funcArgs);
           
           // Fetch data
           $this->$name = $this->getCustomValue($name, $query, isset($arguments[2]) ? $arguments[2] : false);

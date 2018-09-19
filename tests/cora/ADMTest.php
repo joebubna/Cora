@@ -1139,10 +1139,10 @@ class ADMTest extends \Cora\App\TestCase
         $this->assertEquals(3, $user->sameType->count());
 
         // Grab adults named either Jeff or Kevin
-        $this->assertEquals(2, $user->sameType(function($query, $args) {
-          $query->in('name', $args);
+        $this->assertEquals(2, $user->sameType(function($query, $names) {
+          $query->in('name', $names);
           return $query;
-        }, ['Jeff', 'Kevin'])->count());
+        }, [['Jeff', 'Kevin']])->count());
     }
 
 

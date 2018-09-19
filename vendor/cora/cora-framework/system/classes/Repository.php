@@ -53,7 +53,7 @@ class Repository
       $queryDefinition = false;
 
       // If a closure was passed in instead of query object, then store it
-      if ($query instanceof \Closure) {
+      if (is_callable($query)) {
         $queryDefinition = $query;
       }
 
@@ -82,7 +82,7 @@ class Repository
       $queryDefinition = false;
 
       // If a closure was passed in instead of query object, then store it
-      if ($query instanceof \Closure) {
+      if (is_callable($query)) {
         $queryDefinition = $query;
       }
 
