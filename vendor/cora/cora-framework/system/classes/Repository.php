@@ -53,7 +53,7 @@ class Repository
       $queryDefinition = false;
 
       // If a closure was passed in instead of query object, then store it
-      if ($query instanceof \Closure) {
+      if (is_callable($query)) {
         $queryDefinition = $query;
       }
 
@@ -68,7 +68,15 @@ class Repository
 
       // If a closure was given for defining the query, then through that
       if ($queryDefinition) {
-        $query = $queryDefinition($query, $vars);
+        // Setup arguments for closure
+        $funcArgs = [];
+        if (isset($vars)) {
+          $funcArgs = is_array($vars) ? $vars : [$vars];
+        }
+        array_unshift($funcArgs, $query);
+
+        // Call closure
+        $query = call_user_func_array($queryDefinition, $funcArgs);
       }
 
       $all = $this->gateway->fetchByQuery($query);
@@ -82,7 +90,7 @@ class Repository
       $queryDefinition = false;
 
       // If a closure was passed in instead of query object, then store it
-      if ($query instanceof \Closure) {
+      if (is_callable($query)) {
         $queryDefinition = $query;
       }
 
@@ -97,7 +105,15 @@ class Repository
 
       // If a closure was given for defining the query, then through that
       if ($queryDefinition) {
-        $query = $queryDefinition($query, $vars);
+        // Setup arguments for closure
+        $funcArgs = [];
+        if (isset($vars)) {
+          $funcArgs = is_array($vars) ? $vars : [$vars];
+        }
+        array_unshift($funcArgs, $query);
+
+        // Call closure
+        $query = call_user_func_array($queryDefinition, $funcArgs);
       }
       
       $all = $this->gateway->fetchByQuery($query);

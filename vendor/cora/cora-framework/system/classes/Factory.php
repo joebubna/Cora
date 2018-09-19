@@ -16,7 +16,7 @@ class Factory
     $this->namespaceType = $namespaceType;
   }
 
-  public function make($data, $loadMap = [])
+  public function make($data, $loadMap = false)
 	{
 		if (empty($data)) {
 			return null;
@@ -40,7 +40,7 @@ class Factory
     return $obj;
 	}
 
-	public function makeGroup($records, $loadMap = [])
+	public function makeGroup($records, $loadMap = false)
 	{
     // If the class name lacks a leading slash \, then add the namespaceType.
     if ($this->type[0] != '\\') {

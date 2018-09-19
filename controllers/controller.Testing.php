@@ -83,15 +83,17 @@ class Testing extends \Cora\App\Controller
         ])
       ]);
 
-      $results = $users->findAll(function($query, $arg) {
-        $query->in('primaryRole', $arg)
+      $results = $users->findAll(function($query, $roleId, $limit) {
+        $query->in('primaryRole', $roleId)
               ->join('roles', [['users.primaryRole', '=', 'roles.id']])
               ->select('users.*')
               ->select('roles.id as role_id')
               ->select('roles.name as role_name')
-              ->limit(5);
+              ->limit($limit);
         return $query;
-      }, 1, $loadMap);
+      }, [1, 5], $loadMap);
+
+      echo $results->count();
 
       var_dump($results[0]->model_data);
 
@@ -113,10 +115,11 @@ class Testing extends \Cora\App\Controller
           'user_id' => 'id'
         ])
       ],
-        function($model, $str) {
+        function($model, $str, $str2) {
           $model->status = $str;
+          $model->status = $str2;
         },
-        ['Hoola Hoop']
+        ['Hoola Hoop', 'Str2']
       );
 
       $model->comments(function($query) {
@@ -224,6 +227,15 @@ class Testing extends \Cora\App\Controller
       // var_dump($q->fetchAll());
 
       var_dump($list->fetchAll());
+    }
+
+
+    public function testActive()
+    {
+      $app = new \Cora\Collection();
+
+      //$app->test1 = 'Foo';
+      echo $app->test1;
     }
 
 
