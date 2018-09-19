@@ -83,15 +83,17 @@ class Testing extends \Cora\App\Controller
         ])
       ]);
 
-      $results = $users->findAll(function($query, $arg) {
-        $query->in('primaryRole', $arg)
+      $results = $users->findAll(function($query, $roleId, $limit) {
+        $query->in('primaryRole', $roleId)
               ->join('roles', [['users.primaryRole', '=', 'roles.id']])
               ->select('users.*')
               ->select('roles.id as role_id')
               ->select('roles.name as role_name')
-              ->limit(5);
+              ->limit($limit);
         return $query;
-      }, 1, $loadMap);
+      }, [1, 5], $loadMap);
+
+      echo $results->count();
 
       var_dump($results[0]->model_data);
 
