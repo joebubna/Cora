@@ -441,6 +441,13 @@
             <li><a href="#complicated-example-revisited">Complicated Example Revisited</a></li>
         
     
+        <li class="main "><a href="#on-model-loadmaps">On-Model LoadMaps</a></li>
+        
+            <li><a href="#manual-loadmap-example">Manual LoadMap Example</a></li>
+        
+            <li><a href="#on-model-loadmap-example">On-Model LoadMap Example</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
@@ -478,9 +485,9 @@ $currentPage = 0;
 $itemsPerPage = 20;
 
 // Let's fetch a paginated view of the articles this user has written:
-$currentPageArticles = $user-&gt;articles(function($query, $args) {
-  return $query-&gt;offset($args[0] * $args[1])
-               -&gt;limit($args[1]);
+$currentPageArticles = $user-&gt;articles(function($query, $page, $itemsPerPage) {
+  return $query-&gt;offset($page * $itemsPerPage)
+               -&gt;limit($itemsPerPage);
 }, [$currentPage, $itemsPerPage]);
 </code></pre>
 
@@ -734,6 +741,9 @@ Then the 2nd array states that we should load the Job relationship and pass it t
 there, which will map job_id and job_name to the correct fields on the Job model. Finally we're taking
 that LoadMap and popping it in as the 3rd argument to our repository call which we customized to do a JOIN
 for the extra data.</p>
+<p>One handy thing that can save you a lot of code clutter are on-model LoadMaps if you have a situation where 
+you always want to fetch additional info with a model. See <a href="../../../../documentation/v2/ADM/subsets_loadmapping/#on-model-loadmaps">HERE</a> 
+to jump to that section.</p>
 <h2 id="use-case-4-onload-function">Use Case #4: onLoad Function</h2>
 <p>In addition to mapping fields to the model and controlling which relationships get loaded, another thing
 LoadMaps can do that you might find useful is dynamically setting properties onLoad. Models have an <a href="../../../../documentation/v2/ADM/lifecycle/">onLoad()
@@ -817,7 +827,97 @@ embed LoadMaps inside other LoadMaps in a multi-level way to accomodate any leve
 to handle when deciding what you want loaded on a model and giving you the ability to map variables from your 
 custom JOINed query to model relationships that are buried multiple levels deep in your returned models.</p>
 <p>It's probably also clear that this functionality can easily get very complex if you need to load anything deeper 
-than immediate relationships, so use it as you see fit. It's a powerful feature.</p></div>
+than immediate relationships, so use it as you see fit. It's a powerful feature.</p>
+<h1 id="on-model-loadmaps">On-Model LoadMaps</h1>
+<p>There may be situations where you ALWAYS want to fetch some additional information with a model. For instance, 
+with your User models, maybe you always want to fetch their primaryRole information. When that happens you can 
+use on-model LoadMaps combined with model constraints to remove the need to manually specify a custom query and 
+LoadMap each time you need to grab those models out of a repository. Below we'll show a manual query and LoadMap
+(with simple User model), and then show the equivalent functionality using an on-model LoadMap.</p>
+<h2 id="manual-loadmap-example">Manual LoadMap Example</h2>
+<p><strong>Model:</strong>   </p>
+<pre><code>class User extends \Cora\App\Model {
+  public $model_attributes = [
+    'id' =&gt; [
+      'type'          =&gt; 'int',
+      'primaryKey'    =&gt; true
+    ],
+    'email' =&gt; [
+      'type'  =&gt; 'varchar',
+      'index' =&gt; true
+    ],
+    'firstName' =&gt; [
+      'type' =&gt; 'varchar'
+    ],
+    'lastName' =&gt; [
+      'type' =&gt; 'varchar'
+    ],
+    'primaryRole' =&gt; [
+      'model' =&gt; 'Role'
+    ]
+  ];
+}
+</code></pre>
+
+<p><strong>Fetching Models From Repository:</strong>   </p>
+<pre><code>// Define LoadMap
+$loadMap = new \Cora\Adm\LoadMap([], [
+  'primaryRole' =&gt; new \Cora\Adm\LoadMap()
+]);
+
+// Fetch models using modified query and passing LoadMap
+$users = $repo-&gt;findAll(function($query) {
+  // Specify the JOIN we need
+  return $query-&gt;join('roles', [['users.primaryRole', '=', 'roles.role_id']]);
+}, false, $loadMap);
+</code></pre>
+
+<h2 id="on-model-loadmap-example">On-Model LoadMap Example</h2>
+<p>The following model definition and repo use is equivalent to the manual example shown above.</p>
+<p><strong>Model:</strong>   </p>
+<pre><code>class User extends \Cora\App\Model {
+  public $model_attributes = [
+    'id' =&gt; [
+      'type'          =&gt; 'int',
+      'primaryKey'    =&gt; true
+    ],
+    'email' =&gt; [
+      'type'  =&gt; 'varchar',
+      'index' =&gt; true
+    ],
+    'firstName' =&gt; [
+      'type' =&gt; 'varchar'
+    ],
+    'lastName' =&gt; [
+      'type' =&gt; 'varchar'
+    ],
+    'primaryRole' =&gt; [
+      'model' =&gt; 'Role'
+    ]
+  ];
+
+  public static function model_loadMap() 
+  {
+    return new \Cora\Adm\LoadMap([], [
+      'primaryRole' =&gt; new \Cora\Adm\LoadMap()
+    ]);
+  }
+
+  public static function model_constraints($query) 
+  {
+    return $query-&gt;join('roles', [['users.primaryRole', '=', 'roles.role_id']]);
+  }
+}
+</code></pre>
+
+<p><strong>Fetching Models From Repository:</strong>   </p>
+<pre><code>$users = $repo-&gt;findAll();
+</code></pre>
+
+<div class="alert alert-warning">
+    NOTICE: If you have an on-model LoadMap defined and then pass a custom one to the repo when fetching models,
+    the one passed in will override the on-model version.
+</div></div>
         </div>
 
         <footer class="col-md-12">

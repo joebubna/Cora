@@ -4,7 +4,7 @@
     
     <url>
      <loc>None/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -13,19 +13,19 @@
         
     <url>
      <loc>None/setup/install/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/setup/configuration/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/setup/advanced/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -35,13 +35,13 @@
         
     <url>
      <loc>None/tutorials/intro/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/tutorials/composer/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -51,7 +51,7 @@
         
     <url>
      <loc>None/documentation/v2/release_notes/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -63,7 +63,7 @@
         
     <url>
      <loc>None/documentation/v2/collections/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -75,7 +75,7 @@
         
     <url>
      <loc>None/documentation/v2/dependency-injection/overview/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -99,7 +99,7 @@
         
     <url>
      <loc>None/documentation/v2/validationclass/overview/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -109,7 +109,7 @@
         
     <url>
      <loc>None/computerscience/computability/</loc>
-     <lastmod>2018-09-18</lastmod>
+     <lastmod>2018-09-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
         

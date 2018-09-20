@@ -1074,7 +1074,7 @@ $users = $repo-&gt;findAll(function($query) {
 <p>And that's it! Now your User models should come pre-loaded with Job models already attached and looping through to grab the title 
 off each job won't trigger dynamic loading! We've now done in one query what previously took N+1.</p>
 <p>You might be confused about why there is a LoadMap embedded within another LoadMap, but to understand that I recommend you read the 
-documentation for LoapMaps which can be accessed HERE</p>
+documentation for LoapMaps which can be accessed <a href="../../../../documentation/v2/ADM/subsets_loadmapping/">HERE</a></p>
 <h2 id="limiting-resource-creation">Limiting Resource Creation</h2>
 <p>Another optimization made in ADM is statically declared data when possible.
 Specifically, since most apps are likely created using a single
