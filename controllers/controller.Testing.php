@@ -232,10 +232,15 @@ class Testing extends \Cora\App\Controller
 
     public function testActive()
     {
-      $app = new \Cora\Collection();
+      $repo = \Cora\RepositoryFactory::make('Tests\InactiveUser');
+      $users = $repo->findAll();
+      echo $users->count();
 
-      //$app->test1 = 'Foo';
-      echo $app->test1;
+
+      foreach ($users as $user) {
+        $user->model_dynamicOff = true;
+        echo $user->primaryRole->name."<br>";
+      }
     }
 
 

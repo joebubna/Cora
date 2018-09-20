@@ -42,6 +42,9 @@ class Model
         $this->model_db = $db;
       }
 
+      // If no loadMap was passed in, then see if one is defined on model
+      $loadMap = $loadMap ?: $this->model_loadMap();
+
       if($record) {
         // Populate model related data.
         $this->_populateAttributes($record);
@@ -1365,6 +1368,11 @@ class Model
     public function afterGet($prop, &$value)
     {
         //echo __FUNCTION__;
+    }
+
+    public static function model_loadMap() 
+    {
+        return false;
     }
 
     public static function model_constraints($query) 

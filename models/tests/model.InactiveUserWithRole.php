@@ -3,7 +3,7 @@ namespace Models\Tests;
 /**
 *
 */
-class InactiveUser extends \Models\User {
+class InactiveUserWithRole extends \Models\User {
 
     public $model_table = 'users';
     public $model_attributes_add = [
@@ -14,9 +14,17 @@ class InactiveUser extends \Models\User {
     ];
 
 
+    public static function model_loadMap() 
+    {
+        return new \Cora\Adm\LoadMap([], [
+          'primaryRole' => new \Cora\Adm\LoadMap()
+        ]);
+    }
+
     public static function model_constraints($query) 
     {
-        $query->where('status', 'Inactive');
+        $query->join('roles', [['users.primaryRole', '=', 'roles.id']])
+              ->where('status', 'Inactive');
         return $query;
     }
 

@@ -951,7 +951,7 @@ class ADMTest extends \Cora\App\TestCase
      }
 
 
-    /**
+   /**
     *   Checks that model constraints added via the model_constraints method correctly apply
     *   to a collection.
     *
@@ -968,6 +968,45 @@ class ADMTest extends \Cora\App\TestCase
 
         // Check that user has no comments.
         $this->assertEquals(10, $inactiveUsers->count());
+    }
+
+
+   /**
+    *   Checks that model constraints via the model_constraints method combined with 
+    *   a LoadMap from the model_loadMap method can be used in conjunction to efficiently 
+    *   load models.
+    * 
+    *   @test
+    */
+    public function canDefineLoadMapOnModelForEfficientLoading()
+    {
+        // Setup
+        $userRepo = $this->app->users;
+        $inactiveUserRepo = $this->app->repository(\Models\Tests\InactiveUserWithRole::class);
+
+        $users = $userRepo->findBy('status', 'Inactive');
+        $inactiveUsers = $inactiveUserRepo->findAll();
+
+        // Check that the correct amount of users have been fetched for both model groups.
+        $this->assertEquals(10, $users->count());
+        $this->assertEquals(10, $inactiveUsers->count());
+
+        // Turn off dynamic loading on all models.
+        foreach ($users as $user) {
+          $user->model_dynamicOff = true;
+        }
+        foreach ($inactiveUsers as $user) {
+          $user->model_dynamicOff = true;
+        }
+
+        // Verify that the regular user object does not have the Role data loaded, 
+        // but that the LoadMapped version does.
+        // Also verifies that the Role data was populated from the initial query 
+        // because dynamic loading was turned off.
+        $this->assertEquals(true, is_string($users[0]->primaryRole));
+        $this->assertEquals(true, is_object($inactiveUsers[0]->primaryRole));
+
+        $this->assertEquals('User', $inactiveUsers[0]->primaryRole->name);
     }
 
 
