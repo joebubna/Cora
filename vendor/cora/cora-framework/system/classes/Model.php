@@ -8,6 +8,7 @@ class Model
 {
     protected $model_data;
     protected $model_hydrating = false;
+    protected $model_loadMapsEnabled = true;
     public $data;
     public $model_db = false;
     public $model_dynamicOff;
@@ -53,7 +54,9 @@ class Model
         $this->_populateNonModelData($record);
         
         // Populate data as mapped
-        $this->_populateLoadMap($record, $loadMap);
+        if ($this->model_loadMapsEnabled) {
+          $this->_populateLoadMap($record, $loadMap);
+        }
       }
 
       // Call onLoad method 
@@ -107,8 +110,13 @@ class Model
           // If this attribute is defined as a singular model AND a mapping file was given for it, then use that 
           // map instead of dynamically fetching the data.
           if (isset($this->model_attributes[$attributeToLoad]['model']) && $mapping instanceof \Cora\Adm\LoadMap) {
+            // Fetch an object of the correct type
             $relatedObj = $this->fetchRelatedObj($this->model_attributes[$attributeToLoad]['model']);
+            
+            // Populate the related model with any record data that is relevant to it.
             $relatedObj->_populate($record, false, $mapping);
+
+            // Store object
             $this->$attributeToLoad = $relatedObj;
           }
           
@@ -491,7 +499,7 @@ class Model
 
         // If your DB id's aren't 'id', but instead something like "note_id",
         // but you always want to be able to refer to 'id' within a class.
-        else if ($name == 'id' && property_exists(get_class($this), 'id_name')) {
+        else if ($name == 'id' && !$this->model_hydrating && property_exists(get_class($this), 'id_name')) {
             $id_name = $this->id_name;
             if (isset($this->model_attributes[$id_name])) {
                 $this->model_data[$id_name] = $value;
@@ -1231,6 +1239,19 @@ class Model
             return $this->model_attributes[$attributeName]['field'];
         }
         return $attributeName;
+    }
+
+
+    /**
+     *  Sets a property that controls whether LoadMaps should be taken into account when populating this model.
+     *  There are situations when creating dummy objects in the process of saving a model that you want on-model 
+     *  LoadMaps disabled.
+     * 
+     *  @return bool
+     */
+    public function setLoadMapsEnabled($bool) 
+    {
+      $this->model_loadMapsEnabled = $bool;
     }
 
 
