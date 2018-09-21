@@ -567,8 +567,10 @@ class Gateway
 
         // Assign the database ID to the model if necessary
         if ($modelId) {
-            $record['id'] = $modelId;
-            $model->_populate($record);
+          $record[$model->getPrimaryKey()] = $modelId;
+          $model->setLoadMapsEnabled(false);
+          $model->_populate($record);
+          $model->setLoadMapsEnabled(true);
         }
         
 
