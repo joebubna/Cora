@@ -112,6 +112,11 @@ class Model
           if (isset($this->model_attributes[$attributeToLoad]['model']) && $mapping instanceof \Cora\Adm\LoadMap) {
             // Fetch an object of the correct type
             $relatedObj = $this->fetchRelatedObj($this->model_attributes[$attributeToLoad]['model']);
+
+            // Before we pass the record down to any related objects, we need to unset "id" 
+            // if it is set in the data. ID directly as a class attribute takes presidence 
+            // over $id_name, which causes problems. 
+            unset($record['id']);
             
             // Populate the related model with any record data that is relevant to it.
             $relatedObj->_populate($record, false, $mapping);

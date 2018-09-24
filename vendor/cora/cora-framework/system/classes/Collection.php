@@ -794,16 +794,21 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param callback A callable function.
      *  @return A collection
      */
-    public function map($callback)
+    public function map($callback, $data = false)
     {
-        $collection = $this->getIterator();
-        $mutatedCollection = new Collection();
+      $collection = $this->getIterator();
+      $mutatedCollection = new Collection();
 
-        foreach($collection as $prop => $result) {
-            $aValue = $callback($result, $prop);
-            $mutatedCollection->add($aValue);
-        }
-        return $mutatedCollection;
+      foreach($collection as $prop => $result) {
+        // Prep data to pass to closure
+        $funcArgs = is_array($data) ? $data : [];
+        array_unshift($funcArgs, $prop);
+        array_unshift($funcArgs, $result);
+        
+        $aValue = call_user_func_array($callback, $funcArgs);
+        $mutatedCollection->add($aValue);
+      }
+      return $mutatedCollection;
     }  
 
 
@@ -813,17 +818,23 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param callback A callable function.
      *  @return A collection
      */
-    public function filter($callback)
+    public function filter($callback, $data = false)
     {
-        $collection = $this->getIterator();
-        $mutatedCollection = new Collection();
+      $collection = $this->getIterator();
+      $mutatedCollection = new Collection();
 
-        foreach($collection as $prop => $result) {
-            if ($callback($result, $prop)) {
-                $mutatedCollection->add($result);
-            }
+      foreach($collection as $prop => $result) {
+        // Prep data to pass to closure
+        $funcArgs = is_array($data) ? $data : [];
+        array_unshift($funcArgs, $prop);
+        array_unshift($funcArgs, $result);
+        
+        $aValue = call_user_func_array($callback, $funcArgs);
+        if ($aValue) {
+          $mutatedCollection->add($result);
         }
-        return $mutatedCollection;
+      }
+      return $mutatedCollection;
     }
 
 
