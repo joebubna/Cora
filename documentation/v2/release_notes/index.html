@@ -420,6 +420,12 @@
     
         <li class="main active"><a href="#release-notes">Release Notes</a></li>
         
+            <li><a href="#266">2.6.6</a></li>
+        
+            <li><a href="#265">2.6.5</a></li>
+        
+            <li><a href="#264">2.6.4</a></li>
+        
             <li><a href="#263">2.6.3</a></li>
         
             <li><a href="#262">2.6.2</a></li>
@@ -432,6 +438,21 @@
             <div class="col-md-9" role="main">
 
 <h1 id="release-notes">Release Notes</h1>
+<h2 id="266">2.6.6</h2>
+<ul>
+<li>Fixed an issue with on-model loadMapping being applied when fetching an item by ID while the 
+ model_constraints were not. Now fetch by ID will not be affected by loadMaps or constraints.</li>
+</ul>
+<h2 id="265">2.6.5</h2>
+<ul>
+<li>When passing data to child loadMapped relationships, a special rule for columns named "id" 
+  would cause problems. This special rule was excepted when loadMapping.</li>
+<li>Modified the Map and Filter methods in Collections so that data can be passed in to the closure.</li>
+</ul>
+<h2 id="264">2.6.4</h2>
+<ul>
+<li>Added changes to prevent onModel loadMaps from unintentionally loading related models when saving the parent.</li>
+</ul>
 <h2 id="263">2.6.3</h2>
 <ul>
 <li>Added ability to define a LoadMap as part of a model. Using Model constraints in combination with an 
