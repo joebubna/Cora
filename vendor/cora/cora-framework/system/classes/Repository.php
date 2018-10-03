@@ -80,6 +80,10 @@ class Repository
       }
 
       $all = $this->gateway->fetchByQuery($query);
+
+      // If no loadMap was passed in, then see if one is defined on model
+      $loadMap = $loadMap ?: $this->model->model_loadMap();
+
       return $this->factory->makeGroup($all, $loadMap)->get(0);
     }
 
@@ -117,23 +121,35 @@ class Repository
       }
       
       $all = $this->gateway->fetchByQuery($query);
+
+      // If no loadMap was passed in, then see if one is defined on model
+      $loadMap = $loadMap ?: $this->model->model_loadMap();
+
       return $this->factory->makeGroup($all, $loadMap);
     }
 
     public function findBy($prop, $value, $options = array())
     {
-        $coraDbQuery = $this->gateway->getDb();
-        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
-        $all = $this->gateway->fetchBy($prop, $value, $options);
-        return $this->factory->makeGroup($all);
+      $coraDbQuery = $this->gateway->getDb();
+      $coraDbQuery = $this->model::model_constraints($coraDbQuery);
+      $all = $this->gateway->fetchBy($prop, $value, $options);
+
+      // If no loadMap was passed in, then see if one is defined on model
+      $loadMap = $this->model->model_loadMap();
+
+      return $this->factory->makeGroup($all, $loadMap);
     }
 
     public function findOneBy($prop, $value, $options = array())
     {
-        $coraDbQuery = $this->gateway->getDb();
-        $coraDbQuery = $this->model::model_constraints($coraDbQuery);
-        $all = $this->gateway->fetchBy($prop, $value, $options);
-        return $this->factory->makeGroup($all)->get(0);
+      $coraDbQuery = $this->gateway->getDb();
+      $coraDbQuery = $this->model::model_constraints($coraDbQuery);
+      $all = $this->gateway->fetchBy($prop, $value, $options);
+
+      // If no loadMap was passed in, then see if one is defined on model
+      $loadMap = $this->model->model_loadMap();
+
+      return $this->factory->makeGroup($all, $loadMap)->get(0);
     }
 
     /**
