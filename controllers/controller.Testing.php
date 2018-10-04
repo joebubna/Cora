@@ -272,4 +272,40 @@ class Testing extends \Cora\App\Controller
       // Return JSON
       echo $list->items->toJson();
     }
+
+
+
+    public function test7()
+    {
+      $users = $this->app->users;
+
+      $loadMap = new \Cora\Adm\LoadMap([
+        'email' => 'firstName'
+      ], [
+        'primaryRole' => new \Cora\Adm\LoadMap([
+          'role_id' => 'id',
+          'name' => '!name'
+        ]),
+        'parent' => true
+      ]);
+
+      $results = $users->findAll(function($query, $arg) {
+        return $query->custom('
+          SELECT 
+            users.*,
+            roles.id as role_id,
+            roles.name as role_name 
+          FROM users LEFT JOIN roles ON (users.primaryRole = roles.id) 
+          LIMIT 5
+        ');
+      }, 1, $loadMap);
+
+      //var_dump($results[0]->model_data);
+
+      echo $results[1]->firstName."<br>";
+      echo $results[1]->primaryRole->name."<br>";
+      echo $results[0]->parent->firstName;
+
+      var_dump($results[0]->parent);
+    }
 }

@@ -61,7 +61,7 @@ class Model
 
       // If a custom onLoad function was given as part of a loadMap
       // Also call that
-      if ($loadMap && $func = $loadMap->getOnLoadFunction()) {
+      if ($loadMap instanceof \Cora\Adm\LoadMap && $func = $loadMap->getOnLoadFunction()) {
         // Fetch any array of args passed along with the LoadMap
         $args = $loadMap->getOnLoadArgs();
 
@@ -126,8 +126,30 @@ class Model
           else {
             $this->__get($attributeToLoad);
           }
+
+          if (isset($this->model_attributes[$attributeToLoad]['model']) && !is_object($this->$attributeToLoad)) {
+            // Fetch an EMPTY object of the correct type.
+            $this->$attributeToLoad = $this->_loadAttributeObject($attributeToLoad, [], $mapping);
+          }
         }
       }
+    }
+
+
+    protected function _loadAttributeObject($attributeToLoad, $dataForPopulation = [], $mapping = false)
+    {
+      // Fetch an object of the correct type
+      $relatedObj = $this->fetchRelatedObj($this->model_attributes[$attributeToLoad]['model']);
+
+      // Before we pass the record down to any related objects, we need to unset "id" 
+      // if it is set in the data. ID directly as a class attribute takes presidence 
+      // over $id_name, which causes problems. 
+      unset($dataForPopulation['id']);
+      
+      // Populate the related model with any record data that is relevant to it.
+      $relatedObj->_populate($dataForPopulation, false, $mapping);
+      
+      return $relatedObj;
     }
 
 
