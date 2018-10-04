@@ -6,135 +6,135 @@ namespace Cora;
 class Gateway
 {
 	protected $db;
-    protected $tableName;
-    protected $idName;
-    protected $app;
-    protected $idFallback;
-    protected $savedModelsList = [];
-    protected $viewQuery = 0;
+  protected $tableName;
+  protected $idName;
+  protected $app;
+  protected $idFallback;
+  protected $savedModelsList = [];
+  protected $viewQuery = 0;
 
 	public function __construct(Database $db, $tableName, $id)
 	{
 		$this->db = $db;
-        $this->tableName = $tableName;
+    $this->tableName = $tableName;
 
-        if($id == false) {
-            $id = 'id';
-        }
-        $this->idName = $id;
+    if($id == false) {
+        $id = 'id';
+    }
+    $this->idName = $id;
 
-        $this->savedModelsList = &$GLOBALS['savedModelsList'];
+    $this->savedModelsList = &$GLOBALS['savedModelsList'];
 	}
 
 
-    public function viewQuery($bool)
-    {
-        $this->viewQuery = $bool;
+  public function viewQuery($bool)
+  {
+    $this->viewQuery = $bool;
+  }
+
+
+  public function fetchData($name, $object) {
+    // If this model has no DB ID associated with it, then it's obviously not possible
+    // to dynamically fetch this value from the DB.
+    $primaryIdentifier = $this->idName;
+    if ($object->$primaryIdentifier == null) {
+      return null;
     }
 
+    $db = $object->getDbAdaptor();
+    $db ->select($name, '`')
+        ->from($this->tableName)
+        ->where($primaryIdentifier, $object->{$primaryIdentifier});
 
-    public function fetchData($name, $object) {
-        // If this model has no DB ID associated with it, then it's obviously not possible
-        // to dynamically fetch this value from the DB.
-        $primaryIdentifier = $this->idName;
-        if ($object->$primaryIdentifier == null) {
-            return null;
-        }
-
-        $db = $object->getDbAdaptor();
-        $db ->select($name, '`')
-            ->from($this->tableName)
-            ->where($primaryIdentifier, $object->{$primaryIdentifier});
-
-        if ($this->viewQuery) {
-            echo $db->getQuery();
-        }
-
-        $result = $db->fetch();
-        return $result[$name];
+    if ($this->viewQuery) {
+      echo $db->getQuery();
     }
 
-
-    public function getDb()
-    {
-        return $this->db;
-    }
+    $result = $db->fetch();
+    return $result[$name];
+  }
 
 
-    public function getTable()
-    {
-        return $this->tableName;
-    }
+  public function getDb()
+  {
+    return $this->db;
+  }
+
+
+  public function getTable()
+  {
+    return $this->tableName;
+  }
 
 
 	public function persist($model, $table = null, $id_name = null)
 	{
-        if (!$table) {
-            $table = $this->tableName;
-        }
+    if (!$table) {
+      $table = $this->tableName;
+    }
 
-        if (!$id_name) {
-            $id_name = $this->idName;
-        }
+    if (!$id_name) {
+      $id_name = $this->idName;
+    }
 
-        if (is_numeric($model->{$id_name})) {
-            $query = $this->getDb();
-            $query->where($model->getFieldName($id_name), $model->{$id_name});
-            if ($this->count($query)) {
-                return $this->_update($model, $table, $id_name);
-            }
-        }
-        return $this->_create($model, $table, $id_name);
+    if (is_numeric($model->{$id_name})) {
+      $query = $this->getDb();
+      $query->where($model->getFieldName($id_name), $model->{$id_name});
+      if ($this->count($query)) {
+        return $this->_update($model, $table, $id_name);
+      }
+    }
+    return $this->_create($model, $table, $id_name);
 	}
 
 
 	public function fetch($id)
 	{
-        $this->db   ->select('*')
-                    ->from($this->tableName)
-                    ->where($this->idName, $id);
+    $this->db ->select('*')
+              ->from($this->tableName)
+              ->where($this->idName, $id);
 
-        if ($this->viewQuery) {
-            echo $this->db->getQuery();
-        }
+    if ($this->viewQuery) {
+      echo $this->db->getQuery();
+    }
 
-        return $this->db->fetch();
+    return $this->db->fetch();
 	}
 
 
 	public function fetchAll()
 	{
-        $this->db   ->select('*')
-                    ->from($this->tableName);
+    $this->db ->select('*')
+              ->from($this->tableName);
 
-        if ($this->viewQuery) {
-            echo $this->db->getQuery();
-        }
-        
-        return $this->db->fetchAll();
+    if ($this->viewQuery) {
+      echo $this->db->getQuery();
+    }
+    
+    return $this->db->fetchAll();
 	}
 
 
-    public function fetchBy($key, $value, $options)
+  public function fetchBy($key, $value, $options)
 	{
-        $this->db   ->select('*')
-                    ->from($this->tableName)
-                    ->where($key, $value);
+    $this->db ->select('*')
+              ->from($this->tableName)
+              ->where($key, $value);
 
-        if (isset($options['order_by'])) {
-            $this->db->orderBy($options['orderBy'], $options['order']);
-        }
+    if (isset($options['order_by'])) {
+      $this->db->orderBy($options['orderBy'], $options['order']);
+    }
 
-        if (isset($options['limit'])) {
-            $this->db->limit($options['limit']);
-            if (isset($options['offset'])) {
-                $this->db->offset($options['offset']);
-            }
-        }
+    if (isset($options['limit'])) {
+      $this->db->limit($options['limit']);
+      if (isset($options['offset'])) {
+        $this->db->offset($options['offset']);
+      }
+    }
 
-        if ($this->viewQuery) {
-            echo $this->db->getQuery();
-        }
+    if ($this->viewQuery) {
+      echo $this->db->getQuery();
+    }
 
 		return $this->db->fetchAll();
 	}
@@ -145,16 +145,16 @@ class Gateway
      */
 	public function fetchByQuery($query)
 	{
-        if(!$query->isSelectSet()) {
-            $query->select('*');
-        }
-        $query->from($this->tableName);
-        
-        if ($this->viewQuery) {
-            echo $query->getQuery();
-        }
+    if (!$query->isSelectSet()) {
+      $query->select('*');
+    }
+    $query->from($this->tableName);
+    
+    if ($this->viewQuery) {
+      echo $query->getQuery();
+    }
 
-        return $query->fetchAll();
+    return $query->fetchAll();
 	}
 
 
@@ -163,318 +163,318 @@ class Gateway
      */
 	public function count($query)
 	{
-        // If no partial query was passed in, use data-member db instance.
-        if (!isset($query)) {
-            $query = $this->db;
-        }
+    // If no partial query was passed in, use data-member db instance.
+    if (!isset($query)) {
+      $query = $this->db;
+    }
 
-        // Clear out any existing SELECT parameters.
-        $query->resetSelect();
+    // Clear out any existing SELECT parameters.
+    $query->resetSelect();
 
-        // Establish COUNT
-        $query->select('COUNT(*)');
-        $query->from($this->tableName);
+    // Establish COUNT
+    $query->select('COUNT(*)');
+    $query->from($this->tableName);
 
-        if ($this->viewQuery) {
-            echo $query->getQuery();
-        }
+    if ($this->viewQuery) {
+      echo $query->getQuery();
+    }
 
-        $result = $query->fetch();
-        return array_pop($result);
+    $result = $query->fetch();
+    return array_pop($result);
 	}
 
 
 	public function countPrev()
 	{
-        $query = $this->db;
+    $query = $this->db;
 
-        // Restore last query's parameters.
-        $query->resetToLastMinusLimit();
+    // Restore last query's parameters.
+    $query->resetToLastMinusLimit();
 
-        // Establish COUNT
-        $query->select('COUNT(*)');
-        $query->from($this->tableName);
+    // Establish COUNT
+    $query->select('COUNT(*)');
+    $query->from($this->tableName);
 
-        if ($this->viewQuery) {
-            echo $query->getQuery();
-        }
+    if ($this->viewQuery) {
+      echo $query->getQuery();
+    }
 
-        $result = $query->fetch();
-        return array_pop($result);
+    $result = $query->fetch();
+    return array_pop($result);
 	}
 
 
 	public function delete($id)
 	{
-        $this->db   ->delete()
-                    ->from($this->tableName)
-                    ->where($this->idName, $id);
+    $this->db ->delete()
+              ->from($this->tableName)
+              ->where($this->idName, $id);
 
-        if ($this->viewQuery) {
-            echo $this->db->getQuery();
-        }
+    if ($this->viewQuery) {
+      echo $this->db->getQuery();
+    }
 
-        return $this->db->exec();
+    return $this->db->exec();
 	}
 
 
 	protected function _update($model, $table, $id_name)
 	{
-        $model->beforeSave(); // Lifecycle callback
+    $model->beforeSave(); // Lifecycle callback
 
-        $this->db   ->update($table)
-                    ->where($id_name, $model->{$id_name});
+    $this->db ->update($table)
+              ->where($id_name, $model->{$id_name});
 
-        // Mark this model as saved.
-        if (!$this->getSavedModel($model)) {
-            $this->addSavedModel($model);
+    // Mark this model as saved.
+    if (!$this->getSavedModel($model)) {
+      $this->addSavedModel($model);
+    }
+
+    // Define that no lock has been set by default. 
+    $lockSet = false;
+    $versionUpdateArray = &$GLOBALS['coraVersionUpdateArray'];
+    
+    foreach ($model->model_attributes as $key => $prop) {
+        $modelValue = $model->getAttributeValue($key);
+        $fieldName = $model->getFieldName($key);
+
+        // Check if a lock is set on the currently iterated attribute. 
+        // If so, add a new where condition to the update. 
+        if (isset($prop['lock']) && $prop['lock'] == true) {
+            if (strtolower($prop['type']) == 'int' || strtolower($prop['type']) == 'integer') {
+                // Add lock condition to update.
+                $this->db->where($fieldName, $modelValue, '<=');
+                $lockSet = true;
+
+                // Increase the value of the version field.
+                $modelValue += 1;
+                
+                // Update the existing object, so that if it's passed around and tries to get saved a 2nd time, 
+                // that an exception doesn't get thrown. 
+                $versionUpdateArray[] = [$model, $key, $modelValue];
+            }
+            else if (strtolower($prop['type']) == 'datetime') {
+                // Add lock condition to update.
+                $this->db->where($fieldName, $modelValue, '<=');
+                $lockSet = true;
+
+                // Increase the value of the Last Modified'ish timestamp to the current time.
+                $modelValue = new \DateTime("Y-m-d");
+
+                // Update the existing object, so that if it's passed around and tries to get saved a 2nd time, 
+                // that an exception doesn't get thrown. 
+                $versionUpdateArray[] = [$model, $key, $modelValue];
+            }
         }
 
-        // Define that no lock has been set by default. 
-        $lockSet = false;
-        $versionUpdateArray = &$GLOBALS['coraVersionUpdateArray'];
-        
-        foreach ($model->model_attributes as $key => $prop) {
-            $modelValue = $model->getAttributeValue($key);
-            $fieldName = $model->getFieldName($key);
+        if (isset($modelValue)) {
 
-            // Check if a lock is set on the currently iterated attribute. 
-            // If so, add a new where condition to the update. 
-            if (isset($prop['lock']) && $prop['lock'] == true) {
-                if (strtolower($prop['type']) == 'int' || strtolower($prop['type']) == 'integer') {
-                    // Add lock condition to update.
-                    $this->db->where($fieldName, $modelValue, '<=');
-                    $lockSet = true;
+            /////////////////////////////////////////////////////////////////////////////////////////
+            // If the data is a single Cora model object, then we need to create a new repository to
+            // handle saving that object.
+            /////////////////////////////////////////////////////////////////////////////////////////
+            if (
+                    is_object($modelValue) &&
+                    $modelValue instanceof \Cora\Model &&
+                    !isset($prop['models'])
+                )
+            {
+                $relatedObj = $modelValue;
+                $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, false, true);
 
-                    // Increase the value of the version field.
-                    $modelValue += 1;
-                    
-                    // Update the existing object, so that if it's passed around and tries to get saved a 2nd time, 
-                    // that an exception doesn't get thrown. 
-                    $versionUpdateArray[] = [$model, $key, $modelValue];
-                }
-                else if (strtolower($prop['type']) == 'datetime') {
-                    // Add lock condition to update.
-                    $this->db->where($fieldName, $modelValue, '<=');
-                    $lockSet = true;
-
-                    // Increase the value of the Last Modified'ish timestamp to the current time.
-                    $modelValue = new \DateTime("Y-m-d");
-
-                    // Update the existing object, so that if it's passed around and tries to get saved a 2nd time, 
-                    // that an exception doesn't get thrown. 
-                    $versionUpdateArray[] = [$model, $key, $modelValue];
-                }
-            }
-
-            if (isset($modelValue)) {
-
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // If the data is a single Cora model object, then we need to create a new repository to
-                // handle saving that object.
-                /////////////////////////////////////////////////////////////////////////////////////////
-                if (
-                        is_object($modelValue) &&
-                        $modelValue instanceof \Cora\Model &&
-                        !isset($prop['models'])
-                   )
-                {
-                    $relatedObj = $modelValue;
-                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObj), false, false, true);
-
-                    // Check if this object has already been saved during this recursive call series.
-                    // If not, save it.
-                    $id = $relatedObj->{$relatedObj->getPrimaryKey()};
-                    if (!$this->getSavedModel($relatedObj)) {
-                        if ($id) {
-                            $this->addSavedModel($relatedObj);
-                            $repo->save($relatedObj);
-                        }
-                        else {
-                            $id = $repo->save($relatedObj);
-                            $this->addSavedModel($relatedObj);
-                        }
+                // Check if this object has already been saved during this recursive call series.
+                // If not, save it.
+                $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                if (!$this->getSavedModel($relatedObj)) {
+                    if ($id) {
+                        $this->addSavedModel($relatedObj);
+                        $repo->save($relatedObj);
                     }
-
-                    if ($model->usesRelationTable($relatedObj, $key)) {
-                        $db = $repo->getDb();
-                        $db2 = $model->getDbAdaptor(true);
-                        $relTable = $model->getRelationTableName($relatedObj, $key, $prop);
-                        $modelId = $model->{$model->getPrimaryKey()};
-                        $modelName = $model->getClassName();
-                        $relatedObjName = $relatedObj->getClassName();
-
-                        // Delete the existing relation table entry if set 
-                        $this->refDelete($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
-
-                        // Insert reference to this object in ref table
-                        $this->refInsert($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
-
-                    }
-                    else if (!isset($prop['using'])) {
-                        // The reference must be stored in the parent's table.
-                        // So we just set the column to the new ID.
-                        $this->db->set($fieldName, $id);
-                    }
-                }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // If the data is a set of objects and the definition in the model calls for a collection
-                /////////////////////////////////////////////////////////////////////////////////////////
-                else if (
-                            is_object($modelValue) &&
-                            ($modelValue instanceof \Cora\Collection) &&
-                            isset($prop['models'])
-                        )
-                {
-                    $collection = $modelValue;
-
-                    // Create a repository for whatever objects are supposed to make up this resultset
-                    // based on the model definition.
-                    $objPath = isset($prop['models']) ? $prop['models'] : $prop['model'];
-                    $relatedObjBlank = $model->fetchRelatedObj($objPath);
-                    $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObjBlank), false, false, true);
-
-                    // If uses relation table
-                    if ($model->usesRelationTable($relatedObjBlank, $key)) {
-                        $db = $repo->getDb();
-                        $db2 = $model->getDbAdaptor(true);
-                        $relTable = $model->getRelationTableName($relatedObjBlank, $key, $prop);
-                        $modelId = $model->{$model->getPrimaryKey()};
-                        $modelName = $model->getClassName();
-                        $relatedObjName = $relatedObjBlank->getClassName();
-
-                        // Delete all existing relation table entries that match,
-                        $this->refDelete($key, $model, $relatedObjBlank, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
-
-                        // Save each object in the collection
-                        foreach ($collection as $relatedObj) {
-
-                            // Check if this object has already been saved during this recursive call series.
-                            // If not, save it.
-                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
-                            if (!$this->getSavedModel($relatedObj)) {
-                                if ($id) {
-                                    // It has an ID, so add it to the savedModelsList before saving.
-                                    $this->addSavedModel($relatedObj);
-                                    $repo->save($relatedObj);
-                                }
-                                else {
-                                    // It doesn't have an ID, so save first to get it an ID, then add to list.
-                                    //$id = $repo->save($relatedObj);
-                                    $id = $relatedObj->getRepository(true)->save($relatedObj);
-                                    $this->addSavedModel($relatedObj);
-                                }
-                            }
-
-                            // Insert reference to this object in ref table.
-                            $this->refInsert($key, $model, $relatedObjBlank, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
-                        }
-                    }
-
-                    // If uses Via column
-                    else if ($model->usesViaColumn($relatedObjBlank, $key)) {
-                        $db = $repo->getDb();
-                        $objTable = $relatedObjBlank->getTableName();
-                        $modelId = $model->{$model->getPrimaryKey()};
-
-                        // Set all existing table entries to blank owner.
-                        $db ->update($objTable)
-                            ->set($prop['via'], 0)
-                            ->where($prop['via'], $modelId)
-                            ->exec();
-
-                        // Save each object in the collection
-                        foreach ($collection as $relatedObj) {
-
-                            // Check if this object has already been saved during this recursive call series.
-                            // If not, save it.
-                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
-                            if (!$this->getSavedModel($relatedObj)) {
-                                if ($id) {
-                                    $this->addSavedModel($relatedObj);
-                                    $repo->save($relatedObj);
-                                }
-                                else {
-                                    $id = $repo->save($relatedObj);
-                                    $this->addSavedModel($relatedObj);
-                                }
-                            }
-
-                            // Update the object to have correct relation
-                            $db ->update($objTable)
-                                ->set($prop['via'], $modelId)
-                                ->where($relatedObj->getPrimaryKey(), $id);
-
-                            if ($this->viewQuery) {
-                                echo $db->getQuery();
-                            }
-
-                            $db->exec();
-                        }
-                    }
-
-                    // If is some sort of Abtract relationship
                     else {
-                        // Save each object in the collection
-                        foreach ($collection as $relatedObj) {
-                            // Check if this object has already been saved during this recursive call series.
-                            // If not, save it.
-                            $id = $relatedObj->{$relatedObj->getPrimaryKey()};
-                            if (!$this->getSavedModel($relatedObj)) {
-                                if ($id) {
-                                    $this->addSavedModel($relatedObj);
-                                    $repo->save($relatedObj);
-                                }
-                                else {
-                                    $id = $repo->save($relatedObj);
-                                    $this->addSavedModel($relatedObj);
-                                }
+                        $id = $repo->save($relatedObj);
+                        $this->addSavedModel($relatedObj);
+                    }
+                }
+
+                if ($model->usesRelationTable($relatedObj, $key)) {
+                    $db = $repo->getDb();
+                    $db2 = $model->getDbAdaptor(true);
+                    $relTable = $model->getRelationTableName($relatedObj, $key, $prop);
+                    $modelId = $model->{$model->getPrimaryKey()};
+                    $modelName = $model->getClassName();
+                    $relatedObjName = $relatedObj->getClassName();
+
+                    // Delete the existing relation table entry if set 
+                    $this->refDelete($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
+
+                    // Insert reference to this object in ref table
+                    $this->refInsert($key, $model, $relatedObj, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
+
+                }
+                else if (!isset($prop['using'])) {
+                    // The reference must be stored in the parent's table.
+                    // So we just set the column to the new ID.
+                    $this->db->set($fieldName, $id);
+                }
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////////
+            // If the data is a set of objects and the definition in the model calls for a collection
+            /////////////////////////////////////////////////////////////////////////////////////////
+            else if (
+                        is_object($modelValue) &&
+                        ($modelValue instanceof \Cora\Collection) &&
+                        isset($prop['models'])
+                    )
+            {
+                $collection = $modelValue;
+
+                // Create a repository for whatever objects are supposed to make up this resultset
+                // based on the model definition.
+                $objPath = isset($prop['models']) ? $prop['models'] : $prop['model'];
+                $relatedObjBlank = $model->fetchRelatedObj($objPath);
+                $repo = \Cora\RepositoryFactory::make('\\'.get_class($relatedObjBlank), false, false, true);
+
+                // If uses relation table
+                if ($model->usesRelationTable($relatedObjBlank, $key)) {
+                    $db = $repo->getDb();
+                    $db2 = $model->getDbAdaptor(true);
+                    $relTable = $model->getRelationTableName($relatedObjBlank, $key, $prop);
+                    $modelId = $model->{$model->getPrimaryKey()};
+                    $modelName = $model->getClassName();
+                    $relatedObjName = $relatedObjBlank->getClassName();
+
+                    // Delete all existing relation table entries that match,
+                    $this->refDelete($key, $model, $relatedObjBlank, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName);
+
+                    // Save each object in the collection
+                    foreach ($collection as $relatedObj) {
+
+                        // Check if this object has already been saved during this recursive call series.
+                        // If not, save it.
+                        $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                        if (!$this->getSavedModel($relatedObj)) {
+                            if ($id) {
+                                // It has an ID, so add it to the savedModelsList before saving.
+                                $this->addSavedModel($relatedObj);
+                                $repo->save($relatedObj);
+                            }
+                            else {
+                                // It doesn't have an ID, so save first to get it an ID, then add to list.
+                                //$id = $repo->save($relatedObj);
+                                $id = $relatedObj->getRepository(true)->save($relatedObj);
+                                $this->addSavedModel($relatedObj);
+                            }
+                        }
+
+                        // Insert reference to this object in ref table.
+                        $this->refInsert($key, $model, $relatedObjBlank, $db, $db2, $relTable, $modelName, $modelId, $relatedObjName, $id);
+                    }
+                }
+
+                // If uses Via column
+                else if ($model->usesViaColumn($relatedObjBlank, $key)) {
+                    $db = $repo->getDb();
+                    $objTable = $relatedObjBlank->getTableName();
+                    $modelId = $model->{$model->getPrimaryKey()};
+
+                    // Set all existing table entries to blank owner.
+                    $db ->update($objTable)
+                        ->set($prop['via'], 0)
+                        ->where($prop['via'], $modelId)
+                        ->exec();
+
+                    // Save each object in the collection
+                    foreach ($collection as $relatedObj) {
+
+                        // Check if this object has already been saved during this recursive call series.
+                        // If not, save it.
+                        $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                        if (!$this->getSavedModel($relatedObj)) {
+                            if ($id) {
+                                $this->addSavedModel($relatedObj);
+                                $repo->save($relatedObj);
+                            }
+                            else {
+                                $id = $repo->save($relatedObj);
+                                $this->addSavedModel($relatedObj);
+                            }
+                        }
+
+                        // Update the object to have correct relation
+                        $db ->update($objTable)
+                            ->set($prop['via'], $modelId)
+                            ->where($relatedObj->getPrimaryKey(), $id);
+
+                        if ($this->viewQuery) {
+                            echo $db->getQuery();
+                        }
+
+                        $db->exec();
+                    }
+                }
+
+                // If is some sort of Abtract relationship
+                else {
+                    // Save each object in the collection
+                    foreach ($collection as $relatedObj) {
+                        // Check if this object has already been saved during this recursive call series.
+                        // If not, save it.
+                        $id = $relatedObj->{$relatedObj->getPrimaryKey()};
+                        if (!$this->getSavedModel($relatedObj)) {
+                            if ($id) {
+                                $this->addSavedModel($relatedObj);
+                                $repo->save($relatedObj);
+                            }
+                            else {
+                                $id = $repo->save($relatedObj);
+                                $this->addSavedModel($relatedObj);
                             }
                         }
                     }
                 }
+            }
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // If the data is an array, or object that got past the first two IFs,
-                // then we need to serialize it for storage.
-                /////////////////////////////////////////////////////////////////////////////////////////
-                else if (is_array($modelValue) || is_object($modelValue)) {
-                    $str = serialize($modelValue);
-                    $this->db->set($fieldName, $str);
-                }
+            /////////////////////////////////////////////////////////////////////////////////////////
+            // If the data is an array, or object that got past the first two IFs,
+            // then we need to serialize it for storage.
+            /////////////////////////////////////////////////////////////////////////////////////////
+            else if (is_array($modelValue) || is_object($modelValue)) {
+                $str = serialize($modelValue);
+                $this->db->set($fieldName, $str);
+            }
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // If just some plain data.
-                // OR an abstract data reference (such as 'articles' => 1)
-                /////////////////////////////////////////////////////////////////////////////////////////
-                else {
-                    // Check that this is actually a value that needs to be saved.
-                    // It might just be a placeholder value for a model reference.
-                    // If it's a placeholder, we don't want to do anything here.
-                    if (!$model->isPlaceholder($key)) {
-                        $this->db->set($fieldName, $modelValue);
-                    }
+            /////////////////////////////////////////////////////////////////////////////////////////
+            // If just some plain data.
+            // OR an abstract data reference (such as 'articles' => 1)
+            /////////////////////////////////////////////////////////////////////////////////////////
+            else {
+                // Check that this is actually a value that needs to be saved.
+                // It might just be a placeholder value for a model reference.
+                // If it's a placeholder, we don't want to do anything here.
+                if (!$model->isPlaceholder($key)) {
+                    $this->db->set($fieldName, $modelValue);
                 }
             }
         }
+    }
 
-        $model->afterSave(); // Lifecycle callback
+    $model->afterSave(); // Lifecycle callback
 
-        if ($this->viewQuery) {
-            echo $this->db->getQuery();
-            echo "\n";
-        }
+    if ($this->viewQuery) {
+        echo $this->db->getQuery();
+        echo "\n";
+    }
 
-        // execute statement.
-        $result = $this->db->exec();
+    // execute statement.
+    $result = $this->db->exec();
 
-        // If affected rows was zero, then assume lock error. 
-        if ($result->rowCount() == 0 && $lockSet == true) {
-            throw new \Cora\LockException();
-        }
+    // If affected rows was zero, then assume lock error. 
+    if ($result->rowCount() == 0 && $lockSet == true) {
+        throw new \Cora\LockException();
+    }
 
-        return $result->lastInsertId();
+    return $result->lastInsertId();
 	}
 
     protected function _create($model, $table, $id_name)

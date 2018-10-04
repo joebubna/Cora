@@ -1480,7 +1480,7 @@ class ADMTest extends \Cora\App\TestCase
       // Grab users repo
       $users = $this->app->tests->users;
 
-      // Create LoadMap that passes a closure as 3rd argument and params as the 4th
+      // Create LoadMap that passes a closure as 4th argument and params as the 5th
       $loadMap = new \Cora\Adm\LoadMap([
           'name' => 'type'
         ], [
@@ -1489,6 +1489,7 @@ class ADMTest extends \Cora\App\TestCase
             'father_name' => 'name'
           ])
         ],
+        false,
         function($model, $str1, $str2) {
           $model->lastName = $str1.$str2;
         },
