@@ -104,9 +104,9 @@ class Model
       foreach ($loadMap->getRelationsMapping() as $attributeToLoad => $mapping) {
         if (isset($this->model_attributes[$attributeToLoad])) {
 
-          // If this attribute is defined as a singular model AND a mapping file was given for it, then use that 
-          // map instead of dynamically fetching the data.
-          if (isset($this->model_attributes[$attributeToLoad]['model']) && $mapping instanceof \Cora\Adm\LoadMap) {
+          // If this attribute is defined as a singular model, AND a mapping file was given for it, AND the LoadMap doesn't explicitly say we 
+          // need to fetch the data, then use the data we have already instead of dynamically fetching the data.
+          if (isset($this->model_attributes[$attributeToLoad]['model']) && $mapping instanceof \Cora\Adm\LoadMap && !$mapping->fetchData()) {
             // Fetch an object of the correct type
             $relatedObj = $this->fetchRelatedObj($this->model_attributes[$attributeToLoad]['model']);
 

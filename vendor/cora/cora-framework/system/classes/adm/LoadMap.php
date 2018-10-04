@@ -7,13 +7,15 @@ class LoadMap
   protected $relationsMapping;
   protected $onLoadFunction;
   protected $onLoadArgs;
+  protected $fetchData;
   
-  public function __construct($localMapping = [], $relationsToLoad = [], $onLoadFunction = false, $onLoadArgs = [])
+  public function __construct($localMapping = [], $relationsToLoad = [], $fetchData = false, $onLoadFunction = false, $onLoadArgs = [])
   {
     $this->localMapping = $localMapping;
     $this->relationsMapping = $relationsToLoad;
     $this->onLoadFunction = $onLoadFunction;
     $this->onLoadArgs = $onLoadArgs;
+    $this->fetchData = $fetchData;
   }
   
   /**
@@ -46,5 +48,17 @@ class LoadMap
   public function getOnLoadArgs() 
   {
     return $this->onLoadArgs;
+  }
+
+  /**
+   *  Returns whether or not the models this LoadMap is used with need their data fetched.
+   *  This defaults to false which means it's assumed if you are using a LoadMap that you will be 
+   *  providing the data the model(s) need without dynamic loading.
+   * 
+   *  @return bool
+   */
+  public function fetchData()
+  {
+    return $this->fetchData;
   }
 }
