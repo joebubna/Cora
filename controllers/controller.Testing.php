@@ -284,9 +284,14 @@ class Testing extends \Cora\App\Controller
       ], [
         'primaryRole' => new \Cora\Adm\LoadMap([
           'role_id' => 'id',
-          'name' => '!name'
+          'name' => '!name',
+          'role_name' => 'name'
         ]),
-        'parent' => true
+        'parent' => new \Cora\Adm\LoadMap([], [
+          'parent' => new \Cora\Adm\LoadMap([], [
+            'roles' => true
+          ], true)
+        ], true)
       ]);
 
       $results = $users->findAll(function($query, $arg) {
@@ -296,16 +301,18 @@ class Testing extends \Cora\App\Controller
             roles.id as role_id,
             roles.name as role_name 
           FROM users LEFT JOIN roles ON (users.primaryRole = roles.id) 
-          LIMIT 5
+          LIMIT 1
         ');
       }, 1, $loadMap);
 
       //var_dump($results[0]->model_data);
 
-      echo $results[1]->firstName."<br>";
-      echo $results[1]->primaryRole->name."<br>";
-      echo $results[0]->parent->firstName;
-
-      var_dump($results[0]->parent);
+      // echo $results[1]->firstName."<br>";
+      // echo $results[1]->primaryRole->name."<br>";
+      // echo $results[0]->parent->firstName;
+      //var_dump($results[1]->primaryRole);
+      header('Content-Type: application/json; charset=utf-8');
+      echo $results[0]->toJson();
+      //var_dump($results[0]->parent);
     }
 }
