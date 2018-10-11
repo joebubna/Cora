@@ -1372,6 +1372,7 @@ class ADMTest extends \Cora\App\TestCase
      *  Ensure that we can use LoadMaps with plural relationships when using the 
      *  Active-Record-like functionality of models. (vs. directly interacting with a repository)
      * 
+     *  @failing
      *  @test
      */
     public function canLoadMapRelationshipsUsingModelNoDynamic()
@@ -1419,9 +1420,9 @@ class ADMTest extends \Cora\App\TestCase
       // Define a custom query to execute that joins the Father data we need
       // Then pass the loadMap we created so it knows how to populate the Father model.
       $bobsFriends = $user->friends(function($query) {
-        $query->join('tests_users', [['tests_users.id', '=', 'user2']], 'LEFT')
-              ->join('tests_users usersB', [['tests_users.father', '=', 'usersB.id']], 'LEFT')
-              ->select(['tests_users.*', 'usersB.id as father_id', 'usersB.name as father_name']);
+        $query->join('tests_users usersA', [['usersA.id', '=', 'user2']], 'LEFT')
+              ->join('tests_users usersB', [['usersA.father', '=', 'usersB.id']], 'LEFT')
+              ->select(['usersB.id as father_id', 'usersB.name as father_name']);
         return $query;
       }, false, $loadMap);
 

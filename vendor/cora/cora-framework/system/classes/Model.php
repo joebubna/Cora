@@ -572,18 +572,18 @@ class Model
       if ($relatedObjName) {
         // If the relationship is one-to-many.
         if (isset($def['via'])) {
-            $result = $this->_getModelsFromTableColumn($attributeName, $relatedObjName, $def['via'], $query, $loadMap);
+          $result = $this->_getModelsFromTableColumn($attributeName, $relatedObjName, $def['via'], $query, $loadMap);
         }
 
         else if (isset($def['using'])) {
-            $result = $this->getModelsFromCustomRelationship($attributeName, $relatedObjName, $query, $loadMap);
+          $result = $this->getModelsFromCustomRelationship($attributeName, $relatedObjName, $query, $loadMap);
         }
 
         // If the relationship is many-to-many.
         // OR if the relationship is one-to-many and no 'owner' type column is set,
         // meaning there needs to be a relation table.
         else {
-            $result = $this->_getModelsFromRelationTable($attributeName, $relatedObjName, $query, $loadMap);
+          $result = $this->_getModelsFromRelationTable($attributeName, $relatedObjName, $query, $loadMap);
         }
       }
 
@@ -936,23 +936,31 @@ class Model
       // Define custom query for repository.
       ///////////////////////////////////////
 
-      // Get DB adaptor to use. 
-      // In situations where multiple DBs are being used and there's a relation table 
-      // between data on different DBs, we can't be sure which DB holds the relation table. 
-      // First try the DB the related object is on. If that doesn't contain the relation table,
-      // then try the current object's DB.
+      // Get DB adaptor to use for relation.
       if (!$query) $query = $this->_getQueryObjectForRelation($attributeName);
 
       // Setup relation table field names 
       $relThis = isset($this->model_attributes[$attributeName]['relThis']) ? $this->model_attributes[$attributeName]['relThis'] : $className;
       $relThat = isset($this->model_attributes[$attributeName]['relThat']) ? $this->model_attributes[$attributeName]['relThat'] : $relatedClassName;
       
+      // Check if both the Relation Table and the model being fetched use the same DB connection.
+      // If they do, we can do a join to fetch the data without additional queries
+      $relatedObjConnection = $relatedObj->getDbAdaptor()->connection;
+      $relationTableConnection = $query->connection;
+
       // DEFAULT CASE 
       // The objects that are related aren't the same class of object...
       // (or they are, but relThis and relThat definitions were setup)
       if ($relThis != $relThat) {
         $query->select($relThat.' as '.$relatedObj->getPrimaryKey())
               ->where($relThis, $this->$objectId);
+
+        // Optionally JOIN data if on same connection
+        if ($relatedObjConnection == $relationTableConnection) {
+          $oTable = $relatedObj->getTableName();
+          $query->select($oTable.'.*')
+                ->join($oTable, [[$oTable.'.'.$relatedObj->getPrimaryKey(), '=', $relTable.'.'.$relThat]]);
+        }
 
         return $repo->findAll($query, false, $loadMap);
       }
@@ -967,11 +975,25 @@ class Model
         // Fetch related objects where the subject is the left side reference.
         $query->select($relThat.'2'.' as '.$relatedObj->getPrimaryKey())
               ->where($relThis, $this->$objectId);
+
+        // Optionally JOIN data if on same connection
+        if ($relatedObjConnection == $relationTableConnection) {
+          $oTable = $relatedObj->getTableName();
+          $query->select($oTable.'.*')
+                ->join($oTable, [[$oTable.'.'.$relatedObj->getPrimaryKey(), '=', $relTable.'.'.$relThat.'2']]);
+        }
         $leftSet = $repo->findAll($query, false, $loadMap);
 
         // Fetch related objects where the subject is the right side reference.
         $query->select($relThat.' as '.$relatedObj->getPrimaryKey())
               ->where($relThis.'2', $this->$objectId);
+
+        // Optionally JOIN data if on same connection
+        if ($relatedObjConnection == $relationTableConnection) {
+          $oTable = $relatedObj->getTableName();
+          $query->select($oTable.'.*')
+                ->join($oTable, [[$oTable.'.'.$relatedObj->getPrimaryKey(), '=', $relTable.'.'.$relThat]]);
+        }
         $rightSet = $repo->findAll($query, false, $loadMap);
         $leftSet->merge($rightSet);
         return $leftSet;
