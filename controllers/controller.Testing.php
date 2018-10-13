@@ -109,12 +109,13 @@ class Testing extends \Cora\App\Controller
       $model->id = 1;
 
       $loadMap = new \Cora\Adm\LoadMap([], [
-        'madeBy' => new \Cora\Adm\LoadMap([
-          'user_firstName' => 'firstName',
-          'user_lastName' => 'lastName',
-          'user_id' => 'id'
-        ])
-      ],
+          'madeBy' => new \Cora\Adm\LoadMap([
+            'user_firstName' => 'firstName',
+            'user_lastName' => 'lastName',
+            'user_id' => 'id'
+          ])
+        ],
+        false,
         function($model, $str, $str2) {
           $model->status = $str;
           $model->status = $str2;
@@ -287,20 +288,33 @@ class Testing extends \Cora\App\Controller
           'name' => '!name',
           'role_name' => 'name'
         ]),
-        'parent' => new \Cora\Adm\LoadMap([], [
-          'parent' => new \Cora\Adm\LoadMap([], [
-            'roles' => true
-          ], true)
-        ], true)
+        'parent' => new \Cora\Adm\LoadMap([
+          'father_id' => 'id',
+          'father_firstName' => 'firstName',
+          'father_lastName' => 'lastName',
+          'father_parent' => 'parent'
+          //'parent' => '!parent'
+        ], [
+          'parent' => new \Cora\Adm\LoadMap([], [], true)
+          // 'parent' => new \Cora\Adm\LoadMap([], [
+          //   'roles' => true
+          // ], true)
+        ])
       ]);
 
       $results = $users->findAll(function($query, $arg) {
         return $query->custom('
           SELECT 
-            users.*,
+            usersA.*,
             roles.id as role_id,
-            roles.name as role_name 
-          FROM users LEFT JOIN roles ON (users.primaryRole = roles.id) 
+            roles.name as role_name,
+            usersB.id as father_id,
+            usersB.firstName as father_firstName,
+            usersB.lastName as father_lastName,
+            4 as father_parent
+          FROM users usersA
+          LEFT JOIN roles ON (usersA.primaryRole = roles.id) 
+          LEFT JOIN users usersB ON (usersA.parent = usersB.id)
           LIMIT 1
         ');
       }, 1, $loadMap);
@@ -314,5 +328,30 @@ class Testing extends \Cora\App\Controller
       header('Content-Type: application/json; charset=utf-8');
       echo $results[0]->toJson();
       //var_dump($results[0]->parent);
+    }
+
+
+    public function test8() 
+    {
+      $users = $this->app->users;
+      $user = $users->find(1);
+
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'parent' => true
+        //'father' => new \Cora\Adm\LoadMap([],[], true)
+      ], true);
+
+      //var_dump($user->model_data);
+
+      $user->parent(function($query) {
+        return $query;
+      }, false, $loadMap);
+
+      $user->model_dynamicOff = true;
+
+      // Ensure we have the correct user
+      echo 'User name = Bob : '.('Bob' == $user->firstName);
+
+      echo 'User parent = Captain : '.('Captain' == $user->parent->firstName);
     }
 }

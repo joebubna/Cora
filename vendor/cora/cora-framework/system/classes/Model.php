@@ -6,7 +6,7 @@ namespace Cora;
  */
 class Model
 {
-    protected $model_data;
+    public $model_data;
     protected $model_hydrating = false;
     protected $model_loadMapsEnabled = true;
     public $data;
@@ -85,8 +85,8 @@ class Model
       
       // Map data from the data record to attributes on this model
       foreach ($loadMap->getLocalMapping() as $recordKey => $mapToAttribute) {
-        if (isset($record[$recordKey])) {
-          
+        if (array_key_exists($recordKey, $record)) {
+
           // If specifying that the record key should not be matched for this model,
           // then unset that attribute.
           if ($mapToAttribute[0] == '!') {
@@ -103,7 +103,7 @@ class Model
       // Load specified relationships
       foreach ($loadMap->getRelationsMapping() as $attributeToLoad => $mapping) {
         if (isset($this->model_attributes[$attributeToLoad])) {
-          
+
           // If this attribute is defined as a singular model, AND a mapping file was given for it, AND the LoadMap doesn't explicitly say we 
           // need to fetch the data, then use any data passed in rather than dynamically fetching the data.
           if (isset($this->model_attributes[$attributeToLoad]['model']) && $mapping instanceof \Cora\Adm\LoadMap && !$mapping->fetchData()) {
@@ -124,28 +124,27 @@ class Model
           
           // Otherwise just make sure the data for the attribute gets dynamically loaded.
           else {
-            ## JOE!: Need to call with ability to pass LoadMap that in turn gets passed to the Repo, which passes to the Factory.
-            ##       Fetching collection of objects requires the Factory to have the mapping needed.
             $this->_getAttributeData($attributeToLoad, false, $mapping, $record);
-
-            ## JOE!: CANNOT populate after load. It will try calling _populate on Collections if relationship is plural.
-            ## $this->{$attributeToLoad}->_populate(null, false, $mapping);
           }
 
           // After the loading above, if an attribute defined as a model is still not an object, generate an empty object.
-          // if (!is_object($this->$attributeToLoad)) { 
-          //   echo $attributeToLoad;
-          //   var_dump($this->$attributeToLoad);
-          // }
           if (isset($this->model_attributes[$attributeToLoad]['model']) && !is_object($this->$attributeToLoad)) {
+
+            // Iterate over the attributes on a model and generate an empty array to populate a dummy model with
             $dataToLoad = array_map(function($item) { 
-              // if (isset($item['model']) || isset($item['models']) || isset($item['primaryKey'])) {
-              //   return 0;
-              // }
-              return null; 
+              if (isset($item['model'])) {
+                return 0;
+              }
+              else if (isset($item['models'])) {
+                return [];
+              }
+              else if (isset($item['primaryKey'])) {
+                return null;
+              }
+              return ''; 
             }, $this->model_attributes);
-            //var_dump($dataToLoad);
-            // Fetch an EMPTY object of the correct type.
+            
+            // Fetch an EMPTY object of the correct type and populate it with our dummy data.
             $this->$attributeToLoad = $this->_loadAttributeObject($attributeToLoad, $dataToLoad, $mapping);
           }
 
@@ -154,6 +153,9 @@ class Model
     }
 
 
+    /**
+     *  
+     */
     protected function _loadAttributeObject($attributeToLoad, $dataForPopulation = [], $mapping = false)
     {
       // Fetch an object of the correct type
@@ -344,32 +346,30 @@ class Model
     {   
       // Vars
       $def = [];
-
+      
       // If matching attribute is defined, then grab info
       if (isset($this->model_attributes[$name])) {
         $def = $this->model_attributes[$name];
 
-        // If the attribute is a reference to a collection of models
-        //if (isset($def['models']) || isset($def['model'])) {
+        // Get query object that we can use
+        $query = $this->_getQueryObjectForRelation($name);
+        
+        // Build arguments array for closure as necessary
+        $funcArgs = [];
+        if (isset($arguments[1])) {
+          $funcArgs = is_array($arguments[1]) ? $arguments[1] : [$arguments[1]];
+        }
+        array_unshift($funcArgs, $query);
+        
+        // Call the provided function with the query and arguments
+        $query = call_user_func_array($arguments[0], $funcArgs);
 
-          // Get query object that we can use
-          $query = $this->_getQueryObjectForRelation($name);
-          
-          // Build arguments array for closure as necessary
-          $funcArgs = [];
-          if (isset($arguments[1])) {
-            $funcArgs = is_array($arguments[1]) ? $arguments[1] : [$arguments[1]];
-          }
-          array_unshift($funcArgs, $query);
-          
-          // Call the provided function with the query and arguments
-          $query = call_user_func_array($arguments[0], $funcArgs);
-          
-          // Fetch data
-          $this->$name = $this->_getCustomValue($name, $query, isset($arguments[2]) ? $arguments[2] : false);
-          //$this->$name = $this->_getModels($name, $def['models'], $query, isset($arguments[2]) ? $arguments[2] : false);
-          return $this->$name;
-        //}
+        // Determine if a LoadMap was passed in
+        $loadMap = isset($arguments[2]) ? $arguments[2] : false;
+        
+        // Fetch data
+        $this->$name = $this->_getCustomValue($name, $query, $loadMap);
+        return $this->$name;
       }
 
       // If an attribute relationship wasn't what was called, then assume it's a normal 
@@ -436,12 +436,12 @@ class Model
     protected function _getCustomValue($attributeName, $query, $loadMap = false)
     {
       $def = $this->model_attributes[$attributeName];
-      $result = $this->_getRelation($attributeName, $query, $loadMap);
+      $result = $this->_getRelation($attributeName, $query, $loadMap); //$this->_getAttributeData($attributeName, $query, $loadMap);
 
       if (!$result) {
         $result = $query->fetch();
       }
-
+      
       return $result;
     }
 
@@ -470,7 +470,7 @@ class Model
       // Grab attribute definition
       $def = $this->model_attributes[$attributeName];
       $result = false;
-
+      
       if (isset($def['models'])) {
         $result = $this->_getModels($attributeName, $def['models'], $query, $loadMap, $record);
       } 
@@ -496,7 +496,10 @@ class Model
 
       if ($relatedObjName) {
 
-        if ($loadMap instanceof \Cora\Adm\LoadMap && !$loadMap->fetchData()) {
+        // If a LoadMap is present, and explicit fetching of the data isn't enabled, and some data was passed in,
+        // then use the data given.
+        if ($loadMap instanceof \Cora\Adm\LoadMap && !$loadMap->fetchData() && $record !== false) {
+          
           // Create a blank object of desired type and populate it with the results of the data passed in
           $relatedObj = $this->fetchRelatedObj($def['model']);        
           $result = $relatedObj->_populate($record, $query, $loadMap);
@@ -528,7 +531,7 @@ class Model
         else {
           // Create a blank object of desired type
           $relatedObj = $this->fetchRelatedObj($def['model']);        
-
+          
           // If a custom query was passed in, execute it
           // Then populate a model with the data result
           if ($query && $query->isCustom()) {
@@ -544,8 +547,16 @@ class Model
             }  
 
             // Fetch related object in whole (The model_data we have on it should be an ID reference)
-            $relObjRepo = $relatedObj->getRepository(true);
-            $result = $relObjRepo->find($this->model_data[$attributeName]);
+            if (!is_object($this->model_data[$attributeName])) {
+              $relObjRepo = $relatedObj->getRepository(true);
+              $result = $relObjRepo->find($this->model_data[$attributeName]);
+            } 
+            
+            // Unless we already have an object (maybe it was added to the model from the main app)
+            // Then just use what we have
+            else {
+              $result = $this->model_data[$attributeName];
+            }
 
             // Incase there's loadMap info that needs to be passed in, call populate
             if ($result) {
@@ -610,7 +621,7 @@ class Model
       // If it's not, then we don't need to worry about it being a
       // class reference that we need to fetch.
       if (is_numeric($this->model_data[$attributeName])) {
-        
+
         // If the attribute is defined as a model relationship, then the number is 
         // a placeholder or ID and needs to be converted into a model.
         if ($this->_isRelation($attributeName) && !isset($this->model_dynamicOff)) {
@@ -681,10 +692,6 @@ class Model
       // to boolean true, meaning we have to dynamically fetch the model)
       ///////////////////////////////////////////////////////////////////////
       if (isset($this->model_data[$name])) {
-        // if ($name == 'parent') {
-        //   echo 'Fetching Parent<br>'; 
-        //   var_dump($loadMap);
-        // }
         return $this->_getAttributeDataWhenSet($name, $query, $loadMap, $record);
       }
 
