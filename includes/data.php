@@ -114,6 +114,7 @@ $developer->firstName = 'Josiah';
 $developer->lastName = 'Bubna';
 $developer->createdDate = $curDate;
 
+
 //-------------------------------
 // Large set of fake users for pagination.
 //-------------------------------
@@ -138,14 +139,14 @@ $users->save($usersList);
 // Comments
 /////////////////////////////////
 
-////-------------------------------
-//// Declare comments
-////-------------------------------
-//$commentsList = $app->container(false, [
-//    new \Models\Comment($user, 'Test Comment 1'),
-//    new \Models\Comment($user, 'Test Comment 2'),
-//    new \Models\Comment($user, 'Test Comment 3')
-//]);
-//
-//// Save to DB.
-//$comments->save($commentsList);
+// //-------------------------------
+// // Declare comments
+// //-------------------------------
+// $commentsList = $app->container(false, [
+//   new \Models\Comment($user, 'Test Comment 1'),
+//   new \Models\Comment($user, 'Test Comment 2'),
+//   new \Models\Comment($user, 'Test Comment 3')
+// ]);
+
+// // Save to DB.
+// $comments->save($commentsList);
