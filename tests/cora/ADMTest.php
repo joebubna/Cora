@@ -1663,7 +1663,6 @@ class ADMTest extends \Cora\App\TestCase
      *  Ensure that fetching a Collection from a model with a loadMap works.
      *  In this case, the loadMapped relationship should be present.
      *  
-     *  @group failing
      *  @test
      */
     public function canLoadMapRelationshipsNestedUsingModelPluralExists()
@@ -1712,7 +1711,6 @@ class ADMTest extends \Cora\App\TestCase
      *  Ensure that fetching a Collection from a model with a loadMap works.
      *  In this case, the loadMapped relationship should be NOT present.
      *  
-     *  @group failing
      *  @test
      */
     public function canLoadMapRelationshipsNestedUsingModelPluralNotExists()
@@ -1746,7 +1744,6 @@ class ADMTest extends \Cora\App\TestCase
      *  Ensure that fetching a Collection from a model with a loadMap works.
      *  In this case, the loadMapped relationship should be NOT present.
      *  
-     *  @group failing
      *  @test
      */
     public function canLoadMapRelationshipsNestedUsingRepoPluralNotExists()
