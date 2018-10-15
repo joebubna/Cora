@@ -587,7 +587,6 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  Test that a "relName" definition correctly causes attributes on two 
      *  different models to read from the same relation table.
-     *  @group failing
      *  @test
      */
     public function canSetRelationshipNameToLinkDataBetweenModels()
@@ -1419,9 +1418,9 @@ class ADMTest extends \Cora\App\TestCase
       // Define a custom query to execute that joins the Father data we need
       // Then pass the loadMap we created so it knows how to populate the Father model.
       $bobsFriends = $user->friends(function($query) {
-        $query->join('tests_users', [['tests_users.id', '=', 'user2']], 'LEFT')
-              ->join('tests_users usersB', [['tests_users.father', '=', 'usersB.id']], 'LEFT')
-              ->select(['tests_users.*', 'usersB.id as father_id', 'usersB.name as father_name']);
+        $query->join('tests_users usersA', [['usersA.id', '=', 'user2']], 'LEFT')
+              ->join('tests_users usersB', [['usersA.father', '=', 'usersB.id']], 'LEFT')
+              ->select(['usersB.id as father_id', 'usersB.name as father_name']);
         return $query;
       }, false, $loadMap);
 
@@ -1510,4 +1509,264 @@ class ADMTest extends \Cora\App\TestCase
       // Ensure that Bob's lastname was set using the onLoad closure
       $this->assertEquals('fooBAR', $user->lastName);
     }
-}
+
+
+    /**
+     *  This test ends up verifying three things:
+     *    1. Ensure that multi-level nested load maps will work.
+     *    2. Ensure that Fetch Data booleans will cause a relationship to be fetched even if not in the original query.
+     *    3. Ensure that an empty model will be returned if specified relationship is null
+     *  WHile using a REPOSITORY as starting point.
+     * 
+     *  @test
+     */
+    public function canLoadMapRelationshipsNestedUsingRepo()
+    {
+      ///////////////////////////////
+      // DB setup for test
+      ///////////////////////////////
+
+      // Grab users repo
+      $users = $this->app->tests->users;
+
+      // Set and create Zach and his Dad
+      $zach = new \Models\Tests\User('Zach');
+      $zedd = new \Models\Tests\User('Zedd');
+      $zach->father = $zedd;
+      $users->save($zach);
+
+
+      // Create LoadMap for a custom query we will do
+      // State that we want to load the "father" relationship and define the mappings from the 
+      // query to the father model. Also state that we want to load the father of the father, 
+      // but set it's third argument to TRUE, meaning it needs to be loaded via a new query.
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'father' => new \Cora\Adm\LoadMap([
+          'father_id' => 'id',
+          'father_name' => 'name',
+          'father_father' => 'father'
+        ], [
+          'father' => new \Cora\Adm\LoadMap([],[], true)
+        ])
+      ]);
+
+      // Define a custom query to execute that joins the Father data we need
+      // Then pass the loadMap we created so it knows how to populate the Father model.
+      $user = $users->findOne(function($query, $id) {
+        $query->where('tests_users.id', $id)
+              ->join('tests_users usersB', [['tests_users.father', '=', 'usersB.id']], 'LEFT')
+              ->select([
+                'tests_users.*', 
+                'usersB.id as father_id', 
+                'usersB.name as father_name', 
+                'usersB.father as father_father'
+              ]);
+        return $query;
+      }, $zach->id, $loadMap);
+
+      // Ensure we have the correct user
+      $this->assertEquals('Zach', $user->name);
+
+      // Turn off dynamic loading
+      $user->model_dynamicOff = true;
+
+      // Ensure Zach's father was loaded non-dynamically using the data 
+      // from the original closure query above.
+      $this->assertEquals('Zedd', $user->father->name);
+
+      // Zedd has no defined father. However, because we included the embedded father in 
+      // the LoadMap, the ORM should have returned an empty User model to avoid null errors.
+      $this->assertEquals('', $user->father->father->name);
+    }
+
+
+    /**
+     *  This test ends up verifying two things:
+     *    1. Ensure that Fetch Data booleans will cause a relationship to be fetched even if not in the original query.
+     *    2. Ensure that an empty model will be returned if specified relationship is null
+     *  WHile using a MODEL as starting point.
+     *  
+     *  @test
+     */
+    public function canLoadMapRelationshipsNestedUsingModel()
+    {
+      ///////////////////////////////
+      // DB setup for test
+      ///////////////////////////////
+
+      // Grab users repo
+      $users = $this->app->tests->users;
+
+      // Set and create Zach and his Dad
+      $user = new \Models\Tests\User('Adam');
+      $alex = new \Models\Tests\User('Alex');
+      $user->father = $alex;
+      $users->save($user);
+
+
+      // Create LoadMap for a custom query we will do
+      // State that we want to load the "father" relationship and define the mappings from the 
+      // query to the father model. Also state that we want to load the father of the father, 
+      // but set it's third argument to TRUE, meaning it needs to be loaded via a new query.
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'father' => true
+        //'father' => new \Cora\Adm\LoadMap([],[], true)
+      ]);
+
+      // Define a custom query to execute that joins the Father data we need
+      // Then pass the loadMap we created so it knows how to populate the Father model.
+      // Keep in mind here that "father" is already an object on the User model because we created 
+      // it above - this is relevant as it changes possible execution flow.
+      $user->father(function($query) {
+        return $query;
+      }, false, $loadMap);
+
+      // Ensure we have the correct user
+      $this->assertEquals('Adam', $user->name);
+
+      // Turn off dynamic loading
+      $user->model_dynamicOff = true;
+
+      // Ensure father was loaded non-dynamically using the data 
+      // from the original closure query above.
+      $this->assertEquals('Alex', $user->father->name);
+
+      // Alex has no defined father. However, because we included the embedded father in 
+      // the LoadMap, the ORM should have returned an empty User model to avoid null errors.
+      $this->assertEquals('', $user->father->father->name);
+
+
+      /**
+       *  We also need to test the same thing using a fresh User object which doesn't have 
+       *  Father as an object
+       */
+
+      // Fetch a fresh version of the user where the Father isn't already an object
+      $user = $users->find($user->id);
+
+      // Fetch the father with the previous created LoadMap
+      $user->father(function($query) {
+        return $query;
+      }, false, $loadMap);
+
+       // Ensure father was loaded non-dynamically using the data 
+      // from the original closure query above.
+      $this->assertEquals('Alex', $user->father->name);
+
+      // Alex has no defined father. However, because we included the embedded father in 
+      // the LoadMap, the ORM should have returned an empty User model to avoid null errors.
+      $this->assertEquals('', $user->father->father->name);
+    }
+
+
+    /**
+     *  Ensure that fetching a Collection from a model with a loadMap works.
+     *  In this case, the loadMapped relationship should be present.
+     *  
+     *  @test
+     */
+    public function canLoadMapRelationshipsNestedUsingModelPluralExists()
+    {
+      // Grab users repo
+      $users = $this->app->tests->users;
+      $user = new \Models\Tests\User('Adam');
+      $user->comments = $this->app->container(false, [
+        new \Models\Tests\Users\Comment($user, 'Test Comment 1'),
+        new \Models\Tests\Users\Comment($user, 'Test Comment 2'),
+        new \Models\Tests\Users\Comment($user, 'Test Comment 3')
+      ]);
+      $users->save($user);
+
+      // Fetch new
+      $user = $users->find($user->id);
+
+      // Create LoadMap
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        //'madeBy' => true
+        'madeBy' => new \Cora\Adm\LoadMap([
+          'madeBy' => '!madeBy'
+        ], [], true)
+      ]);
+
+      // Define a custom query to execute that joins the Father data we need
+      // Then pass the loadMap we created so it knows how to populate the Father model.
+      // Keep in mind here that "father" is already an object on the User model because we created 
+      // it above - this is relevant as it changes possible execution flow.
+      $user->comments(function($query) {
+        return $query;
+      }, false, $loadMap);
+
+      // Ensure we have the right amount of friends
+      $this->assertEquals(3, $user->comments->count());
+
+      // Turn off dynamic loading on one of the friends
+      $user->comments[1]->model_dynamicOff = true;
+
+      // Ensure that the father of that friend was loaded and populated without any dynamic queries
+      $this->assertEquals('Adam', $user->comments[1]->madeBy->name);
+    }
+
+
+    /**
+     *  Ensure that fetching a Collection from a model with a loadMap works.
+     *  In this case, the loadMapped relationship should be NOT present.
+     *  
+     *  @test
+     */
+    public function canLoadMapRelationshipsNestedUsingModelPluralNotExists()
+    {
+      // Grab users repo
+      $users = $this->app->tests->users;
+      $user = new \Models\Tests\User('Jennifer');
+      $users->save($user);
+
+      // Create LoadMap
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'madeBy' => new \Cora\Adm\LoadMap([
+          'madeBy' => '!madeBy'
+        ], [], true)
+      ]);
+
+      // Define a custom query to execute that joins the Father data we need
+      // Then pass the loadMap we created so it knows how to populate the Father model.
+      // Keep in mind here that "father" is already an object on the User model because we created 
+      // it above - this is relevant as it changes possible execution flow.
+      $user->comments(function($query) {
+        return $query;
+      }, false, $loadMap);
+
+      // Ensure we have the right amount of friends
+      $this->assertEquals(0, $user->comments->count());
+    }
+
+
+    /**
+     *  Ensure that fetching a Collection from a model with a loadMap works.
+     *  In this case, the loadMapped relationship should be NOT present.
+     *  
+     *  @test
+     */
+    public function canLoadMapRelationshipsNestedUsingRepoPluralNotExists()
+    {
+      // Grab users repo
+      $users = $this->app->tests->users;
+      $user = new \Models\Tests\User('Jennifer');
+      $users->save($user);
+
+      // Create LoadMap
+      $loadMap = new \Cora\Adm\LoadMap([], [
+        'comments' => new \Cora\Adm\LoadMap([], [
+          'madeBy' => true
+        ], true)
+      ]);
+
+      // Fetch user using loadMap
+      $user = $users->findOne(function($query, $id) {
+        return $query->where('id', $id);
+      }, $user->id, $loadMap);
+
+      // Ensure we have the right amount of friends
+      $this->assertEquals(0, $user->comments->count());
+    }
+
+} // END TEST

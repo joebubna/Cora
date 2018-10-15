@@ -23,7 +23,8 @@ class Role extends \Cora\App\Model {
     
     public function __construct($name = null)
     {
-        $this->name = $name;
+      parent::__construct();
+      $this->name = $name;
     }
 
 }

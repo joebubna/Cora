@@ -1,6 +1,9 @@
 <?php
 namespace Cora;
 
+// Need to implement an Interface that defines $this->connection as part of it. It must be present 
+// across all adaptors.
+
 class Db_MySQL extends Database
 {
     public $connection;
