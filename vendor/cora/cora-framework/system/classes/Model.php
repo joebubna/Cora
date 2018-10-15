@@ -1411,7 +1411,14 @@ class Model
                     $object->$key = $this->toArray($data);
                 }
             }
-            return (array) $object;
+            $resultArray = (array) $object;
+
+            // If the first array key starts with an underscore such as "_item0"
+            // Then assume it's a Cora Collection array and return a keyless array back.
+            if (count($resultArray) && array_keys($resultArray)[0][0] = '_') {
+              $resultArray = array_values($resultArray);
+            }
+            return $resultArray;
         }
 
         return $inputData;
