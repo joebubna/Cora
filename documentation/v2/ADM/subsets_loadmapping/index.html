@@ -440,6 +440,8 @@
         
             <li><a href="#complicated-example-revisited">Complicated Example Revisited</a></li>
         
+            <li><a href="#forced-loading-advanced">Forced Loading Advanced</a></li>
+        
     
         <li class="main "><a href="#on-model-loadmaps">On-Model LoadMaps</a></li>
         
@@ -828,6 +830,162 @@ to handle when deciding what you want loaded on a model and giving you the abili
 custom JOINed query to model relationships that are buried multiple levels deep in your returned models.</p>
 <p>It's probably also clear that this functionality can easily get very complex if you need to load anything deeper 
 than immediate relationships, so use it as you see fit. It's a powerful feature.</p>
+<h2 id="forced-loading-advanced">Forced Loading Advanced</h2>
+<p>In one of the sections above we spoke about loading additional related models and how to force certain relationships to be 
+pre-loaded, especially in the context of returning data from an API endpoint. One of the examples given was:</p>
+<pre><code>// The second parameter of a LoadMap is for passing an array 
+// of relationships you want pre-loaded
+$loadMap = new \Cora\Adm\LoadMap([], [
+  'job' =&gt; true
+]);
+
+// Just add the LoadMap as the 3rd argument to our findAll() call
+$users = $repo-&gt;findAll(false, false, $loadMap);
+</code></pre>
+
+<p>One thing that's important to know is that the boolean true for loading the "job" relationship as seen 
+in that example is the same as doing:</p>
+<pre><code>$loadMap = new \Cora\Adm\LoadMap([], [
+  'job' =&gt; new \Cora\Adm\LoadMap([], [], true)
+]);
+</code></pre>
+
+<p>That third argument to the LoadMap specifies that the 'job' relationship needs to be fetched on its own using a separate query.
+Why would you need to specify that? Well, when you define a LoadMap within another LoadMap, there is an assumption made that the 
+main query which will be run will return all the data needed for any SINGULAR nested models. Because of this assumption, dynamic 
+loading is disabled for singular relationships so that the LoadMap can map the data to the model. </p>
+<p>I realize that's a mouthful, so let's look at an example that will hopefully make sense of what we're talking about. 
+Notice the line <code>'role' =&gt; new \Cora\Adm\LoadMap()</code> in the following because it's the nested LoadMap we're talking about:</p>
+<pre><code>// Create LoadMap
+$loadMap = new \Cora\Adm\LoadMap([], [
+  'role' =&gt; new \Cora\Adm\LoadMap([
+    'role_id' =&gt; 'id'
+  ])
+]);
+
+// Custom data fetch to fetch Users with their Role info in one query
+$users = $repo-&gt;findAll(function($query) {
+  $query-&gt;join('roles', [['users.role', '=', 'roles.id']])
+        -&gt;select([&quot;users.*&quot;, &quot;roles.id as 'role_id'&quot;, &quot;role.title&quot;]);
+  return $query;
+}, false, $loadMap);
+</code></pre>
+
+<p>Because the "role" relationship is defined using a nested LoadMap, ADM assumes we will be doing a customized query 
+with a JOIN (which we are doing in the example). This way, no extra queries are needed to fetch the Role model data,
+which makes the code super fast. </p>
+<p>However, what if each Role had a list of Permissions attached to it, and you wanted those fetched too? Well you can 
+specify you want that additional relationship loaded using the second LoadMap parameter like so:</p>
+<pre><code>// Create LoadMap
+$loadMap = new \Cora\Adm\LoadMap([], [
+  'role' =&gt; new \Cora\Adm\LoadMap([
+    'role_id' =&gt; 'id'
+  ], [
+    'permissions' =&gt; true
+  ])
+]);
+
+// Custom data fetch to fetch Users with their Role info in one query
+$users = $repo-&gt;findAll(function($query) {
+  $query-&gt;join('roles', [['users.role', '=', 'roles.id']])
+        -&gt;select([&quot;users.*&quot;, &quot;roles.id as 'role_id'&quot;, &quot;role.title&quot;]);
+  return $query;
+}, false, $loadMap);
+</code></pre>
+
+<p>Now the Users and Roles will be fetched the same as before, but as each Role is loaded the permissions attached to 
+it will also be fetched in a separate query.</p>
+<p>Next, what if each Permission had a reference to a group of Users who have that permission and we wanted that User Group
+loaded? Forcing that info to load would look like this:</p>
+<pre><code>// Create LoadMap
+$loadMap = new \Cora\Adm\LoadMap([], [
+  'role' =&gt; new \Cora\Adm\LoadMap([
+    'role_id' =&gt; 'id'
+  ], [
+    'permissions' =&gt; new \Cora\Adm\LoadMap([], [
+      'userGroup' =&gt; true
+    ], true)
+  ])
+]);
+</code></pre>
+
+<p>Finally, what if each User Permission Group had a User who was the designated moderator for some reason? Forcing 
+that Moderator user model to load would look something like:</p>
+<pre><code>// Create LoadMap
+$loadMap = new \Cora\Adm\LoadMap([], [
+  'role' =&gt; new \Cora\Adm\LoadMap([
+    'role_id' =&gt; 'id'
+  ], [
+    'permissions' =&gt; new \Cora\Adm\LoadMap([], [
+      'userGroup' =&gt; new \Cora\Adm\LoadMap([], [
+        'moderator' =&gt; true
+      ], true)
+    ], true)
+  ])
+]);
+</code></pre>
+
+<h3 id="blank-models-when-force-loading">Blank Models When Force Loading</h3>
+<p>What we were doing above with "true" booleans is what I call Forced Loading. You're telling ADM to always load that 
+relationship when present. However, what happens when a relationship you're attempting to force load is null?</p>
+<p>This question is especially important when working with APIs because changes in the format of the response can 
+be annoying to deal with. For example, imagine this is the response some front-end javascript received from your 
+API:</p>
+<pre><code>[
+  {
+    name: &quot;User 1&quot;,
+    userGroup: {
+      name: &quot;Moderators&quot;
+    }
+  },
+  {
+    name: &quot;User 2&quot;,
+    userGroup: null
+  }
+]
+</code></pre>
+
+<p>If you were to try doing a foreach loop and access the name of the UserGroup the user is in like so: 
+<code>user.userGroup.name</code>, you'll likely encounter a null reference error because the 2nd user doesn't have a group.</p>
+<p>When force loading singular models using a LoadMap, ADM will utilize blank models in order to standarize the response 
+you give back if you do an automated toJson() call. In the case of plural relationships such as "permissions", 
+if there are no related permissions, it will return an empty array.</p>
+<p>To see how this works let's use a slightly simplified version of the LoadMap we recently defined as seen here:</p>
+<pre><code>// Create LoadMap
+$loadMap = new \Cora\Adm\LoadMap([], [
+  'role' =&gt; new \Cora\Adm\LoadMap([], [
+    'permissions' =&gt; new \Cora\Adm\LoadMap([], [
+      'userGroup' =&gt; new \Cora\Adm\LoadMap([], [
+        'moderator' =&gt; true
+      ], true)
+    ], true)
+  ], true)
+]);
+</code></pre>
+
+<p>And let's pretend we're doing code like the following that uses the data:</p>
+<pre><code>foreach (users as user) {
+  foreach (user.role.permissions as permission) {
+    echo permission.userGroup.moderator.name
+  }
+}
+</code></pre>
+
+<p>Because of the system ADM employs to load blank models, the above pseudo code should run fine even if there are 
+null values present in the data.</p>
+<ul>
+<li>First off, if there's no User models returned, then the loop never starts. </li>
+<li>Even if a user has no assigned Role, a blank role will be returned for them causing the <code>user.role.permissions</code> reference 
+to not error.</li>
+<li>If a user has no permissions, then the Permissions relationship will be an empty array and never run the 2nd loop.</li>
+<li>Once a Permission is in hand, "userGroup" is a singular relationship and we're forcing it to be loaded just like Role. 
+What this means is that if the result of that relationship is null, ADM will return a blank dummy object with the correct properties
+instead of null.</li>
+<li>Finally, and for the 3rd time, moderator is a singular relationship and will also return a dummy object if null, one that has a blank 
+string for the name property.</li>
+</ul>
+<p>In this way, relationships that you are forcing to load using a LoadMap should be fairly consistent and hopefully 
+not require a ton of work arounds to deal with imperfect data.</p>
 <h1 id="on-model-loadmaps">On-Model LoadMaps</h1>
 <p>There may be situations where you ALWAYS want to fetch some additional information with a model. For instance, 
 with your User models, maybe you always want to fetch their primaryRole information. When that happens you can 

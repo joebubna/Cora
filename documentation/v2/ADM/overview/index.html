@@ -1048,7 +1048,7 @@ unless we rename the jobs table ID to job_id, it will overwrite the users' ID in
 <p>Then we replace the generic findAll() call with one that will generate the modified query we need:</p>
 <pre><code>$users = $repo-&gt;findAll(function($query) {
   $query-&gt;join('jobs', [['users.job', '=', 'jobs.id']])
-        -&gt;select([&quot;users.*&quot;, &quot;job.id as 'job_id'&quot;, &quot;job.title&quot;]);
+        -&gt;select([&quot;users.*&quot;, &quot;jobs.id as 'job_id'&quot;, &quot;jobs.title&quot;]);
   return $query;
 });
 </code></pre>
@@ -1059,14 +1059,14 @@ via a LoadMap:</p>
 <pre><code>// The LoadMap we just created
 $loadMap = new \Cora\Adm\LoadMap([], [
   'job' =&gt; new \Cora\Adm\LoadMap([
-    'role_id' =&gt; 'id'
+    'job_id' =&gt; 'id'
   ])
 ]);
 
 // Just add the LoadMap as the 3rd argument to our findAll() call
 $users = $repo-&gt;findAll(function($query) {
   $query-&gt;join('jobs', [['users.job', '=', 'jobs.id']])
-        -&gt;select([&quot;users.*&quot;, &quot;job.id as 'job_id'&quot;, &quot;job.title&quot;]);
+        -&gt;select([&quot;users.*&quot;, &quot;jobs.id as 'job_id'&quot;, &quot;job.title&quot;]);
   return $query;
 }, false, $loadMap);
 </code></pre>
