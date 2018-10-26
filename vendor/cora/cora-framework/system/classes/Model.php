@@ -1374,7 +1374,7 @@ class Model
         return $this->toJson();
     }
 
-    public function toArray($inputData = '__cora__empty')
+    public function toArray($inputData = '__cora__empty', $convertModelDataIntoUtf8 = false)
     {
         // If nothing was passed in, default to this object. 
         if ($inputData === '__cora__empty') {
@@ -1388,14 +1388,14 @@ class Model
                 if ($data instanceof \Cora\Model) {
                     $object->$key = $data->toArray();
                 } else {
-                    $object->$key = $this->toArray($data);
+                    $object->$key = $this->toArray($data, $convertModelDataIntoUtf8);
                 }
             }
             foreach ($this->data as $key => $data) {
                 if ($data instanceof \Cora\Model) {
                     $object->$key = $data->toArray();
                 } else {
-                    $object->$key = $this->toArray($data);
+                    $object->$key = $this->toArray($data, $convertModelDataIntoUtf8);
                 }
             }
             return (array) $object;
@@ -1408,7 +1408,7 @@ class Model
                 if ($data instanceof \Cora\Model) {
                     $object->$key = $data->toArray();
                 } else {
-                    $object->$key = $this->toArray($data);
+                    $object->$key = $this->toArray($data, $convertModelDataIntoUtf8);
                 }
             }
             $resultArray = (array) $object;
@@ -1421,7 +1421,7 @@ class Model
             return $resultArray;
         }
 
-        return $inputData;
+        return utf8_encode($inputData);
     }
 
     public function toJson($inputData = false)
@@ -1431,7 +1431,7 @@ class Model
             $inputData = $this;
         }
         
-        return json_encode($this->toArray($inputData));
+        return json_encode($this->toArray($inputData, true));
     }
 
 
