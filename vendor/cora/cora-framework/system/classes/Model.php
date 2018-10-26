@@ -959,7 +959,7 @@ class Model
       // The objects that are related aren't the same class of object...
       // (or they are, but relThis and relThat definitions were setup)
       if ($relThis != $relThat) {
-        $query->select($relThat.' as '.$relatedObj->getPrimaryKey())
+        $query->select($relTable.'.'.$relThat.' as '.$relatedObj->getPrimaryKey())
               ->where($relThis, $this->$objectId);
 
         // Optionally JOIN data if on same connection
@@ -980,7 +980,7 @@ class Model
       //            Bob's ID     Bob's relative's ID
       else {
         // Fetch related objects where the subject is the left side reference.
-        $query->select($relThat.'2'.' as '.$relatedObj->getPrimaryKey())
+        $query->select($relTable.'.'.$relThat.'2'.' as '.$relatedObj->getPrimaryKey())
               ->where($relThis, $this->$objectId);
 
         // Optionally JOIN data if on same connection
@@ -992,7 +992,7 @@ class Model
         $leftSet = $repo->findAll($query, false, $loadMap);
 
         // Fetch related objects where the subject is the right side reference.
-        $query->select($relThat.' as '.$relatedObj->getPrimaryKey())
+        $query->select($relTable.'.'.$relThat.' as '.$relatedObj->getPrimaryKey())
               ->where($relThis.'2', $this->$objectId);
 
         // Optionally JOIN data if on same connection
