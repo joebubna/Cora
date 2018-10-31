@@ -1374,7 +1374,7 @@ class Model
         return $this->toJson();
     }
 
-    public function toArray($inputData = '__cora__empty', $convertModelDataIntoUtf8 = false)
+    public function toArray($inputData = '__cora__empty')
     {
         // If nothing was passed in, default to this object. 
         if ($inputData === '__cora__empty') {
@@ -1388,27 +1388,27 @@ class Model
                 if ($data instanceof \Cora\Model) {
                     $object->$key = $data->toArray();
                 } else {
-                    $object->$key = $this->toArray($data, $convertModelDataIntoUtf8);
+                    $object->$key = $this->toArray($data);
                 }
             }
             foreach ($this->data as $key => $data) {
                 if ($data instanceof \Cora\Model) {
                     $object->$key = $data->toArray();
                 } else {
-                    $object->$key = $this->toArray($data, $convertModelDataIntoUtf8);
+                    $object->$key = $this->toArray($data);
                 }
             }
             return (array) $object;
         }
 
         // If input is iterable
-        else if (is_array($inputData) || $inputData instanceof \Traversable) {
+        else if (is_array($inputData) || $inputData instanceof \Traversable || $inputData instanceof \DateTime) {
             $object = new \stdClass;
             foreach ($inputData as $key => $data) {
                 if ($data instanceof \Cora\Model) {
                     $object->$key = $data->toArray();
                 } else {
-                    $object->$key = $this->toArray($data, $convertModelDataIntoUtf8);
+                    $object->$key = $this->toArray($data);
                 }
             }
             $resultArray = (array) $object;
