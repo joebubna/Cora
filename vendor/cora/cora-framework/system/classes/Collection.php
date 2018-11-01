@@ -801,7 +801,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
 
       foreach($collection as $prop => $result) {
         // Prep data to pass to closure
-        $funcArgs = is_array($data) ? $data : [];
+        $funcArgs = is_array($data) ? $data : [$data];
         array_unshift($funcArgs, $prop);
         array_unshift($funcArgs, $result);
         
@@ -825,7 +825,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
 
       foreach($collection as $prop => $result) {
         // Prep data to pass to closure
-        $funcArgs = is_array($data) ? $data : [];
+        $funcArgs = is_array($data) ? $data : [$data];
         array_unshift($funcArgs, $prop);
         array_unshift($funcArgs, $result);
         
