@@ -10,8 +10,8 @@ class Autoload extends Framework
         // Register autoloader functions. Are called when an unloaded class is invoked.
         // These should only end up getting called if Composer doesn't work first.
         spl_autoload_register(array($this, 'autoLoader'));
-        spl_autoload_register(array($this, 'coraLoader'));
-        spl_autoload_register(array($this, 'coraLegacyLoader'));
+        //spl_autoload_register(array($this, 'coraLoader'));
+        //spl_autoload_register(array($this, 'coraLegacyLoader'));
     }
     
     /************************************************
@@ -41,7 +41,7 @@ class Autoload extends Framework
                     $this->getPathBackslash($className, true) .
                     $this->getNameBackslash($className) .
                     '.php';
-        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
         if (file_exists($fullPath)) {
             include($fullPath);
         }
@@ -53,7 +53,7 @@ class Autoload extends Framework
                     //$this->getPathBackslash($className) .
                     $this->getNameBackslash($className) .
                     '.php';
-        //echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
+        echo 'Trying to load ', $className, '<br> &nbsp;&nbsp;&nbsp; from file ', $fullPath, "<br> &nbsp;&nbsp;&nbsp; via ", __METHOD__, "<br>";
         if (file_exists($fullPath)) {
             include($fullPath);
         }

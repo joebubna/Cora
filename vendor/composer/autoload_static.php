@@ -28,6 +28,10 @@ class ComposerStaticInit823b0774f7bb7712fc6900b064003fb9
             'Doctrine\\Instantiator\\' => 22,
             'DeepCopy\\' => 9,
         ),
+        'C' => 
+        array (
+            'Cora\\' => 5,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -52,6 +56,10 @@ class ComposerStaticInit823b0774f7bb7712fc6900b064003fb9
         'DeepCopy\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
+        ),
+        'Cora\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cora/cora-framework/system/classes',
         ),
     );
 
