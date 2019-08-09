@@ -10,5 +10,9 @@ include 'vendor/autoload.php';
 // Load Cora core files.
 include 'vendor/cora/cora-framework/core.php';
 
+// Grab config options to pass in to the autoloader
+$al_config = include('config/autoload.php');
+
 // This register's Cora's autoload functions.
-$autoload = new \Cora\Autoload();
+$autoload = new \Cora\Autoload($al_config);
+$autoload->register();

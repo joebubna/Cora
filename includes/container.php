@@ -19,6 +19,17 @@ $container->singleton('singleUser', function($c, $name) {
 
 //$container->singleUser = new \Models\User('BobbyJones@gmail.com');
 
+$container->{\Classes\User::class} = function($c, $user_id) {
+  return new \Classes\User($user_id);
+};
+
+// $container->{\Classes\Users::class} = function($c) {
+//   return new \Classes\Users(
+//     $c->{\Cora\Database::class},
+//     $c->getFactory(\Classes\User::class)
+//   );
+// };
+
 
 
 /*******************************************************************
@@ -153,6 +164,10 @@ $container->db = function($c, $connection = false, $existingConnection = false) 
 
 $container->database = function($c) {
     return new \Cora\Database();
+};
+
+$container->{\Cora\Database::class} = function($c) {
+  return new \Cora\Database();
 };
 
 $container->dbBuilder = function($c) {
