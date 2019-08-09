@@ -1,0 +1,23 @@
+version: '3.3'
+services:
+
+  nginx:
+    image: evild/alpine-nginx:1.9.15-openssl
+    volumes:
+      - ./app:/var/www/app/:ro
+      - ./nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - php
+
+
+  php:
+    image: joebubna/php-7.1.3
+    restart: always
+    volumes:
+      - ./app:/var/www/app
+    ports:
+      - 9000:9000

@@ -11,5 +11,5 @@ return array(
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
-    'Cora\\' => array($vendorDir . '/cora/cora-framework/system/classes'),
+    'Cora\\' => array($vendorDir . '/cora/autoload/app', $vendorDir . '/cora/cora-framework/system/classes'),
 );

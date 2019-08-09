@@ -13,6 +13,10 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "phpmailer/phpmailer": "~5.2"
+        "phpmailer/phpmailer": "~5.2",
+        "cora/autoload": "*",
+    },
+    "autoload": {
+      "psr-4": {"Cora\\": "system/classes/"}
     }
 }

@@ -1,0 +1,21 @@
+{
+  "name": "cora/autoload",
+  "description": "Easy autoloading of PHP class files",
+  "keywords": ["autoload", "autoloading", "cora", "demo", "php"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Josiah Bubna"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0",
+    "phpunit/phpunit": "7.*"
+  },
+  "config": {
+    "vendor-dir": "app/vendor"
+  },
+  "autoload": {
+    "psr-4": {"Cora\\": "app/"}
+  }
+}
