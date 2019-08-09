@@ -3,6 +3,19 @@ namespace Controllers;
 
 class Testing extends \Cora\App\Controller 
 {
+  public function di1()
+  {
+    //echo 'Init load<br>';
+    //$name = \Classes\Users::class;
+    //echo $name."<br>";
+    //echo 'Named fetched<br>';
+    //echo method_exists('\\'.\Classes\Users::class, 'di_config');
+    $users = $this->app->{\Classes\Users::class}('Regular');
+    $user = $users->fetch(3);
+    echo $user->user_id."<br>";
+    echo $users->type;
+  }
+  
     public function abstractSaving()
     {
         // Setup

@@ -141,6 +141,12 @@ $config['modelsPrefix'] = 'model.';
 $config['modelsPostfix'] = '';
 
 /**
+ *  Class file prefix / postfix.
+ */
+$config['classesPrefix'] = 'class.';
+$config['classesPostfix'] = '';
+
+/**
  *  View file prefix / postfix.
  */
 $config['viewsPrefix'] = 'view.';
