@@ -1,5 +1,10 @@
 # Cora
 
+# Important!!!
+I don't recommend using the framework at this time. You're better off using something with an existing large community like Laravel. I've started the process of segregating out some of the more useful features in Cora for use by people apart from the framework, but I still need to update a lot of the documentation. 
+
+If I get this framework in a state where the documentation is up-to-date and that I feel would be worth using over other options, then I will remove this warning and advertise it. Until then I recommend you avoid it. - Josiah
+
 ## Documentation
 The goal of Cora's documentation is to provide developers of all skill levels the knowledge they need to make amazing applications. 
 
