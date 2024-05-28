@@ -5,12 +5,6 @@ error_reporting(E_ALL);
 
 // Include Composer autoload
 $composerAuto = include('../vendor/autoload.php');
-$results = $composerAuto->findFile("\Cora");
-
-print "Found file for class at: $results";
-
-// $composerAuto->loadClass("\Cora");
-// print_r($composerAuto);
 
 // Load Cora framework.
 require('../vendor/cora/cora-framework/core.php');

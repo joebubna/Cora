@@ -646,7 +646,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param op The operator used in comparision. 
      *  @return A Container with the matching resources.
      */
-    public function where($key = false, $desiredValue, $op = "==")
+    public function where($key, $desiredValue, $op = "==")
     {
         $collection = $this->getIterator();
         $subset = new Collection();
@@ -1019,11 +1019,22 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
     }
 
 
+    public function __serialize()
+    {
+        return $this->serialize();
+    }
+
+
     public function unserialize($data)
     {
         return unserialize($data);
     }
 
+
+    public function __unserialize($data)
+    {
+        return $this->unserialize($data);
+    }
 
 
     ////////////////////////////////////////////////////////////////////////
