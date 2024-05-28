@@ -1,0 +1,22 @@
+{
+    "name": "cora/cora-framework",
+    "description": "A framework for easily building MVC style web applications.",
+    "keywords": ["framework", "cora"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Josiah Bubna"
+        },
+        {
+            "name": "Aaron Rabideau"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "phpmailer/phpmailer": "~5.2",
+        "cora/autoload": "*"
+    },
+    "autoload": {
+      "psr-4": {"Cora\\": "system/classes/"}
+    }
+}
