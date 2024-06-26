@@ -30,6 +30,7 @@ class Database
     protected $indexes;
     protected $query;
     protected $queryDisplay;
+    protected $fields;
 
     // For overridding with a custom query
     protected $customQuery;

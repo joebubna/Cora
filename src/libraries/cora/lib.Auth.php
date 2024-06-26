@@ -8,6 +8,7 @@ class Auth
     protected $userId;
     protected $secureLogin;
     protected $authField;
+    protected $container;
 
     // Dependencies
     protected $users;

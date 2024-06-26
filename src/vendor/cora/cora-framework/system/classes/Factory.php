@@ -8,6 +8,7 @@ class Factory
 	protected $type;
   protected $db;
   protected $dbConfig;
+  protected $namespaceType;
 
   public function __construct($type, $db = false, $namespaceType = 'Models\\')
   {

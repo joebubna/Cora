@@ -10,6 +10,8 @@ class Repository
     protected $model;           // An instance of the model this Repository is for.
     protected $saveStarted;
     protected $savedAdaptors;
+    protected $lockError;
+    protected $dbError;
 
     public function __construct(Gateway $gateway, Factory $factory, $dummyModel)
     {
