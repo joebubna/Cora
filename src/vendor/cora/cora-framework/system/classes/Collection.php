@@ -522,7 +522,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param recount If true, then recounts the items rather than returning the stored count.
      *  @return The number of resources stored in this Container.
      */
-    public function count($includeParents = false, $recount = false)
+    public function count($includeParents = false, $recount = false): int
     {
         if ($recount) {
             return $this->getIterator()->count();
@@ -943,7 +943,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *
      *  @return ArrayIterator
      */
-    public function getIterator() {
+    public function getIterator(): \Traversable {
         if (!$this->content || $this->contentModified) {
             $this->generateContent();
         }
@@ -962,7 +962,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param $offset Int | String
      *  @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         if ($this->get($offset)) {
             return true;
@@ -977,7 +977,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param $offset Int | String
      *  @return mixed
      */
-    public function offsetGet($offset) 
+    public function offsetGet($offset): Mixed
     {
         return $this->$offset;
     }
@@ -990,7 +990,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param $value Mixed
      *  @return Void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): Void
     {
         $this->$offset = $value;
     }
@@ -1002,7 +1002,7 @@ class Collection implements \Serializable, \IteratorAggregate, \Countable, \Arra
      *  @param $offset Int | String
      *  @return Void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): Void
     {
         $this->delete($offset);
     }

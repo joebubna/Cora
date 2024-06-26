@@ -5,6 +5,9 @@ class Controller {
 
     protected $load;
     protected $data;
+    protected $site;
+    protected $input;
+    protected $config;
 
     public function __construct($container = false)
     {

@@ -4,8 +4,14 @@ namespace Cora\App;
 class Controller extends \Cora\Controller
 {   
     protected $db;
+    protected $app;
+    protected $event;
+    protected $session;
+    protected $cookie;
+    protected $redirect;
+    protected $auth;
     
-    public function __construct($container = false)
+    public function __construct($container = null)
     {
         parent::__construct($container); 
         
