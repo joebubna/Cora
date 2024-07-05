@@ -5,6 +5,7 @@ class Users extends \Cora\App\Controller
 {
     protected $repo;
     protected $db;
+    public $Validate;
 
     public function __construct($container = false)
     {

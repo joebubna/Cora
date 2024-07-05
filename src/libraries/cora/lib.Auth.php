@@ -20,8 +20,13 @@ class Auth
     protected $redirect;
 
 
-    public function __construct($userId = false, $secureLogin = false, $authField = 'username', $repoUser, $repoRole, $event, $session, $cookie, $redirect, $container)
+    public function __construct($userId, $secureLogin, $authField, $repoUser, $repoRole, $event, $session, $cookie, $redirect, $container)
     {
+        // Depreciation fix for PHP8
+        if ($userId === null) { $userId = false; }
+        if ($secureLogin === null) { $secureLogin = false; }
+        if ($authField === null) { $authField = 'username'; }
+        
         // Repository Dependencies
         $this->users = $repoUser;
         $this->roles = $repoRole;

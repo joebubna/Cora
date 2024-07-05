@@ -15,7 +15,7 @@ class Route extends Framework
     protected $method;              // STRING
     protected $methodArgs;          // ARRAY    - If set, this will override any arguments passed in through URL.
     protected $httpMethod;          // STRING
-    protected $collectionIDgiven;   // BOOL     - If the URL is of form /articles/107 this is set to true.
+    protected $collectionIDGiven;   // BOOL     - If the URL is of form /articles/107 this is set to true.
     protected $collectionID;        // INT      - The ID if a collection ID is specified.
 
     protected $paths;               // ARRAY    - Holds custom defined paths.
