@@ -548,9 +548,9 @@ class Db_MySQL extends Database
     protected function calculateCREATE()
     {
         $this->query .= 'CREATE TABLE IF NOT EXISTS ';
-        $this->query .= $this->create.' (';
+        $this->query .= '`'.$this->create.'` (';
         $this->queryStringFromArray('fields', '', ', ', false, true);
-        $this->primaryKeyStringFromArray('primaryKeys', ', CONSTRAINT ');
+        $this->primaryKeyStringFromArray('primaryKeys', ', ');
         $this->foreignKeyStringFromArray('foreignKeys', ', CONSTRAINT ');
         $this->indexStringFromArray('indexes', ', INDEX ');
         $this->query .= ')';
@@ -585,7 +585,10 @@ class Db_MySQL extends Database
     
     /**
      *  For outputting a string of the following form from the 'primaryKeys' array in Database.
-     *  CONSTRAINT pk_id_name PRIMARY KEY (id, name)
+     *  PRIMARY KEY (id, name)
+     * 
+     *  NOTE: This used to output "CONSTRAINT pk_id_name PRIMARY KEY (id, name)" but at some point MYSQL made
+     *  it so you can't name the primary key.
      */
     protected function primaryKeyStringFromArray($dataMember, $opening, $sep = ', ')
     {
@@ -605,7 +608,8 @@ class Db_MySQL extends Database
             }
         }
         $query .= ')';
-        $this->query .= $constraintName.' '.$query;
+        //$this->query .= $constraintName.' '.$query;
+        $this->query .= $query;
     }
     
     

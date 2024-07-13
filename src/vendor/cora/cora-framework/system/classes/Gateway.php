@@ -765,7 +765,11 @@ class Gateway
 
     public static function is_serialized($value)
     {
-        $unserialized = @unserialize($value);
+        $unserialized = false;
+        if (is_string($value)) {
+            $unserialized = @unserialize($value);
+        }
+        
         if ($value === 'b:0;' || $unserialized !== false) {
             return true;
         }

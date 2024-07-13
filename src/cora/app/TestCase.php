@@ -6,7 +6,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected $app;
     protected static $sapp;
     
-    protected function setUp()
+    protected function setUp(): void
     {
         // Load test container.
         require('includes/container.php');
@@ -111,7 +111,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     }
     
     
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         // Load test container.
         require('includes/container.php');
@@ -126,7 +126,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     }
     
     
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         // // Load test container.
         // require('includes/container.php');

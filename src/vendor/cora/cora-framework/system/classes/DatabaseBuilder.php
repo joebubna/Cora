@@ -282,11 +282,11 @@ class DatabaseBuilder extends Framework
     protected function getClassName($fileName)
     {
         // Get rid of prefix
-        $namePiece = @explode($this->config['modelsPrefix'], $fileName);
+        $namePiece = @explode($this->config['modelsPrefix'] ?: ' ', $fileName);
         $name = isset($namePiece[1]) ? $namePiece[1] : $fileName;
         
         // Get rid of postfix
-        $namePiece = @explode($this->config['modelsPostfix'], $name);
+        $namePiece = @explode($this->config['modelsPostfix'] ?: ' ', $name);
         $name = isset($namePiece[1]) ? $namePiece[0] : $name;
         
         // Get rid of .php

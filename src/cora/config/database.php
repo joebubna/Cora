@@ -38,11 +38,4 @@ $dbConfig['connections'] = [
         'dbUser'    => 'root',
         'dbPass'    => 'root'
     ],
-    'EnterConnectionNameHere' => [
-        'adaptor'   => 'MySQL',
-        'host'      => 'db',
-        'dbName'    => 'cora3',
-        'dbUser'    => 'root',
-        'dbPass'    => 'root'
-    ]
 ];

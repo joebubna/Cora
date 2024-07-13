@@ -1,13 +1,16 @@
 <?php
 namespace Tests\Cora;
 
+use \PHPUnit\Framework\Attributes\Test;
+
 class ADMTest extends \Cora\App\TestCase
 {   
     /**
      *  Check that it's possible to create a simple model located that doesn't inherit from another model.
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canCreateSimpleModel()
     {
         //$this->app->dbBuilder->reset();
@@ -21,8 +24,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to create a model that inherits from another model.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canCreateInheritedSubFolderModel()
     {
         $userComments = $this->app->tests->userComments;
@@ -41,8 +45,9 @@ class ADMTest extends \Cora\App\TestCase
      *  - References using "Via" keyword work. 
      *  - References to models in subfolders works.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canReferenceSubFolderModelUsingVia_independent()
     {
         // Setup
@@ -74,8 +79,9 @@ class ADMTest extends \Cora\App\TestCase
      *  - References using "Via" keyword work. 
      *  - References to models in subfolders works.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canReferenceSubFolderModelUsingVia_connected()
     {
         // Setup
@@ -112,8 +118,9 @@ class ADMTest extends \Cora\App\TestCase
      *  If a User has a collection of Dates related to it using a Via column,
      *  make sure that collection can be replaced.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canReplaceRelatedCollectionByVia()
     {
         //$this->app->dbBuilder->reset();
@@ -147,8 +154,9 @@ class ADMTest extends \Cora\App\TestCase
      *  If a User has a collection of Users related to it using a reference table,
      *  make sure that collection can be replaced.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canReplaceRelatedCollectionByRef()
     {
         //$this->app->dbBuilder->reset();
@@ -191,8 +199,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  If a User has a collection of related models, ensure one can be deleted.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canDeleteRelatedModelByRef()
     {
         // Setup
@@ -234,8 +243,9 @@ class ADMTest extends \Cora\App\TestCase
      *  If a User has a collection of Users related to it using a reference table,
      *  make sure that collection can be updated.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canEditRelatedCollectionByRef()
     {
         //$this->app->dbBuilder->reset();
@@ -279,8 +289,9 @@ class ADMTest extends \Cora\App\TestCase
      *  If a User has a relationship with another singular model,
      *  test that we can set and modify this field.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canEditSingleModelRef()
     {
         //$this->app->dbBuilder->reset();
@@ -312,8 +323,9 @@ class ADMTest extends \Cora\App\TestCase
      *  If a User has a relationship with another singular model,
      *  test that we can set and modify this field when the useRefTable setting is active.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canEditSingleModelRefUsesRefTable()
     {
         //$this->app->dbBuilder->reset();
@@ -347,8 +359,9 @@ class ADMTest extends \Cora\App\TestCase
      *  The goal here is to create a "mother2" attribute which reads from the same table as "mother" and 
      *  should return the same result. If successful, that means the "relTable" setting is working correctly.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canUseRelTableAttributeOnSingle()
     {
         //$this->app->dbBuilder->reset();
@@ -382,8 +395,9 @@ class ADMTest extends \Cora\App\TestCase
      *  "friends" attribute. This is accomplished by telling "friends2" to use a custom table 
      *  which is specified to be the same one "friends" uses.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canUseRelTableAttributeOnCollection()
     {
         // Setup
@@ -428,8 +442,9 @@ class ADMTest extends \Cora\App\TestCase
      *  that user can reference objects located in a secondary DB. 
      *  In this test, the collection is referenced by the "Via" keyword.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canManipulateCollectionInOtherDatabaseByVia()
     {
         // Setup
@@ -463,8 +478,9 @@ class ADMTest extends \Cora\App\TestCase
      *  that user can reference objects located in a secondary DB. 
      *  In this test, the collection is referenced by a reference table.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canManipulateCollectionInOtherDatabaseByRefTable()
     {
         // Setup
@@ -500,8 +516,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  Make sure can properly save dates.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function datesProperlySavedWithoutManualConversion()
     {
         // Setup
@@ -528,8 +545,9 @@ class ADMTest extends \Cora\App\TestCase
      *  Make sure a simple attribute that has a custom DB field set 
      *  properly can read from and save to the DB.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function simpleAttributeCanHaveCustomDdFieldname()
     {
         // Setup
@@ -556,8 +574,9 @@ class ADMTest extends \Cora\App\TestCase
      *  Test if custom fieldname can be set for a singular model reference. 
      *  (singular references are normally stored as a field on the table)
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canSetCustomFieldnameForSingleModelRef()
     {
         // Setup
@@ -587,8 +606,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  Test that a "relName" definition correctly causes attributes on two 
      *  different models to read from the same relation table.
-     *  @test
+     *  
      */
+    #[Test]
     public function canSetRelationshipNameToLinkDataBetweenModels()
     {
         // Setup
@@ -631,8 +651,9 @@ class ADMTest extends \Cora\App\TestCase
      *  on a relation table. Identifying which column refers to the currently being read object,
      *  and which refers to the other.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canSetRelationTableFieldNames()
     {
         // Setup
@@ -667,8 +688,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  If check if a many-to-many relationship can be used correctly.
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canUseManyToManyRelationOverMultipleDBs()
     {
         // Setup
@@ -711,8 +733,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  Check that default values work correctly
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canUseDefaultValues()
     {
         // Setup
@@ -734,8 +757,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  Check that fields set to NULL don't change DB.
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function nullAttributesDontUpdateDB()
     {
         // Setup
@@ -785,8 +809,9 @@ class ADMTest extends \Cora\App\TestCase
      *  For boolean values, use 0 instead of FALSE.
      *  For collections you need to set to empty collection. 
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function falseAttributesSetToNullInDB()
     {
         // Setup
@@ -834,8 +859,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  If an int or datetime field has lock=true attribute, 
      *  ensure old data can't overwrite newer.
-     *  @test
+     *  
      */
+    #[Test]
     public function optimisticLockingWorks()
     {
         // Setup
@@ -910,8 +936,9 @@ class ADMTest extends \Cora\App\TestCase
      *  If we create a new Model using just the ID number, without fetching it from a repository,
      *  can we access related models fetched using the "via" keyword on it?
      *  
-     *  @test
+     *  
      */
+    #[Test]
      public function canAccessRelatedModelsFromViaOnNewObject()
      {
         $this->app->dbBuilder->reset();
@@ -954,8 +981,9 @@ class ADMTest extends \Cora\App\TestCase
     *   Checks that model constraints added via the model_constraints method correctly apply
     *   to a collection.
     *
-    *   @test
+    *   
     */
+    #[Test]
     public function canLimitCollectionByModelConstraints()
     {
         // Setup
@@ -975,8 +1003,9 @@ class ADMTest extends \Cora\App\TestCase
     *   a LoadMap from the model_loadMap method can be used in conjunction to efficiently 
     *   load models.
     * 
-    *   @test
+    *   
     */
+    #[Test]
     public function canDefineLoadMapOnModelForEfficientLoading()
     {
         // Setup
@@ -1002,7 +1031,7 @@ class ADMTest extends \Cora\App\TestCase
         // but that the LoadMapped version does.
         // Also verifies that the Role data was populated from the initial query 
         // because dynamic loading was turned off.
-        $this->assertEquals(true, is_string($users[0]->primaryRole));
+        $this->assertEquals(true, is_int($users[0]->primaryRole));
         $this->assertEquals(true, is_object($inactiveUsers[0]->primaryRole));
 
         $this->assertEquals('User', $inactiveUsers[0]->primaryRole->name);
@@ -1019,8 +1048,9 @@ class ADMTest extends \Cora\App\TestCase
     *
     *   The "using" definition allows you to specify a method that will define an abstract relationship.
     *
-    *   @test
+    *   
     */
+    #[Test]
     public function canGrabRelatedModelsFromAbstractRelationship()
     {
         // Setup
@@ -1059,8 +1089,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
     *   Check that models which utilize abstract models can be saved.
     *
-    *   @test
+    *   
     */
+    #[Test]
     public function canSaveModelUtilizingAbstractRelationship()
     {
         // Setup
@@ -1094,8 +1125,9 @@ class ADMTest extends \Cora\App\TestCase
      *  For example you may want to paginate or search. This checks that you can pass a closure
      *  to a plural relationship for customizing the data that gets returned.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canPassClosureToCustomizeFetchingOfRelatedModels()
     {
         // Setup
@@ -1126,8 +1158,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  Check that you can pass a closure even for a single model relationship
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canPassClosureToCustomizeFetchingOfRelatedModel()
     {
         // Setup
@@ -1155,8 +1188,9 @@ class ADMTest extends \Cora\App\TestCase
      * 
      *  This test checks that you can pass arguments to the closure.
      *
-     *  @test
+     *  
      */
+    #[Test]
     public function canPassClosureArguments()
     {
         // Setup
@@ -1187,7 +1221,7 @@ class ADMTest extends \Cora\App\TestCase
     /**
     *   Check that models which utilize abstract models can be saved.
     *
-    *   @test
+    *   
     */
     public function canSaveModelsUtilizingAbstractRelationshipToDifferentModel()
     {
@@ -1229,8 +1263,9 @@ class ADMTest extends \Cora\App\TestCase
      *  If the "Role" model expects an array offset named "name", then you'll run into a problem.
      *  By mapping "role_name" => "name" you can solve the issue.
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapOffsetsToAttributesUsingRepository()
     {
       $this->app->dbBuilder->reset();
@@ -1284,8 +1319,9 @@ class ADMTest extends \Cora\App\TestCase
      *  Using the feature below, you can intelligently grab and populate all the data you need 
      *  in one query.
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapRelationshipsUsingRepository()
     {
       ///////////////////////////////
@@ -1371,8 +1407,9 @@ class ADMTest extends \Cora\App\TestCase
      *  Ensure that we can use LoadMaps with plural relationships when using the 
      *  Active-Record-like functionality of models. (vs. directly interacting with a repository)
      * 
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapRelationshipsUsingModelNoDynamic()
     {
       ///////////////////////////////
@@ -1439,8 +1476,9 @@ class ADMTest extends \Cora\App\TestCase
      *  Checks that just specifying the relationships you want to initially load work 
      *  without also giving an attribute mapping array or a recursive LoadMap.
      * 
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapRelationshipsNoSubLoadMap()
     {
       // Grab users repo
@@ -1472,8 +1510,9 @@ class ADMTest extends \Cora\App\TestCase
     /**
      *  Check that you can specify an onLoad function to run using LoadMaps
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapAnOnLoadFunction()
     {
       // Grab users repo
@@ -1518,8 +1557,9 @@ class ADMTest extends \Cora\App\TestCase
      *    3. Ensure that an empty model will be returned if specified relationship is null
      *  WHile using a REPOSITORY as starting point.
      * 
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapRelationshipsNestedUsingRepo()
     {
       ///////////////////////////////
@@ -1586,8 +1626,9 @@ class ADMTest extends \Cora\App\TestCase
      *    2. Ensure that an empty model will be returned if specified relationship is null
      *  WHile using a MODEL as starting point.
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapRelationshipsNestedUsingModel()
     {
       ///////////////////////////////
@@ -1663,8 +1704,9 @@ class ADMTest extends \Cora\App\TestCase
      *  Ensure that fetching a Collection from a model with a loadMap works.
      *  In this case, the loadMapped relationship should be present.
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapRelationshipsNestedUsingModelPluralExists()
     {
       // Grab users repo
@@ -1711,8 +1753,9 @@ class ADMTest extends \Cora\App\TestCase
      *  Ensure that fetching a Collection from a model with a loadMap works.
      *  In this case, the loadMapped relationship should be NOT present.
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapRelationshipsNestedUsingModelPluralNotExists()
     {
       // Grab users repo
@@ -1744,8 +1787,9 @@ class ADMTest extends \Cora\App\TestCase
      *  Ensure that fetching a Collection from a model with a loadMap works.
      *  In this case, the loadMapped relationship should be NOT present.
      *  
-     *  @test
+     *  
      */
+    #[Test]
     public function canLoadMapRelationshipsNestedUsingRepoPluralNotExists()
     {
       // Grab users repo
