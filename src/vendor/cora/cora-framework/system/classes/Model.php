@@ -10,6 +10,7 @@ class Model
     protected $model_hydrating = false;
     protected $model_loadMapsEnabled = true;
     public $data;
+    public $dynamic_prop = []; // New field to support dynamic property assignment which is depreciated in PHP8.
     public $model_db = false;
     public $model_dynamicOff;
 
@@ -324,7 +325,13 @@ class Model
 
         // Otherwise if a plain model attribute is defined.
         else {
-            $this->{$name} = $value;
+            //$this->{$name} = $value;
+            if (property_exists($this, $name)) {
+              $this->{$name} = $value;
+            } 
+            else {
+              $this->dynamic_prop[$name] = $value;
+            }
         }
 
         // Lifecycle callback
@@ -768,7 +775,11 @@ class Model
       $this->beforeGet($name); // Lifecycle callback
       if (isset($this->{$name})) {
         $returnValue = $this->{$name};
-      } else {
+      } 
+      else if (isset($this->dynamic_prop[$name])) {
+        $returnValue = $this->dynamic_prop[$name];
+      }
+      else {
         $returnValue = null;
       }
       $this->afterGet($name, $returnValue); // Lifecycle callback

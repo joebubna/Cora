@@ -157,7 +157,7 @@ class Db_MySQL extends Database
     // Clean user provided input to make it safe for use in a database query.
     public function clean($value)
     {
-        return $this->mysqli->real_escape_string($value);
+        return $value ? $this->mysqli->real_escape_string($value) : $value;
     }
     
     public function resetToLastMinusLimit()
