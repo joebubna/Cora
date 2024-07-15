@@ -1,13 +1,15 @@
 <?php
 namespace Tests\Cora;
 
+use \PHPUnit\Framework\Attributes\Test;
+
 class ContainerTest extends \Cora\App\TestCase
 {   
     /**
      *  Check that it's possible to add and retrieve a primitive using Property Name
      *
-     *  @test
      */
+    #[Test]
     public function canStorePrimitivesUsingPropertyName()
     {
         $collection = new \Cora\Collection();
@@ -27,8 +29,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to add and retrieve a primitive using methods.
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canStorePrimitivesUsingOffsetMethod()
     {
         $collection = new \Cora\Collection();
@@ -48,8 +51,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to add and retrieve a primitive using array syntax
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canStorePrimitivesUsingArrayOffset()
     {
         $collection = new \Cora\Collection();
@@ -69,8 +73,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to remove a primitive using Property Name
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canRemovePrimitiveUsingPropertyName()
     {
         $collection = new \Cora\Collection();
@@ -95,8 +100,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to remove a primitive using offset number.
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canRemovePrimitiveUsingOffset()
     {
         $collection = new \Cora\Collection();
@@ -121,8 +127,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to return a subset of results when dealing with objects.
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canReturnObjectCollectionSubset()
     {
         $collection = new \Cora\Collection([
@@ -143,8 +150,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to set the key/property you want to be accessor
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canSetAccessKeyForObject()
     {
         $collection = new \Cora\Collection([
@@ -166,8 +174,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to set the key/property you want to be accessor
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canSetAccessKeyForArray()
     {
         $collection = new \Cora\Collection([
@@ -189,8 +198,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that collection can be sorted.
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canSortCollection()
     {
         $collection = new \Cora\Collection([
@@ -217,8 +227,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to get the max value from collection.
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canGetMaxValue()
     {
         $collection = new \Cora\Collection([
@@ -237,8 +248,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to get the min value from collection.
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canGetMinValue()
     {
         $collection = new \Cora\Collection([
@@ -257,8 +269,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to map the collection.
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canMap()
     {
         $collection = new \Cora\Collection([
@@ -284,8 +297,9 @@ class ContainerTest extends \Cora\App\TestCase
     /**
      *  Check that it's possible to map the collection.
      *
-     *  @test
+     *
      */
+    #[Test]
     public function canFilter()
     {
         $collection = new \Cora\Collection([
