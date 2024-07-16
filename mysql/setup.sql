@@ -1,0 +1,7 @@
+# Create databases
+CREATE DATABASE IF NOT EXISTS `cora`;
+CREATE DATABASE IF NOT EXISTS `cora2`;
+CREATE DATABASE IF NOT EXISTS `cora_test`;
+
+# Other stuff
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
