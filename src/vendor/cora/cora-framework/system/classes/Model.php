@@ -358,8 +358,14 @@ class Model
       if (isset($this->model_attributes[$name])) {
         $def = $this->model_attributes[$name];
 
-        // Get query object that we can use
-        $query = $this->_getQueryObjectForRelation($name);
+        // Get query object that we can use.
+        // If an instance of a database object was passed in, use what was given.
+        // Otherwise get a matching database object.
+        if (isset($arguments[0]) && $arguments[0] instanceof Database) {
+          $query = $arguments[0];
+        } else {
+          $query = $this->_getQueryObjectForRelation($name);
+        }
         
         // Build arguments array for closure as necessary
         $funcArgs = [];
@@ -369,7 +375,10 @@ class Model
         array_unshift($funcArgs, $query);
         
         // Call the provided function with the query and arguments
-        $query = call_user_func_array($arguments[0], $funcArgs);
+        // IF a closure was passed in.
+        if (is_callable($arguments[0])) {
+          $query = call_user_func_array($arguments[0], $funcArgs);
+        }
 
         // Determine if a LoadMap was passed in
         $loadMap = isset($arguments[2]) ? $arguments[2] : false;
