@@ -367,4 +367,14 @@ class Testing extends \Cora\App\Controller
 
       echo 'User parent = Captain : '.('Captain' == $user->parent->firstName);
     }
+
+
+    public function test9()
+    {
+      $comments = $this->app->repository('Tests\Users\commentUser');
+      $c = $comments->find(5);
+      echo $c->text;
+      echo "\r\n\r\n<br><br>";
+      echo $c->name;
+    }
 }

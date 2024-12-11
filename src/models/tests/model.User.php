@@ -5,6 +5,7 @@ namespace Models\Tests;
 */
 class User extends \Cora\App\Model {
 
+    public $model_connection = 'MySQLTest';
     public $model_attributes = [
         'id' => [
             'type'          => 'int',

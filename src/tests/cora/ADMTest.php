@@ -1750,6 +1750,51 @@ class ADMTest extends \Cora\App\TestCase
 
 
     /**
+     *  Ensure that "model_extends" attribute works on models.
+     *  If trying to fetch a data attribute that does NOT exist on the model, but the model "extends"
+     *  (not using PHP extension, but rather an ADM feature) a diff model, check for that attribute on the
+     *  parent model.
+     */
+    #[Test]
+    public function canExtendModelWithAdmFeature()
+    {
+      // Grab users repo
+      $users = $this->app->tests->users;
+      $user = new \Models\Tests\User('Adam');
+      $user->comments = $this->app->container(false, [
+        new \Models\Tests\Users\Comment($user, 'Extend Comment 1'),
+        new \Models\Tests\Users\Comment($user, 'Extend Comment 2'),
+        new \Models\Tests\Users\Comment($user, 'Extend Comment 3')
+      ]);
+      $users->save($user);
+
+      // Fetch new
+      $user = $users->find($user->id);
+
+      // Ensure we have the right amount of comments
+      $this->assertEquals(3, $user->comments->count());
+      $this->assertEquals('Extend Comment 2', $user->comments[1]->text);
+
+      // Get ID of a comment
+      $cID = $user->comments[1]->id;
+
+      // Create LoadMap
+      // $loadMap = new \Cora\Adm\LoadMap([], [
+      //   //'madeBy' => true
+      //   'madeBy' => new \Cora\Adm\LoadMap([
+      //     'madeBy' => '!madeBy'
+      //   ], [], true)
+      // ]);
+
+      $comments = $this->app->tests->userCommentsExtend;
+      $comment = $comments->find($cID);
+
+      // Ensure that the father of that friend was loaded and populated without any dynamic queries
+      $this->assertEquals('Adam', $comment->name);
+    }
+
+
+    /**
      *  Ensure that fetching a Collection from a model with a loadMap works.
      *  In this case, the loadMapped relationship should be NOT present.
      *  

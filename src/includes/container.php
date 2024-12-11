@@ -254,6 +254,10 @@ $container->tests->userComments = function($c) {
     return $c->repository('Tests\Users\Comment');
 };
 
+$container->tests->userCommentsExtend = function($c) {
+    return $c->repository('Tests\Users\CommentUser');
+};
+
 
 // Don't remove. Register container to be accessible globally.
 $GLOBALS['coraContainer'] = $container;
