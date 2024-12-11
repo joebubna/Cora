@@ -817,6 +817,12 @@ class Model
         if (isset($this->$name)) {
             return true;
         }
+        // Added for backwards compatibilty with previous version.
+        // Usage in this method is fine, but it's used in conjunction with SetExtendedAttribute() where
+        // the dynamic property stuff there is questionable.
+        else if (isset($this->dynamic_prop[$name])) {
+          return true;
+        }
         else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
             $extendedModel = $this->{$this->model_extends};
             
@@ -859,6 +865,18 @@ class Model
     {
         if (isset($this->$name)) {
             return $this->$name;
+        }
+        // Added for backwards compatibilty with previous version.
+        // Obviously data attributes can be accessed on a model with $this->$attributeName as seen above.
+        // However, in past versions of ADM before PHP8, extra data passed in to a model would be stored for access
+        // such that $this->$name = $value even when there was no class property with that name. 
+        // In PHP8 you can't dynamically assign properties like that anymore without them being explicitly defined in the code,
+        // so the "dynamic_prop" variable was introduced to store that extra non-model data.
+        // IDEALLY, it would make more sense to NOT check dynamic_prop in this method, since this method implies by the name
+        // that it is only fetching attributes of the model... but since prior to PHP8 non-model data would get returned,
+        // I needed to add this for backwards compatibility.
+        else if (isset($this->dynamic_prop[$name])) {
+          return $this->dynamic_prop[$name];
         }
         else if (isset($this->model_extends) && isset($this->model_attributes[$this->model_extends])) {
             $extendedModel = $this->{$this->model_extends};
